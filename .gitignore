@@ -83,3 +83,16 @@ lint/generated/
 lint/outputs/
 lint/tmp/
 # lint/reports/
+
+# Bruno
+*.iml
+.gradle
+local.properties
+.idea/
+.DS_Store
+/build
+/captures
+.externalNativeBuild
+.cxx
+.project
+.settings/
