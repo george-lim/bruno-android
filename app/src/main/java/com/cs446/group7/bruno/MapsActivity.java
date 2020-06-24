@@ -21,8 +21,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
-    private final int LOCATION_PERMISSION_REQUEST_CODE = 1;
-    final String[] locationPermissions = { Manifest.permission.ACCESS_FINE_LOCATION };
+    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
+    private static final String[] locationPermissions = { Manifest.permission.ACCESS_FINE_LOCATION };
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
