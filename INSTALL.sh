@@ -8,7 +8,10 @@ cp hooks/* .git/hooks
 
 # Install API key (if found)
 google_maps_key=${1:-'<!-- Add API Key here -->'}
-mkdir -p app/src/debug/res/values
-echo -e "<resources>\n\t<string name=\"google_maps_key\" templateMergeStrategy=\"preserve\" translatable=\"false\">\n\t\t$google_maps_key\n\t</string>\n</resources>" > app/src/debug/res/values/google_maps_api.xml
-mkdir -p app/src/release/res/values
-echo -e "<resources>\n\t<string name=\"google_maps_key\" templateMergeStrategy=\"preserve\" translatable=\"false\">\n\t\t$google_maps_key\n\t</string>\n</resources>" > app/src/release/res/values/google_maps_api.xml
+google_maps_api_xml="<resources>\n\t<string name=\"google_maps_key\" templateMergeStrategy=\"preserve\" translatable=\"false\">\n\t\t$google_maps_key\n\t</string>\n</resources>"
+
+for config in debug release; do
+  api_key_dir=app/src/$config/res/values
+  mkdir -p api_key_dir
+  echo -e $google_maps_api_xml > $api_key_dir/google_maps_api.xml
+done
