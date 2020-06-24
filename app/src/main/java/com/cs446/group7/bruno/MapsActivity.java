@@ -5,6 +5,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
@@ -54,10 +55,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         // mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
 
         // request location permissions
-        if (!hasLocationPermission()) {
-            requestLocationPermission();
-        } else {
+        if (hasLocationPermission()) {
             enableLocation();
+        } else {
+            requestLocationPermission();
         }
     }
 
@@ -74,11 +75,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         return ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
     }
 
+    @SuppressLint("MissingPermission")
     private void enableLocation() {
-        // this call must be wrapped in this if statement
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            mMap.setMyLocationEnabled(true);
-        }
+        mMap.setMyLocationEnabled(true);
     }
 
     private void requestLocationPermission() {
