@@ -12,6 +12,6 @@ google_maps_api_xml="<resources>\n\t<string name=\"google_maps_key\" templateMer
 
 for config in debug release; do
   api_key_dir=app/src/$config/res/values
-  mkdir -p api_key_dir
+  mkdir -p $api_key_dir
   echo -e $google_maps_api_xml > $api_key_dir/google_maps_api.xml
 done
