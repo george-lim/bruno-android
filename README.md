@@ -11,6 +11,8 @@ To install, run:
 
 ```bash
 bash INSTALL.sh
+# or
+bash INSTALL.sh <google_maps_key>
 ```
 
 Ensure that API 30 is installed in Android Studio by navigating to Android Studio -> Preferences -> System Settings -> Android SDK.
