@@ -11,7 +11,8 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - name: Checkout repo
+      uses: actions/checkout@v2
     - name: Run INSTALL.sh
       run: bash INSTALL.sh
     - name: Build project
