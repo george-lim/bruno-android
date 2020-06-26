@@ -12,6 +12,9 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.widget.Toast;
 
+import com.cs446.group7.bruno.sensor.PedometerSubscriber;
+import com.cs446.group7.bruno.sensor.SensorService;
+
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -19,11 +22,14 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, PedometerSubscriber {
 
     private GoogleMap mMap;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
     private static final String[] locationPermissions = { Manifest.permission.ACCESS_FINE_LOCATION };
+
+    private SensorService sensorService;
+    private int steps = 0;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -60,6 +66,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         } else {
             requestLocationPermission();
         }
+
+        sensorService = new SensorService(this);
+        sensorService.addPedometerSubscriber(this);
     }
 
     @Override
@@ -99,5 +108,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 })
                 .create()
                 .show();
+    }
+
+    @Override
+    public void didStep(long timestamp) {
+        steps++;
+        System.out.println("Total steps: " + steps);
     }
 }
