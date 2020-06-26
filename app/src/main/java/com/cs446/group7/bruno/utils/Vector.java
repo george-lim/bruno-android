@@ -8,7 +8,7 @@ public class Vector {
     // MARK: - N dimension vector methods
 
     // Returns vector component sum
-    public static float componentSum(float[] vector) {
+    public static float componentSum(final float[] vector) {
         float result = 0;
         for (float i : vector) {
             result += i;
@@ -17,7 +17,7 @@ public class Vector {
     }
 
     // Returns vector norm
-    public static float norm(float[] vector) {
+    public static float norm(final float[] vector) {
         float result = 0;
         for (float i : vector) {
             result += i * i;
@@ -26,7 +26,7 @@ public class Vector {
     }
 
     // Returns normalized vector
-    public static float[] normalize(float[] vector) {
+    public static float[] normalize(final float[] vector) {
         float[] result = new float[vector.length];
         float norm = norm(vector);
         for (int i = 0; i < vector.length; ++i) {
@@ -38,7 +38,7 @@ public class Vector {
     // MARK: - 3 dimension vector methods
 
     // Returns dot product of vector1 and vector2
-    public static float dotProduct3D(float[] vector1, float[] vector2) {
+    public static float dotProduct3D(final float[] vector1, final float[] vector2) {
         float result = 0;
         for (int i = 0; i < 3; ++i) {
             result += vector1[i] * vector2[i];

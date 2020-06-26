@@ -18,7 +18,7 @@ public class Pedometer {
         private float[][] queue = new float[3][MAX_SIZE];
 
         // Add a data point
-        void add(float[] vector) {
+        void add(final float[] vector) {
             totalCount++;
             for (int i = 0; i < 3; ++i) {
                 queue[i][totalCount % MAX_SIZE] = vector[i];
@@ -85,17 +85,17 @@ public class Pedometer {
     }
 
     // Adds subscriber to the list of subscribers
-    public void addSubscriber(PedometerSubscriber subscriber) {
+    public void addSubscriber(final PedometerSubscriber subscriber) {
         subscribers.add(subscriber);
     }
 
     // Removes subscriber from the list of subscribers
-    public void removeSubscriber(PedometerSubscriber subscriber) {
+    public void removeSubscriber(final PedometerSubscriber subscriber) {
         subscribers.remove(subscriber);
     }
 
     // Calculates whether the added acceleration vector and timestamp are enough to register a step
-    public void onAccelerometerChanged(final long timestamp, float[] accelerationVector) {
+    public void onAccelerometerChanged(long timestamp, final float[] accelerationVector) {
         accelerationData.add(accelerationVector);
         float[] accelerationAverage = accelerationData.getAverage();
         float[] normalizedAverage = Vector.normalize(accelerationAverage);

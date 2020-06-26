@@ -14,7 +14,7 @@ public class SensorService implements SensorEventListener {
 
     private Pedometer pedometer;
 
-    public SensorService(Context context) {
+    public SensorService(final Context context) {
         sensorManager = (SensorManager)context.getSystemService(context.SENSOR_SERVICE);
         accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         pedometer = new Pedometer();
@@ -23,12 +23,12 @@ public class SensorService implements SensorEventListener {
     }
 
     // Adds subscriber to the list of pedometer subscribers
-    public void addPedometerSubscriber(PedometerSubscriber subscriber) {
+    public void addPedometerSubscriber(final PedometerSubscriber subscriber) {
         pedometer.addSubscriber(subscriber);
     }
 
     // Removes subscriber from the list of pedometer subscribers
-    public void removePedometerSubscriber(PedometerSubscriber subscriber) {
+    public void removePedometerSubscriber(final PedometerSubscriber subscriber) {
         pedometer.removeSubscriber(subscriber);
     }
 
