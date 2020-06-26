@@ -7,23 +7,32 @@ import androidx.fragment.app.FragmentActivity;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
-import android.widget.Toast;
 
+import com.cs446.group7.bruno.routing.Route;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnSuccessListener;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
+    private FusedLocationProviderClient fusedLocationClient;
+
+
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
     private static final String[] locationPermissions = { Manifest.permission.ACCESS_FINE_LOCATION };
+    private static String apiKey;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -33,6 +42,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+
+
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+
+        Context context = getApplicationContext();
+        ApplicationInfo app = null;
+        try {
+            app = context.getPackageManager().getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA);
+            Bundle bundle = app.metaData;
+
+            apiKey = bundle.getString("com.google.android.geo.API_KEY");
+
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+
     }
 
     /**
@@ -44,6 +70,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      * it inside the SupportMapFragment. This method will only be triggered once the user has
      * installed Google Play services and returned to the app.
      */
+    @SuppressLint("MissingPermission")
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
@@ -57,6 +84,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         // request location permissions
         if (hasLocationPermission()) {
             enableLocation();
+            fusedLocationClient.getLastLocation()
+                    .addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                        @Override
+                        public void onSuccess(Location location) {
+                            // Got last known location. In some rare situations this can be null.
+                            if (location != null) {
+                                Route.run(mMap, location, apiKey, getApplicationContext());
+                                mMap.moveCamera(CameraUpdateFactory.newLatLng(
+                                        new LatLng(location.getLatitude(), location.getLongitude())
+                                ));
+                            }
+                        }
+                    });
+
+
         } else {
             requestLocationPermission();
         }
