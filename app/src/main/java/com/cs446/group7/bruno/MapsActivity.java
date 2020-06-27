@@ -15,14 +15,20 @@ import android.location.Location;
 import android.os.Bundle;
 
 import com.cs446.group7.bruno.routing.Route;
+import com.cs446.group7.bruno.routing.RouteGenerator;
+import com.cs446.group7.bruno.routing.RouteTesting;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
+
+import java.util.List;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
@@ -43,8 +49,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-
-
+        // Enable location services
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
         Context context = getApplicationContext();
@@ -90,10 +95,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         public void onSuccess(Location location) {
                             // Got last known location. In some rare situations this can be null.
                             if (location != null) {
-                                Route.run(mMap, location, apiKey, getApplicationContext());
-                                mMap.moveCamera(CameraUpdateFactory.newLatLng(
-                                        new LatLng(location.getLatitude(), location.getLongitude())
-                                ));
+                                final LatLng currLocation = new LatLng(location.getLatitude(), location.getLongitude());
+
+                                Route route = RouteGenerator.generateRoute(currLocation, 3, 0.1, Math.random() * 2 * Math.PI);
+
+                                List<LatLng> markers = route.getMarkers();
+                                float alpha = 1.0f;
+                                for (final LatLng p : markers) {
+                                    mMap.addMarker(new MarkerOptions()
+                                            .alpha(alpha)
+                                            .position(p))
+                                            .setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
+                                    alpha -= 1.0f / markers.size();
+                                }
+
+
+                                mMap.moveCamera(CameraUpdateFactory.newLatLng(currLocation));
                             }
                         }
                     });
