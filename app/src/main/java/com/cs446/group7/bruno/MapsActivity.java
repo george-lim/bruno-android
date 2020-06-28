@@ -68,7 +68,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             requestLocationPermission();
         }
 
-        sensorService = new SensorService(this);
+        sensorService = new SensorService(getApplicationContext());
         sensorService.addPedometerSubscriber(this);
     }
 
