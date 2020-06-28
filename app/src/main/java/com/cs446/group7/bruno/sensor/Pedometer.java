@@ -105,20 +105,24 @@ public class Pedometer {
         float[] accelerationAverage = accelerationData.getAverage();
         float[] normalizedAverage = Vector.normalize(accelerationAverage);
         float normalizationFactor = Vector.norm(accelerationAverage);
+
+        float velocity;
         try {
-            float velocity = Vector.dotProduct(normalizedAverage, accelerationVector) - normalizationFactor;
-            velocityData.add(velocity);
-            float velocityEstimate = velocityData.getVelocityEstimate();
-            if (lastVelocityEstimate <= STEP_THRESHOLD && velocityEstimate > STEP_THRESHOLD
-                    && timestamp - lastTimestamp > STEP_DELAY_NS) {
-                for (PedometerSubscriber subscriber : subscribers) {
-                    subscriber.didStep(timestamp);
-                }
-                lastTimestamp = timestamp;
-            }
-            lastVelocityEstimate = velocityEstimate;
+            velocity = Vector.dotProduct(normalizedAverage, accelerationVector) - normalizationFactor;
         } catch (Vector.UnequalDimensionException e) {
-            Log.i(this.getClass().getSimpleName(), e.getMessage());
+            Log.e(this.getClass().getSimpleName(), "Unable to calculate velocity using dot product", e);
+            return;
         }
+
+        velocityData.add(velocity);
+        float velocityEstimate = velocityData.getVelocityEstimate();
+        if (lastVelocityEstimate <= STEP_THRESHOLD && velocityEstimate > STEP_THRESHOLD
+                && timestamp - lastTimestamp > STEP_DELAY_NS) {
+            for (PedometerSubscriber subscriber : subscribers) {
+                subscriber.didStep(timestamp);
+            }
+            lastTimestamp = timestamp;
+        }
+        lastVelocityEstimate = velocityEstimate;
     }
 }
