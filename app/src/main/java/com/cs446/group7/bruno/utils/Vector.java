@@ -5,7 +5,16 @@ public class Vector {
     // NOTE: - Vector is a utility class, should not be instantiated
     private Vector() {}
 
-    // MARK: - N dimension vector methods
+    // MARK: - Vector exceptions
+
+    // Exception caused by vector1 and vector2 not being the same dimension
+    public static class UnequalDimensionException extends RuntimeException {
+        public UnequalDimensionException() {
+            super("Vector operation requires input vectors to be the same dimension");
+        }
+    }
+
+    // MARK: - Vector operations
 
     // Returns vector component sum
     public static float componentSum(final float[] vector) {
@@ -35,12 +44,14 @@ public class Vector {
         return result;
     }
 
-    // MARK: - 3 dimension vector methods
-
     // Returns dot product of vector1 and vector2
-    public static float dotProduct3D(final float[] vector1, final float[] vector2) {
+    public static float dotProduct(final float[] vector1, final float[] vector2)
+            throws UnequalDimensionException {
+        if (vector1.length != vector2.length) {
+            throw new UnequalDimensionException();
+        }
         float result = 0;
-        for (int i = 0; i < 3; ++i) {
+        for (int i = 0; i < vector1.length; ++i) {
             result += vector1[i] * vector2[i];
         }
         return result;

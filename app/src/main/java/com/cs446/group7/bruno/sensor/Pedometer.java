@@ -1,5 +1,7 @@
 package com.cs446.group7.bruno.sensor;
 
+import android.util.Log;
+
 import com.cs446.group7.bruno.utils.Vector;
 
 import java.util.ArrayList;
@@ -100,16 +102,20 @@ public class Pedometer {
         float[] accelerationAverage = accelerationData.getAverage();
         float[] normalizedAverage = Vector.normalize(accelerationAverage);
         float normalizationFactor = Vector.norm(accelerationAverage);
-        float velocity = Vector.dotProduct3D(normalizedAverage, accelerationVector) - normalizationFactor;
-        velocityData.add(velocity);
-        float velocityEstimate = velocityData.getVelocityEstimate();
-        if (lastVelocityEstimate <= STEP_THRESHOLD && velocityEstimate > STEP_THRESHOLD
-                && timestamp - lastTimestamp > STEP_DELAY_NS) {
-            for (PedometerSubscriber subscriber : subscribers) {
-                subscriber.didStep(timestamp);
+        try {
+            float velocity = Vector.dotProduct(normalizedAverage, accelerationVector) - normalizationFactor;
+            velocityData.add(velocity);
+            float velocityEstimate = velocityData.getVelocityEstimate();
+            if (lastVelocityEstimate <= STEP_THRESHOLD && velocityEstimate > STEP_THRESHOLD
+                    && timestamp - lastTimestamp > STEP_DELAY_NS) {
+                for (PedometerSubscriber subscriber : subscribers) {
+                    subscriber.didStep(timestamp);
+                }
+                lastTimestamp = timestamp;
             }
-            lastTimestamp = timestamp;
+            lastVelocityEstimate = velocityEstimate;
+        } catch (Vector.UnequalDimensionException e) {
+            Log.i(this.getClass().getSimpleName(), e.getMessage());
         }
-        lastVelocityEstimate = velocityEstimate;
     }
 }
