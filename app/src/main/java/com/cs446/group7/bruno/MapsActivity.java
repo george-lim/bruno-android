@@ -7,16 +7,18 @@ import androidx.fragment.app.FragmentActivity;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 
+import com.cs446.group7.bruno.routing.OnRouteReadyCallback;
 import com.cs446.group7.bruno.routing.Route;
 import com.cs446.group7.bruno.routing.RouteGenerator;
-import com.cs446.group7.bruno.routing.RouteTesting;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -25,37 +27,79 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 
 import java.util.List;
+import java.util.Random;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, OnRouteReadyCallback {
 
     private GoogleMap mMap;
+    private LatLng currLocation;
+    private RouteGenerator routeGenerator;
     private FusedLocationProviderClient fusedLocationClient;
 
+
+    private static boolean isMock = true;
 
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
     private static final String[] locationPermissions = { Manifest.permission.ACCESS_FINE_LOCATION };
     private static String apiKey;
+
+    private Button generateRouteButton;
+    private Button toggleMockButton;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+        final SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
+
+        generateRouteButton = findViewById(R.id.btn_generate_route);
+        generateRouteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (currLocation == null) return;
+
+                // currLocation = new LatLng(43.472390, -80.540752); // Blair
+                // currLocation = new LatLng(43.470304, -80.544331); // Needles hall
+                // currLocation = new LatLng(43.652746, -79.383555); // Nathan Phillips square
+
+                routeGenerator.generateRoute(
+                        MapsActivity.this,
+                        currLocation,
+                        new Random().nextInt(7 - 3 + 1) + 3,
+                        Math.random() * 0.05,
+                        Math.random() * 2 * Math.PI,
+                        isMock
+                );
+            }
+        });
+
+        toggleMockButton = findViewById(R.id.btn_toggle_mock);
+        toggleMockButton.setText("Mock: " + (isMock ? "ON" : "OFF"));
+        toggleMockButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                isMock = !isMock;
+                toggleMockButton.setText("Mock: " + (isMock ? "ON" : "OFF"));
+            }
+        });
+
+
         mapFragment.getMapAsync(this);
 
         // Enable location services
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
-        Context context = getApplicationContext();
-        ApplicationInfo app = null;
+        ApplicationInfo app;
         try {
-            app = context.getPackageManager().getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA);
+            app = getPackageManager().getApplicationInfo(getPackageName(), PackageManager.GET_META_DATA);
             Bundle bundle = app.metaData;
 
             apiKey = bundle.getString("com.google.android.geo.API_KEY");
@@ -64,6 +108,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             e.printStackTrace();
         }
 
+        routeGenerator = RouteGenerator.create(this, apiKey);
     }
 
     /**
@@ -94,24 +139,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         @Override
                         public void onSuccess(Location location) {
                             // Got last known location. In some rare situations this can be null.
-                            if (location != null) {
-                                final LatLng currLocation = new LatLng(location.getLatitude(), location.getLongitude());
+                            if (location == null) return;
 
-                                Route route = RouteGenerator.generateRoute(currLocation, 3, 0.1, Math.random() * 2 * Math.PI);
-
-                                List<LatLng> markers = route.getMarkers();
-                                float alpha = 1.0f;
-                                for (final LatLng p : markers) {
-                                    mMap.addMarker(new MarkerOptions()
-                                            .alpha(alpha)
-                                            .position(p))
-                                            .setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
-                                    alpha -= 1.0f / markers.size();
-                                }
-
-
-                                mMap.moveCamera(CameraUpdateFactory.newLatLng(currLocation));
-                            }
+                            currLocation = new LatLng(location.getLatitude(), location.getLongitude());
                         }
                     });
 
@@ -119,6 +149,44 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         } else {
             requestLocationPermission();
         }
+    }
+
+    @Override
+    public void onRouteReady(Route route) {
+        final List<LatLng> markers = route.getMarkers();
+        float alpha = 1.0f;
+
+        mMap.clear();
+
+
+        LatLngBounds.Builder builder = new LatLngBounds.Builder();
+
+        for (final LatLng p : markers) {
+            builder.include(p);
+        }
+
+        if (!isMock) {
+            for (final LatLng p : markers) {
+                mMap.addMarker(new MarkerOptions()
+                        .alpha(alpha)
+                        .position(p))
+                        .setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
+                alpha -= 1.0f / markers.size();
+            }
+        } else {
+            mMap.addMarker(new MarkerOptions()
+                    .position(markers.get(0)))
+                    .setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+        }
+
+        int padding = 200;
+        mMap.moveCamera(CameraUpdateFactory
+                .newLatLngBounds(builder.build(), padding)
+                //.newLatLngZoom(currLocation, 15 )
+        );
+
+
+        mMap.addPolyline(new PolylineOptions().addAll(route.getDecodedPath()));
     }
 
     @Override
