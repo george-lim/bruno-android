@@ -10,8 +10,12 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Toast;
 
+import com.cs446.group7.bruno.persistence.PersistenceService;
+import com.cs446.group7.bruno.persistence.WalkRunSession;
+import com.cs446.group7.bruno.persistence.WalkRunSessionDAO;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -19,11 +23,15 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.util.List;
+
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
     private static final String[] locationPermissions = { Manifest.permission.ACCESS_FINE_LOCATION };
+
+    private PersistenceService persistenceService;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -59,6 +67,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             enableLocation();
         } else {
             requestLocationPermission();
+        }
+
+        persistenceService = new PersistenceService(getApplicationContext());
+        WalkRunSessionDAO sessionDAO = persistenceService.getWalkRunSessionDAO();
+
+        // Insert a session
+        WalkRunSession newSession = new WalkRunSession();
+        newSession.setUid((int)(Math.random() * 10000 + 1));
+        newSession.setMyData("Hello world!");
+        sessionDAO.insert(newSession);
+
+        // Fetching all sessions
+        List<WalkRunSession> sessions = sessionDAO.getSessions();
+
+        for (WalkRunSession session : sessions) {
+            Log.i(this.getClass().getSimpleName(), "uid: " + session.getUid());
+            Log.i(this.getClass().getSimpleName(), "my_data: " + session.getMyData());
         }
     }
 
