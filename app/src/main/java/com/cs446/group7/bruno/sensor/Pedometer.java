@@ -8,30 +8,33 @@ import java.util.ArrayList;
 
 public class Pedometer {
 
+
+
     // MARK: - Pedometer data classes
 
     // Acceleration data class that manages all previously recorded acceleration sensor data
     private class AccelerationData {
+        private static final int VECTOR_DIMENSION = 3;
         // Maximum data point buffer size
         private static final int MAX_SIZE = 50;
         // Total data points observed
         private int totalCount = 0;
         // Data point queue. Overwrites oldest data points when buffer is full.
-        private float[][] queue = new float[3][MAX_SIZE];
+        private float[][] queue = new float[VECTOR_DIMENSION][MAX_SIZE];
 
         // Add a data point
         void add(final float[] vector) {
             totalCount++;
-            for (int i = 0; i < 3; ++i) {
+            for (int i = 0; i < VECTOR_DIMENSION; ++i) {
                 queue[i][totalCount % MAX_SIZE] = vector[i];
             }
         }
 
         // Returns the average acceleration vector from buffer data
         float[] getAverage() {
-            float[] average = new float[3];
+            float[] average = new float[VECTOR_DIMENSION];
             int storedCount = Math.min(totalCount, MAX_SIZE);
-            for (int i = 0; i < 3; ++i) {
+            for (int i = 0; i < VECTOR_DIMENSION; ++i) {
                 average[i] = Vector.componentSum(queue[i]) / storedCount;
             }
             return average;
