@@ -25,6 +25,9 @@ public class RouteGenerator {
 
     private static final String DIRECTIONS_ENDPOINT = "https://maps.googleapis.com/maps/api/directions/";
     private static final String TAG = "RouteGenerator";
+    private static final double METRES_PER_LAT_DEG = 110947.2;
+    private static final double EARTH_CIRCUMFERENCE_METRES = 40075000;
+    private static final int DEG_PER_PI_RADIAN = 180;
 
     private static final String[] mockPaths = {
             "__`iGvjgeN]s@]i@_@e@g@a@gAc@}@OH_AJq@dAyBt@aB\\i@ZONE\\@TDXRt@z@u@{@QMBMPy@b@iBH]JD\\wARk@d@}@vAtAbAlAlEdF~AfBFP?VKNi@h@SRm@z@Zf@Rf@Rp@H`@j@ULGhAgAJ?HBHJBTCUIKICK?iAfAMFk@TF\\Hl@J|@sBn@QL]`@s@hAODMAKKyAiBKP?@A@_B`DqCkD_@q@",
@@ -179,7 +182,9 @@ public class RouteGenerator {
         if (numPoints < 3) {
             throw new IllegalArgumentException(String.format("numPoints needs to be at least 3, %s is given", numPoints));
         }
-        final double l = totalDistance / numPoints;
+
+        final double distanceInLatLngDegree = distanceToLatLngDegree(start, totalDistance);
+        final double l = distanceInLatLngDegree / numPoints;
         final double a = 2 * Math.PI / numPoints;
         final double r = l / Math.sqrt(2 * (1 - Math.cos(a)));
 
@@ -193,5 +198,16 @@ public class RouteGenerator {
             ));
         }
         return result;
+    }
+
+    private static double distanceToLatLngDegree(final LatLng start, double totalDistance) {
+        final double metresPerLngDegree = metresPerLngDegree(start.latitude);
+        // assuming that we typically travel in N-S direction as much as in E-W for now
+        final double averageMetresPerLatLngDegree = (METRES_PER_LAT_DEG + metresPerLngDegree) / 2;
+        return totalDistance / averageMetresPerLatLngDegree;
+    }
+
+    private static double metresPerLngDegree(double lat) {
+        return (EARTH_CIRCUMFERENCE_METRES * Math.cos(lat * (Math.PI / DEG_PER_PI_RADIAN))) / (2 * DEG_PER_PI_RADIAN);
     }
 }

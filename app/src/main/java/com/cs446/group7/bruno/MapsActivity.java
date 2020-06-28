@@ -48,6 +48,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
     private static final String[] locationPermissions = { Manifest.permission.ACCESS_FINE_LOCATION };
     private static String apiKey;
+    private static final String TAG = "MapsActivity";
 
     private Button generateRouteButton;
     private Button toggleMockButton;
@@ -70,11 +71,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 // currLocation = new LatLng(43.470304, -80.544331); // Needles hall
                 // currLocation = new LatLng(43.652746, -79.383555); // Nathan Phillips square
 
+                double totalDistance = new Random().nextInt(11) * 1000;
+                Log.i(TAG, "Total route distance (m): " + totalDistance);
+
                 routeGenerator.generateRoute(
                         MapsActivity.this,
                         currLocation,
                         new Random().nextInt(7 - 3 + 1) + 3,
-                        Math.random() * 0.05,
+                        totalDistance,
                         Math.random() * 2 * Math.PI,
                         isMock
                 );
