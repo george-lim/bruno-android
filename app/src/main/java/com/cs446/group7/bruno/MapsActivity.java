@@ -10,6 +10,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.cs446.group7.bruno.sensor.PedometerSubscriber;
@@ -113,6 +114,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void didStep(long timestamp) {
         steps++;
-        System.out.println("Total steps: " + steps);
+        Log.i(this.getClass().getSimpleName(), "Total steps: " + steps);
     }
 }
