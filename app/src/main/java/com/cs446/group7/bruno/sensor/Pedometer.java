@@ -8,12 +8,11 @@ import java.util.ArrayList;
 
 public class Pedometer {
 
-
-
     // MARK: - Pedometer data classes
 
     // Acceleration data class that manages all previously recorded acceleration sensor data
     private class AccelerationData {
+        // Expected acceleration vector dimension size
         private static final int VECTOR_DIMENSION = 3;
         // Maximum data point buffer size
         private static final int MAX_SIZE = 50;
