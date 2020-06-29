@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.cs446.group7.bruno.routing.OnRouteReadyCallback;
 import com.cs446.group7.bruno.routing.Route;
@@ -39,16 +40,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private GoogleMap mMap;
     private LatLng currLocation;
-    private RouteGenerator routeGenerator;
+    private RouteGenerator routeGeneratorReal;
+    private RouteGenerator routeGeneratorMock;
     private FusedLocationProviderClient fusedLocationClient;
 
 
-    private static boolean isMock = true;
+    private static boolean isMock = BuildConfig.DEBUG;
 
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
     private static final String[] locationPermissions = { Manifest.permission.ACCESS_FINE_LOCATION };
     private static String apiKey;
-    private static final String TAG = "MapsActivity";
+    private final String TAG = this.getClass().getSimpleName();
 
     private Button generateRouteButton;
     private Button toggleMockButton;
@@ -74,13 +76,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 double totalDistance = new Random().nextInt(11) * 1000;
                 Log.i(TAG, "Total route distance (m): " + totalDistance);
 
-                routeGenerator.generateRoute(
+                (isMock ? routeGeneratorMock : routeGeneratorReal).generateRoute(
                         MapsActivity.this,
                         currLocation,
                         new Random().nextInt(7 - 3 + 1) + 3,
                         totalDistance,
-                        Math.random() * 2 * Math.PI,
-                        isMock
+                        Math.random() * 2 * Math.PI
                 );
             }
         });
@@ -92,6 +93,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onClick(View view) {
                 isMock = !isMock;
                 toggleMockButton.setText("Mock: " + (isMock ? "ON" : "OFF"));
+//                Toast.makeText(MapsActivity.this, routeGenerator.TAG, Toast.LENGTH_SHORT).show();
+//                Log.i(routeGenerator.TAG, routeGenerator.TAG);
             }
         });
 
@@ -112,7 +115,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             e.printStackTrace();
         }
 
-        routeGenerator = RouteGenerator.create(this, apiKey);
+        routeGeneratorReal = RouteGenerator.create(this, apiKey, false);
+        routeGeneratorMock = RouteGenerator.create(this, apiKey, true);
     }
 
     /**
