@@ -56,6 +56,7 @@ public abstract class RouteGenerator {
 
         List<LatLng> result = new ArrayList<>(numPoints);
 
+        // calculate points to form a regular polygon with numPoints sides
         for (int i = 0; i < numPoints; ++i) {
             final double b = i * a + rotation;
             result.add(new LatLng(
@@ -66,19 +67,18 @@ public abstract class RouteGenerator {
         return result;
     }
 
+    /**
+     * Parse the route generate response into the {@link Route} object
+     *
+     * @param routeJson json containing the raw response\
+     */
     static Route parseRouteFromJson(final JSONObject routeJson) {
         try {
-            final String encodedPath = routeJson.getJSONArray("routes")
-                    .getJSONObject(0)
-                    .getJSONObject("overview_polyline")
-                    .getString("points");
-
-            final List<LatLng> decodedPath = PolyUtil.decode(encodedPath);
-            return new Route(encodedPath, decodedPath);
+            return Route.parseFromJson(routeJson);
         } catch (JSONException e) {
             e.printStackTrace();
+            return null;
         }
-        return null;
     }
 
     /**

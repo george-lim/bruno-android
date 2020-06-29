@@ -78,7 +78,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onClick(View view) {
                 if (currLocation == null) return;
 
-                currLocation = new LatLng(43.472390, -80.540752); // Blair
+                // currLocation = new LatLng(43.472390, -80.540752); // Blair
                 // currLocation = new LatLng(43.470304, -80.544331); // Needles hall
                 // currLocation = new LatLng(43.652746, -79.383555); // Nathan Phillips square
 
@@ -174,6 +174,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onRouteReady(Route route) {
+        if (route == null) {
+            Log.e(TAG, "Failed to generate route");
+        }
+
         final List<LatLng> decodedPath = route.getDecodedPath();
 
         List<LatLng> markers = new ArrayList<>();
