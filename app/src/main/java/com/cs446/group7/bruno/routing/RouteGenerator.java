@@ -1,11 +1,19 @@
 package com.cs446.group7.bruno.routing;
 
 import android.content.Context;
+
 import com.google.android.gms.maps.model.LatLng;
+import com.google.maps.android.PolyUtil;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Class used to generate routes using the Google maps API
+ */
 public abstract class RouteGenerator {
     static final String DIRECTIONS_ENDPOINT = "https://maps.googleapis.com/maps/api/directions/";
     static final double METRES_PER_LAT_DEG = 110947.2;
@@ -58,13 +66,37 @@ public abstract class RouteGenerator {
         return result;
     }
 
+    static Route parseRouteFromJson(final JSONObject routeJson) {
+        try {
+            final String encodedPath = routeJson.getJSONArray("routes")
+                    .getJSONObject(0)
+                    .getJSONObject("overview_polyline")
+                    .getString("points");
+
+            final List<LatLng> decodedPath = PolyUtil.decode(encodedPath);
+            return new Route(encodedPath, decodedPath);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * Converts distance in meters to Latitude and longitude measures
+     *
+     * @param start starting location
+     * @param totalDistance distance (m)
+     */
     static double distanceToLatLngDegree(final LatLng start, double totalDistance) {
         final double metresPerLngDegree = metresPerLngDegree(start.latitude);
         // assuming that we typically travel in N-S direction as much as in E-W for now
         final double averageMetresPerLatLngDegree = (METRES_PER_LAT_DEG + metresPerLngDegree) / 2;
         return totalDistance / averageMetresPerLatLngDegree;
-}
+    }
 
+    /**
+     * Converts Latitude and longitude measures to distance in meters
+     */
     static double metresPerLngDegree(double lat) {
         return (EARTH_CIRCUMFERENCE_METRES * Math.cos(lat * (Math.PI / DEG_PER_PI_RADIAN))) / (2 * DEG_PER_PI_RADIAN);
     }

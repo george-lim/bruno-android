@@ -37,6 +37,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -77,13 +78,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onClick(View view) {
                 if (currLocation == null) return;
 
-                // currLocation = new LatLng(43.472390, -80.540752); // Blair
+                currLocation = new LatLng(43.472390, -80.540752); // Blair
                 // currLocation = new LatLng(43.470304, -80.544331); // Needles hall
                 // currLocation = new LatLng(43.652746, -79.383555); // Nathan Phillips square
 
                 double totalDistance = new Random().nextInt(11) * 1000;
                 Log.i(TAG, "Total route distance (m): " + totalDistance);
 
+                // Note: Spamming the button in non-mock mode will cause crashes due to
+                //       the app running out of memory handling multiple concurrent requests
                 (isMock ? routeGeneratorMock : routeGeneratorReal).generateRoute(
                         MapsActivity.this,
                         currLocation,
@@ -105,7 +108,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //                Log.i(routeGenerator.TAG, routeGenerator.TAG);
             }
         });
-
 
         mapFragment.getMapAsync(this);
 
@@ -172,8 +174,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onRouteReady(Route route) {
-        final List<LatLng> markers = route.getMarkers();
-        float alpha = 1.0f;
+        final List<LatLng> decodedPath = route.getDecodedPath();
+
+        List<LatLng> markers = new ArrayList<>();
+        int skipInterval = decodedPath.size() / 5;
+
+        // sample a few points one the route to act as markers
+        for (int i = 0; i < decodedPath.size(); i += skipInterval) {
+            markers.add(decodedPath.get(i));
+        }
 
         mMap.clear();
 
@@ -184,19 +193,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             builder.include(p);
         }
 
-        if (!isMock) {
-            for (final LatLng p : markers) {
-                mMap.addMarker(new MarkerOptions()
-                        .alpha(alpha)
-                        .position(p))
-                        .setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
-                alpha -= 1.0f / markers.size();
-            }
-        } else {
-            mMap.addMarker(new MarkerOptions()
+        mMap.addMarker(new MarkerOptions()
                     .position(markers.get(0)))
-                    .setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
-        }
+                    .setIcon(BitmapDescriptorFactory.defaultMarker(isMock ? BitmapDescriptorFactory.HUE_RED : BitmapDescriptorFactory.HUE_BLUE));
 
         int padding = 200;
         mMap.moveCamera(CameraUpdateFactory
