@@ -2,7 +2,6 @@ package com.cs446.group7.bruno.routing;
 
 import android.content.Context;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -10,11 +9,8 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.cs446.group7.bruno.MapsActivity;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.maps.android.PolyUtil;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.List;
@@ -60,29 +56,9 @@ class RouteGeneratorRealImpl extends RouteGenerator {
 
         RequestQueue requestQueue = Volley.newRequestQueue(context);
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, (String) null, new Response.Listener<JSONObject>() {
-
             @Override
             public void onResponse(JSONObject response) {
-                Log.i(TAG, response.toString());
-                try {
-                    final String encodedPath = response.getJSONArray("routes")
-                            .getJSONObject(0)
-                            .getJSONObject("overview_polyline")
-                            .getString("points");
-
-                    Log.i(TAG, encodedPath);
-
-                    final List<LatLng> decodedPath = PolyUtil.decode(encodedPath);
-
-                    double routeDistance = 0;
-
-
-
-                    callback.onRouteReady(new Route(waypoints, encodedPath, decodedPath, routeDistance));
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    Log.e(TAG, e.toString());
-                }
+                callback.onRouteReady(parseRouteFromJson(response));
             }
         }, new Response.ErrorListener() {
             @Override
