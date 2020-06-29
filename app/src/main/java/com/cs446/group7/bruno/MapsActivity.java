@@ -13,6 +13,7 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
+
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -22,6 +23,9 @@ import com.cs446.group7.bruno.routing.Route;
 import com.cs446.group7.bruno.routing.RouteGenerator;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.cs446.group7.bruno.sensor.PedometerSubscriber;
+import com.cs446.group7.bruno.sensor.SensorService;
+
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -36,7 +40,8 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import java.util.List;
 import java.util.Random;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, OnRouteReadyCallback {
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, OnRouteReadyCallback, PedometerSubscriber {
+
 
     private GoogleMap mMap;
     private LatLng currLocation;
@@ -54,6 +59,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private Button generateRouteButton;
     private Button toggleMockButton;
+
+    private SensorService sensorService;
+    private int steps = 0;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -157,6 +165,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         } else {
             requestLocationPermission();
         }
+
+        sensorService = new SensorService(getApplicationContext());
+        sensorService.addPedometerSubscriber(this);
     }
 
     @Override
@@ -234,5 +245,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 })
                 .create()
                 .show();
+    }
+
+    @Override
+    public void didStep(long timestamp) {
+        steps++;
+        Log.i(this.getClass().getSimpleName(), "Total steps: " + steps);
     }
 }
