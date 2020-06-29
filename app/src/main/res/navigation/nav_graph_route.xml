@@ -2,20 +2,21 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/nav_graph_route"
-    app:startDestination="@id/route_planning_fragment">
+    android:id="@+id/nav_route"
+    app:startDestination="@id/fragment_route_planning">
 
     <fragment
-        android:id="@+id/route_planning_fragment"
+        android:id="@+id/fragment_route_planning"
         android:name="com.cs446.group7.bruno.ui.routeplanning.RoutePlanningFragment"
         android:label="fragment_route_planning"
         tools:layout="@layout/fragment_route_planning" >
         <action
-            android:id="@+id/action_routeplanningfragment_to_onroutefragment"
-            app:destination="@id/on_route_fragment" />
+            android:id="@+id/action_routePlanningFragment_to_onRouteFragment"
+            app:destination="@id/fragment_on_route" />
     </fragment>
+
     <fragment
-        android:id="@+id/on_route_fragment"
+        android:id="@+id/fragment_on_route"
         android:name="com.cs446.group7.bruno.ui.onroute.OnRouteFragment"
         android:label="fragment_on_route"
         tools:layout="@layout/fragment_on_route" />

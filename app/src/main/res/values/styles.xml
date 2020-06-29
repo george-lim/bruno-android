@@ -4,5 +4,4 @@
         <item name="android:textColorPrimary">@color/colorOnBackground</item>
         <item name="android:textColorSecondary">@color/colorOnBackgroundLite</item>
     </style>
-
 </resources>

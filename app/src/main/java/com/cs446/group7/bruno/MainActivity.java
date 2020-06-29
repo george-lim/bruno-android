@@ -1,14 +1,76 @@
 package com.cs446.group7.bruno;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.os.Bundle;
+import android.view.MenuItem;
 
-public class MainActivity extends AppCompatActivity {
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.viewpager2.widget.ViewPager2;
+
+import com.cs446.group7.bruno.ui.BaseFragment;
+import com.cs446.group7.bruno.ui.BottomNavPagerAdaptor;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+
+public class MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
+
+    private ViewPager2 viewPager;
+    private BottomNavigationView bttmNav;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        setupBottomNavigation();
+    }
+
+    private void setupBottomNavigation() {
+        viewPager = findViewById(R.id.main_screen_pager);
+        bttmNav = findViewById(R.id.bttm_nav);
+        BottomNavPagerAdaptor adaptor = new BottomNavPagerAdaptor(this);
+        adaptor.addFragment(BaseFragment.newInstance(R.layout.content_route_base, R.id.nav_host_route));
+        adaptor.addFragment(BaseFragment.newInstance(R.layout.content_fitness_base, R.id.nav_host_fitness));
+        adaptor.addFragment(BaseFragment.newInstance(R.layout.content_setting_base, R.id.nav_host_settings));
+        viewPager.setAdapter(adaptor);
+        viewPager.setUserInputEnabled(false);
+        viewPager.setOffscreenPageLimit(3);
+        bttmNav.setOnNavigationItemSelectedListener(this);
+        viewPager.registerOnPageChangeCallback(pageChangeCallback);
+    }
+
+    ViewPager2.OnPageChangeCallback pageChangeCallback = new ViewPager2.OnPageChangeCallback() {
+        @Override
+        public void onPageSelected(int position) {
+            switch (position) {
+                case 0:
+                    bttmNav.setSelectedItemId(R.id.navigate_route_planning); break;
+                case 1:
+                    bttmNav.setSelectedItemId(R.id.navigate_fitness_records); break;
+                case 3:
+                    bttmNav.setSelectedItemId(R.id.navigate_settings); break;
+            }
+            super.onPageSelected(position);
+        }
+    };
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+        switch (menuItem.getItemId()) {
+            case R.id.navigate_route_planning:
+                viewPager.setCurrentItem(0, false); break;
+            case R.id.navigate_fitness_records:
+                viewPager.setCurrentItem(1, false); break;
+            case R.id.navigate_settings:
+                viewPager.setCurrentItem(2, false); break;
+        }
+        return true;
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (viewPager.getCurrentItem() != 0) {
+            viewPager.setCurrentItem(0, false);
+        } else {
+            super.onBackPressed();
+        }
     }
 }
