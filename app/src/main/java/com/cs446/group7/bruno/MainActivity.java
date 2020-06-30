@@ -5,16 +5,21 @@ import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.cs446.group7.bruno.ui.BaseFragment;
 import com.cs446.group7.bruno.ui.BottomNavPagerAdaptor;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
 
     private ViewPager2 viewPager;
     private BottomNavigationView bttmNav;
+    private List<BaseFragment> baseFragments = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,9 +32,12 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         viewPager = findViewById(R.id.main_screen_pager);
         bttmNav = findViewById(R.id.bttm_nav);
         BottomNavPagerAdaptor adaptor = new BottomNavPagerAdaptor(this);
-        adaptor.addFragment(BaseFragment.newInstance(R.layout.content_route_base, R.id.nav_host_route));
-        adaptor.addFragment(BaseFragment.newInstance(R.layout.content_fitness_base, R.id.nav_host_fitness));
-        adaptor.addFragment(BaseFragment.newInstance(R.layout.content_setting_base, R.id.nav_host_settings));
+        baseFragments.add(BaseFragment.newInstance(R.layout.content_route_base, R.id.nav_host_route));
+        baseFragments.add(BaseFragment.newInstance(R.layout.content_fitness_base, R.id.nav_host_fitness));
+        baseFragments.add(BaseFragment.newInstance(R.layout.content_setting_base, R.id.nav_host_settings));
+        for (Fragment f: baseFragments) {
+            adaptor.addFragment(f);
+        }
         viewPager.setAdapter(adaptor);
         viewPager.setUserInputEnabled(false);
         viewPager.setOffscreenPageLimit(3);
@@ -67,7 +75,11 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
     @Override
     public void onBackPressed() {
-        if (viewPager.getCurrentItem() != 0) {
+        BaseFragment curFragment = baseFragments.get(viewPager.getCurrentItem());
+        boolean canNavigateUp = curFragment.onBackPressed();
+        if (canNavigateUp) {
+            return;
+        } else if (viewPager.getCurrentItem() != 0) {
             viewPager.setCurrentItem(0, false);
         } else {
             super.onBackPressed();

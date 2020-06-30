@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 
 public class BaseFragment extends Fragment {
     private static String KEY_LAYOUT = "layout_key";
@@ -50,8 +51,8 @@ public class BaseFragment extends Fragment {
         return inflater.inflate(fragmentLayout, container, false);
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
+    public boolean onBackPressed() {
+        if (navHostId == defaultInt) return false;
+        return Navigation.findNavController(getActivity(), navHostId).navigateUp();
     }
 }
