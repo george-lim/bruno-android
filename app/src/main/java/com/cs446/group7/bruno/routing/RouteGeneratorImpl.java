@@ -18,9 +18,9 @@ import java.util.List;
 /**
  * {@link RouteGenerator} real implementation that uses Google's Directions API to generate routes.
  */
-class RouteGeneratorRealImpl extends RouteGenerator {
+public class RouteGeneratorImpl extends RouteGenerator {
 
-    RouteGeneratorRealImpl(Context context, String gMapsApiKey) {
+    public RouteGeneratorImpl(Context context, String gMapsApiKey) {
         super(context, gMapsApiKey);
     }
 

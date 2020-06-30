@@ -24,10 +24,6 @@ public abstract class RouteGenerator {
     final String gMapsApiKey;
     public final String TAG = this.getClass().getSimpleName();
 
-    public static RouteGenerator create(Context context, final String gMapsApiKey, final boolean isMock) {
-        return isMock ? new RouteGeneratorMockImpl(context, gMapsApiKey) : new RouteGeneratorRealImpl(context, gMapsApiKey);
-    }
-
     /**
      * Selects a random path from the stored paths.
      *

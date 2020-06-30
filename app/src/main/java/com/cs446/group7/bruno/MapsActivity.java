@@ -18,9 +18,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.cs446.group7.bruno.routing.MockRouteGeneratorImpl;
 import com.cs446.group7.bruno.routing.OnRouteReadyCallback;
 import com.cs446.group7.bruno.routing.Route;
 import com.cs446.group7.bruno.routing.RouteGenerator;
+import com.cs446.group7.bruno.routing.RouteGeneratorImpl;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.cs446.group7.bruno.sensor.PedometerSubscriber;
@@ -46,8 +48,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private GoogleMap mMap;
     private LatLng currLocation;
-    private RouteGenerator routeGeneratorReal;
-    private RouteGenerator routeGeneratorMock;
+    private RouteGenerator realRouteGenerator;
+    private RouteGenerator mockRouteGenerator;
     private FusedLocationProviderClient fusedLocationClient;
 
 
@@ -89,14 +91,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
 
                 double totalDistance = duration * SettingsService.PREFERRED_WALKING_SPEED;
+                double rotation = Math.random() * 2 * Math.PI;
 
                 // Note: Spamming the button in non-mock mode will cause crashes due to
                 //       the app running out of memory handling multiple concurrent requests
-                (isMock ? routeGeneratorMock : routeGeneratorReal).generateRoute(
+                (isMock ? mockRouteGenerator : realRouteGenerator).generateRoute(
                         MapsActivity.this,
                         currLocation,
                         totalDistance,
-                        Math.random() * 2 * Math.PI
+                        rotation
                 );
             }
         });
@@ -127,8 +130,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             e.printStackTrace();
         }
 
-        routeGeneratorReal = RouteGenerator.create(this, apiKey, false);
-        routeGeneratorMock = RouteGenerator.create(this, apiKey, true);
+        realRouteGenerator = new RouteGeneratorImpl(this, apiKey);
+        mockRouteGenerator = new MockRouteGeneratorImpl(this, apiKey);
     }
 
     /**
