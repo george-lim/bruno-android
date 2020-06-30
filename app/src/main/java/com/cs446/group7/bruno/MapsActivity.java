@@ -17,7 +17,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import com.cs446.group7.bruno.routing.OnRouteReadyCallback;
 import com.cs446.group7.bruno.routing.Route;
@@ -41,7 +40,6 @@ import com.google.android.gms.tasks.OnSuccessListener;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, OnRouteReadyCallback, PedometerSubscriber {
 
@@ -83,10 +81,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onClick(View view) {
                 if (currLocation == null) return;
 
-                // currLocation = new LatLng(43.472390, -80.540752); // Blair
-                // currLocation = new LatLng(43.470304, -80.544331); // Needles hall
-                // currLocation = new LatLng(43.652746, -79.383555); // Nathan Phillips square
-
                 int duration;
                 try {
                     duration = Integer.parseInt(durationInput.getText().toString());
@@ -114,8 +108,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onClick(View view) {
                 isMock = !isMock;
                 toggleMockButton.setText("Mock: " + (isMock ? "ON" : "OFF"));
-//                Toast.makeText(MapsActivity.this, routeGenerator.TAG, Toast.LENGTH_SHORT).show();
-//                Log.i(routeGenerator.TAG, routeGenerator.TAG);
             }
         });
 
@@ -152,12 +144,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-
-        // Sample to draw custom markers
-        // Add a marker in Sydney and move the camera
-        // LatLng sydney = new LatLng(-34, 151);
-        // mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        // mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
 
         // request location permissions
         if (hasLocationPermission()) {
@@ -214,7 +200,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         int padding = 200;
         mMap.moveCamera(CameraUpdateFactory
                 .newLatLngBounds(builder.build(), padding)
-                //.newLatLngZoom(currLocation, 15 )
         );
 
 
