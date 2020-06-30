@@ -1,4 +1,4 @@
-package com.cs446.group7.bruno;
+package com.cs446.group7.bruno.ui;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.cs446.group7.bruno.R;
 import com.cs446.group7.bruno.ui.BottomNavPagerAdaptor;
 import com.cs446.group7.bruno.ui.fitnessrecords.FitnessRecordsFragment;
 import com.cs446.group7.bruno.ui.routeplanning.RoutePlanningFragment;

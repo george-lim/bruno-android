@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/fragment_top_lvl"
-        android:name="com.cs446.group7.bruno.TopLevelFragment"
+        android:name="com.cs446.group7.bruno.ui.TopLevelFragment"
         android:label="fragment_top_level"
         tools:layout="@layout/fragment_top_level" >
         <action
