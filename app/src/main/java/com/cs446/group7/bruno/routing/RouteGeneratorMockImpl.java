@@ -24,7 +24,7 @@ class RouteGeneratorMockImpl extends RouteGenerator {
     }
 
     @Override
-    public void generateRoute(OnRouteReadyCallback callback, LatLng start, int numPoints, double totalDistance, double rotation) {
+    public void generateRoute(OnRouteReadyCallback callback, LatLng start, double totalDistance, double rotation) {
         int randomIndex = new Random().nextInt(mockResponses.length);
         try {
             callback.onRouteReady(parseRouteFromJson(new JSONObject(mockResponses[randomIndex])));
