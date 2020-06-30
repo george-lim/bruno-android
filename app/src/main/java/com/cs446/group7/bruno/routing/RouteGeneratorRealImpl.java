@@ -25,13 +25,10 @@ class RouteGeneratorRealImpl extends RouteGenerator {
     }
 
     @Override
-    public void generateRoute(final OnRouteReadyCallback callback, final LatLng start, int numPoints, final double totalDistance, double rotation) {
-        if (numPoints < 3) {
-            throw new IllegalArgumentException(String.format("numPoints must be at least 3, %s given", numPoints));
-        }
+    public void generateRoute(final OnRouteReadyCallback callback, final LatLng start, final double totalDistance, double rotation) {
 
-        // Select waypoints forming a regular numPointed-polygon anchored
-        final List<LatLng> waypoints = generateWaypoints(start, numPoints, totalDistance, rotation);
+        // Select waypoints forming an equilateral triangle
+        final List<LatLng> waypoints = generateWaypoints(start, totalDistance, rotation);
 
         // Build waypoint string
         String waypointDelimiter = "";
