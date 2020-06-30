@@ -3,14 +3,17 @@ package com.cs446.group7.bruno.routing;
 import android.content.Context;
 import android.util.Log;
 
+import com.android.volley.NoConnectionError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.ServerError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.maps.model.LatLng;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.List;
@@ -25,7 +28,7 @@ public class RouteGeneratorImpl extends RouteGenerator {
     }
 
     @Override
-    public void generateRoute(final OnRouteReadyCallback callback, final LatLng start, final double totalDistance, double rotation) {
+    public void generateRoute(final OnRouteResponseCallback callback, final LatLng start, final double totalDistance, double rotation) {
 
         // Select waypoints forming an equilateral triangle
         final List<LatLng> waypoints = generateWaypoints(start, totalDistance, rotation);
@@ -55,12 +58,23 @@ public class RouteGeneratorImpl extends RouteGenerator {
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, (String) null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
-                callback.onRouteReady(parseRouteFromJson(response));
+                try {
+                    callback.onRouteReady(parseRouteFromJson(response));
+                } catch (JSONException e) {
+                    callback.onRouteError(RouteGeneratorError.PARSE_ERROR);
+                }
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 Log.e(TAG, error.toString());
+                if (error instanceof NoConnectionError) {
+                    callback.onRouteError(RouteGeneratorError.NO_CONNECTION_ERROR);
+                } else if (error instanceof ServerError) {
+                    callback.onRouteError(RouteGeneratorError.SERVER_ERROR);
+                } else {
+                    callback.onRouteError(RouteGeneratorError.OTHER_ERROR);
+                }
             }
         });
 

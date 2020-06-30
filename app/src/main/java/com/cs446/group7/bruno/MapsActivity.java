@@ -19,9 +19,10 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.cs446.group7.bruno.routing.MockRouteGeneratorImpl;
-import com.cs446.group7.bruno.routing.OnRouteReadyCallback;
+import com.cs446.group7.bruno.routing.OnRouteResponseCallback;
 import com.cs446.group7.bruno.routing.Route;
 import com.cs446.group7.bruno.routing.RouteGenerator;
+import com.cs446.group7.bruno.routing.RouteGeneratorError;
 import com.cs446.group7.bruno.routing.RouteGeneratorImpl;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -43,7 +44,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, OnRouteReadyCallback, PedometerSubscriber {
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, OnRouteResponseCallback, PedometerSubscriber {
 
 
     private GoogleMap mMap;
@@ -173,10 +174,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onRouteReady(Route route) {
-        if (route == null) {
-            Log.e(TAG, "Failed to generate route");
-        }
-
         final List<LatLng> decodedPath = route.getDecodedPath();
 
         List<LatLng> markers = new ArrayList<>();
@@ -207,6 +204,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
         mMap.addPolyline(new PolylineOptions().addAll(route.getDecodedPath()));
+    }
+
+    @Override
+    public void onRouteError(RouteGeneratorError error) {
+        switch (error) {
+            case PARSE_ERROR:
+                Log.e(TAG, "Failed to generate route due to response parse error");
+                break;
+            case SERVER_ERROR:
+                Log.e(TAG, "Failed to generate route due to server error");
+                break;
+            case NO_CONNECTION_ERROR:
+                Log.e(TAG, "Failed to generate route due to no connection error");
+                break;
+            default:
+                Log.e(TAG, "Failed to generate route");
+        }
     }
 
     @Override

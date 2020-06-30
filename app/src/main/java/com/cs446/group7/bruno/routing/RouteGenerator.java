@@ -32,7 +32,7 @@ public abstract class RouteGenerator {
      * @param totalDistance target route distance (meters)
      * @param rotation rotation of route w.r.t starting position (rad), 0 being due south
      */
-    public abstract void generateRoute(final OnRouteReadyCallback callback, final LatLng start, double totalDistance, double rotation);
+    public abstract void generateRoute(final OnRouteResponseCallback callback, final LatLng start, double totalDistance, double rotation);
 
     /**
      *  Generate waypoints forming an equilateral triangle with perimeter {@code totalDistance} anchored
@@ -64,15 +64,11 @@ public abstract class RouteGenerator {
     /**
      * Parse the route generate response into the {@link Route} object
      *
-     * @param routeJson json containing the raw response\
+     * @param routeJson json containing the raw response
+     * @throws JSONException
      */
-    static Route parseRouteFromJson(final JSONObject routeJson) {
-        try {
-            return Route.parseFromJson(routeJson);
-        } catch (JSONException e) {
-            e.printStackTrace();
-            return null;
-        }
+    static Route parseRouteFromJson(final JSONObject routeJson) throws JSONException {
+        return Route.parseFromJson(routeJson);
     }
 
     /**
