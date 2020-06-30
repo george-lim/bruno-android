@@ -16,6 +16,8 @@ import android.widget.Toast;
 import com.cs446.group7.bruno.sensor.PedometerSubscriber;
 import com.cs446.group7.bruno.sensor.SensorService;
 
+import com.cs446.group7.bruno.spotify.SpotifyService;
+
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -23,14 +25,24 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import com.spotify.android.appremote.api.ConnectionParams;
+import com.spotify.android.appremote.api.Connector;
+import com.spotify.android.appremote.api.SpotifyAppRemote;
+
+import com.spotify.protocol.client.Subscription;
+import com.spotify.protocol.types.PlayerState;
+import com.spotify.protocol.types.Track;
+
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, PedometerSubscriber {
 
     private GoogleMap mMap;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
-    private static final String[] locationPermissions = { Manifest.permission.ACCESS_FINE_LOCATION };
+    private static final String[] locationPermissions = {Manifest.permission.ACCESS_FINE_LOCATION};
 
     private SensorService sensorService;
     private int steps = 0;
+
+    private SpotifyService spotifyService;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -70,6 +82,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         sensorService = new SensorService(getApplicationContext());
         sensorService.addPedometerSubscriber(this);
+
+        spotifyService = new SpotifyService();
+        spotifyService.connectToSpotify(this);
     }
 
     @Override
@@ -115,5 +130,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void didStep(long timestamp) {
         steps++;
         Log.i(this.getClass().getSimpleName(), "Total steps: " + steps);
+        spotifyService.playMusic();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        spotifyService.disconnectFromSpotify();
     }
 }
