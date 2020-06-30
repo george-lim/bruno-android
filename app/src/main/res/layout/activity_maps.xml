@@ -42,4 +42,28 @@
         map:layout_constraintTop_toTopOf="parent"
         tools:context=".MapsActivity" />
 
+    <EditText
+        android:id="@+id/et_duration"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:ems="10"
+        android:inputType="number"
+        android:importantForAutofill="no"
+        map:layout_constraintEnd_toEndOf="parent"
+        map:layout_constraintHorizontal_bias="0.457"
+        map:layout_constraintStart_toStartOf="parent"
+        map:layout_constraintTop_toBottomOf="@id/map" />
+
+    <TextView
+        android:id="@+id/tv_duration_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:labelFor="@id/et_duration"
+        android:text="Duration (minutes)"
+        map:layout_constraintEnd_toEndOf="parent"
+        map:layout_constraintHorizontal_bias="0.311"
+        map:layout_constraintStart_toStartOf="parent"
+        map:layout_constraintTop_toBottomOf="@id/map" />
 </androidx.constraintlayout.widget.ConstraintLayout>

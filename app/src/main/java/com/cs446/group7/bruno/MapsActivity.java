@@ -16,6 +16,7 @@ import android.util.Log;
 
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.cs446.group7.bruno.routing.OnRouteReadyCallback;
@@ -25,6 +26,7 @@ import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.cs446.group7.bruno.sensor.PedometerSubscriber;
 import com.cs446.group7.bruno.sensor.SensorService;
+import com.cs446.group7.bruno.settings.SettingsService;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -60,6 +62,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private Button generateRouteButton;
     private Button toggleMockButton;
+    private EditText durationInput;
 
     private SensorService sensorService;
     private int steps = 0;
@@ -72,6 +75,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         final SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
 
+        durationInput = findViewById(R.id.et_duration);
+
         generateRouteButton = findViewById(R.id.btn_generate_route);
         generateRouteButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -82,8 +87,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 // currLocation = new LatLng(43.470304, -80.544331); // Needles hall
                 // currLocation = new LatLng(43.652746, -79.383555); // Nathan Phillips square
 
-                double totalDistance = new Random().nextInt(11) * 1000;
-                Log.i(TAG, "Total route distance (m): " + totalDistance);
+                int duration;
+                try {
+                    duration = Integer.parseInt(durationInput.getText().toString());
+                } catch (NumberFormatException e) {
+                    duration = SettingsService.DEFAULT_EXERCISE_DURATION;
+                }
+
+                double totalDistance = duration * SettingsService.PREFERRED_WALKING_SPEED;
 
                 // Note: Spamming the button in non-mock mode will cause crashes due to
                 //       the app running out of memory handling multiple concurrent requests
