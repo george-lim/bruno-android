@@ -19,6 +19,7 @@ public abstract class RouteGenerator {
     static final double METRES_PER_LAT_DEG = 110947.2;
     static final double EARTH_CIRCUMFERENCE_METRES = 40075000;
     static final int DEG_PER_PI_RADIAN = 180;
+    static final int NUMBER_OF_POINTS = 3;
 
     Context context;
     final String gMapsApiKey;
@@ -33,31 +34,29 @@ public abstract class RouteGenerator {
      *
      * @param callback callback handler
      * @param start start location
-     * @param numPoints number points used to generated the route
      * @param totalDistance target route distance (meters)
      * @param rotation rotation of route w.r.t starting position (rad), 0 being due south
      */
-    public abstract void generateRoute(final OnRouteReadyCallback callback, final LatLng start, int numPoints, double totalDistance, double rotation);
+    public abstract void generateRoute(final OnRouteReadyCallback callback, final LatLng start, double totalDistance, double rotation);
 
     /**
-     *  Generate waypoints forming a regular {@code numPointed}-polygon with perimeter {@code totalDistance} anchored
+     *  Generate waypoints forming an equilateral triangle with perimeter {@code totalDistance} anchored
      * around {@code start} with rotation {@code rotation}.
      * @param start start location
-     * @param numPoints number of points ( >= 3 )
      * @param totalDistance distance (meters)
      * @param rotation rotation (rad)
      * @return list of {@code LatLng} points in route order
      */
-    static List<LatLng> generateWaypoints(final LatLng start, int numPoints, double totalDistance, double rotation) {
+    static List<LatLng> generateWaypoints(final LatLng start, double totalDistance, double rotation) {
         final double distanceInLatLngDegree = distanceToLatLngDegree(start, totalDistance);
-        final double l = distanceInLatLngDegree / numPoints;
-        final double a = 2 * Math.PI / numPoints;
+        final double l = distanceInLatLngDegree / NUMBER_OF_POINTS;
+        final double a = 2 * Math.PI / NUMBER_OF_POINTS;
         final double r = l / Math.sqrt(2 * (1 - Math.cos(a)));
 
-        List<LatLng> result = new ArrayList<>(numPoints);
+        List<LatLng> result = new ArrayList<>(NUMBER_OF_POINTS);
 
-        // calculate points to form a regular polygon with numPoints sides
-        for (int i = 0; i < numPoints; ++i) {
+        // calculate points to form an equilateral triangle
+        for (int i = 0; i < NUMBER_OF_POINTS; ++i) {
             final double b = i * a + rotation;
             result.add(new LatLng(
                     r * (Math.cos(b) - Math.cos(rotation)) + start.latitude,

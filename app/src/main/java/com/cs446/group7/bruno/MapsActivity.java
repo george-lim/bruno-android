@@ -101,7 +101,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 (isMock ? routeGeneratorMock : routeGeneratorReal).generateRoute(
                         MapsActivity.this,
                         currLocation,
-                        new Random().nextInt(7 - 3 + 1) + 3,
                         totalDistance,
                         Math.random() * 2 * Math.PI
                 );
