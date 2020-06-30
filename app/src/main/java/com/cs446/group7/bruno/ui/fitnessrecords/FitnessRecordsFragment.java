@@ -34,8 +34,8 @@ public class FitnessRecordsFragment extends Fragment {
         toDetailsBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                NavController navController = Navigation.findNavController(getActivity(), R.id.nav_host_fitness);
-                navController.navigate(R.id.action_fitnessRecordsFragment_to_fitnessDetailsFragment);
+                NavController navController = Navigation.findNavController(getActivity(), R.id.nav_host_fragment);
+                navController.navigate(R.id.action_toplevelfragment_to_fitnessdetailsfragment);
             }
         });
     }

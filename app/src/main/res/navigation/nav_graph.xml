@@ -11,10 +11,10 @@
         android:label="fragment_top_level"
         tools:layout="@layout/fragment_top_level" >
         <action
-            android:id="@+id/action_topLevelFragment_to_fitnessDetailsFragment"
+            android:id="@+id/action_toplevelfragment_to_fitnessdetailsfragment"
             app:destination="@id/fragment_fitness_details" />
         <action
-            android:id="@+id/action_topLevelFragment_to_onRouteFragment"
+            android:id="@+id/action_toplevelfragment_to_onroutefragment"
             app:destination="@id/fragment_settings" />
     </fragment>
 
