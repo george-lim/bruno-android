@@ -16,6 +16,7 @@ import android.widget.Toast;
 import com.cs446.group7.bruno.sensor.PedometerSubscriber;
 import com.cs446.group7.bruno.sensor.SensorService;
 
+import com.cs446.group7.bruno.spotify.BrunoTrack;
 import com.cs446.group7.bruno.spotify.SpotifyService;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -83,8 +84,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         sensorService = new SensorService(getApplicationContext());
         sensorService.addPedometerSubscriber(this);
 
-        spotifyService = new SpotifyService();
-        spotifyService.connectToSpotify(this);
+        spotifyService = new SpotifyService(this);
     }
 
     @Override
@@ -130,7 +130,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void didStep(long timestamp) {
         steps++;
         Log.i(this.getClass().getSimpleName(), "Total steps: " + steps);
+
+        // Highlighting how to use the Spotify service
         spotifyService.playMusic();
+        BrunoTrack currentTrack = spotifyService.getCurrentTrack();
+        Log.i(this.getClass().getSimpleName(),"Album: " + currentTrack.album + "; Artist: "
+                + currentTrack.artist + "; Artists: " + currentTrack.artists.toString() + "; Duration: "
+                + currentTrack.duration + "; Name: " + currentTrack.name);
     }
 
     @Override
