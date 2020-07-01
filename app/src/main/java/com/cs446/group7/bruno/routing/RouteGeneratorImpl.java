@@ -61,7 +61,7 @@ public class RouteGeneratorImpl extends RouteGenerator {
                 try {
                     callback.onRouteReady(parseRouteFromJson(response));
                 } catch (JSONException e) {
-                    callback.onRouteError(RouteGeneratorError.PARSE_ERROR);
+                    callback.onRouteError(RouteGeneratorError.PARSE_ERROR, e);
                 }
             }
         }, new Response.ErrorListener() {
@@ -69,11 +69,11 @@ public class RouteGeneratorImpl extends RouteGenerator {
             public void onErrorResponse(VolleyError error) {
                 Log.e(TAG, error.toString());
                 if (error instanceof NoConnectionError) {
-                    callback.onRouteError(RouteGeneratorError.NO_CONNECTION_ERROR);
+                    callback.onRouteError(RouteGeneratorError.NO_CONNECTION_ERROR, error);
                 } else if (error instanceof ServerError) {
-                    callback.onRouteError(RouteGeneratorError.SERVER_ERROR);
+                    callback.onRouteError(RouteGeneratorError.SERVER_ERROR, error);
                 } else {
-                    callback.onRouteError(RouteGeneratorError.OTHER_ERROR);
+                    callback.onRouteError(RouteGeneratorError.OTHER_ERROR, error);
                 }
             }
         });

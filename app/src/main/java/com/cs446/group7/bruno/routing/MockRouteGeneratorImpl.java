@@ -29,7 +29,7 @@ public class MockRouteGeneratorImpl extends RouteGenerator {
         try {
             callback.onRouteReady(parseRouteFromJson(new JSONObject(mockResponses[randomIndex])));
         } catch (JSONException e) {
-            callback.onRouteError(RouteGeneratorError.PARSE_ERROR);
+            callback.onRouteError(RouteGeneratorError.PARSE_ERROR, e);
         }
     }
 }

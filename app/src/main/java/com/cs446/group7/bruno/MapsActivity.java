@@ -207,7 +207,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     @Override
-    public void onRouteError(RouteGeneratorError error) {
+    public void onRouteError(RouteGeneratorError error, Exception underlyingException) {
         switch (error) {
             case PARSE_ERROR:
                 Log.e(TAG, "Failed to generate route due to response parse error");
@@ -221,6 +221,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             case OTHER_ERROR:
                 Log.e(TAG, "Failed to generate route");
         }
+        Log.getStackTraceString(underlyingException);
     }
 
     @Override
