@@ -218,7 +218,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             case NO_CONNECTION_ERROR:
                 Log.e(TAG, "Failed to generate route due to no connection error");
                 break;
-            default:
+            case OTHER_ERROR:
                 Log.e(TAG, "Failed to generate route");
         }
     }
