@@ -7,19 +7,15 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
 import com.cs446.group7.bruno.R;
+import com.cs446.group7.bruno.ui.FragmentToolbar;
 
 public class FitnessRecordsFragment extends Fragment {
-
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -30,7 +26,7 @@ public class FitnessRecordsFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        Button toDetailsBtn = getActivity().findViewById(R.id.button_to_details);
+        Button toDetailsBtn = getView().findViewById(R.id.button_to_details);
         toDetailsBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -38,5 +34,11 @@ public class FitnessRecordsFragment extends Fragment {
                 navController.navigate(R.id.action_toplevelfragment_to_fitnessdetailsfragment);
             }
         });
+
+        FragmentToolbar appbar = new FragmentToolbar.Builder()
+                .withId(R.id.appbar_fitness_reocrds)
+                .withTitle(getResources().getString(R.string.title_fitness_records))
+                .build();
+        appbar.addToFragment((AppCompatActivity) getActivity());
     }
 }

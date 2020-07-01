@@ -3,6 +3,7 @@
     <color name="colorPrimary">#F4A69B</color>
     <color name="colorSecondary">#A1D2B8</color>
     <color name="colorSecondaryVariant">#95BDBC</color>
+    <color name="colorToolBarBackground">#FFFFFF</color>
     <color name="colorBackground">#FFFFFF</color>
     <color name="colorOnBackground">#000000</color>
     <color name="colorOnBackgroundLite">#858181</color>
