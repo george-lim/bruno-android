@@ -9,14 +9,20 @@
         android:id="@+id/fragment_top_lvl"
         android:name="com.cs446.group7.bruno.ui.TopLevelFragment"
         android:label="fragment_top_level"
-        tools:layout="@layout/fragment_top_level" >
+        tools:layout="@layout/fragment_top_level">
+        <action
+            android:id="@+id/action_toplevelfragment_to_onroutefragment"
+            app:destination="@id/fragment_on_route" />
         <action
             android:id="@+id/action_toplevelfragment_to_fitnessdetailsfragment"
             app:destination="@id/fragment_fitness_details" />
-        <action
-            android:id="@+id/action_toplevelfragment_to_onroutefragment"
-            app:destination="@id/fragment_settings" />
     </fragment>
+
+    <fragment
+        android:id="@+id/fragment_on_route"
+        android:name="com.cs446.group7.bruno.ui.onroute.OnRouteFragment"
+        android:label="fragment_on_route"
+        tools:layout="@layout/fragment_on_route" />
 
     <fragment
         android:id="@+id/fragment_fitness_details"
@@ -24,9 +30,4 @@
         android:label="fragment_fitness_details"
         tools:layout="@layout/fragment_fitness_details" />
 
-    <fragment
-        android:id="@+id/fragment_settings"
-        android:name="com.cs446.group7.bruno.ui.onroute.OnRouteFragment"
-        android:label="fragment_on_route"
-        tools:layout="@layout/fragment_on_route" />
 </navigation>
