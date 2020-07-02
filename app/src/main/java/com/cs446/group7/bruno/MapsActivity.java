@@ -1,29 +1,65 @@
 package com.cs446.group7.bruno;
 
-import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
-import androidx.fragment.app.FragmentActivity;
-
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.FragmentActivity;
+
+import com.cs446.group7.bruno.routing.MockRouteGeneratorImpl;
+import com.cs446.group7.bruno.routing.OnRouteResponseCallback;
+import com.cs446.group7.bruno.routing.Route;
+import com.cs446.group7.bruno.routing.RouteGenerator;
+import com.cs446.group7.bruno.routing.RouteGeneratorError;
+import com.cs446.group7.bruno.routing.RouteGeneratorImpl;
 import com.cs446.group7.bruno.sensor.PedometerSubscriber;
 import com.cs446.group7.bruno.sensor.SensorService;
-
+import com.cs446.group7.bruno.settings.SettingsService;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.android.gms.tasks.OnSuccessListener;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, PedometerSubscriber {
+import java.util.ArrayList;
+import java.util.List;
+
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, OnRouteResponseCallback, PedometerSubscriber {
 
     private GoogleMap mMap;
+    private LatLng currLocation;
+    private RouteGenerator realRouteGenerator;
+    private RouteGenerator mockRouteGenerator;
+    private FusedLocationProviderClient fusedLocationClient;
+
+
+    private static boolean isMock = BuildConfig.DEBUG;
+
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
     private static final String[] locationPermissions = { Manifest.permission.ACCESS_FINE_LOCATION };
+    private static String apiKey;
+    private final String TAG = this.getClass().getSimpleName();
+
+    private Button generateRouteButton;
+    private Button toggleMockButton;
+    private EditText durationInput;
 
     private SensorService sensorService;
     private int steps = 0;
@@ -33,9 +69,67 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.planning_map);
+        final SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
+
+        durationInput = findViewById(R.id.et_duration);
+
+        generateRouteButton = findViewById(R.id.btn_generate_route);
+        generateRouteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (currLocation == null) return;
+
+                int duration;
+                try {
+                    duration = Integer.parseInt(durationInput.getText().toString());
+                } catch (NumberFormatException e) {
+                    duration = SettingsService.DEFAULT_EXERCISE_DURATION;
+                }
+
+                double totalDistance = duration * SettingsService.PREFERRED_WALKING_SPEED;
+                double rotation = Math.random() * 2 * Math.PI;
+
+                // Note: Spamming the button in non-mock mode will cause crashes due to
+                //       the app running out of memory handling multiple concurrent requests
+                (isMock ? mockRouteGenerator : realRouteGenerator).generateRoute(
+                        MapsActivity.this,
+                        currLocation,
+                        totalDistance,
+                        rotation
+                );
+            }
+        });
+
+        toggleMockButton = findViewById(R.id.btn_toggle_mock);
+        toggleMockButton.setText("Mock: " + (isMock ? "ON" : "OFF"));
+        toggleMockButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                isMock = !isMock;
+                toggleMockButton.setText("Mock: " + (isMock ? "ON" : "OFF"));
+            }
+        });
+
+
         mapFragment.getMapAsync(this);
+
+        // Enable location services
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+
+        ApplicationInfo app;
+        try {
+            app = getPackageManager().getApplicationInfo(getPackageName(), PackageManager.GET_META_DATA);
+            Bundle bundle = app.metaData;
+
+            apiKey = bundle.getString("com.google.android.geo.API_KEY");
+
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        realRouteGenerator = new RouteGeneratorImpl(this, apiKey);
+        mockRouteGenerator = new MockRouteGeneratorImpl(this, apiKey);
     }
 
     /**
@@ -47,25 +141,84 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      * it inside the SupportMapFragment. This method will only be triggered once the user has
      * installed Google Play services and returned to the app.
      */
+    @SuppressLint("MissingPermission")
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        // Sample to draw custom markers
-        // Add a marker in Sydney and move the camera
-        // LatLng sydney = new LatLng(-34, 151);
-        // mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        // mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
-
         // request location permissions
         if (hasLocationPermission()) {
             enableLocation();
+            fusedLocationClient.getLastLocation()
+                    .addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                        @Override
+                        public void onSuccess(Location location) {
+                            // Got last known location. In some rare situations this can be null.
+                            if (location == null) return;
+
+                            currLocation = new LatLng(location.getLatitude(), location.getLongitude());
+                        }
+                    });
+
+
         } else {
             requestLocationPermission();
         }
 
         sensorService = new SensorService(getApplicationContext());
         sensorService.addPedometerSubscriber(this);
+    }
+
+    @Override
+    public void onRouteReady(Route route) {
+        final List<LatLng> decodedPath = route.getDecodedPath();
+
+        List<LatLng> markers = new ArrayList<>();
+        int skipInterval = decodedPath.size() / 5;
+
+        // sample a few points one the route to act as markers
+        for (int i = 0; i < decodedPath.size(); i += skipInterval) {
+            markers.add(decodedPath.get(i));
+        }
+
+        mMap.clear();
+
+
+        LatLngBounds.Builder builder = new LatLngBounds.Builder();
+
+        for (final LatLng p : markers) {
+            builder.include(p);
+        }
+
+        mMap.addMarker(new MarkerOptions()
+                    .position(markers.get(0)))
+                    .setIcon(BitmapDescriptorFactory.defaultMarker(isMock ? BitmapDescriptorFactory.HUE_RED : BitmapDescriptorFactory.HUE_BLUE));
+
+        int padding = 200;
+        mMap.moveCamera(CameraUpdateFactory
+                .newLatLngBounds(builder.build(), padding)
+        );
+
+
+        mMap.addPolyline(new PolylineOptions().addAll(route.getDecodedPath()));
+    }
+
+    @Override
+    public void onRouteError(RouteGeneratorError error, Exception underlyingException) {
+        switch (error) {
+            case PARSE_ERROR:
+                Log.e(TAG, "Failed to generate route due to response parse error");
+                break;
+            case SERVER_ERROR:
+                Log.e(TAG, "Failed to generate route due to server error");
+                break;
+            case NO_CONNECTION_ERROR:
+                Log.e(TAG, "Failed to generate route due to no connection error");
+                break;
+            case OTHER_ERROR:
+                Log.e(TAG, "Failed to generate route");
+        }
+        Log.getStackTraceString(underlyingException);
     }
 
     @Override
