@@ -1,6 +1,7 @@
 package com.cs446.group7.bruno;
 
 import android.os.Bundle;
+import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
@@ -15,7 +16,12 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
     }
 
-//    TODO: fix this
+    /**
+     * We want the app to exit only if the app is currently on the map tab.
+     * The setup of nav_graph will exit the app if it display TopLevelFragment.
+     * Hence, overriding the back pressed behaviour to achieve desire result.
+     */
+    // TODO: encapsulate ViewPager logic in TopLevelFragment (yet to figure how)
     @Override
     public void onBackPressed() {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);

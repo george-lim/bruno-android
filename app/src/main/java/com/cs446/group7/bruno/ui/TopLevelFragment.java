@@ -1,7 +1,6 @@
 package com.cs446.group7.bruno.ui;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -12,7 +11,6 @@ import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.cs446.group7.bruno.R;
-import com.cs446.group7.bruno.ui.BottomNavPagerAdaptor;
 import com.cs446.group7.bruno.ui.fitnessrecords.FitnessRecordsFragment;
 import com.cs446.group7.bruno.ui.routeplanning.RoutePlanningFragment;
 import com.cs446.group7.bruno.ui.settings.SettingsFragment;
@@ -30,6 +28,11 @@ public class TopLevelFragment extends Fragment implements BottomNavigationView.O
         return root;
     }
 
+    /**
+     * This function sets up bottom navigation by using a non-swipable ViewPager to host tab fragments.
+     * This functions also sets up listener such that ViewPager are sync with the bottom navigation bar.
+     * ViewPager are setup to retain state between tab.
+     */
     private void setupBottomNavigation(View view) {
         viewPager = view.findViewById(R.id.main_screen_pager);
         bttmNav = view.findViewById(R.id.bttm_nav);
@@ -39,7 +42,8 @@ public class TopLevelFragment extends Fragment implements BottomNavigationView.O
         adaptor.addFragment(new SettingsFragment());
         viewPager.setAdapter(adaptor);
         viewPager.setUserInputEnabled(false);
-        viewPager.setOffscreenPageLimit(3);
+        int numOfTabs = adaptor.getItemCount();
+        viewPager.setOffscreenPageLimit(numOfTabs);
         bttmNav.setOnNavigationItemSelectedListener(this);
         viewPager.registerOnPageChangeCallback(pageChangeCallback);
     }

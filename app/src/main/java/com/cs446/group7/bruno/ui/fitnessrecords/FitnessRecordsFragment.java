@@ -36,7 +36,7 @@ public class FitnessRecordsFragment extends Fragment {
         });
 
         FragmentToolbar appbar = new FragmentToolbar.Builder()
-                .withId(R.id.appbar_fitness_reocrds)
+                .withId(R.id.appbar_fitness_records)
                 .withTitle(getResources().getString(R.string.title_fitness_records))
                 .build();
         appbar.addToFragment((AppCompatActivity) getActivity());
