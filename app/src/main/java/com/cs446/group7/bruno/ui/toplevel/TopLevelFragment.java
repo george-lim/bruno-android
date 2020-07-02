@@ -1,4 +1,4 @@
-package com.cs446.group7.bruno.ui;
+package com.cs446.group7.bruno.ui.toplevel;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -52,13 +52,13 @@ public class TopLevelFragment extends Fragment implements BottomNavigationView.O
         @Override
         public void onPageSelected(int position) {
             switch (position) {
-                case 0:
+                case BottomNavTab.MAP:
                     bttmNav.setSelectedItemId(R.id.navigate_route_planning);
                     break;
-                case 1:
+                case BottomNavTab.FITNESS:
                     bttmNav.setSelectedItemId(R.id.navigate_fitness_records);
                     break;
-                case 3:
+                case BottomNavTab.SETTINGS:
                     bttmNav.setSelectedItemId(R.id.navigate_settings);
                     break;
             }
@@ -70,15 +70,30 @@ public class TopLevelFragment extends Fragment implements BottomNavigationView.O
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
         switch (menuItem.getItemId()) {
             case R.id.navigate_route_planning:
-                viewPager.setCurrentItem(0, false);
+                viewPager.setCurrentItem(BottomNavTab.MAP, false);
                 break;
             case R.id.navigate_fitness_records:
-                viewPager.setCurrentItem(1, false);
+                viewPager.setCurrentItem(BottomNavTab.FITNESS, false);
                 break;
             case R.id.navigate_settings:
-                viewPager.setCurrentItem(2, false);
+                viewPager.setCurrentItem(BottomNavTab.SETTINGS, false);
                 break;
         }
         return true;
+    }
+
+    /**
+     * We want the app to exit only if the app is currently on the map tab.
+     * This handles back press behaviour when records or setting tab is selected.
+     *
+     * @return true if back press is handled, otherwise false.
+     */
+    public boolean onBackPress() {
+        int pos = viewPager.getCurrentItem();
+        if (pos != 0) {
+            viewPager.setCurrentItem(0, false);
+            return true;
+        }
+        return false;
     }
 }

@@ -1,4 +1,4 @@
-package com.cs446.group7.bruno.ui;
+package com.cs446.group7.bruno.ui.toplevel;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
