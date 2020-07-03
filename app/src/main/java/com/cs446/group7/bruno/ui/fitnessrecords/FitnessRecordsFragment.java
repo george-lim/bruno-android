@@ -33,6 +33,6 @@ public class FitnessRecordsFragment extends Fragment {
 
     private void handleNavigateToFitnessDetailsClick(View view) {
         NavController navController = Navigation.findNavController(getActivity(), R.id.nav_host_fragment);
-        navController.navigate(R.id.action_toplevelfragment_to_fitnessdetailsfragment);
+        navController.navigate(R.id.action_fragmenttoplevel_to_fragmentfitnessdetails);
     }
 }
