@@ -5,7 +5,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
@@ -22,17 +21,13 @@ public class FitnessDetailsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_fitness_details, container, false);
-    }
-
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+        View view = inflater.inflate(R.layout.fragment_fitness_details, container, false);
         FragmentToolbar appbar = new FragmentToolbar.Builder()
                 .withId(R.id.appbar_fitness_details)
                 .withTitle("June 15 · 11:30 AM ")
                 .withUpButton()
                 .build();
-        appbar.addToFragment((AppCompatActivity) getActivity());
+        appbar.addToFragment((AppCompatActivity) getActivity(), view);
+        return view;
     }
 }

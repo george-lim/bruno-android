@@ -21,15 +21,14 @@ public class FragmentToolbar {
         this.hasUp = hasUp;
     }
 
-    public void addToFragment(AppCompatActivity activity) {
-        Toolbar toolbar = activity.findViewById(appbarId).findViewById(R.id.toolbar);
-        activity.setSupportActionBar(toolbar);
-        ActionBar actionbar = activity.getSupportActionBar();
-
-        actionbar.setDisplayShowTitleEnabled(false);
-        TextView toolbarText = activity.findViewById(appbarId).findViewById(R.id.toolbar_text);
+    public void addToFragment(AppCompatActivity activity, View view) {
+        Toolbar toolbar = view.findViewById(appbarId).findViewById(R.id.toolbar);
+        TextView toolbarText = view.findViewById(appbarId).findViewById(R.id.toolbar_text);
         toolbarText.setText(title);
 
+        activity.setSupportActionBar(toolbar);
+        ActionBar actionbar = activity.getSupportActionBar();
+        actionbar.setDisplayShowTitleEnabled(false);
         if (hasUp) {
             actionbar.setDisplayShowHomeEnabled(true);
             actionbar.setDisplayHomeAsUpEnabled(true);

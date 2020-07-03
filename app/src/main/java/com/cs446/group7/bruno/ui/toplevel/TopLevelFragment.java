@@ -48,7 +48,7 @@ public class TopLevelFragment extends Fragment implements BottomNavigationView.O
         viewPager.registerOnPageChangeCallback(pageChangeCallback);
     }
 
-    ViewPager2.OnPageChangeCallback pageChangeCallback = new ViewPager2.OnPageChangeCallback() {
+    private ViewPager2.OnPageChangeCallback pageChangeCallback = new ViewPager2.OnPageChangeCallback() {
         @Override
         public void onPageSelected(int position) {
             switch (position) {

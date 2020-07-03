@@ -46,7 +46,10 @@ public class RoutePlanningFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_route_planning, container, false);
+        View view = inflater.inflate(R.layout.fragment_route_planning, container, false);
+        Button btn = view.findViewById(R.id.buttn_start_walking);
+        btn.setOnClickListener(this::handleStartWalkingClick);
+        return view;
     }
 
     @Override
@@ -59,16 +62,8 @@ public class RoutePlanningFragment extends Fragment {
         }
     }
 
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        Button btn = getView().findViewById(R.id.buttn_start_walking);
-        btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                NavController navController = Navigation.findNavController(getActivity(), R.id.nav_host_fragment);
-                navController.navigate(R.id.action_toplevelfragment_to_onroutefragment);
-            }
-        });
+    private void handleStartWalkingClick(View view) {
+        NavController navController = Navigation.findNavController(getActivity(), R.id.nav_host_fragment);
+        navController.navigate(R.id.action_toplevelfragment_to_onroutefragment);
     }
 }
