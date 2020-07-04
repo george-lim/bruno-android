@@ -9,25 +9,16 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import com.cs446.group7.bruno.R;
-import com.cs446.group7.bruno.ui.FragmentToolbar;
+import com.cs446.group7.bruno.ui.FragmentToolbarFormatter;
 
 public class FitnessDetailsFragment extends Fragment {
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_fitness_details, container, false);
-        FragmentToolbar appbar = new FragmentToolbar.Builder()
-                .withId(R.id.appbar_fitness_details)
-                .withTitle("June 15 · 11:30 AM ")
-                .withUpButton()
-                .build();
-        appbar.addToFragment((AppCompatActivity) getActivity(), view);
+        new FragmentToolbarFormatter((AppCompatActivity) getActivity(), view, R.id.appbar_fitness_details)
+                .format("June 15 · 11:30 AM ", true);
         return view;
     }
 }

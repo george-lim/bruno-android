@@ -20,7 +20,8 @@ public class MainActivity extends AppCompatActivity {
     /**
      * We want the app to exit only if the app is currently on the map tab.
      * The setup of nav_graph will exit the app if it display TopLevelFragment.
-     * Hence, overriding the back pressed behaviour to achieve desire result.
+     * Hence, overriding the behaviour when pressing the back button will achieve
+     * the desired result.
      */
     @Override
     public void onBackPressed() {

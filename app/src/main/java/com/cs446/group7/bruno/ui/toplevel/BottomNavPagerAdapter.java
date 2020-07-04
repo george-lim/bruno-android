@@ -8,14 +8,14 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BottomNavPagerAdaptor extends FragmentStateAdapter {
+public class BottomNavPagerAdapter extends FragmentStateAdapter {
     private final List<Fragment> fragmentList = new ArrayList<>();
 
-    public BottomNavPagerAdaptor(@NonNull FragmentActivity activity) {
+    public BottomNavPagerAdapter(@NonNull FragmentActivity activity) {
         super(activity);
     }
 
-    public void addFragment(Fragment fragment) {
+    public void addFragment(final Fragment fragment) {
         fragmentList.add(fragment);
     }
 

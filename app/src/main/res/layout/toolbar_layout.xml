@@ -14,7 +14,8 @@
             android:id="@+id/toolbar_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Bruno"
+            android:lines="1"
+            android:maxLength="30"
             android:layout_gravity="center_horizontal"
             style="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"/>
 

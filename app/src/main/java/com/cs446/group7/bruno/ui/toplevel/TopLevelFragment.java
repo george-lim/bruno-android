@@ -18,7 +18,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class TopLevelFragment extends Fragment implements BottomNavigationView.OnNavigationItemSelectedListener {
     private ViewPager2 viewPager;
-    private BottomNavigationView bttmNav;
+    private BottomNavigationView btmNav;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -33,10 +33,10 @@ public class TopLevelFragment extends Fragment implements BottomNavigationView.O
      * This functions also sets up listener such that ViewPager are sync with the bottom navigation bar.
      * ViewPager are setup to retain state between tab.
      */
-    private void setupBottomNavigation(View view) {
+    private void setupBottomNavigation(final View view) {
         viewPager = view.findViewById(R.id.main_screen_pager);
-        bttmNav = view.findViewById(R.id.bttm_nav);
-        BottomNavPagerAdaptor adaptor = new BottomNavPagerAdaptor(getActivity());
+        btmNav = view.findViewById(R.id.bttm_nav);
+        BottomNavPagerAdapter adaptor = new BottomNavPagerAdapter(getActivity());
         adaptor.addFragment(new RoutePlanningFragment());
         adaptor.addFragment(new FitnessRecordsFragment());
         adaptor.addFragment(new SettingsFragment());
@@ -44,7 +44,7 @@ public class TopLevelFragment extends Fragment implements BottomNavigationView.O
         viewPager.setUserInputEnabled(false);
         int numOfTabs = adaptor.getItemCount();
         viewPager.setOffscreenPageLimit(numOfTabs);
-        bttmNav.setOnNavigationItemSelectedListener(this);
+        btmNav.setOnNavigationItemSelectedListener(this);
         viewPager.registerOnPageChangeCallback(pageChangeCallback);
     }
 
@@ -53,13 +53,13 @@ public class TopLevelFragment extends Fragment implements BottomNavigationView.O
         public void onPageSelected(int position) {
             switch (position) {
                 case BottomNavTab.MAP:
-                    bttmNav.setSelectedItemId(R.id.navigate_route_planning);
+                    btmNav.setSelectedItemId(R.id.navigate_route_planning);
                     break;
                 case BottomNavTab.FITNESS:
-                    bttmNav.setSelectedItemId(R.id.navigate_fitness_records);
+                    btmNav.setSelectedItemId(R.id.navigate_fitness_records);
                     break;
                 case BottomNavTab.SETTINGS:
-                    bttmNav.setSelectedItemId(R.id.navigate_settings);
+                    btmNav.setSelectedItemId(R.id.navigate_settings);
                     break;
             }
             super.onPageSelected(position);
@@ -90,8 +90,8 @@ public class TopLevelFragment extends Fragment implements BottomNavigationView.O
      */
     public boolean onBackPress() {
         int pos = viewPager.getCurrentItem();
-        if (pos != 0) {
-            viewPager.setCurrentItem(0, false);
+        if (pos != BottomNavTab.MAP) {
+            viewPager.setCurrentItem(BottomNavTab.MAP, false);
             return true;
         }
         return false;
