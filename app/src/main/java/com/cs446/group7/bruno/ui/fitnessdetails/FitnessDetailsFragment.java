@@ -9,7 +9,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import com.cs446.group7.bruno.R;
-import com.cs446.group7.bruno.ui.FragmentToolbarFormatter;
+import com.cs446.group7.bruno.ui.AppbarFormatter;
 
 public class FitnessDetailsFragment extends Fragment {
 
@@ -17,8 +17,12 @@ public class FitnessDetailsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_fitness_details, container, false);
-        new FragmentToolbarFormatter((AppCompatActivity) getActivity(), view, R.id.appbar_fitness_details)
-                .format("June 15 · 11:30 AM ", true);
+        AppbarFormatter.format(
+                (AppCompatActivity) getActivity(),
+                view,
+                R.id.appbar_fitness_details,
+                "June 15 · 11:30 AM ",
+                true);
         return view;
     }
 }

@@ -12,7 +12,7 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
 import com.cs446.group7.bruno.R;
-import com.cs446.group7.bruno.ui.FragmentToolbarFormatter;
+import com.cs446.group7.bruno.ui.AppbarFormatter;
 
 public class FitnessRecordsFragment extends Fragment {
 
@@ -20,8 +20,12 @@ public class FitnessRecordsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view =  inflater.inflate(R.layout.fragment_fitness_records, container, false);
-        new FragmentToolbarFormatter((AppCompatActivity) getActivity(), view, R.id.appbar_fitness_records)
-                .format(getResources().getString(R.string.title_fitness_records), false);
+        AppbarFormatter.format(
+                (AppCompatActivity) getActivity(),
+                view,
+                R.id.appbar_fitness_records,
+                getResources().getString(R.string.title_fitness_records),
+                false);
 
         Button toDetailsBtn = view.findViewById(R.id.button_to_details);
         toDetailsBtn.setOnClickListener(this::handleNavigateToFitnessDetailsClick);
