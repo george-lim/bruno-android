@@ -62,7 +62,7 @@ public class RoutePlanningFragment extends Fragment {
         }
     }
 
-    private void handleStartWalkingClick(View view) {
+    private void handleStartWalkingClick(final View view) {
         NavController navController = Navigation.findNavController(getActivity(), R.id.nav_host_fragment);
         navController.navigate(R.id.action_fragmenttoplevel_to_fragmentonroute);
     }
