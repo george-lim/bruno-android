@@ -38,7 +38,7 @@ public class SpotifyService {
         }
     }
 
-    // Called by constructor, attempts to connect to Spotify by authenticating users
+    // Attempts to connect to Spotify by authenticating users
     public void connectToSpotify(OnPlayerCallback callback, Context appContext) {
 
         // Spotify is not installed on the device - communicating this via a custom exception
@@ -64,7 +64,6 @@ public class SpotifyService {
                         mSpotifyAppRemote = spotifyAppRemote;
                         subscribeToPlayerState();
                         callback.onPlayerReady();
-
                     }
 
                     public void onFailure(Throwable throwable) {
