@@ -27,7 +27,6 @@ public class MainActivity extends AppCompatActivity implements PermissionRequest
     private int currentRequestCode = 0;
     private HashMap<Integer, PermissionRequest> activePermissionRequests;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,6 +69,8 @@ public class MainActivity extends AppCompatActivity implements PermissionRequest
         return capabilityService;
     }
 
+    // MARK: - PermissionRequestDelegate methods
+
     private void presentAlertDialog(String title,
                                     String message,
                                     NoFailCallback<Void> callback) {
@@ -90,8 +91,6 @@ public class MainActivity extends AppCompatActivity implements PermissionRequest
                 .create()
                 .show();
     }
-
-    // MARK: - PermissionRequestDelegate methods
 
     @Override
     public void handlePermissionRequest(PermissionRequest request) {
