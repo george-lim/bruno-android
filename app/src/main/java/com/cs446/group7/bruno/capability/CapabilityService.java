@@ -11,6 +11,10 @@ public class CapabilityService {
         permissionManager = new PermissionManager(context, permissionRequestDelegate);
     }
 
+    public boolean isCapabilityEnabled(Capability capability) {
+        return permissionManager.isPermissionGroupGranted(capability.getPermissionGroup());
+    }
+
     public void request(Capability capability, CompletionHandler<Void, Void> completion) {
         permissionManager.requestPermission(capability.getPermissionGroup(), completion);
     }

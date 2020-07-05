@@ -21,7 +21,7 @@ class PermissionManager {
         return permissionStatus == PackageManager.PERMISSION_GRANTED;
     }
 
-    private boolean isPermissionGroupGranted(PermissionGroup permissionGroup) {
+    boolean isPermissionGroupGranted(PermissionGroup permissionGroup) {
         for (String permissionName : permissionGroup.getPermissionNames()) {
             if (!isPermissionGranted(permissionName)) {
                 return false;
