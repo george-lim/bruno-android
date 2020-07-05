@@ -118,12 +118,12 @@ public class SpotifyService {
     // Reads the currently playing track and returns a BrunoTrack containing track metadata
     public BrunoTrack getCurrentTrack() {
         List<Artist> trackArtists = currentTrack.artists;
-        ArrayList<String> artistNames = new ArrayList();
+        ArrayList<String> artistNames = new ArrayList<String>();
         for (Artist artist : trackArtists) {
             artistNames.add(artist.name);
         }
-        BrunoTrack output = new BrunoTrack(currentTrack.album.name, currentTrack.artist.name,
-                artistNames, currentTrack.duration, currentTrack.name);
+        BrunoTrack output = new BrunoTrack(currentTrack.name, currentTrack.album.name,
+                currentTrack.duration, artistNames);
         return output;
     }
 }

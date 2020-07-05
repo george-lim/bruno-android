@@ -4,19 +4,18 @@ import java.util.ArrayList;
 
 // Simple container class containing information about a track
 public class BrunoTrack {
-    public final String album;
-    public final String artist;
-    public final ArrayList<String> artists;
-    public final long duration;
+    // album is possibly null if the album is taken down
     public final String name;
+    public final String album;
+    public final long duration;
+    public final ArrayList<String> artists;
 
-    public BrunoTrack(String inputAlbum, String inputArtist, ArrayList<String> inputArtists,
-                      long inputDuration, String inputName) {
-        album = inputAlbum;
-        artist = inputArtist;
-        artists = inputArtists;
-        duration = inputDuration;
+    public BrunoTrack(String inputName, String inputAlbum, long inputDuration,
+                      ArrayList<String> inputArtists) {
         name = inputName;
+        album = inputAlbum;
+        duration = inputDuration;
+        artists = inputArtists;
     }
 
 }

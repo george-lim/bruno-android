@@ -41,7 +41,6 @@ public class SpotifyWebAPI {
     }
 
     public void getPlaylist(OnPlaylistCallback callback) {
-
         getAuthorizationToken(callback);
     }
 
@@ -52,7 +51,6 @@ public class SpotifyWebAPI {
             public void onResponse(String response) {
                 try {
                     JSONObject responseJson = new JSONObject(response);
-                    Log.e("AUTH TOKEN: ", responseJson.getString("access_token"));
                     getPlaylistResponse(callback, responseJson.getString("access_token"));
                 } catch (JSONException e) {
                     callback.onPlaylistError(e);
@@ -93,11 +91,10 @@ public class SpotifyWebAPI {
             new Response.Listener<String>() {
                 @Override
                 public void onResponse(String response) {
-                    Log.e("Got response", response);
                     try {
                         JSONObject responseJson = new JSONObject(response);
-                        //BrunoPlaylist playlist = BrunoPlaylist.getPlaylistFromJSON(responseJson);
-                        //callback.onPlaylistReady(playlist);
+                        BrunoPlaylist playlist = BrunoPlaylist.getPlaylistFromJSON(responseJson);
+                        callback.onPlaylistReady(playlist);
                     } catch (JSONException e) {
                         callback.onPlaylistError(e);
                     }
