@@ -1,9 +1,10 @@
 package com.cs446.group7.bruno.spotify;
 
+import com.cs446.group7.bruno.R;
+
 import android.content.Context;
 import android.util.Log;
 
-import com.cs446.group7.bruno.BuildConfig;
 import com.spotify.android.appremote.api.ConnectionParams;
 import com.spotify.android.appremote.api.Connector;
 import com.spotify.android.appremote.api.SpotifyAppRemote;
@@ -57,8 +58,8 @@ public class SpotifyService {
 
         // Configuration parameters configured in the BuildConfig
         ConnectionParams connectionParams =
-                new ConnectionParams.Builder(BuildConfig.SPOTIFY_CLIENT_ID)
-                        .setRedirectUri(BuildConfig.SPOTIFY_REDIRECT_URI)
+                new ConnectionParams.Builder(appContext.getResources().getString(R.string.spotify_client_id))
+                        .setRedirectUri(appContext.getResources().getString(R.string.spotify_redirect_uri))
                         .showAuthView(true)
                         .build();
 
@@ -70,6 +71,7 @@ public class SpotifyService {
                     public void onConnected(SpotifyAppRemote spotifyAppRemote) {
                         mSpotifyAppRemote = spotifyAppRemote;
                         subscribeToPlayerState();
+                        playMusic();
 
                     }
 
