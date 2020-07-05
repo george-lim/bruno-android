@@ -12,7 +12,7 @@ To install, run:
 ```bash
 bash INSTALL.sh
 # or
-bash INSTALL.sh <google_maps_key>
+bash INSTALL.sh <google_maps_key> <spotify_client_id> <spotify_client_secret> <spotify_redirect_uri>
 ```
 
 Ensure that API 30 is installed in Android Studio by navigating to Android Studio -> Preferences -> System Settings -> Android SDK.
@@ -21,4 +21,9 @@ Ensure that API 30 is installed in Android Studio by navigating to Android Studi
 ### API Key Setup
 Follow the link [here](https://console.developers.google.com/flows/enableapi?apiid=maps_android_backend&keyType=CLIENT_SIDE_ANDROID) to create a Google Maps API key for this project.
 Once you have your key (it starts with "AIza"), replace the `google_maps_key` string in `google_maps_api.xml` file.
+
+### Spotify Key Setup
+Visit [the Spotify developer dashboard](https://developer.spotify.com/dashboard/applications) and create a new application. You will receive a client id and client secret.
+For the redirect URI, you will need to click "Edit settings" on your dashboard and create a URI from that interface.
+You can then either edit `INSTALL.sh` and paste your keys in there, or call `INSTALL.sh` with the keys through command-line.
 <!-- [END getstarted] -->
