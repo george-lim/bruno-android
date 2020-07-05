@@ -23,8 +23,16 @@ import com.cs446.group7.bruno.utils.NoFailCallback;
 import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity implements PermissionRequestDelegate {
-    private CapabilityService capabilityService;
+
+    // MARK: - Singletons
+
+    private static CapabilityService capabilityService;
+
+    // MARK: - PermissionRequestDelegate members
+
+    // Counter for permission request codes
     private int currentRequestCode = 0;
+    // Map request codes to active permission requests
     private HashMap<Integer, PermissionRequest> activePermissionRequests;
 
     @Override
@@ -35,15 +43,17 @@ public class MainActivity extends AppCompatActivity implements PermissionRequest
         capabilityService = new CapabilityService(this, this);
         activePermissionRequests = new HashMap<>();
 
+        // PR TEST CODE: - The following code is temporary, and exists to allow PR reviewers to test out CapabilityService.
+        //                 It will be removed before the PR is merged.
         capabilityService.request(Capability.LOCATION, new Callback<Void, Void>() {
             @Override
             public void onSuccess(Void result) {
-                presentAlertDialog("Location Status", "Enabled", null);
+                showAlertDialog("Location Status", "Enabled", null);
             }
 
             @Override
             public void onFailed(Void result) {
-                presentAlertDialog("Location Status", "Disabled", null);
+                showAlertDialog("Location Status", "Disabled", null);
             }
         });
     }
@@ -65,15 +75,16 @@ public class MainActivity extends AppCompatActivity implements PermissionRequest
         super.onBackPressed();
     }
 
-    public CapabilityService getCapabilityService() {
+    public static CapabilityService getCapabilityService() {
         return capabilityService;
     }
 
     // MARK: - PermissionRequestDelegate methods
 
-    private void presentAlertDialog(String title,
-                                    String message,
-                                    NoFailCallback<Void> callback) {
+    // Creates and shows an alert dialog
+    private void showAlertDialog(final String title,
+                                 final String message,
+                                 final NoFailCallback<Void> callback) {
         DialogInterface.OnDismissListener onDismiss = new DialogInterface.OnDismissListener() {
             @Override
             public void onDismiss(DialogInterface dialogInterface) {
@@ -92,26 +103,31 @@ public class MainActivity extends AppCompatActivity implements PermissionRequest
                 .show();
     }
 
+    // Show a popup describing permission usage, then request permission
     @Override
-    public void handlePermissionRequest(PermissionRequest request) {
+    public void handlePermissionRequest(final PermissionRequest request) {
+        // Request permission after showing popup
         NoFailCallback<Void> callback = new NoFailCallback<Void>() {
             @Override
             public void onSuccess(Void result) {
                 activePermissionRequests.put(currentRequestCode, request);
+
                 ActivityCompat.requestPermissions(MainActivity.this,
                         request.getPermissionNames(),
                         currentRequestCode);
+
                 currentRequestCode++;
             }
         };
 
-        presentAlertDialog(
+        showAlertDialog(
                 request.getTitle(),
                 request.getPermissionRequestMessage(),
                 callback
         );
     }
 
+    // Observe permission request result to either complete request callback or show permission denied message
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            @NonNull final String[] permissions,
@@ -121,6 +137,7 @@ public class MainActivity extends AppCompatActivity implements PermissionRequest
 
         for (int permissionStatus : grantResults) {
             if (permissionStatus != PackageManager.PERMISSION_GRANTED) {
+                // After showing permission denied message, complete initial request callback with failure
                 NoFailCallback<Void> callback = new NoFailCallback<Void>() {
                     @Override
                     public void onSuccess(Void result) {
@@ -128,7 +145,7 @@ public class MainActivity extends AppCompatActivity implements PermissionRequest
                     }
                 };
 
-                presentAlertDialog(
+                showAlertDialog(
                         request.getTitle(),
                         request.getPermissionDeniedMessage(),
                         callback

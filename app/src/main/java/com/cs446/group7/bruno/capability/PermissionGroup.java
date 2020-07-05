@@ -2,7 +2,7 @@ package com.cs446.group7.bruno.capability;
 
 import android.Manifest;
 
-// Permission Groups that require user authorization
+// An enumerable model representing a group of related permissions
 enum PermissionGroup {
     LOCATION(
             new String[] {
@@ -14,7 +14,7 @@ enum PermissionGroup {
     private String[] permissionNames;
     private String requestMessage;
 
-    PermissionGroup(String[] permissionNames, String requestMessage) {
+    PermissionGroup(final String[] permissionNames, final String requestMessage) {
         this.permissionNames = permissionNames;
         this.requestMessage = requestMessage;
     }

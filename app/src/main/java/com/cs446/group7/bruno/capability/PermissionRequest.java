@@ -2,13 +2,14 @@ package com.cs446.group7.bruno.capability;
 
 import com.cs446.group7.bruno.utils.Callback;
 
+// A model that contains all permission request info
 public class PermissionRequest {
     private PermissionGroup permissionGroup;
     private Callback<Void, Void> callback;
 
     private static String title = "Permission Request";
 
-    PermissionRequest(PermissionGroup permissionGroup, Callback<Void, Void> callback) {
+    PermissionRequest(final PermissionGroup permissionGroup, final Callback<Void, Void> callback) {
         this.permissionGroup = permissionGroup;
         this.callback = callback;
     }
