@@ -42,20 +42,6 @@ public class MainActivity extends AppCompatActivity implements PermissionRequest
 
         capabilityService = new CapabilityService(this, this);
         activePermissionRequests = new HashMap<>();
-
-        // PR TEST CODE: - The following code is temporary, and exists to allow PR reviewers to test out CapabilityService.
-        //                 It will be removed before the PR is merged.
-        capabilityService.request(Capability.LOCATION, new Callback<Void, Void>() {
-            @Override
-            public void onSuccess(Void result) {
-                showAlertDialog("Location Status", "Enabled", null);
-            }
-
-            @Override
-            public void onFailed(Void result) {
-                showAlertDialog("Location Status", "Disabled", null);
-            }
-        });
     }
 
     /**
