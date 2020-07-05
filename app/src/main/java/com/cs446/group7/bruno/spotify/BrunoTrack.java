@@ -4,10 +4,9 @@ import java.util.ArrayList;
 
 // Simple container class containing information about a track
 public class BrunoTrack {
-    // album is possibly null if the album is taken down
     public final String name;
     public final String album;
-    public final long duration;
+    public final long duration; // Milliseconds
     public final ArrayList<String> artists;
 
     public BrunoTrack(final String inputName, final String inputAlbum, final long inputDuration,
