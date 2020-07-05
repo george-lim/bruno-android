@@ -3,84 +3,64 @@ package com.cs446.group7.bruno.routing;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class RouteProcessor {
-    class BrunoTrack {
-        public String album;
-        public String artist;
-        public ArrayList<String> artists;
-        public long duration; // This is in milliseconds
-        public String name;
-    }
-
-    class ProcessedRoute {
-        RouteSegment[] routeSegments;
-        BrunoTrack track;
-
-        ProcessedRoute(RouteSegment[] routeSegments, BrunoTrack track) {
-            this.routeSegments = routeSegments;
-            this.track = track;
-        }
-
-        @Override
-        public String toString() {
-            StringBuilder sb = new StringBuilder();
-            sb.append(this.track.name);
-            sb.append(" has routes:\n");
-            for (RouteSegment rs : routeSegments) {
-                sb.append(rs.toString());
+    /**
+     * Given a series of route segments and spotify tracks, return a mapping of route segments
+     * to each track.
+     * @param routeSegments
+     * @param tracks
+     * @return
+     */
+    public RouteTrackMapping[] execute(RouteSegment[] routeSegments, BrunoTrack[] tracks) {
+        List<RouteTrackMapping> result = new ArrayList<>();
+        int currTrackInd = 0;
+        long accumulatedRouteSegmentDuration = 0;
+        List<RouteSegment> accumulatedRouteSegments = new ArrayList<>();
+        for (RouteSegment routeSegment : routeSegments) {
+            if (currTrackInd > tracks.length) {
+                // throw corresponding exception
             }
-            return sb.toString();
-        }
-    }
 
-    // RouteSegment duration is in seconds
-    public ProcessedRoute[] execute(RouteSegment[] routeSegments, BrunoTrack[] tracks) {
-        int currSegmentIndex = 0;
-        ArrayList<ProcessedRoute> processedRoutes = new ArrayList<>();
-        ArrayList<RouteSegment> associatedSegments = new ArrayList<>();
-        int accumulatedLegDuration = 0;
-        for (BrunoTrack track : tracks) {
-            while (accumulatedLegDuration < track.duration) {
-                RouteSegment currSegment = routeSegments[currSegmentIndex];
-                if (accumulatedLegDuration + (currSegment.getDuration() * 1000) > track.duration) {
-                    // The next segment added will overflow the track duration
-                    // THIS IS THE SPECIAL CASE TO CUT THE segment up
-                    int overflow = (int) (accumulatedLegDuration + (currSegment.getDuration() * 1000) - track.duration);
-                    int cutoffDuration = (int) (track.duration - overflow);
-                    long percentTrackIncluded = (overflow - track.duration) / track.duration;
+            BrunoTrack currTrack = tracks[currTrackInd];
+            if (accumulatedRouteSegmentDuration + routeSegment.getDurationInMilliseconds() > currTrack.duration) {
+                long routeDurationUnder = currTrack.duration - accumulatedRouteSegmentDuration;
+                long routeDurationOver = routeSegment.getDurationInMilliseconds() - routeDurationUnder;
+                long percentOfRouteUnder = routeDurationUnder / routeSegment.getDurationInMilliseconds();
 
-                    // end - start = total distance of line
-                    double diffLat = currSegment.getEndLocation().latitude - currSegment.getStartLocation().latitude;
-                    double diffLng = currSegment.getEndLocation().longitude - currSegment.getEndLocation().longitude;
+                double diffLat = routeSegment.getEndLocation().latitude - routeSegment.getStartLocation().latitude;
+                double diffLng = routeSegment.getEndLocation().longitude - routeSegment.getStartLocation().longitude;
 
-                    double cutoffLat = currSegment.getStartLocation().latitude + (diffLat / percentTrackIncluded);
-                    double cutoffLng = currSegment.getStartLocation().longitude + (diffLng / percentTrackIncluded);
+                double cutoffLat = routeSegment.getStartLocation().latitude + (diffLat / percentOfRouteUnder);
+                double cutoffLng = routeSegment.getStartLocation().longitude + (diffLng / percentOfRouteUnder);
 
-                    LatLng cutoffPoint = new LatLng(cutoffLat, cutoffLng);
-                    RouteSegment firstCutSegment = new RouteSegment(
-                            currSegment.getStartLocation(), cutoffPoint, cutoffDuration);
-                    RouteSegment secondCutSegment = new RouteSegment(
-                            cutoffPoint, currSegment.getEndLocation(), overflow);
-
-                    associatedSegments.add(firstCutSegment);
-
-                    ProcessedRoute resultingRoute = new ProcessedRoute(associatedSegments.toArray(
-                            new RouteSegment[associatedSegments.size()]), track);
-                    processedRoutes.add(resultingRoute);
-                    associatedSegments.clear();
-
-                    // Adding the overflow route to next track association
-                    associatedSegments.add(secondCutSegment);
-                    accumulatedLegDuration += secondCutSegment.getDuration();
-                } else {
-                    // This segment can be apart of this track
-                    associatedSegments.add(currSegment);
-                    accumulatedLegDuration += currSegment.getDuration() * 1000;
-                }
-                currSegmentIndex++;
+                LatLng cutoffPoint = new LatLng(cutoffLat, cutoffLng);
+                RouteSegment underRouteSegment = new RouteSegment(routeSegment.getStartLocation(),
+                        cutoffPoint, (int) (routeDurationUnder / 1000));
+                RouteSegment overRouteSegment = new RouteSegment(cutoffPoint,
+                        routeSegment.getEndLocation(), (int) (routeDurationOver / 1000));
+                accumulatedRouteSegments.add(underRouteSegment);
+                RouteTrackMapping rtm = new RouteTrackMapping(accumulatedRouteSegments.toArray(
+                        new RouteSegment[accumulatedRouteSegments.size()]), currTrack);
+                result.add(rtm);
+                accumulatedRouteSegments.clear();
+                accumulatedRouteSegments.add(overRouteSegment);
+                accumulatedRouteSegmentDuration = routeDurationOver;
+                currTrackInd++;
+            } else if (accumulatedRouteSegmentDuration + routeSegment.getDurationInMilliseconds() == currTrack.duration) {
+                accumulatedRouteSegments.add(routeSegment);
+                RouteTrackMapping rtm = new RouteTrackMapping(accumulatedRouteSegments.toArray(
+                        new RouteSegment[accumulatedRouteSegments.size()]), currTrack);
+                result.add(rtm);
+                accumulatedRouteSegments.clear();
+                accumulatedRouteSegmentDuration = 0;
+                currTrackInd++;
+            } else {
+                accumulatedRouteSegments.add(routeSegment);
+                accumulatedRouteSegmentDuration += routeSegment.getDurationInMilliseconds();
             }
         }
-        return processedRoutes.toArray(new ProcessedRoute[processedRoutes.size()]);
+        return result.toArray(new RouteTrackMapping[result.size()]);
     }
 }
