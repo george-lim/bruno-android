@@ -71,7 +71,7 @@ public class SpotifyService {
                     public void onConnected(SpotifyAppRemote spotifyAppRemote) {
                         mSpotifyAppRemote = spotifyAppRemote;
                         subscribeToPlayerState();
-                        playMusic();
+                        //playMusic();
 
                     }
 
