@@ -5,11 +5,11 @@ import android.util.Log;
 
 // To demonstrate how to get a playlist and play music using SpotifyWebAPI and SpotifyService,
 // using interfaces OnPlaylistCallback and OnPlayerCallback respectively
-public class MockSpotifyAPIImpl implements OnPlaylistCallback, OnPlayerCallback {
+public class MockSpotifyImpl implements OnPlaylistCallback, OnPlayerCallback {
 
     SpotifyService player;
 
-    public MockSpotifyAPIImpl(Context context) {
+    public MockSpotifyImpl(Context context) {
         SpotifyWebAPI api = new SpotifyWebAPI(context);
         api.getPlaylist(this);
         player = new SpotifyService();

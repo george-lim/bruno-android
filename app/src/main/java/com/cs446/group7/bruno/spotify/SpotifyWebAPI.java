@@ -30,6 +30,7 @@ public class SpotifyWebAPI {
     String authorizationEndpoint = "https://accounts.spotify.com/api/token";
     String clientId;
     String clientSecret;
+    public String TAG = this.getClass().getSimpleName();
 
     public SpotifyWebAPI(Context context) {
         requestQueue = Volley.newRequestQueue(context);
@@ -86,6 +87,7 @@ public class SpotifyWebAPI {
                 }
             }
         };
+        authRequest.setTag(TAG);
         requestQueue.add(authRequest);
     }
 
@@ -120,7 +122,7 @@ public class SpotifyWebAPI {
                 return headers;
             }
         };
-
+        stringRequest.setTag(TAG);
         requestQueue.add(stringRequest);
     }
 
