@@ -1,6 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#6200EE</color>
-    <color name="colorPrimaryDark">#3700B3</color>
-    <color name="colorAccent">#03DAC5</color>
+    <color name="colorPrimary">#F4A69B</color>
+    <color name="colorSecondary">#A1D2B8</color>
+    <color name="colorSecondaryVariant">#95BDBC</color>
+    <color name="colorToolBarBackground">#FFFFFF</color>
+    <color name="colorBackground">#FFFFFF</color>
+    <color name="colorOnBackground">#000000</color>
+    <color name="colorOnBackgroundLite">#858181</color>
+    <color name="colorDisable">#C4C4C4</color>
+
+    <array name="colorRouteList">
+        <item>#F7CB89</item>
+        <item>#A0DD96</item>
+        <item>#87C5FE</item>
+        <item>#A191C2</item>
+        <item>#F0B1CC</item>
+        <item>#F1AE89</item>
+        <item>#A8B8A8</item>
+        <item>#A4C8FF</item>
+    </array>
 </resources>
