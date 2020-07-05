@@ -7,6 +7,8 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+// Class which encapsulates all playlist information used by our app
+// Contains track information through a list of BrunoTracks
 public class BrunoPlaylist {
 
     public String name;
@@ -24,11 +26,11 @@ public class BrunoPlaylist {
         tracks = inputTracks;
     }
 
-
+    // Parses a BrunoPlaylist by reading a response JSON from Spotify's Playlist endpoint
     public static BrunoPlaylist getPlaylistFromJSON(JSONObject responseJson) throws JSONException {
         try {
+            String outputPlaylistName = responseJson.getString("name");
             String outputDescription = responseJson.getString("description");
-            String outputPlaylistName = responseJson.getString("description");
             JSONObject pagingObject = responseJson.getJSONObject("tracks");
 
             int outputTotalTracks = pagingObject.getInt("total");

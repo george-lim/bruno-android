@@ -8,7 +8,6 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.cs446.group7.bruno.R;
@@ -22,7 +21,7 @@ import java.util.Map;
 
 // Communicates with the Spotify Web API through HTTP
 // Uses Volley, an HTTP library: https://developer.android.com/training/volley
-// Could share the request queue between this and RouteGenerator - need to turn it into a singleton then
+// Could share the request queue between this and RouteGenerator - can turn it into a singleton
 public class SpotifyWebAPI {
 
     RequestQueue requestQueue;
@@ -33,17 +32,21 @@ public class SpotifyWebAPI {
     String clientSecret;
 
     public SpotifyWebAPI(Context context) {
-
         requestQueue = Volley.newRequestQueue(context);
         clientId = context.getResources().getString(R.string.spotify_client_id);
         clientSecret = context.getResources().getString(R.string.spotify_client_secret);
-
     }
 
+    // Call this to get the BrunoPlaylist - it goes through the sequence necessary to provide
+    // the BrunoPlaylist requested by callback
+    // All failures are sent back through callback.onPlaylistError()
     public void getPlaylist(OnPlaylistCallback callback) {
         getAuthorizationToken(callback);
     }
 
+    // In order to use the Spotify API, an authorization token needs to be retrieved from Spotify
+    // Using the client id and client secret, we can retrieve this token first before using the API
+    // Calls getPlaylistResponse upon success
     private void getAuthorizationToken(OnPlaylistCallback callback) {
         StringRequest authRequest = new StringRequest(Request.Method.POST, authorizationEndpoint,
                 new Response.Listener<String>() {
@@ -86,6 +89,9 @@ public class SpotifyWebAPI {
         requestQueue.add(authRequest);
     }
 
+    // With the authorization token, we can use the playlist API to retrieve a JSON representation
+    // of the playlist. This gets parsed in BrunoPlaylist.getPlaylistFromJson, and returned to
+    // the callback.
     private void getPlaylistResponse(OnPlaylistCallback callback, String authToken) {
         StringRequest stringRequest = new StringRequest(Request.Method.GET, playlistEndpoint,
             new Response.Listener<String>() {
