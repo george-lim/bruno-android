@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/fragment_top_lvl">
+
+    <fragment
+        android:id="@+id/fragment_top_lvl"
+        android:name="com.cs446.group7.bruno.ui.toplevel.TopLevelFragment"
+        android:label="fragment_top_level"
+        tools:layout="@layout/fragment_top_level">
+        <action
+            android:id="@+id/action_fragmenttoplevel_to_fragmentonroute"
+            app:destination="@id/fragment_on_route" />
+        <action
+            android:id="@+id/action_fragmenttoplevel_to_fragmentfitnessdetails"
+            app:destination="@id/fragment_fitness_details" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/fragment_on_route"
+        android:name="com.cs446.group7.bruno.ui.onroute.OnRouteFragment"
+        android:label="fragment_on_route"
+        tools:layout="@layout/fragment_on_route" />
+
+    <fragment
+        android:id="@+id/fragment_fitness_details"
+        android:name="com.cs446.group7.bruno.ui.fitnessdetails.FitnessDetailsFragment"
+        android:label="fragment_fitness_details"
+        tools:layout="@layout/fragment_fitness_details" />
+
+</navigation>
