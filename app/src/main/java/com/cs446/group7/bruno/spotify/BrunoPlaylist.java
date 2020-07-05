@@ -11,14 +11,14 @@ import java.util.List;
 // Contains track information through a list of BrunoTracks
 public class BrunoPlaylist {
 
-    public String name;
-    public String description;
-    int totalTracks;
-    long totalDuration;
-    public List<BrunoTrack> tracks;
+    final public String name;
+    final public String description;
+    final int totalTracks;
+    final long totalDuration;
+    final public List<BrunoTrack> tracks;
 
-    public BrunoPlaylist(String inputName, String inputDescription, int inputTotalTracks,
-                         long inputTotalDuration, List<BrunoTrack> inputTracks) {
+    public BrunoPlaylist(final String inputName, final String inputDescription, final int inputTotalTracks,
+                         final long inputTotalDuration, final List<BrunoTrack> inputTracks) {
         name = inputName;
         description = inputDescription;
         totalTracks = inputTotalTracks;
@@ -29,22 +29,22 @@ public class BrunoPlaylist {
     // Parses a BrunoPlaylist by reading a response JSON from Spotify's Playlist endpoint
     public static BrunoPlaylist getPlaylistFromJSON(JSONObject responseJson) throws JSONException {
         try {
-            String outputPlaylistName = responseJson.getString("name");
-            String outputDescription = responseJson.getString("description");
-            JSONObject pagingObject = responseJson.getJSONObject("tracks");
+            final String outputPlaylistName = responseJson.getString("name");
+            final String outputDescription = responseJson.getString("description");
+            final JSONObject pagingObject = responseJson.getJSONObject("tracks");
 
-            int outputTotalTracks = pagingObject.getInt("total");
-            JSONArray responseTracks = pagingObject.getJSONArray("items");
+            final int outputTotalTracks = pagingObject.getInt("total");
+            final JSONArray responseTracks = pagingObject.getJSONArray("items");
             long outputPlaylistDuration = 0;
-            List<BrunoTrack> outputTracks = new ArrayList<BrunoTrack>();
+            final List<BrunoTrack> outputTracks = new ArrayList<BrunoTrack>();
 
             // Iterate through the tracks
             for (int i = 0; i < outputTotalTracks; ++i) {
-                JSONObject responseTrack = responseTracks.getJSONObject(i).getJSONObject("track");
-                String outputAlbum = responseTrack.getJSONObject("album").getString("name");
+                final JSONObject responseTrack = responseTracks.getJSONObject(i).getJSONObject("track");
+                final String outputAlbum = responseTrack.getJSONObject("album").getString("name");
 
-                ArrayList<String> outputArtists = new ArrayList<String>();
-                JSONArray responseArtists = responseTrack.getJSONArray("artists");
+                final ArrayList<String> outputArtists = new ArrayList<String>();
+                final JSONArray responseArtists = responseTrack.getJSONArray("artists");
 
                 // Iterate through the artists of each track
                 for (int j = 0; j < responseArtists.length(); ++j) {
@@ -52,7 +52,7 @@ public class BrunoPlaylist {
                 }
 
                 // implicit int to long conversion - harmless
-                long outputDuration = responseTrack.getInt("duration_ms");
+                final long outputDuration = responseTrack.getInt("duration_ms");
                 outputPlaylistDuration += outputDuration;
                 String outputTrackName = responseTrack.getString("name");
 
@@ -61,7 +61,7 @@ public class BrunoPlaylist {
                 outputTracks.add(currentTrack);
             }
 
-            BrunoPlaylist outputPlaylist = new BrunoPlaylist(outputPlaylistName, outputDescription,
+            final BrunoPlaylist outputPlaylist = new BrunoPlaylist(outputPlaylistName, outputDescription,
                     outputTotalTracks, outputPlaylistDuration, outputTracks);
             return outputPlaylist;
 

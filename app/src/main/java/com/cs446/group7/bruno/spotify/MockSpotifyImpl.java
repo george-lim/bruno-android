@@ -7,10 +7,10 @@ import android.util.Log;
 // using interfaces OnPlaylistCallback and OnPlayerCallback respectively
 public class MockSpotifyImpl implements OnPlaylistCallback, OnPlayerCallback {
 
-    SpotifyService player;
+    final SpotifyService player;
 
     public MockSpotifyImpl(Context context) {
-        SpotifyWebAPI api = new SpotifyWebAPI(context);
+        final SpotifyWebAPI api = new SpotifyWebAPI(context);
         api.getPlaylist(this);
         player = new SpotifyService();
         player.connectToSpotify(this, context);

@@ -24,13 +24,13 @@ import java.util.Map;
 // Could share the request queue between this and RouteGenerator - can turn it into a singleton
 public class SpotifyWebAPI {
 
-    RequestQueue requestQueue;
+    final RequestQueue requestQueue;
     // Hard coded to a specific playlist - same as the one in SpotifyService.playMusic()
-    String playlistEndpoint = "https://api.spotify.com/v1/playlists/7fPwZk4KFD2yfU7J5O1JVz";
-    String authorizationEndpoint = "https://accounts.spotify.com/api/token";
-    String clientId;
-    String clientSecret;
-    public String TAG = this.getClass().getSimpleName();
+    final String playlistEndpoint = "https://api.spotify.com/v1/playlists/7fPwZk4KFD2yfU7J5O1JVz";
+    final String authorizationEndpoint = "https://accounts.spotify.com/api/token";
+    final String clientId;
+    final String clientSecret;
+    final public String TAG = this.getClass().getSimpleName();
 
     public SpotifyWebAPI(Context context) {
         requestQueue = Volley.newRequestQueue(context);
@@ -49,12 +49,12 @@ public class SpotifyWebAPI {
     // Using the client id and client secret, we can retrieve this token first before using the API
     // Calls getPlaylistResponse upon success
     private void getAuthorizationToken(OnPlaylistCallback callback) {
-        StringRequest authRequest = new StringRequest(Request.Method.POST, authorizationEndpoint,
+        final StringRequest authRequest = new StringRequest(Request.Method.POST, authorizationEndpoint,
                 new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 try {
-                    JSONObject responseJson = new JSONObject(response);
+                    final JSONObject responseJson = new JSONObject(response);
                     getPlaylistResponse(callback, responseJson.getString("access_token"));
                 } catch (JSONException e) {
                     callback.onPlaylistError(e);
@@ -95,13 +95,13 @@ public class SpotifyWebAPI {
     // of the playlist. This gets parsed in BrunoPlaylist.getPlaylistFromJson, and returned to
     // the callback.
     private void getPlaylistResponse(OnPlaylistCallback callback, String authToken) {
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, playlistEndpoint,
+        final StringRequest stringRequest = new StringRequest(Request.Method.GET, playlistEndpoint,
             new Response.Listener<String>() {
                 @Override
                 public void onResponse(String response) {
                     try {
-                        JSONObject responseJson = new JSONObject(response);
-                        BrunoPlaylist playlist = BrunoPlaylist.getPlaylistFromJSON(responseJson);
+                        final JSONObject responseJson = new JSONObject(response);
+                        final BrunoPlaylist playlist = BrunoPlaylist.getPlaylistFromJSON(responseJson);
                         callback.onPlaylistReady(playlist);
                     } catch (JSONException e) {
                         callback.onPlaylistError(e);
@@ -116,7 +116,7 @@ public class SpotifyWebAPI {
         {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> headers = new HashMap<String, String>();
+                final Map<String, String> headers = new HashMap<String, String>();
                 headers.put("Content-Type", "application/json; charset=utf-8");
                 headers.put("Authorization", "Bearer " + authToken);
                 return headers;

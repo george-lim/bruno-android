@@ -47,11 +47,11 @@ public class SpotifyService {
         }
 
         // Configuration parameters read from resources
-        ConnectionParams connectionParams =
+        final ConnectionParams connectionParams =
                 new ConnectionParams.Builder(appContext.getResources().getString(R.string.spotify_client_id))
-                        .setRedirectUri(appContext.getResources().getString(R.string.spotify_redirect_uri))
-                        .showAuthView(true)
-                        .build();
+                    .setRedirectUri(appContext.getResources().getString(R.string.spotify_redirect_uri))
+                    .showAuthView(true)
+                    .build();
 
         // Attempt to connect to Spotify
         SpotifyAppRemote.connect(appContext, connectionParams,
@@ -109,12 +109,12 @@ public class SpotifyService {
     // Reads the currently playing track from the player
     // and returns a BrunoTrack containing track metadata
     public BrunoTrack getCurrentTrack() {
-        List<Artist> trackArtists = currentTrack.artists;
-        ArrayList<String> artistNames = new ArrayList<String>();
-        for (Artist artist : trackArtists) {
+        final List<Artist> trackArtists = currentTrack.artists;
+        final ArrayList<String> artistNames = new ArrayList<String>();
+        for (final Artist artist : trackArtists) {
             artistNames.add(artist.name);
         }
-        BrunoTrack output = new BrunoTrack(currentTrack.name, currentTrack.album.name,
+        final BrunoTrack output = new BrunoTrack(currentTrack.name, currentTrack.album.name,
                 currentTrack.duration, artistNames);
         return output;
     }

@@ -10,8 +10,8 @@ public class BrunoTrack {
     public final long duration;
     public final ArrayList<String> artists;
 
-    public BrunoTrack(String inputName, String inputAlbum, long inputDuration,
-                      ArrayList<String> inputArtists) {
+    public BrunoTrack(final String inputName, final String inputAlbum, final long inputDuration,
+                      final ArrayList<String> inputArtists) {
         name = inputName;
         album = inputAlbum;
         duration = inputDuration;
