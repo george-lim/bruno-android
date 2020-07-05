@@ -3,7 +3,7 @@ package com.cs446.group7.bruno.capability;
 import android.content.Context;
 import android.content.pm.PackageManager;
 
-import com.cs446.group7.bruno.utils.CompletionHandler;
+import com.cs446.group7.bruno.utils.Callback;
 
 class PermissionManager {
     private PackageManager packageManager;
@@ -31,12 +31,12 @@ class PermissionManager {
         return true;
     }
 
-    void requestPermission(PermissionGroup permissionGroup, CompletionHandler<Void, Void> completion) {
+    void requestPermission(PermissionGroup permissionGroup, Callback<Void, Void> callback) {
         if (isPermissionGroupGranted(permissionGroup)) {
-            completion.onSuccess(null);
+            callback.onSuccess(null);
             return;
         }
 
-        delegate.handlePermissionRequest(new PermissionRequest(permissionGroup, completion));
+        delegate.handlePermissionRequest(new PermissionRequest(permissionGroup, callback));
     }
 }

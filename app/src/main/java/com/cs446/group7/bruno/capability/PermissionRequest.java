@@ -1,24 +1,24 @@
 package com.cs446.group7.bruno.capability;
 
-import com.cs446.group7.bruno.utils.CompletionHandler;
+import com.cs446.group7.bruno.utils.Callback;
 
 public class PermissionRequest {
     private PermissionGroup permissionGroup;
-    private CompletionHandler<Void, Void> completion;
+    private Callback<Void, Void> callback;
 
     private static String title = "Permission Request";
 
-    PermissionRequest(PermissionGroup permissionGroup, CompletionHandler<Void, Void> completion) {
+    PermissionRequest(PermissionGroup permissionGroup, Callback<Void, Void> callback) {
         this.permissionGroup = permissionGroup;
-        this.completion = completion;
+        this.callback = callback;
     }
 
     public String[] getPermissionNames() {
         return permissionGroup.getPermissionNames();
     }
 
-    public CompletionHandler<Void, Void> getCompletion() {
-        return completion;
+    public Callback<Void, Void> getCallback() {
+        return callback;
     }
 
     public String getTitle() {

@@ -1,5 +1,5 @@
 package com.cs446.group7.bruno.utils;
 
-public interface NoFailCompletionHandler<Success> {
+public interface NoFailCallback<Success> {
     void onSuccess(Success result);
 }

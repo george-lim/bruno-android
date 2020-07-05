@@ -17,8 +17,8 @@ import com.cs446.group7.bruno.capability.CapabilityService;
 import com.cs446.group7.bruno.capability.PermissionRequest;
 import com.cs446.group7.bruno.capability.PermissionRequestDelegate;
 import com.cs446.group7.bruno.ui.toplevel.TopLevelFragment;
-import com.cs446.group7.bruno.utils.CompletionHandler;
-import com.cs446.group7.bruno.utils.NoFailCompletionHandler;
+import com.cs446.group7.bruno.utils.Callback;
+import com.cs446.group7.bruno.utils.NoFailCallback;
 
 import java.util.HashMap;
 
@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity implements PermissionRequest
         capabilityService = new CapabilityService(this, this);
         activePermissionRequests = new HashMap<>();
 
-        capabilityService.request(Capability.LOCATION, new CompletionHandler<Void, Void>() {
+        capabilityService.request(Capability.LOCATION, new Callback<Void, Void>() {
             @Override
             public void onSuccess(Void result) {
                 presentAlertDialog("Location Status", "Enabled", null);
@@ -72,12 +72,12 @@ public class MainActivity extends AppCompatActivity implements PermissionRequest
 
     private void presentAlertDialog(String title,
                                     String message,
-                                    NoFailCompletionHandler<Void> completion) {
+                                    NoFailCallback<Void> callback) {
         DialogInterface.OnDismissListener onDismiss = new DialogInterface.OnDismissListener() {
             @Override
             public void onDismiss(DialogInterface dialogInterface) {
-                if (completion != null) {
-                    completion.onSuccess(null);
+                if (callback != null) {
+                    callback.onSuccess(null);
                 }
             }
         };
@@ -95,7 +95,7 @@ public class MainActivity extends AppCompatActivity implements PermissionRequest
 
     @Override
     public void handlePermissionRequest(PermissionRequest request) {
-        NoFailCompletionHandler<Void> completion = new NoFailCompletionHandler<Void>() {
+        NoFailCallback<Void> callback = new NoFailCallback<Void>() {
             @Override
             public void onSuccess(Void result) {
                 activePermissionRequests.put(currentRequestCode, request);
@@ -109,7 +109,7 @@ public class MainActivity extends AppCompatActivity implements PermissionRequest
         presentAlertDialog(
                 request.getTitle(),
                 request.getPermissionRequestMessage(),
-                completion
+                callback
         );
     }
 
@@ -122,23 +122,23 @@ public class MainActivity extends AppCompatActivity implements PermissionRequest
 
         for (int permissionStatus : grantResults) {
             if (permissionStatus != PackageManager.PERMISSION_GRANTED) {
-                NoFailCompletionHandler<Void> completion = new NoFailCompletionHandler<Void>() {
+                NoFailCallback<Void> callback = new NoFailCallback<Void>() {
                     @Override
                     public void onSuccess(Void result) {
-                        request.getCompletion().onFailed(null);
+                        request.getCallback().onFailed(null);
                     }
                 };
 
                 presentAlertDialog(
                         request.getTitle(),
                         request.getPermissionDeniedMessage(),
-                        completion
+                        callback
                 );
 
                 return;
             }
         }
 
-        request.getCompletion().onSuccess(null);
+        request.getCallback().onSuccess(null);
     }
 }
