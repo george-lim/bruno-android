@@ -70,12 +70,9 @@ public class MainActivity extends AppCompatActivity implements PermissionRequest
     private void showAlertDialog(@NonNull final String title,
                                  @NonNull final String message,
                                  final NoFailCallback<Void> callback) {
-        DialogInterface.OnDismissListener onDismiss = new DialogInterface.OnDismissListener() {
-            @Override
-            public void onDismiss(DialogInterface dialogInterface) {
-                if (callback != null) {
-                    callback.onSuccess(null);
-                }
+        DialogInterface.OnDismissListener onDismiss = dialogInterface -> {
+            if (callback != null) {
+                callback.onSuccess(null);
             }
         };
 
@@ -92,17 +89,14 @@ public class MainActivity extends AppCompatActivity implements PermissionRequest
     @Override
     public void handlePermissionRequest(@NonNull final PermissionRequest request) {
         // Request permission after showing popup
-        NoFailCallback<Void> callback = new NoFailCallback<Void>() {
-            @Override
-            public void onSuccess(Void result) {
-                activePermissionRequests.put(currentRequestCode, request);
+        NoFailCallback<Void> callback = result -> {
+            activePermissionRequests.put(currentRequestCode, request);
 
-                ActivityCompat.requestPermissions(MainActivity.this,
-                        request.getPermissionNames(),
-                        currentRequestCode);
+            ActivityCompat.requestPermissions(MainActivity.this,
+                    request.getPermissionNames(),
+                    currentRequestCode);
 
-                currentRequestCode++;
-            }
+            currentRequestCode++;
         };
 
         showAlertDialog(
