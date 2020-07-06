@@ -76,10 +76,12 @@ public class MainActivity extends AppCompatActivity implements PermissionRequest
             }
         };
 
+        String okButtonText = getResources().getString(R.string.ok_button);
+
         new AlertDialog.Builder(this)
                 .setTitle(title)
                 .setMessage(message)
-                .setPositiveButton("OK", null)
+                .setPositiveButton(okButtonText, null)
                 .setOnDismissListener(onDismiss)
                 .create()
                 .show();
