@@ -17,7 +17,7 @@ import java.util.List;
 /**
  * Singleton responsible for handling all logic related to querying the location
  */
-public class LocationService extends LocationCallback {
+public class LocationService {
 
     private static final int UPDATE_INTERVAL_MILLISECONDS = 5000;
     private static final int FASTEST_UPDATE_INTERVAL_MILLISECONDS = 2000;
@@ -25,10 +25,26 @@ public class LocationService extends LocationCallback {
     private FusedLocationProviderClient fusedLocationClient;
     private List<LocationServiceSubscriber> subscriberList;
     private LocationRequest locationRequest;
-    private LocationCallback locationCallback;
     private static String TAG;
 
     private static LocationService instance;
+
+    private LocationCallback locationCallback = new LocationCallback() {
+        @Override
+        public void onLocationResult(LocationResult locationResult) {
+            final Location result = locationResult.getLastLocation();
+            if (result == null) {
+                for (LocationServiceSubscriber subscriber : subscriberList) {
+                    subscriber.onLocationUpdateFailure(
+                            new LocationServiceException(LocationServiceException.ErrorType.NULL_LOCATION_ERROR));
+                }
+            } else {
+                for (LocationServiceSubscriber subscriber : subscriberList) {
+                    subscriber.onLocationUpdateSuccess(result);
+                }
+            }
+        }
+    };
 
     public static void init(Context context) {
         if (instance != null) {
@@ -63,8 +79,12 @@ public class LocationService extends LocationCallback {
     }
 
     @SuppressLint("MissingPermission")
-    private void startLocationUpdates() {
-        fusedLocationClient.requestLocationUpdates(locationRequest, this, Looper.getMainLooper());
+    public void startLocationUpdates() {
+        fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
+    }
+
+    public void stopLocationUpdates() {
+        fusedLocationClient.removeLocationUpdates(locationCallback);
     }
 
     public void addSubscriber(final LocationServiceSubscriber subscriber) {
@@ -101,20 +121,5 @@ public class LocationService extends LocationCallback {
                 .addOnFailureListener(error -> {
                     callback.onLocationUpdateFailure(new LocationServiceException(error));
                 });
-    }
-
-    @Override
-    public void onLocationResult(LocationResult locationResult) {
-        final Location result = locationResult.getLastLocation();
-        if (result == null) {
-            for (LocationServiceSubscriber subscriber : subscriberList) {
-                subscriber.onLocationUpdateFailure(
-                        new LocationServiceException(LocationServiceException.ErrorType.NULL_LOCATION_ERROR));
-            }
-        } else {
-            for (LocationServiceSubscriber subscriber : subscriberList) {
-                subscriber.onLocationUpdateSuccess(result);
-            }
-        }
     }
 }
