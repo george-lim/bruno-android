@@ -119,12 +119,7 @@ public class MainActivity extends AppCompatActivity implements PermissionRequest
         for (int permissionStatus : grantResults) {
             if (permissionStatus != PackageManager.PERMISSION_GRANTED) {
                 // After showing permission denied message, complete initial request callback with failure
-                NoFailCallback<Void> callback = new NoFailCallback<Void>() {
-                    @Override
-                    public void onSuccess(Void result) {
-                        request.getCallback().onFailed(null);
-                    }
-                };
+                NoFailCallback<Void> callback = result -> request.getCallback().onFailed(null);
 
                 showAlertDialog(
                         request.getTitle(),
