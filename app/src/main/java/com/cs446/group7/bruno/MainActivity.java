@@ -12,12 +12,10 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 
-import com.cs446.group7.bruno.capability.Capability;
 import com.cs446.group7.bruno.capability.CapabilityService;
 import com.cs446.group7.bruno.capability.PermissionRequest;
 import com.cs446.group7.bruno.capability.PermissionRequestDelegate;
 import com.cs446.group7.bruno.ui.toplevel.TopLevelFragment;
-import com.cs446.group7.bruno.utils.Callback;
 import com.cs446.group7.bruno.utils.NoFailCallback;
 
 import java.util.HashMap;
@@ -26,14 +24,14 @@ public class MainActivity extends AppCompatActivity implements PermissionRequest
 
     // MARK: - Singletons
 
-    private static CapabilityService capabilityService;
+    @NonNull private static CapabilityService capabilityService;
 
     // MARK: - PermissionRequestDelegate members
 
     // Counter for permission request codes
     private int currentRequestCode = 0;
     // Map request codes to active permission requests
-    private HashMap<Integer, PermissionRequest> activePermissionRequests;
+    @NonNull private HashMap<Integer, PermissionRequest> activePermissionRequests;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,15 +59,15 @@ public class MainActivity extends AppCompatActivity implements PermissionRequest
         super.onBackPressed();
     }
 
-    public static CapabilityService getCapabilityService() {
+    @NonNull public static CapabilityService getCapabilityService() {
         return capabilityService;
     }
 
     // MARK: - PermissionRequestDelegate methods
 
     // Creates and shows an alert dialog
-    private void showAlertDialog(final String title,
-                                 final String message,
+    private void showAlertDialog(@NonNull final String title,
+                                 @NonNull final String message,
                                  final NoFailCallback<Void> callback) {
         DialogInterface.OnDismissListener onDismiss = new DialogInterface.OnDismissListener() {
             @Override
@@ -91,7 +89,7 @@ public class MainActivity extends AppCompatActivity implements PermissionRequest
 
     // Show a popup describing permission usage, then request permission
     @Override
-    public void handlePermissionRequest(final PermissionRequest request) {
+    public void handlePermissionRequest(@NonNull final PermissionRequest request) {
         // Request permission after showing popup
         NoFailCallback<Void> callback = new NoFailCallback<Void>() {
             @Override

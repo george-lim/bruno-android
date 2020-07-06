@@ -2,6 +2,8 @@ package com.cs446.group7.bruno.capability;
 
 import android.Manifest;
 
+import androidx.annotation.NonNull;
+
 // An enumerable model representing a group of related permissions
 enum PermissionGroup {
     LOCATION(
@@ -14,16 +16,17 @@ enum PermissionGroup {
     private String[] permissionNames;
     private String requestMessage;
 
-    PermissionGroup(final String[] permissionNames, final String requestMessage) {
+    PermissionGroup(@NonNull final String[] permissionNames,
+                    @NonNull final String requestMessage) {
         this.permissionNames = permissionNames;
         this.requestMessage = requestMessage;
     }
 
-    String[] getPermissionNames() {
+    @NonNull String[] getPermissionNames() {
         return permissionNames;
     }
 
-    String getRequestMessage() {
+    @NonNull String getRequestMessage() {
         return requestMessage;
     }
 }
