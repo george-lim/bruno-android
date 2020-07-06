@@ -9,7 +9,8 @@ public class PermissionRequest {
     private PermissionGroup permissionGroup;
     private Callback<Void, Void> callback;
 
-    private static String title = "Permission Request";
+    // All permission requests share the same title internally
+    private static final String TITLE = "Permission Request";
 
     PermissionRequest(@NonNull final PermissionGroup permissionGroup,
                       @NonNull final Callback<Void, Void> callback) {
@@ -26,7 +27,7 @@ public class PermissionRequest {
     }
 
     public String getTitle() {
-        return title;
+        return TITLE;
     }
 
     public String getPermissionRequestMessage() {
