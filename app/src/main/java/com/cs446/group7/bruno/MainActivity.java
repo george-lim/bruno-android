@@ -24,14 +24,14 @@ public class MainActivity extends AppCompatActivity implements PermissionRequest
 
     // MARK: - Singletons
 
-    @NonNull private static CapabilityService capabilityService;
+    private static CapabilityService capabilityService;
 
     // MARK: - PermissionRequestDelegate members
 
     // Counter for permission request codes
     private int currentRequestCode = 0;
     // Map request codes to active permission requests
-    @NonNull private HashMap<Integer, PermissionRequest> activePermissionRequests;
+    private HashMap<Integer, PermissionRequest> activePermissionRequests;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
