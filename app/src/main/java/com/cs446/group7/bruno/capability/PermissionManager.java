@@ -28,9 +28,11 @@ class PermissionManager {
 
     // Predicate that determines if a permission group is granted
     boolean isPermissionGroupGranted(final PermissionGroup permissionGroup) {
-        for (String permissionName : permissionGroup.getPermissionNames()) {
-            if (!isPermissionGranted(permissionName)) {
-                return false;
+        if (permissionGroup != null) {
+            for (String permissionName : permissionGroup.getPermissionNames()) {
+                if (!isPermissionGranted(permissionName)) {
+                    return false;
+                }
             }
         }
 
