@@ -92,6 +92,7 @@ public class LocationService {
     }
 
     public void addSubscriber(final LocationServiceSubscriber subscriber) {
+        if (subscriberList.contains(subscriber)) return;
         subscriberList.add(subscriber);
     }
 
