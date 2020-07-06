@@ -47,14 +47,18 @@ public class LocationService {
     };
 
     public static void init(Context context) {
-        if (instance != null) {
+        if (isInitialized()) {
             Log.w(TAG, "init called again, singleton re-initialized");
         }
         instance = new LocationService(context);
     }
 
+    public static boolean isInitialized() {
+        return instance != null;
+    }
+
     public static LocationService getInstance() {
-        if (instance == null) {
+        if (!isInitialized()) {
             throw new AssertionError("you must call 'init' first!");
         }
         return instance;
