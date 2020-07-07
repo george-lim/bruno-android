@@ -3,8 +3,6 @@ package com.cs446.group7.bruno.capability.permission;
 import android.content.Context;
 import android.content.pm.PackageManager;
 
-import androidx.annotation.NonNull;
-
 import com.cs446.group7.bruno.utils.Callback;
 
 // Manages permission status checking and permission requests
@@ -13,15 +11,15 @@ public class PermissionManager {
     private String packageName;
     private PermissionRequestDelegate delegate;
 
-    public PermissionManager(@NonNull final Context context,
-                      @NonNull final PermissionRequestDelegate delegate) {
+    public PermissionManager(final Context context,
+                             final PermissionRequestDelegate delegate) {
         packageManager = context.getPackageManager();
         packageName = context.getPackageName();
         this.delegate = delegate;
     }
 
     // Predicate that determines if a permission is granted given permission name
-    private boolean isPermissionGranted(@NonNull final String permissionName) {
+    private boolean isPermissionGranted(final String permissionName) {
         int permissionStatus = packageManager.checkPermission(permissionName, packageName);
         return permissionStatus == PackageManager.PERMISSION_GRANTED;
     }
@@ -41,7 +39,7 @@ public class PermissionManager {
 
     // Requests permissions if not already granted
     public void requestPermission(final PermissionGroup permissionGroup,
-                           @NonNull final Callback<Void, Void> callback) {
+                                  final Callback<Void, Void> callback) {
         if (permissionGroup == null || isPermissionGroupGranted(permissionGroup)) {
             callback.onSuccess(null);
             return;

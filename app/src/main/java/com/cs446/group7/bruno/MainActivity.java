@@ -60,15 +60,15 @@ public class MainActivity extends AppCompatActivity implements PermissionRequest
         super.onBackPressed();
     }
 
-    @NonNull public static CapabilityService getCapabilityService() {
+    public static CapabilityService getCapabilityService() {
         return capabilityService;
     }
 
     // MARK: - PermissionRequestDelegate methods
 
     // Creates and shows an alert dialog
-    private void showAlertDialog(@NonNull final String title,
-                                 @NonNull final String message,
+    private void showAlertDialog(final String title,
+                                 final String message,
                                  final NoFailCallback<Void> callback) {
         DialogInterface.OnDismissListener onDismiss = dialogInterface -> {
             if (callback != null) {
@@ -111,7 +111,7 @@ public class MainActivity extends AppCompatActivity implements PermissionRequest
     // Observe permission request result to either complete request callback or show permission denied message
     @Override
     public void onRequestPermissionsResult(int requestCode,
-                                           @NonNull final String[] permissions,
+                                           @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
         PermissionRequest request = activePermissionRequests.get(requestCode);
         activePermissionRequests.remove(requestCode);

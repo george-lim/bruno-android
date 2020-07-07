@@ -1,7 +1,5 @@
 package com.cs446.group7.bruno.capability.permission;
 
-import androidx.annotation.NonNull;
-
 import com.cs446.group7.bruno.utils.Callback;
 
 // A model that contains all permission request info
@@ -12,8 +10,8 @@ public class PermissionRequest {
     // All permission requests share the same title internally
     private static final String TITLE = "Permission Request";
 
-    public PermissionRequest(@NonNull final PermissionGroup permissionGroup,
-                      @NonNull final Callback<Void, Void> callback) {
+    public PermissionRequest(final PermissionGroup permissionGroup,
+                             final Callback<Void, Void> callback) {
         this.permissionGroup = permissionGroup;
         this.callback = callback;
     }

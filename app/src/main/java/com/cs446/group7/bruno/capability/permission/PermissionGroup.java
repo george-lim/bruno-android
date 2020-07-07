@@ -22,11 +22,11 @@ public enum PermissionGroup {
         this.requestMessage = requestMessage;
     }
 
-    public @NonNull String[] getPermissionNames() {
+    public String[] getPermissionNames() {
         return permissionNames;
     }
 
-    public @NonNull String getRequestMessage() {
+    public String getRequestMessage() {
         return requestMessage;
     }
 }
