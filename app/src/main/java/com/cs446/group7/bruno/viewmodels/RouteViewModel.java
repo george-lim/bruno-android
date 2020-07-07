@@ -8,13 +8,16 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.cs446.group7.bruno.MainActivity;
 import com.cs446.group7.bruno.R;
+import com.cs446.group7.bruno.capability.Capability;
 import com.cs446.group7.bruno.routing.OnRouteResponseCallback;
 import com.cs446.group7.bruno.routing.Route;
 import com.cs446.group7.bruno.routing.RouteGenerator;
 import com.cs446.group7.bruno.routing.RouteGeneratorError;
 import com.cs446.group7.bruno.routing.RouteGeneratorImpl;
 import com.cs446.group7.bruno.settings.SettingsService;
+import com.cs446.group7.bruno.utils.Callback;
 import com.google.android.gms.maps.model.LatLng;
 
 
@@ -47,12 +50,22 @@ public class RouteViewModel extends AndroidViewModel implements OnRouteResponseC
     }
 
     private void generateRoute() {
-        // TODO: integrate LocationService and CapabilityService to get current location
-        LatLng start = new LatLng(43.652746, -79.383555);
-        double speed = isWalkingMode ? SettingsService.PREFERRED_WALKING_SPEED : SettingsService.PREFERRED_RUNNING_SPEED;
-        double totalDistance = duration * speed;
-        double rotation = Math.random() * 2 * Math.PI;
-        routeGenerator.generateRoute(this, start, totalDistance, rotation);
+        Callback<Void, Void> permissionCallback = new Callback<Void, Void>() {
+            @Override
+            public void onSuccess(Void result) {
+                // TODO: integrate LocationService to get current location
+                LatLng start = new LatLng(43.652746, -79.383555);
+                double speed = isWalkingMode ? SettingsService.PREFERRED_WALKING_SPEED : SettingsService.PREFERRED_RUNNING_SPEED;
+                double totalDistance = duration * speed;
+                double rotation = Math.random() * 2 * Math.PI;
+                routeGenerator.generateRoute(RouteViewModel.this, start, totalDistance, rotation);
+            }
+
+            @Override
+            public void onFailed(Void result) { }
+        };
+
+        MainActivity.getCapabilityService().request(Capability.LOCATION, permissionCallback);
     }
 
     @Override
