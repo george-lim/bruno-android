@@ -25,9 +25,7 @@ public class LocationService {
     private FusedLocationProviderClient fusedLocationClient;
     private List<LocationServiceSubscriber> subscriberList;
     private LocationRequest locationRequest;
-    private static String TAG;
-
-    private static LocationService instance;
+    private final String TAG = getClass().getSimpleName();
 
     private LocationCallback locationCallback = new LocationCallback() {
         @Override
@@ -46,25 +44,7 @@ public class LocationService {
         }
     };
 
-    public static void init(Context context) {
-        if (isInitialized()) {
-            Log.w(TAG, "init called again, singleton re-initialized");
-        }
-        instance = new LocationService(context);
-    }
-
-    public static boolean isInitialized() {
-        return instance != null;
-    }
-
-    public static LocationService getInstance() {
-        if (!isInitialized()) {
-            throw new AssertionError("you must call 'init' first!");
-        }
-        return instance;
-    }
-
-    private LocationService(final Context context) {
+    public LocationService(final Context context) {
         subscriberList = new ArrayList<>();
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(context);
 
@@ -78,8 +58,6 @@ public class LocationService {
 
         // Prioritize high accuracy results
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-
-        TAG = getClass().getSimpleName();
     }
 
     @SuppressLint("MissingPermission")
@@ -98,33 +76,5 @@ public class LocationService {
 
     public void removeSubscriber(final LocationServiceSubscriber subscriber) {
         subscriberList.remove(subscriber);
-    }
-
-    /**
-     * Gets the current location of device.
-     *
-     * Note: Location permissions must be enabled for this to work
-     *
-     * @param callback callback interface
-     */
-    @SuppressLint("MissingPermission")
-    public void getCurrentLocation(LocationServiceSubscriber callback) {
-        fusedLocationClient
-                .getLastLocation()
-                .addOnSuccessListener(location -> {
-                    /*
-                        Android's own handler can return null even on a successful call,
-                        we will treat them as errors.
-                     */
-                    if (location == null) {
-                        callback.onLocationUpdateFailure(new LocationServiceException(
-                                LocationServiceException.ErrorType.NULL_LOCATION_ERROR));
-                    } else {
-                        callback.onLocationUpdateSuccess(location);
-                    }
-                })
-                .addOnFailureListener(error -> {
-                    callback.onLocationUpdateFailure(new LocationServiceException(error));
-                });
     }
 }
