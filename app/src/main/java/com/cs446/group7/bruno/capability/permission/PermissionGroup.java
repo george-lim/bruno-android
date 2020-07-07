@@ -1,11 +1,11 @@
-package com.cs446.group7.bruno.capability;
+package com.cs446.group7.bruno.capability.permission;
 
 import android.Manifest;
 
 import androidx.annotation.NonNull;
 
 // An enumerable model representing a group of related permissions
-enum PermissionGroup {
+public enum PermissionGroup {
     LOCATION(
             new String[] {
                     Manifest.permission.ACCESS_FINE_LOCATION
@@ -22,11 +22,11 @@ enum PermissionGroup {
         this.requestMessage = requestMessage;
     }
 
-    @NonNull String[] getPermissionNames() {
+    public @NonNull String[] getPermissionNames() {
         return permissionNames;
     }
 
-    @NonNull String getRequestMessage() {
+    public @NonNull String getRequestMessage() {
         return requestMessage;
     }
 }

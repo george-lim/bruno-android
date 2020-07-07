@@ -13,8 +13,8 @@ import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.cs446.group7.bruno.capability.CapabilityService;
-import com.cs446.group7.bruno.capability.PermissionRequest;
-import com.cs446.group7.bruno.capability.PermissionRequestDelegate;
+import com.cs446.group7.bruno.capability.permission.PermissionRequest;
+import com.cs446.group7.bruno.capability.permission.PermissionRequestDelegate;
 import com.cs446.group7.bruno.ui.toplevel.TopLevelFragment;
 import com.cs446.group7.bruno.utils.NoFailCallback;
 

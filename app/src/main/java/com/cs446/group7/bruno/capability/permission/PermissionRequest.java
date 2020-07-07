@@ -1,4 +1,4 @@
-package com.cs446.group7.bruno.capability;
+package com.cs446.group7.bruno.capability.permission;
 
 import androidx.annotation.NonNull;
 
@@ -12,7 +12,7 @@ public class PermissionRequest {
     // All permission requests share the same title internally
     private static final String TITLE = "Permission Request";
 
-    PermissionRequest(@NonNull final PermissionGroup permissionGroup,
+    public PermissionRequest(@NonNull final PermissionGroup permissionGroup,
                       @NonNull final Callback<Void, Void> callback) {
         this.permissionGroup = permissionGroup;
         this.callback = callback;

@@ -1,4 +1,4 @@
-package com.cs446.group7.bruno.capability;
+package com.cs446.group7.bruno.capability.permission;
 
 import androidx.annotation.NonNull;
 
