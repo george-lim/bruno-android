@@ -17,4 +17,12 @@ public class Route {
     public List<LatLng> getDecodedPath() {
         return decodedPath;
     }
+
+    public int getTotalDuration() {
+        int totalDuration = 0;
+        for (RouteSegment routeSegment : routeSegments) {
+            totalDuration += routeSegment.getDuration();
+        }
+        return  totalDuration;
+    }
 }

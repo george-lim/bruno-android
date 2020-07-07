@@ -13,4 +13,14 @@
     <string name="terms_and_conditions_hint">All the stuff you agree with Bruno.</string>
     <string name="privacy_policy">Privacy Policy</string>
     <string name="privacy_policy_hint">How Bruno treats your data.</string>
+
+    <string name="route_planning_instruction">Plan your route with Bruno</string>
+    <string name="route_planning_walking_mode">Walking</string>
+    <string name="route_planning_running_mode">Running</string>
+    <string name="route_planning_duration">Duration (Minutes)</string>
+    <string name="route_planning_start">Start</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <!-- TODO: Should the greeting be dynamic? E.g. good morning, afternoon, etc. -->
+    <string name="route_planning_greeting">Good day,</string>
 </resources>
