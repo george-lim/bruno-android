@@ -33,7 +33,7 @@ public class PermissionRequest {
     }
 
     public String getPermissionDeniedMessage() {
-        return "Unfortunately, Bruno requires " + permissionGroup.name().toLowerCase()
+        return "Bruno requires " + permissionGroup.name().toLowerCase()
                 + " permission to proceed. You can enable the permission through system settings.";
     }
 }
