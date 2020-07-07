@@ -7,4 +7,12 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="ok_button">OK</string>
+
+    <!--  Settings  -->
+    <string name="about_bruno_title">About Bruno</string>
+    <string name="version">Version</string>
+    <string name="terms_and_conditions">Terms and Conditions</string>
+    <string name="terms_and_conditions_hint">All the stuff you agree with Burno</string>
+    <string name="privacy_policy">Privacy Policy</string>
+    <string name="privacy_policy_hint">How Bruno treats your data</string>
 </resources>

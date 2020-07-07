@@ -4,4 +4,38 @@
         <item name="android:textColorPrimary">@color/colorOnBackground</item>
         <item name="android:textColorSecondary">@color/colorOnBackgroundLite</item>
     </style>
+
+    <!--  Settings  -->
+    <style name="SettingItemContainer">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:paddingTop">8dp</item>
+        <item name="android:paddingBottom">8dp</item>
+        <item name="android:paddingLeft">12dp</item>
+        <item name="android:right">12dp</item>
+    </style>
+    <style name="SettingClickableItemContainer" parent="SettingItemContainer">
+        <item name="android:clickable">true</item>
+        <item name="android:background">@drawable/list_item_pressed</item>
+    </style>
+    <style name="TextTitle" parent="TextAppearance.AppCompat">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:textColor">@color/colorOnBackground</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+    <style name="NormalText" parent="TextAppearance.AppCompat">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/colorOnBackground</item>
+    </style>
+    <style name="HintText" parent="TextAppearance.AppCompat">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/colorOnBackgroundLite</item>
+    </style>
 </resources>
