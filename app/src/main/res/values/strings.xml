@@ -10,7 +10,7 @@
     <string name="about_bruno_title">About Bruno</string>
     <string name="version">Version</string>
     <string name="terms_and_conditions">Terms and Conditions</string>
-    <string name="terms_and_conditions_hint">All the stuff you agree with Burno.</string>
+    <string name="terms_and_conditions_hint">All the stuff you agree with Bruno.</string>
     <string name="privacy_policy">Privacy Policy</string>
     <string name="privacy_policy_hint">How Bruno treats your data.</string>
 </resources>
