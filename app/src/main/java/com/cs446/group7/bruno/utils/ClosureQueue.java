@@ -1,16 +1,16 @@
 package com.cs446.group7.bruno.utils;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 
 /*
     A queue that will execute a bunch of closures sequentially
     NOTE: If any closure step fails, the client callback will fail
  */
 public class ClosureQueue<Success, Failure> implements Closure<Void, Void> {
-    private ArrayList<Closure<Success, Failure>> steps;
+    private LinkedList<Closure<Success, Failure>> steps;
 
     public ClosureQueue() {
-        steps = new ArrayList<>();
+        steps = new LinkedList<>();
     }
 
     // Add a step to the queue
@@ -26,7 +26,7 @@ public class ClosureQueue<Success, Failure> implements Closure<Void, Void> {
             return;
         }
 
-        Closure<Success, Failure> nextStep = steps.remove(0);
+        Closure<Success, Failure> nextStep = steps.poll();
 
         nextStep.run(new Callback<Success, Failure>() {
             @Override
