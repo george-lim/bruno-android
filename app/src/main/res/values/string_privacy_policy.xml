@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="privacy_policy_text">
+        "This is some place holder text for privacy policy
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras aliquet dapibus nisi. Sed volutpat eros dui, id pellentesque lectus porta vitae. Nunc quis varius nisl, nec bibendum nibh. In sit amet porta justo, vitae ornare dui. Integer tristique blandit augue vitae sodales. Curabitur tempus finibus arcu, et aliquam ante tristique quis. Nulla sed finibus magna.
+
+Morbi finibus efficitur sollicitudin. Sed nec molestie purus. Integer mauris lorem, tempor et pharetra in, pretium eu sem. Etiam suscipit venenatis ipsum id vehicula. Sed sem tellus, molestie mattis placerat convallis, ullamcorper eget sapien. Aenean sodales porta lectus a maximus. Donec commodo fermentum mi, eu tincidunt quam iaculis vel. Nunc id orci arcu. Proin faucibus placerat iaculis. Suspendisse euismod, diam eget molestie commodo, mauris ligula pellentesque nulla, nec aliquam justo diam faucibus ligula. Vivamus mattis nunc nec odio blandit commodo. Nullam egestas bibendum felis, eget sodales urna laoreet ut. Etiam quis cursus turpis. Vivamus ut tincidunt magna, non laoreet libero. Phasellus elit urna, semper nec euismod ut, aliquam at turpis. Aenean cursus augue ante, eget pharetra neque commodo at.
+
+Sed gravida, nisl ut vestibulum placerat, odio quam blandit metus, eu luctus libero metus nec mauris. Sed auctor sapien nec odio semper luctus. Vivamus dignissim luctus eros, quis condimentum mauris euismod et. Curabitur porta ipsum ultrices, commodo neque ac, efficitur ipsum. Phasellus quis massa venenatis, consequat felis sed, semper massa. Vestibulum nec bibendum arcu. Vivamus cursus mi non libero laoreet, ut scelerisque mauris convallis. Phasellus leo ex, placerat eu tincidunt sit amet, consectetur eu quam. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.
+
+Vivamus nec odio aliquet, vehicula nulla eget, euismod justo. Quisque nec cursus neque. Mauris id congue ex, id feugiat metus. Ut commodo metus nec turpis varius, vitae fringilla nisl vehicula. Pellentesque bibendum aliquet nisl, vitae mattis velit ultricies sit amet. Nam consequat gravida porta. Duis sagittis dolor in laoreet fermentum. Pellentesque vel lorem in ex tincidunt consequat vitae a mauris. Pellentesque eu hendrerit lacus. Aliquam eleifend elementum risus, in consectetur tortor. Suspendisse vel lobortis mi, vel consectetur mauris. In non nulla magna. Morbi convallis tellus a enim congue, quis lacinia elit maximus.
+
+Curabitur a nisl vitae sem lacinia cursus. Mauris quis posuere leo. Cras non libero sed purus lacinia posuere. Duis tincidunt maximus consectetur. Morbi vel elit vitae odio commodo pretium ac ac massa. Etiam non semper justo. Fusce ut pellentesque eros."
+    </string>
+</resources>

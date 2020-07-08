@@ -8,6 +8,7 @@
     <color name="colorOnBackground">#000000</color>
     <color name="colorOnBackgroundLite">#858181</color>
     <color name="colorDisable">#C4C4C4</color>
+    <color name="colorListBackgroundPressed">#ededed</color>
 
     <array name="colorRouteList">
         <item>#F7CB89</item>

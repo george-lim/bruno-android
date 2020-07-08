@@ -8,13 +8,18 @@ android {
         minSdkVersion 23
         targetSdkVersion 30
         versionCode 1
-        versionName "1.0"
+        versionName "1.0.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
+        debug {
+            resValue "string", "app_version", "${defaultConfig.versionName}.debug"
+        }
+
         release {
+            resValue "string", "app_version", "${defaultConfig.versionName}"
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
@@ -43,4 +48,7 @@ dependencies {
     implementation "androidx.navigation:navigation-fragment:$nav_version"
     implementation "androidx.navigation:navigation-ui:$nav_version"
     implementation "androidx.viewpager2:viewpager2:1.0.0"
+
+    implementation "androidx.recyclerview:recyclerview:1.1.0"
+    implementation "androidx.recyclerview:recyclerview-selection:1.1.0-rc01"
 }
