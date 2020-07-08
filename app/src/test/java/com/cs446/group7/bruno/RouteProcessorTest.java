@@ -10,6 +10,7 @@ import com.google.android.gms.maps.model.LatLng;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class RouteProcessorTest {
     // These mock segments create a box around the university of waterloo
@@ -36,6 +37,19 @@ public class RouteProcessorTest {
 
     RouteSegment[] mockSegments = { mockSegment1, mockSegment2, mockSegment3, mockSegment4 };
 
+    private boolean trackEquals(BrunoTrack a, BrunoTrack b) {
+        return a.album == b.album &&
+                a.artists.equals(b.artists) &&
+                a.duration == b.duration &&
+                a.name == b.name;
+    }
+
+    private boolean segmentEquals(RouteSegment a, RouteSegment b) {
+        return a.getStartLocation().equals(b.getStartLocation()) &&
+                a.getEndLocation().equals(b.getEndLocation()) &&
+                a.getDuration() == b.getDuration();
+    }
+
     @Test
     public void routeDurationEqualToTrackDuration() {
         RouteProcessor rp = new RouteProcessor();
@@ -49,8 +63,11 @@ public class RouteProcessorTest {
         };
         assertEquals(result.length, answer.length);
         for (int i = 0; i < result.length; i++) {
-            assertEquals(result[i].routeSegments, answer[i].routeSegments);
-            assertEquals(result[i].track, answer[i].track);
+            assertEquals(result[i].routeSegments.length, answer[i].routeSegments.length);
+            assertTrue(trackEquals(result[i].track, answer[i].track));
+            for (int j = 0; j < result[i].routeSegments.length; j++) {
+                assertTrue(segmentEquals(result[i].routeSegments[j], answer[i].routeSegments[j]));
+            }
         }
     }
 }
