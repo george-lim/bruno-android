@@ -1,5 +1,7 @@
 package com.cs446.group7.bruno.music.playlist;
 
+import android.util.Log;
+
 import com.cs446.group7.bruno.music.BrunoPlaylist;
 import com.cs446.group7.bruno.music.BrunoTrack;
 import com.cs446.group7.bruno.utils.Callback;
@@ -21,8 +23,10 @@ public class MockPlaylistGeneratorImpl implements PlaylistGenerator {
                     three_minutes, artistsClone));
         }
 
-        BrunoPlaylist playlist = new BrunoPlaylist("playlist", "description",
+        BrunoPlaylist playlist = new BrunoPlaylist("name", "description",
                 track_count, three_minutes * track_count, tracks);
+        Log.i(this.getClass().getSimpleName(), "getPlaylist(): Returning playlist: "
+                + playlist.name);
         callback.onSuccess(playlist);
 
     }
