@@ -56,7 +56,7 @@ public class RoutePlanningFragment extends Fragment {
         public void onLocationUpdate(@NonNull final Location location) {
             Log.i(TAG, location.toString());
             final LatLng newLocation = new LatLng(location.getLatitude(), location.getLongitude());
-
+            // TODO: Remove
             Toast.makeText(getContext(), String.format("Location: (%s, %s)", location.getLatitude(), location.getLongitude()), Toast.LENGTH_SHORT).show();
 
             if (googleMap == null) return;
@@ -120,20 +120,39 @@ public class RoutePlanningFragment extends Fragment {
     private void requestLocationUpdates() {
         if (isRequestingCapability) return;
         isRequestingCapability = true;
-        MainActivity.getCapabilityService().request(Capability.LOCATION, new Callback<Void, Void>() {
+
+        // Start location update after requesting location and internet capabilities
+        Callback<Void, Void> requestInternetCallback = new Callback<Void, Void>() {
             @Override
             public void onSuccess(Void result) {
                 MainActivity.getLocationService().startLocationUpdates();
-                Toast.makeText(getContext(), "Location permission granted", Toast.LENGTH_SHORT).show();
                 isRequestingCapability = false;
             }
 
             @Override
             public void onFailed(Void result) {
-                Toast.makeText(getContext(), "Location permission not granted", Toast.LENGTH_SHORT).show();
                 isRequestingCapability = false;
             }
-        });
+        };
+
+        // After requesting location capability, request internet capability
+        Callback<Void, Void> requestLocationCallback = new Callback<Void, Void>() {
+            @Override
+            public void onSuccess(Void result) {
+                MainActivity
+                        .getCapabilityService()
+                        .request(Capability.INTERNET, requestInternetCallback);
+            }
+
+            @Override
+            public void onFailed(Void result) {
+                isRequestingCapability = false;
+            }
+        };
+
+        MainActivity
+                .getCapabilityService()
+                .request(Capability.LOCATION, requestLocationCallback);
     }
 
     private void handleStartWalkingClick(final View view) {
