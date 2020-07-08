@@ -5,22 +5,21 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorBackground"
-    tools:context=".ui.settings.SettingsFragment">
+    tools:context=".ui.settings.TermsAndConditionsFragment">
 
     <include
-        android:id="@+id/appbar_settings"
+        android:id="@+id/appbar_terms_and_condition"
         layout="@layout/toolbar_layout"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/appbar_settings">
+        app:layout_constraintTop_toBottomOf="@id/appbar_terms_and_condition">
 
-        <include layout="@layout/settings_about_bruno" />
-
-    </LinearLayout>
+        <TextView
+            style="@style/ParagraphText"
+            android:text="@string/terms_and_condition_text" />
+    </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>
