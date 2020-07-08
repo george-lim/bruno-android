@@ -38,6 +38,17 @@ public class CapabilityService {
         return hasPermissions && hasHardwareCapabilities;
     }
 
+    // Synchronously check if all capabilities are enabled at once, without requesting user action
+    public boolean isEveryCapabilityEnabled(@NonNull final Capability[] capabilities) {
+        for (Capability capability : capabilities) {
+            if (!isCapabilityEnabled(capability)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     // Checks if a capability is enabled, and requests user action if any check fails
     public void request(@NonNull final Capability capability,
                         @NonNull final Callback<Void, Void> callback) {

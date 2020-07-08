@@ -129,6 +129,7 @@ public class RoutePlanningFragment extends Fragment {
         if (isRequestingCapability) return;
         isRequestingCapability = true;
 
+        // Start location update after requesting location and internet capabilities
         Callback<Void, Void> requestInternetCallback = new Callback<Void, Void>() {
             @Override
             public void onSuccess(Void result) {
@@ -142,6 +143,7 @@ public class RoutePlanningFragment extends Fragment {
             }
         };
 
+        // After requesting location capability, request internet capability
         Callback<Void, Void> requestLocationCallback = new Callback<Void, Void>() {
             @Override
             public void onSuccess(Void result) {
