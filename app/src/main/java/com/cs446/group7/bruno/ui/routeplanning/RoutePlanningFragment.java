@@ -53,7 +53,7 @@ public class RoutePlanningFragment extends Fragment {
      */
     private LocationServiceSubscriber onLocationUpdatedCallback = new LocationServiceSubscriber() {
         @Override
-        public void onLocationUpdateSuccess(@NonNull final Location location) {
+        public void onLocationUpdate(@NonNull final Location location) {
             Log.i(TAG, location.toString());
             final LatLng newLocation = new LatLng(location.getLatitude(), location.getLongitude());
 
@@ -70,12 +70,6 @@ public class RoutePlanningFragment extends Fragment {
             googleMap.moveCamera(CameraUpdateFactory
                     .newLatLngZoom(newLocation, 15)
             );
-        }
-
-        @Override
-        public void onLocationUpdateFailure(final Throwable error) {
-            Toast.makeText(getContext(), error.toString(), Toast.LENGTH_SHORT).show();
-            Log.e(TAG, error.toString());
         }
     };
 

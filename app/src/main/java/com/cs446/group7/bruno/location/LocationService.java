@@ -29,25 +29,13 @@ public class LocationService {
         @Override
         public void onLocationResult(LocationResult locationResult) {
             final Location result = locationResult.getLastLocation();
-            if (result == null) {
+            if (result != null) {
                 for (LocationServiceSubscriber subscriber : subscriberList) {
-                    subscriber.onLocationUpdateFailure(new NullLocationException());
-                }
-            } else {
-                for (LocationServiceSubscriber subscriber : subscriberList) {
-                    subscriber.onLocationUpdateSuccess(result);
+                    subscriber.onLocationUpdate(result);
                 }
             }
         }
     };
-
-    // Exception caused by receiving a null location in a location update
-    // NOTE: This exception is not critical
-    public static class NullLocationException extends RuntimeException {
-        public NullLocationException() {
-            super("Received a null location update");
-        }
-    }
 
     public LocationService(final Context context) {
         subscriberList = new ArrayList<>();
