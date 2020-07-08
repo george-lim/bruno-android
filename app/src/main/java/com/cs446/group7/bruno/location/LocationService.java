@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.location.Location;
 import android.os.Looper;
-import android.util.Log;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -25,7 +24,6 @@ public class LocationService {
     private FusedLocationProviderClient fusedLocationClient;
     private List<LocationServiceSubscriber> subscriberList;
     private LocationRequest locationRequest;
-    private final String TAG = getClass().getSimpleName();
 
     private LocationCallback locationCallback = new LocationCallback() {
         @Override
@@ -33,8 +31,7 @@ public class LocationService {
             final Location result = locationResult.getLastLocation();
             if (result == null) {
                 for (LocationServiceSubscriber subscriber : subscriberList) {
-                    subscriber.onLocationUpdateFailure(
-                            new LocationServiceException(LocationServiceException.ErrorType.NULL_LOCATION_ERROR));
+                    subscriber.onLocationUpdateFailure(new NullLocationException());
                 }
             } else {
                 for (LocationServiceSubscriber subscriber : subscriberList) {
@@ -43,6 +40,14 @@ public class LocationService {
             }
         }
     };
+
+    // Exception caused by receiving a null location in a location update
+    // NOTE: This exception is not critical
+    public static class NullLocationException extends RuntimeException {
+        public NullLocationException() {
+            super("Received a null location update");
+        }
+    }
 
     public LocationService(final Context context) {
         subscriberList = new ArrayList<>();
