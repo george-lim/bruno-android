@@ -15,7 +15,7 @@ import com.cs446.group7.bruno.utils.Callback;
     for a capability, CapabilityService will:
 
     1. Check that all associated permissions are granted
-    2. Check that all related hardware is enabled
+    2. Check that all related hardware capabilities are enabled
 
     before successfully fulfilling the client callback. Furthermore, CapabilityService will attempt
     to request permissions from the user if the permission check fails.
@@ -33,8 +33,9 @@ public class CapabilityService {
 
     // Synchronously check if a capability is enabled, without requesting user action
     public boolean isCapabilityEnabled(@NonNull final Capability capability) {
-        return permissionManager.isPermissionGroupGranted(capability.getPermissionGroup())
-                && hardwareManager.isHardwareEnabled(capability);
+        boolean hasPermissions = permissionManager.isPermissionGroupGranted(capability.getPermissionGroup());
+        boolean hasHardwareCapabilities = hardwareManager.isHardwareEnabled(capability);
+        return hasPermissions && hasHardwareCapabilities;
     }
 
     // Checks if a capability is enabled, and requests user action if any check fails

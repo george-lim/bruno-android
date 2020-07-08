@@ -115,9 +115,9 @@ public class MainActivity extends AppCompatActivity implements PermissionRequest
     // Observe permission request result to either complete request callback or show permission denied message
     @Override
     public void onRequestPermissionsResult(int requestCode,
-                                            @NonNull String[] permissions,
-                                            @NonNull int[] grantResults) {
-        // Find matching permission request and remove it active permission requests
+                                           @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        // Find matching permission request and remove it from active permission requests
         PermissionRequest request = activePermissionRequests.get(requestCode);
         activePermissionRequests.remove(requestCode);
 
