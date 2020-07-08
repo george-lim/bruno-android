@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.location.Location;
 import android.os.Looper;
-import android.util.Log;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -25,20 +24,14 @@ public class LocationService {
     private FusedLocationProviderClient fusedLocationClient;
     private List<LocationServiceSubscriber> subscriberList;
     private LocationRequest locationRequest;
-    private final String TAG = getClass().getSimpleName();
 
     private LocationCallback locationCallback = new LocationCallback() {
         @Override
         public void onLocationResult(LocationResult locationResult) {
             final Location result = locationResult.getLastLocation();
-            if (result == null) {
+            if (result != null) {
                 for (LocationServiceSubscriber subscriber : subscriberList) {
-                    subscriber.onLocationUpdateFailure(
-                            new LocationServiceException(LocationServiceException.ErrorType.NULL_LOCATION_ERROR));
-                }
-            } else {
-                for (LocationServiceSubscriber subscriber : subscriberList) {
-                    subscriber.onLocationUpdateSuccess(result);
+                    subscriber.onLocationUpdate(result);
                 }
             }
         }
