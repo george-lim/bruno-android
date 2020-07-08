@@ -38,4 +38,10 @@
         <item name="android:textSize">14sp</item>
         <item name="android:textColor">@color/colorOnBackgroundLite</item>
     </style>
+    <style name="ParagraphText" parent="HintText">
+        <item name="android:paddingTop">18dp</item>
+        <item name="android:paddingLeft">18dp</item>
+        <item name="android:paddingRight">18dp</item>
+        <item name="android:paddingBottom">36dp</item>
+    </style>
 </resources>

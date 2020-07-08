@@ -15,7 +15,9 @@
             android:text="@string/app_version" />
     </LinearLayout>
 
-    <LinearLayout style="@style/SettingClickableItemContainer">
+    <LinearLayout
+        android:id="@+id/settings_terms_and_conditions"
+        style="@style/SettingClickableItemContainer">
         <TextView
             style="@style/NormalText"
             android:text="@string/terms_and_conditions" />
@@ -24,7 +26,9 @@
             android:text="@string/terms_and_conditions_hint" />
     </LinearLayout>
 
-    <LinearLayout style="@style/SettingClickableItemContainer">
+    <LinearLayout
+        android:id="@+id/settings_privacy_policy"
+        style="@style/SettingClickableItemContainer">
         <TextView
             style="@style/NormalText"
             android:text="@string/privacy_policy" />
