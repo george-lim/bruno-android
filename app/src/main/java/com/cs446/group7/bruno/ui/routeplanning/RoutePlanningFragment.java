@@ -121,8 +121,12 @@ public class RoutePlanningFragment extends Fragment {
         if (isRequestingCapability) return;
         isRequestingCapability = true;
 
-        // Start location update after requesting location and internet capabilities
-        Callback<Void, Void> requestInternetCallback = new Callback<Void, Void>() {
+        Capability[] capabilities = new Capability[] {
+                Capability.LOCATION,
+                Capability.INTERNET
+        };
+
+        MainActivity.getCapabilityService().request(capabilities, new Callback<Void, Void>() {
             @Override
             public void onSuccess(Void result) {
                 MainActivity.getLocationService().startLocationUpdates();
@@ -133,26 +137,7 @@ public class RoutePlanningFragment extends Fragment {
             public void onFailed(Void result) {
                 isRequestingCapability = false;
             }
-        };
-
-        // After requesting location capability, request internet capability
-        Callback<Void, Void> requestLocationCallback = new Callback<Void, Void>() {
-            @Override
-            public void onSuccess(Void result) {
-                MainActivity
-                        .getCapabilityService()
-                        .request(Capability.INTERNET, requestInternetCallback);
-            }
-
-            @Override
-            public void onFailed(Void result) {
-                isRequestingCapability = false;
-            }
-        };
-
-        MainActivity
-                .getCapabilityService()
-                .request(Capability.LOCATION, requestLocationCallback);
+        });
     }
 
     private void handleStartWalkingClick(final View view) {
