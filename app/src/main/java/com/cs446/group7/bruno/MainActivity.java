@@ -17,6 +17,7 @@ import com.cs446.group7.bruno.capability.hardware.HardwareRequest;
 import com.cs446.group7.bruno.capability.hardware.HardwareRequestDelegate;
 import com.cs446.group7.bruno.capability.permission.PermissionRequest;
 import com.cs446.group7.bruno.capability.permission.PermissionRequestDelegate;
+import com.cs446.group7.bruno.location.LocationService;
 import com.cs446.group7.bruno.ui.toplevel.TopLevelFragment;
 import com.cs446.group7.bruno.utils.NoFailCallback;
 
@@ -27,6 +28,7 @@ public class MainActivity extends AppCompatActivity implements PermissionRequest
     // MARK: - Services
 
     private static CapabilityService capabilityService;
+    private static LocationService locationService;
 
     // MARK: - PermissionRequestDelegate members
 
@@ -42,6 +44,8 @@ public class MainActivity extends AppCompatActivity implements PermissionRequest
 
         capabilityService = new CapabilityService(getApplicationContext(), this, this);
         activePermissionRequests = new HashMap<>();
+
+        locationService = new LocationService(getApplicationContext());
     }
 
     /**
@@ -64,6 +68,10 @@ public class MainActivity extends AppCompatActivity implements PermissionRequest
 
     public static CapabilityService getCapabilityService() {
         return capabilityService;
+    }
+
+    public static LocationService getLocationService() {
+        return locationService;
     }
 
     // Creates and shows an alert dialog
