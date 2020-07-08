@@ -6,6 +6,27 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RouteProcessor {
+
+    /**
+     * Custom exception thrown when the number of tracks in a playlist is less than the required
+     * number to map to a series of route segments
+     */
+    public static class TrackIndexOutOfBoundsException extends ArrayIndexOutOfBoundsException {
+        public TrackIndexOutOfBoundsException() {
+            super("Expected total playlist duration length to be longer than the total route segment duration");
+        }
+    }
+
+    /**
+     * Required because track duration is measured in milliseconds, but Google's route duration
+     * is measured in seconds
+     * @param milliseconds
+     * @return
+     */
+    private static int convertToSeconds(long milliseconds) {
+        return (int) (milliseconds / 1000);
+    }
+
     /**
      * Given a series of route segments and spotify tracks, return a mapping of route segments
      * to each track.
@@ -13,42 +34,57 @@ public class RouteProcessor {
      * @param tracks
      * @return
      */
-    public RouteTrackMapping[] execute(RouteSegment[] routeSegments, BrunoTrack[] tracks) {
+    public static RouteTrackMapping[] execute(RouteSegment[] routeSegments, BrunoTrack[] tracks) throws TrackIndexOutOfBoundsException {
         List<RouteTrackMapping> result = new ArrayList<>();
         int currTrackInd = 0;
+        // Duration is measured in milliseconds
         long accumulatedRouteSegmentDuration = 0;
         List<RouteSegment> accumulatedRouteSegments = new ArrayList<>();
         for (RouteSegment routeSegment : routeSegments) {
             if (currTrackInd > tracks.length) {
-                // throw corresponding exception
+                throw new TrackIndexOutOfBoundsException();
             }
 
             BrunoTrack currTrack = tracks[currTrackInd];
-            if (accumulatedRouteSegmentDuration + routeSegment.getDurationInMilliseconds() > currTrack.duration) {
-                long routeDurationUnder = currTrack.duration - accumulatedRouteSegmentDuration;
-                long routeDurationOver = routeSegment.getDurationInMilliseconds() - routeDurationUnder;
-                long percentOfRouteUnder = routeDurationUnder / routeSegment.getDurationInMilliseconds();
 
-                double diffLat = routeSegment.getEndLocation().latitude - routeSegment.getStartLocation().latitude;
-                double diffLng = routeSegment.getEndLocation().longitude - routeSegment.getStartLocation().longitude;
+            LatLng routeSegmentStart = routeSegment.getStartLocation();
+            LatLng routeSegmentEnd = routeSegment.getEndLocation();
+            long routeSegmentDuration = routeSegment.getDurationInMilliseconds();
 
-                double cutoffLat = routeSegment.getStartLocation().latitude + (diffLat / percentOfRouteUnder);
-                double cutoffLng = routeSegment.getStartLocation().longitude + (diffLng / percentOfRouteUnder);
+            long lastSongSegment = accumulatedRouteSegmentDuration + routeSegmentDuration;
 
-                LatLng cutoffPoint = new LatLng(cutoffLat, cutoffLng);
-                RouteSegment underRouteSegment = new RouteSegment(routeSegment.getStartLocation(),
-                        cutoffPoint, (int) (routeDurationUnder / 1000));
-                RouteSegment overRouteSegment = new RouteSegment(cutoffPoint,
-                        routeSegment.getEndLocation(), (int) (routeDurationOver / 1000));
-                accumulatedRouteSegments.add(underRouteSegment);
+            if (lastSongSegment > currTrack.duration) {
+                // Represents the duration of each half of a segment since it needs to be split
+                long segmentDurationFirstHalf = currTrack.duration - accumulatedRouteSegmentDuration;
+                long segmentDurationSecondHalf = routeSegmentDuration - segmentDurationFirstHalf;
+                long segmentDurationRatio = segmentDurationFirstHalf / routeSegmentDuration;
+
+                // Represent the difference in lat and long distances, needed for slope calculations
+                double diffLat = routeSegmentEnd.latitude - routeSegmentStart.latitude;
+                double diffLng = routeSegmentEnd.longitude - routeSegmentStart.longitude;
+
+                double midPointLat = routeSegmentStart.latitude + (diffLat * segmentDurationRatio);
+                double midPointLng = routeSegmentStart.longitude + (diffLng * segmentDurationRatio);
+
+                // Create two new segments based on start, midpoint, end to represent split
+                LatLng segmentMidPoint = new LatLng(midPointLat, midPointLng);
+                RouteSegment segmentFirstHalf = new RouteSegment(routeSegmentStart,
+                        segmentMidPoint, convertToSeconds(segmentDurationFirstHalf));
+                RouteSegment segmentSecondHalf = new RouteSegment(segmentMidPoint,
+                        routeSegment.getEndLocation(), convertToSeconds(segmentDurationSecondHalf));
+
+                // Create mapping of accumulated segments and first half segment with current track
+                accumulatedRouteSegments.add(segmentFirstHalf);
                 RouteTrackMapping rtm = new RouteTrackMapping(accumulatedRouteSegments.toArray(
                         new RouteSegment[accumulatedRouteSegments.size()]), currTrack);
                 result.add(rtm);
                 accumulatedRouteSegments.clear();
-                accumulatedRouteSegments.add(overRouteSegment);
-                accumulatedRouteSegmentDuration = routeDurationOver;
+
+                // Accommodate the second half of route segment for the next track
+                accumulatedRouteSegments.add(segmentSecondHalf);
+                accumulatedRouteSegmentDuration = segmentDurationSecondHalf;
                 currTrackInd++;
-            } else if (accumulatedRouteSegmentDuration + routeSegment.getDurationInMilliseconds() == currTrack.duration) {
+            } else if (lastSongSegment == currTrack.duration) {
                 accumulatedRouteSegments.add(routeSegment);
                 RouteTrackMapping rtm = new RouteTrackMapping(accumulatedRouteSegments.toArray(
                         new RouteSegment[accumulatedRouteSegments.size()]), currTrack);
@@ -58,7 +94,7 @@ public class RouteProcessor {
                 currTrackInd++;
             } else {
                 accumulatedRouteSegments.add(routeSegment);
-                accumulatedRouteSegmentDuration += routeSegment.getDurationInMilliseconds();
+                accumulatedRouteSegmentDuration += routeSegmentDuration;
             }
         }
         return result.toArray(new RouteTrackMapping[result.size()]);

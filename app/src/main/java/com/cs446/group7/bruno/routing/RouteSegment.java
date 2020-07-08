@@ -26,19 +26,4 @@ public class RouteSegment {
     }
 
     public long getDurationInMilliseconds() { return duration * 1000; }
-
-    @Override
-    public boolean equals(Object o) {
-        if (o == this) {
-            return true;
-        }
-
-        if (!(o instanceof RouteSegment)) {
-            return false;
-        }
-
-        RouteSegment a = (RouteSegment) o;
-        return a.startLocation.equals(this.startLocation) &&
-                a.endLocation.equals(this.endLocation) && a.duration == this.duration;
-    }
 }

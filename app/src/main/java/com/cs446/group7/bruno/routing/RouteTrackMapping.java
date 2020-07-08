@@ -8,19 +8,4 @@ public class RouteTrackMapping {
         this.routeSegments = routeSegments;
         this.track = track;
     }
-
-    @Override
-    public boolean equals(Object o) {
-        if (o == this) {
-            return true;
-        }
-
-        if (!(o instanceof RouteTrackMapping)) {
-            return false;
-        }
-
-        RouteTrackMapping a = (RouteTrackMapping) o;
-        return a.routeSegments.equals(this.routeSegments) &&
-                a.track.equals(this.track);
-    }
 }
