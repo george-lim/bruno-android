@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity implements PermissionRequest
         capabilityService = new CapabilityService(this, this);
         activePermissionRequests = new HashMap<>();
 
-        locationService = new LocationService(this);
+        locationService = new LocationService(getApplicationContext());
     }
 
     /**
