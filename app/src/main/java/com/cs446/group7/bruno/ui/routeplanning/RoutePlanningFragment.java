@@ -12,7 +12,6 @@ import android.widget.Toast;
 import com.cs446.group7.bruno.MainActivity;
 import com.cs446.group7.bruno.R;
 import com.cs446.group7.bruno.capability.Capability;
-import com.cs446.group7.bruno.location.LocationServiceException;
 import com.cs446.group7.bruno.location.LocationServiceSubscriber;
 import com.cs446.group7.bruno.utils.Callback;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -54,7 +53,7 @@ public class RoutePlanningFragment extends Fragment {
      */
     private LocationServiceSubscriber onLocationUpdatedCallback = new LocationServiceSubscriber() {
         @Override
-        public void onLocationUpdateSuccess(@NonNull Location location) {
+        public void onLocationUpdate(@NonNull final Location location) {
             Log.i(TAG, location.toString());
             final LatLng newLocation = new LatLng(location.getLatitude(), location.getLongitude());
 
@@ -71,12 +70,6 @@ public class RoutePlanningFragment extends Fragment {
             googleMap.moveCamera(CameraUpdateFactory
                     .newLatLngZoom(newLocation, 15)
             );
-        }
-
-        @Override
-        public void onLocationUpdateFailure(LocationServiceException error) {
-            Toast.makeText(getContext(), error.toString(), Toast.LENGTH_SHORT).show();
-            Log.e(TAG, error.toString());
         }
     };
 
