@@ -32,6 +32,7 @@ import androidx.navigation.Navigation;
 public class RoutePlanningFragment extends Fragment {
 
     private GoogleMap googleMap;
+    private boolean isRequestingPermission = false;
     private final String TAG = getClass().getSimpleName();
 
     /**
@@ -60,8 +61,12 @@ public class RoutePlanningFragment extends Fragment {
             Log.i(TAG, location.toString());
             final LatLng newLocation = new LatLng(location.getLatitude(), location.getLongitude());
             googleMap.clear();
-            googleMap.addMarker(new MarkerOptions().position(newLocation).title("Curr location"));
-            googleMap.moveCamera(CameraUpdateFactory.newLatLng(newLocation));
+
+            googleMap.addMarker(new MarkerOptions().position(newLocation).title("Your location"));
+            googleMap.moveCamera(CameraUpdateFactory
+                    .newLatLngZoom(newLocation, 15)
+            );
+
             Toast.makeText(getContext(), String.format("Location: (%s, %s)", location.getLatitude(), location.getLongitude()), Toast.LENGTH_SHORT).show();
         }
 
@@ -97,6 +102,8 @@ public class RoutePlanningFragment extends Fragment {
     public void onResume() {
         super.onResume();
         MainActivity.getLocationService().addSubscriber(onLocationUpdatedCallback);
+
+        requestLocationUpdates();
     }
 
     @Override
@@ -111,19 +118,24 @@ public class RoutePlanningFragment extends Fragment {
         MainActivity.getLocationService().stopLocationUpdates();
     }
 
+    /**
+     * Requests location permissions from Capability service. Requires mutex to prevent duplicate requests
+     */
     private void requestLocationUpdates() {
+        if (isRequestingPermission) return;
+        isRequestingPermission = true;
         MainActivity.getCapabilityService().request(Capability.LOCATION, new Callback<Void, Void>() {
-            @SuppressLint("MissingPermission")
             @Override
             public void onSuccess(Void result) {
-                googleMap.setMyLocationEnabled(true); // Can remove eventually when we no longer use Google map's location
                 MainActivity.getLocationService().startLocationUpdates();
                 Toast.makeText(getContext(), "Location permission granted", Toast.LENGTH_SHORT).show();
+                isRequestingPermission = false;
             }
 
             @Override
             public void onFailed(Void result) {
                 Toast.makeText(getContext(), "Location permission not granted", Toast.LENGTH_SHORT).show();
+                isRequestingPermission = false;
             }
         });
     }
