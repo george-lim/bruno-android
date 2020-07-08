@@ -18,16 +18,6 @@ public class RouteProcessor {
     }
 
     /**
-     * Required because track duration is measured in milliseconds, but Google's route duration
-     * is measured in seconds
-     * @param milliseconds
-     * @return
-     */
-    private static int convertToSeconds(long milliseconds) {
-        return (int) (milliseconds / 1000);
-    }
-
-    /**
      * Given a series of route segments and spotify tracks, return a mapping of route segments
      * to each track.
      * @param routeSegments
@@ -49,7 +39,7 @@ public class RouteProcessor {
 
             LatLng routeSegmentStart = routeSegment.getStartLocation();
             LatLng routeSegmentEnd = routeSegment.getEndLocation();
-            long routeSegmentDuration = routeSegment.getDurationInMilliseconds();
+            long routeSegmentDuration = routeSegment.getDuration();
 
             long lastSongSegment = accumulatedRouteSegmentDuration + routeSegmentDuration;
 
@@ -69,9 +59,9 @@ public class RouteProcessor {
                 // Create two new segments based on start, midpoint, end to represent split
                 LatLng segmentMidPoint = new LatLng(midPointLat, midPointLng);
                 RouteSegment segmentFirstHalf = new RouteSegment(routeSegmentStart,
-                        segmentMidPoint, convertToSeconds(segmentDurationFirstHalf));
+                        segmentMidPoint, segmentDurationFirstHalf);
                 RouteSegment segmentSecondHalf = new RouteSegment(segmentMidPoint,
-                        routeSegment.getEndLocation(), convertToSeconds(segmentDurationSecondHalf));
+                        routeSegment.getEndLocation(), segmentDurationSecondHalf);
 
                 // Create mapping of accumulated segments and first half segment with current track
                 accumulatedRouteSegments.add(segmentFirstHalf);
