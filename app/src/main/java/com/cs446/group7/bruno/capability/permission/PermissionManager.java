@@ -1,33 +1,31 @@
-package com.cs446.group7.bruno.capability;
+package com.cs446.group7.bruno.capability.permission;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
 
-import androidx.annotation.NonNull;
-
 import com.cs446.group7.bruno.utils.Callback;
 
 // Manages permission status checking and permission requests
-class PermissionManager {
+public class PermissionManager {
     private PackageManager packageManager;
     private String packageName;
     private PermissionRequestDelegate delegate;
 
-    PermissionManager(@NonNull final Context context,
-                      @NonNull final PermissionRequestDelegate delegate) {
+    public PermissionManager(final Context context,
+                             final PermissionRequestDelegate delegate) {
         packageManager = context.getPackageManager();
         packageName = context.getPackageName();
         this.delegate = delegate;
     }
 
     // Predicate that determines if a permission is granted given permission name
-    private boolean isPermissionGranted(@NonNull final String permissionName) {
+    private boolean isPermissionGranted(final String permissionName) {
         int permissionStatus = packageManager.checkPermission(permissionName, packageName);
         return permissionStatus == PackageManager.PERMISSION_GRANTED;
     }
 
     // Predicate that determines if a permission group is granted
-    boolean isPermissionGroupGranted(final PermissionGroup permissionGroup) {
+    public boolean isPermissionGroupGranted(final PermissionGroup permissionGroup) {
         if (permissionGroup != null) {
             for (String permissionName : permissionGroup.getPermissionNames()) {
                 if (!isPermissionGranted(permissionName)) {
@@ -40,8 +38,8 @@ class PermissionManager {
     }
 
     // Requests permissions if not already granted
-    void requestPermission(final PermissionGroup permissionGroup,
-                           @NonNull final Callback<Void, Void> callback) {
+    public void requestPermission(final PermissionGroup permissionGroup,
+                                  final Callback<Void, Void> callback) {
         if (permissionGroup == null || isPermissionGroupGranted(permissionGroup)) {
             callback.onSuccess(null);
             return;
