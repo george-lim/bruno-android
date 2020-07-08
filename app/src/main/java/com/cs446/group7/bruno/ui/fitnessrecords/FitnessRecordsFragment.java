@@ -12,7 +12,6 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
 import com.cs446.group7.bruno.R;
-import com.cs446.group7.bruno.spotify.MockSpotifyImpl;
 import com.cs446.group7.bruno.ui.AppbarFormatter;
 
 public class FitnessRecordsFragment extends Fragment {
@@ -30,8 +29,7 @@ public class FitnessRecordsFragment extends Fragment {
 
         Button toDetailsBtn = view.findViewById(R.id.button_to_details);
         toDetailsBtn.setOnClickListener(this::handleNavigateToFitnessDetailsClick);
-        MockSpotifyImpl impl = new MockSpotifyImpl(getContext());
-
+        
         return view;
     }
 
@@ -39,4 +37,5 @@ public class FitnessRecordsFragment extends Fragment {
         NavController navController = Navigation.findNavController(getActivity(), R.id.nav_host_fragment);
         navController.navigate(R.id.action_fragmenttoplevel_to_fragmentfitnessdetails);
     }
+
 }

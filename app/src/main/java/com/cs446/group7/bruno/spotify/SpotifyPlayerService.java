@@ -5,6 +5,9 @@ import com.cs446.group7.bruno.R;
 import android.content.Context;
 import android.util.Log;
 
+import com.cs446.group7.bruno.music.BrunoTrack;
+import com.cs446.group7.bruno.music.MusicPlayer;
+import com.cs446.group7.bruno.music.OnPlayerCallback;
 import com.spotify.android.appremote.api.ConnectionParams;
 import com.spotify.android.appremote.api.Connector;
 import com.spotify.android.appremote.api.SpotifyAppRemote;
@@ -18,7 +21,7 @@ import java.util.List;
 // I am designing this class in a way where it's instantiated once and acts as the main interface to
 // Spotify. We can break this down later into separate components if it makes it easier to work with
 
-public class SpotifyService {
+public class SpotifyPlayerService extends MusicPlayer {
 
     // Main interface to Spotify, initialized by connectToSpotify()
     private SpotifyAppRemote mSpotifyAppRemote;
@@ -29,7 +32,7 @@ public class SpotifyService {
     private Track currentTrack;
 
     // connectToSpotify() does the main initialization
-    public SpotifyService() { }
+    public SpotifyPlayerService() { }
 
     // Exception caused by not having Spotify installed
     public static class SpotifyNotInstalledException extends RuntimeException {
@@ -39,7 +42,7 @@ public class SpotifyService {
     }
 
     // Attempts to connect to Spotify by authenticating users
-    public void connectToSpotify(OnPlayerCallback callback, Context appContext) {
+    public void connect(OnPlayerCallback callback, Context appContext) {
 
         // Spotify is not installed on the device - communicating this via a custom exception
         if (!SpotifyAppRemote.isSpotifyInstalled(appContext)) {
@@ -88,7 +91,7 @@ public class SpotifyService {
     }
 
     // Should be called when disconnecting from Spotify
-    public void disconnectFromSpotify() {
+    public void disconnect() {
         SpotifyAppRemote.disconnect(mSpotifyAppRemote);
     }
 
@@ -101,8 +104,8 @@ public class SpotifyService {
     }
 
     // Note that calling this method multiple times will play the custom playlist from the beginning
-    public void playMusic() {
-        mSpotifyAppRemote.getPlayerApi().play("spotify:playlist:7fPwZk4KFD2yfU7J5O1JVz");
+    public void playMusic(String playlistId) {
+        mSpotifyAppRemote.getPlayerApi().play("spotify:playlist:" + playlistId);
     }
 
     // Reads the currently playing track from the player

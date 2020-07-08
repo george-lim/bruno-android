@@ -1,4 +1,4 @@
-package com.cs446.group7.bruno.spotify;
+package com.cs446.group7.bruno.music;
 
 import java.util.ArrayList;
 
