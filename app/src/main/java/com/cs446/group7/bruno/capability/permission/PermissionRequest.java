@@ -1,6 +1,4 @@
-package com.cs446.group7.bruno.capability;
-
-import androidx.annotation.NonNull;
+package com.cs446.group7.bruno.capability.permission;
 
 import com.cs446.group7.bruno.utils.Callback;
 
@@ -12,8 +10,8 @@ public class PermissionRequest {
     // All permission requests share the same title internally
     private static final String TITLE = "Permission Request";
 
-    PermissionRequest(@NonNull final PermissionGroup permissionGroup,
-                      @NonNull final Callback<Void, Void> callback) {
+    public PermissionRequest(final PermissionGroup permissionGroup,
+                             final Callback<Void, Void> callback) {
         this.permissionGroup = permissionGroup;
         this.callback = callback;
     }
@@ -35,7 +33,7 @@ public class PermissionRequest {
     }
 
     public String getPermissionDeniedMessage() {
-        return "Unfortunately, Bruno requires " + permissionGroup.name().toLowerCase()
+        return "Bruno requires " + permissionGroup.name().toLowerCase()
                 + " permission to proceed. You can enable the permission through system settings.";
     }
 }
