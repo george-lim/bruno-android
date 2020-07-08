@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity implements PermissionRequest
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        capabilityService = new CapabilityService(this, this, this);
+        capabilityService = new CapabilityService(getApplicationContext(), this, this);
         activePermissionRequests = new HashMap<>();
     }
 
