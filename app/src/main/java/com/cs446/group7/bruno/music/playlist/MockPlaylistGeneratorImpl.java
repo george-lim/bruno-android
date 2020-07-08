@@ -10,11 +10,13 @@ import java.util.ArrayList;
 
 public class MockPlaylistGeneratorImpl implements PlaylistGenerator {
 
+    private final String TAG = getClass().getSimpleName();
+
     public void getPlaylist(String playlistId, Callback<BrunoPlaylist, Exception> callback) {
         ArrayList<BrunoTrack> tracks = new ArrayList<BrunoTrack>(5);
         ArrayList<String> artists = new ArrayList<String>(2);
-        artists.add("Bruno Mars");
-        artists.add("Burno Mars");
+        artists.add("Jimin");
+        artists.add("Taylor Swift");
         long three_minutes = 180000; // Milliseconds
         int track_count = 50;
         for (int i = 0; i < track_count; ++i) {
@@ -25,7 +27,7 @@ public class MockPlaylistGeneratorImpl implements PlaylistGenerator {
 
         BrunoPlaylist playlist = new BrunoPlaylist("name", "description",
                 track_count, three_minutes * track_count, tracks);
-        Log.i(this.getClass().getSimpleName(), "getPlaylist(): Returning playlist: "
+        Log.i(TAG, "getPlaylist(): Returning playlist: "
                 + playlist.name);
         callback.onSuccess(playlist);
 

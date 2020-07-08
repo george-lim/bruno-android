@@ -10,23 +10,24 @@ import java.util.ArrayList;
 public class MockMusicPlayerImpl implements MusicPlayer {
 
     String playlistId = "";
+    private final String TAG = getClass().getSimpleName();
 
     public void setPlaylist(String playlistId) {
         this.playlistId = playlistId;
     }
 
     public void play(Callback<Void, Exception> callback) {
-        Log.i(this.getClass().getSimpleName(), "play(): Playing playlist " + this.playlistId);
+        Log.i(TAG, "play(): Playing playlist " + this.playlistId);
         callback.onSuccess(null);
     }
 
     public void pause(Callback<Void, Exception> callback) {
-        Log.i(this.getClass().getSimpleName(), "pause(): Paused playlist " + this.playlistId);
+        Log.i(TAG, "pause(): Paused playlist " + this.playlistId);
         callback.onSuccess(null);
     }
 
     public void resume(Callback<Void, Exception> callback) {
-        Log.i(this.getClass().getSimpleName(), "resume(): Resuming playlist " + this.playlistId);
+        Log.i(TAG, "resume(): Resuming playlist " + this.playlistId);
         callback.onSuccess(null);
     }
 
@@ -35,11 +36,11 @@ public class MockMusicPlayerImpl implements MusicPlayer {
         artists.add("Bruno Mars");
         artists.add("Burno Mars");
         BrunoTrack track = new BrunoTrack("name", "album", 420, artists);
-        Log.i(this.getClass().getSimpleName(), "getCurrentTrack(): Name: " + track.name);
-        Log.i(this.getClass().getSimpleName(), "getCurrentTrack(): Album: " + track.album);
-        Log.i(this.getClass().getSimpleName(), "getCurrentTrack(): Duration: " + track.duration);
+        Log.i(TAG, "getCurrentTrack(): Name: " + track.name);
+        Log.i(TAG, "getCurrentTrack(): Album: " + track.album);
+        Log.i(TAG, "getCurrentTrack(): Duration: " + track.duration);
         for (int i = 0; i < artists.size(); ++i) {
-            Log.i(this.getClass().getSimpleName(), "getCurrentTrack(): Artist "
+            Log.i(TAG, "getCurrentTrack(): Artist "
                     + i + ": " + artists.get(i));
         }
         callback.onSuccess(track);
