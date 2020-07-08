@@ -4,12 +4,11 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.cs446.group7.bruno.R;
 import com.cs446.group7.bruno.ui.AppbarFormatter;
@@ -27,13 +26,13 @@ public class FitnessRecordsFragment extends Fragment {
                 getResources().getString(R.string.title_fitness_records),
                 false);
 
-        Button toDetailsBtn = view.findViewById(R.id.button_to_details);
-        toDetailsBtn.setOnClickListener(this::handleNavigateToFitnessDetailsClick);
-        return view;
-    }
+        RecyclerView fitnessRecordsList = view.findViewById(R.id.recycler_view_fitness_record);
+        fitnessRecordsList.setHasFixedSize(true);
+        fitnessRecordsList.setLayoutManager(new LinearLayoutManager(getActivity()));
+        int[] data = new int[]{0,1,0,0,1,0,0,0,1,1,1,1,0,0,0};
+        FitnessRecordsAdapter adapter = new FitnessRecordsAdapter(data);
+        fitnessRecordsList.setAdapter(adapter);
 
-    private void handleNavigateToFitnessDetailsClick(final View view) {
-        NavController navController = Navigation.findNavController(getActivity(), R.id.nav_host_fragment);
-        navController.navigate(R.id.action_fragmenttoplevel_to_fragmentfitnessdetails);
+        return view;
     }
 }
