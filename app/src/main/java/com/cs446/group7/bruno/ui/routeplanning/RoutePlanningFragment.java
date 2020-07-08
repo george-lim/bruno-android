@@ -47,7 +47,6 @@ public class RoutePlanningFragment extends Fragment {
      */
     private OnMapReadyCallback onMapReadyCallback = googleMap -> {
         this.googleMap = googleMap;
-        requestLocationUpdates();
     };
 
     /**
@@ -59,6 +58,10 @@ public class RoutePlanningFragment extends Fragment {
             Log.i(TAG, location.toString());
             final LatLng newLocation = new LatLng(location.getLatitude(), location.getLongitude());
 
+            Toast.makeText(getContext(), String.format("Location: (%s, %s)", location.getLatitude(), location.getLongitude()), Toast.LENGTH_SHORT).show();
+
+            if (googleMap == null) return;
+
             if (currentLocationMarker == null) {
                 currentLocationMarker = googleMap.addMarker(new MarkerOptions().position(newLocation).title("Your location"));
             } else {
@@ -68,8 +71,6 @@ public class RoutePlanningFragment extends Fragment {
             googleMap.moveCamera(CameraUpdateFactory
                     .newLatLngZoom(newLocation, 15)
             );
-
-            Toast.makeText(getContext(), String.format("Location: (%s, %s)", location.getLatitude(), location.getLongitude()), Toast.LENGTH_SHORT).show();
         }
 
         @Override
