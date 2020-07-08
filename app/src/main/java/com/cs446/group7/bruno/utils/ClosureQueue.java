@@ -14,7 +14,7 @@ public class ClosureQueue<Success, Failure> implements Closure<Void, Void> {
     }
 
     // Add a step to the queue
-    public void add(Closure<Success, Failure> step) {
+    public void add(final Closure<Success, Failure> step) {
         steps.add(step);
     }
 
