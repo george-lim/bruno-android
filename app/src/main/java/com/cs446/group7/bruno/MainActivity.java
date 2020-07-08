@@ -15,6 +15,7 @@ import androidx.navigation.fragment.NavHostFragment;
 import com.cs446.group7.bruno.capability.CapabilityService;
 import com.cs446.group7.bruno.capability.PermissionRequest;
 import com.cs446.group7.bruno.capability.PermissionRequestDelegate;
+import com.cs446.group7.bruno.location.LocationService;
 import com.cs446.group7.bruno.ui.toplevel.TopLevelFragment;
 import com.cs446.group7.bruno.utils.NoFailCallback;
 
@@ -25,6 +26,7 @@ public class MainActivity extends AppCompatActivity implements PermissionRequest
     // MARK: - Singletons
 
     private static CapabilityService capabilityService;
+    private static LocationService locationService;
 
     // MARK: - PermissionRequestDelegate members
 
@@ -40,6 +42,8 @@ public class MainActivity extends AppCompatActivity implements PermissionRequest
 
         capabilityService = new CapabilityService(this, this);
         activePermissionRequests = new HashMap<>();
+
+        locationService = new LocationService(getApplicationContext());
     }
 
     /**
@@ -62,6 +66,10 @@ public class MainActivity extends AppCompatActivity implements PermissionRequest
 
     @NonNull public static CapabilityService getCapabilityService() {
         return capabilityService;
+    }
+
+    public static LocationService getLocationService() {
+        return locationService;
     }
 
     // MARK: - PermissionRequestDelegate methods
