@@ -7,7 +7,7 @@
     android:background="@drawable/list_item_pressed">
 
     <ImageView
-        android:id="@+id/imageView"
+        android:id="@+id/record_icon"
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_marginStart="18dp"
@@ -23,7 +23,7 @@
         android:layout_marginStart="8dp"
         android:text="June 15 · 11:30 AM"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/imageView"
+        app:layout_constraintStart_toEndOf="@+id/record_icon"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.511" />
 

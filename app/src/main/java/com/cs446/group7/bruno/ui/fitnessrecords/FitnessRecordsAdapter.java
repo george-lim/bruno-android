@@ -1,8 +1,10 @@
 package com.cs446.group7.bruno.ui.fitnessrecords;
 
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.navigation.NavController;
@@ -31,6 +33,17 @@ public class FitnessRecordsAdapter extends RecyclerView.Adapter<FitnessRecordsAd
             NavController navController = Navigation.findNavController(view);
             navController.navigate(R.id.action_fragmenttoplevel_to_fragmentfitnessdetails);
         });
+        if (data[position] == 1) {
+            Drawable runningIcon = holder.itemView.getResources().getDrawable(R.drawable.ic_running, null);
+            int color = holder.itemView.getResources().getColor(R.color.colorPrimary, null);
+            holder.icon.setImageDrawable(runningIcon);
+            holder.icon.setColorFilter(color);
+        } else {
+            Drawable walkingIcon = holder.itemView.getResources().getDrawable(R.drawable.ic_walking, null);
+            int color = holder.itemView.getResources().getColor(R.color.colorSecondary, null);
+            holder.icon.setImageDrawable(walkingIcon);
+            holder.icon.setColorFilter(color);
+        }
     }
 
     @Override
@@ -40,8 +53,11 @@ public class FitnessRecordsAdapter extends RecyclerView.Adapter<FitnessRecordsAd
 
     public static class FitnessRecordViewHolder extends RecyclerView.ViewHolder {
 
+        private ImageView icon;
+
         public FitnessRecordViewHolder(@NonNull View itemView) {
             super(itemView);
+            icon = itemView.findViewById(R.id.record_icon);
         }
     }
 }
