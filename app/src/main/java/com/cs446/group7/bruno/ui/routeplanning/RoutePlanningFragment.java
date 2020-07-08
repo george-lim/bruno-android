@@ -20,6 +20,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import androidx.annotation.NonNull;
@@ -31,6 +32,7 @@ import androidx.navigation.Navigation;
 public class RoutePlanningFragment extends Fragment {
 
     private GoogleMap googleMap;
+    private Marker currentLocationMarker;
     private boolean isRequestingCapability = false;
     private final String TAG = getClass().getSimpleName();
 
@@ -56,9 +58,13 @@ public class RoutePlanningFragment extends Fragment {
         public void onLocationUpdateSuccess(@NonNull Location location) {
             Log.i(TAG, location.toString());
             final LatLng newLocation = new LatLng(location.getLatitude(), location.getLongitude());
-            googleMap.clear();
 
-            googleMap.addMarker(new MarkerOptions().position(newLocation).title("Your location"));
+            if (currentLocationMarker == null) {
+                currentLocationMarker = googleMap.addMarker(new MarkerOptions().position(newLocation).title("Your location"));
+            } else {
+                currentLocationMarker.setPosition(newLocation);
+            }
+
             googleMap.moveCamera(CameraUpdateFactory
                     .newLatLngZoom(newLocation, 15)
             );
