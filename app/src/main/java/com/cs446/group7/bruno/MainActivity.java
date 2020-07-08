@@ -90,6 +90,7 @@ public class MainActivity extends AppCompatActivity implements PermissionRequest
     // MARK: - PermissionRequestDelegate methods
 
     // Show a popup describing permission usage, then request permission
+    // NOTE: Requesting a permission will trigger onPause() on MainActivity
     @Override
     public void handlePermissionRequest(@NonNull final PermissionRequest request) {
         // Request permission after showing popup
@@ -142,7 +143,7 @@ public class MainActivity extends AppCompatActivity implements PermissionRequest
 
     // MARK: - HardwareRequestDelegate methods
 
-    // Show a popup describing hardware requirement and prompt user to enable
+    // Show a popup prompting user to enable hardware capability
     @Override
     public void handleHardwareRequest(@NonNull final HardwareRequest request) {
         showAlertDialog(

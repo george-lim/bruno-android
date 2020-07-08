@@ -9,6 +9,7 @@ import com.cs446.group7.bruno.capability.Capability;
 import com.cs446.group7.bruno.utils.Callback;
 import com.cs446.group7.bruno.utils.NoFailCallback;
 
+// Manages hardware capability checking and requests
 public class HardwareManager {
     private LocationManager locationManager;
     private ConnectivityManager connectivityManager;
@@ -21,22 +22,28 @@ public class HardwareManager {
         this.delegate = delegate;
     }
 
-    private boolean isLocationServiceEnabled() {
+    // Predicate that determines whether the user has location enabled
+    private boolean isLocationEnabled() {
         boolean isGPSProviderEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
         boolean isNetworkProviderEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
         return isGPSProviderEnabled || isNetworkProviderEnabled;
     }
 
-    // NOTE: This does not check whether the toggles are enabled.
+    /*
+      Predicate that determines whether the user is connected to a network
+      NOTE: This check only passes if the user is truly connected to a network.
+            Toggling WiFi or cellular data is not enough.
+     */
     private boolean isConnectedToNetwork() {
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
+    // Predicate that determines if a hardware capability is enabled
     public boolean isHardwareEnabled(final Capability capability) {
         switch (capability) {
             case LOCATION:
-                return isLocationServiceEnabled();
+                return isLocationEnabled();
             case INTERNET:
                 return isConnectedToNetwork();
             default:
@@ -44,6 +51,7 @@ public class HardwareManager {
         }
     }
 
+    // Requests hardware capability if not already enabled
     public void requestHardware(final Capability capability,
                                 final Callback<Void, Void> callback) {
         if (isHardwareEnabled(capability)) {
@@ -51,7 +59,7 @@ public class HardwareManager {
             return;
         }
 
-        // See if the user enabled hardware
+        // Verify that the user has enabled hardware
         NoFailCallback<Void> verifyCallback = result -> {
             if (isHardwareEnabled(capability)) {
                 callback.onSuccess(null);

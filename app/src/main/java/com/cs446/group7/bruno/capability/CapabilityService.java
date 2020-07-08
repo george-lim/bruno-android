@@ -1,7 +1,6 @@
 package com.cs446.group7.bruno.capability;
 
 import android.content.Context;
-import android.telecom.Call;
 
 import androidx.annotation.NonNull;
 
@@ -16,7 +15,7 @@ import com.cs446.group7.bruno.utils.Callback;
     for a capability, CapabilityService will:
 
     1. Check that all associated permissions are granted
-    2. Check that all related hardware services are enabled
+    2. Check that all related hardware is enabled
 
     before successfully fulfilling the client callback. Furthermore, CapabilityService will attempt
     to request permissions from the user if the permission check fails.
