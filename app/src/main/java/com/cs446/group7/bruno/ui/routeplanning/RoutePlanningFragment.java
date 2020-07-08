@@ -1,6 +1,5 @@
 package com.cs446.group7.bruno.ui.routeplanning;
 
-import android.annotation.SuppressLint;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
@@ -32,7 +31,7 @@ import androidx.navigation.Navigation;
 public class RoutePlanningFragment extends Fragment {
 
     private GoogleMap googleMap;
-    private boolean isRequestingPermission = false;
+    private boolean isRequestingCapability = false;
     private final String TAG = getClass().getSimpleName();
 
     /**
@@ -46,9 +45,6 @@ public class RoutePlanningFragment extends Fragment {
      */
     private OnMapReadyCallback onMapReadyCallback = googleMap -> {
         this.googleMap = googleMap;
-        LatLng sydney = new LatLng(-34, 151);
-        googleMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
         requestLocationUpdates();
     };
 
@@ -122,20 +118,20 @@ public class RoutePlanningFragment extends Fragment {
      * Requests location permissions from Capability service. Requires mutex to prevent duplicate requests
      */
     private void requestLocationUpdates() {
-        if (isRequestingPermission) return;
-        isRequestingPermission = true;
+        if (isRequestingCapability) return;
+        isRequestingCapability = true;
         MainActivity.getCapabilityService().request(Capability.LOCATION, new Callback<Void, Void>() {
             @Override
             public void onSuccess(Void result) {
                 MainActivity.getLocationService().startLocationUpdates();
                 Toast.makeText(getContext(), "Location permission granted", Toast.LENGTH_SHORT).show();
-                isRequestingPermission = false;
+                isRequestingCapability = false;
             }
 
             @Override
             public void onFailed(Void result) {
                 Toast.makeText(getContext(), "Location permission not granted", Toast.LENGTH_SHORT).show();
-                isRequestingPermission = false;
+                isRequestingCapability = false;
             }
         });
     }
