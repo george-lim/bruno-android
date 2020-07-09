@@ -26,7 +26,7 @@ public class RouteProcessor {
      * @param playlist
      * @return
      */
-    public static RouteTrackMapping[] execute(RouteSegment[] routeSegments, BrunoPlaylist playlist) throws TrackIndexOutOfBoundsException {
+    public static List<RouteTrackMapping> execute(List<RouteSegment> routeSegments, BrunoPlaylist playlist) throws TrackIndexOutOfBoundsException {
         List<RouteTrackMapping> result = new ArrayList<>();
         int currTrackInd = 0;
         // Duration is measured in milliseconds
@@ -68,8 +68,7 @@ public class RouteProcessor {
 
                 // Create mapping of accumulated segments and first half segment with current track
                 accumulatedRouteSegments.add(segmentFirstHalf);
-                RouteTrackMapping rtm = new RouteTrackMapping(accumulatedRouteSegments.toArray(
-                        new RouteSegment[accumulatedRouteSegments.size()]), currTrack);
+                RouteTrackMapping rtm = new RouteTrackMapping(new ArrayList<>(accumulatedRouteSegments), currTrack);
                 result.add(rtm);
                 accumulatedRouteSegments.clear();
 
@@ -79,8 +78,7 @@ public class RouteProcessor {
                 currTrackInd++;
             } else if (lastSongSegment == currTrack.duration) {
                 accumulatedRouteSegments.add(routeSegment);
-                RouteTrackMapping rtm = new RouteTrackMapping(accumulatedRouteSegments.toArray(
-                        new RouteSegment[accumulatedRouteSegments.size()]), currTrack);
+                RouteTrackMapping rtm = new RouteTrackMapping(new ArrayList<>(accumulatedRouteSegments), currTrack);
                 result.add(rtm);
                 accumulatedRouteSegments.clear();
                 accumulatedRouteSegmentDuration = 0;
@@ -91,10 +89,9 @@ public class RouteProcessor {
             }
         }
         if (accumulatedRouteSegments.size() > 0) {
-            RouteTrackMapping rtm = new RouteTrackMapping(accumulatedRouteSegments.toArray(
-                    new RouteSegment[accumulatedRouteSegments.size()]), tracks.get(currTrackInd));
+            RouteTrackMapping rtm = new RouteTrackMapping(accumulatedRouteSegments, tracks.get(currTrackInd));
             result.add(rtm);
         }
-        return result.toArray(new RouteTrackMapping[result.size()]);
+        return result;
     }
 }

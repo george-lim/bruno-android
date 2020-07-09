@@ -7,9 +7,13 @@ import com.cs446.group7.bruno.routing.RouteSegment;
 import com.cs446.group7.bruno.routing.RouteTrackMapping;
 import com.google.android.gms.maps.model.LatLng;
 
+import org.junit.After;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -36,7 +40,20 @@ public class RouteProcessorTest {
             new LatLng(43.476861, -80.539940),
             80
     );
-    RouteSegment[] mockSegments = { mockSegment1, mockSegment2, mockSegment3, mockSegment4 };
+    List<RouteSegment> mockSegments = new ArrayList<>();
+
+    @Before
+    public void setup() {
+        mockSegments.add(mockSegment1);
+        mockSegments.add(mockSegment2);
+        mockSegments.add(mockSegment3);
+        mockSegments.add(mockSegment4);
+    }
+
+    @After
+    public void teardown() {
+        mockSegments.clear();
+    }
 
     // Equality functions for tested objects
     private boolean trackEquals(BrunoTrack a, BrunoTrack b) {
@@ -52,13 +69,13 @@ public class RouteProcessorTest {
                 a.getDuration() == b.getDuration();
     }
 
-    private void assertEqualRouteTrackMapping(RouteTrackMapping[] result, RouteTrackMapping[] answer) {
-        assertEquals(result.length, answer.length);
-        for (int i = 0; i < result.length; i++) {
-            assertEquals(result[i].routeSegments.length, answer[i].routeSegments.length);
-            assertTrue(trackEquals(result[i].track, answer[i].track));
-            for (int j = 0; j < result[i].routeSegments.length; j++) {
-                assertTrue(segmentEquals(result[i].routeSegments[j], answer[i].routeSegments[j]));
+    private void assertEqualRouteTrackMapping(List<RouteTrackMapping> result, List<RouteTrackMapping> answer) {
+        assertEquals(result.size(), answer.size());
+        for (int i = 0; i < result.size(); i++) {
+            assertEquals(result.get(i).routeSegments.size(), answer.get(i).routeSegments.size());
+            assertTrue(trackEquals(result.get(i).track, answer.get(i).track));
+            for (int j = 0; j < result.get(i).routeSegments.size(); j++) {
+                assertTrue(segmentEquals(result.get(i).routeSegments.get(j), answer.get(i).routeSegments.get(j)));
             }
         }
     }
@@ -83,10 +100,9 @@ public class RouteProcessorTest {
                 tracks
         );
 
-        RouteTrackMapping[] result = rp.execute(mockSegments, playlist);
-        RouteTrackMapping[] answer = {
-                new RouteTrackMapping(mockSegments, tracks.get(0))
-        };
+        List<RouteTrackMapping> result = rp.execute(mockSegments, playlist);
+        List<RouteTrackMapping> answer = new ArrayList<>();
+        answer.add(new RouteTrackMapping(mockSegments, tracks.get(0)));
 
         assertEqualRouteTrackMapping(result, answer);
     }
@@ -112,13 +128,17 @@ public class RouteProcessorTest {
                 tracks
         );
 
-        RouteTrackMapping[] result = rp.execute(mockSegments, playlist);
-        RouteSegment[] route1 = { mockSegment1, mockSegment2 };
-        RouteSegment[] route2 = { mockSegment3, mockSegment4 };
-        RouteTrackMapping[] answer = {
-                new RouteTrackMapping(route1, tracks.get(0)),
-                new RouteTrackMapping(route2, tracks.get(1))
-        };
+        List<RouteTrackMapping> result = rp.execute(mockSegments, playlist);
+        List<RouteSegment> route1 = new ArrayList<>();
+
+        route1.add(mockSegment1);
+        route1.add(mockSegment2);
+        List<RouteSegment> route2 = new ArrayList<>();
+        route2.add(mockSegment3);
+        route2.add(mockSegment4);
+        List<RouteTrackMapping> answer = new ArrayList<>();
+        answer.add(new RouteTrackMapping(route1, tracks.get(0)));
+        answer.add(new RouteTrackMapping(route2, tracks.get(1)));
 
         assertEqualRouteTrackMapping(result, answer);
     }
@@ -143,10 +163,9 @@ public class RouteProcessorTest {
                 tracks
         );
 
-        RouteTrackMapping[] result = rp.execute(mockSegments, playlist);
-        RouteTrackMapping[] answer = {
-                new RouteTrackMapping(mockSegments, tracks.get(0)),
-        };
+        List<RouteTrackMapping> result = rp.execute(mockSegments, playlist);
+        List<RouteTrackMapping> answer = new ArrayList<>();
+        answer.add(new RouteTrackMapping(mockSegments, tracks.get(0)));
 
         assertEqualRouteTrackMapping(result, answer);
     }
@@ -172,13 +191,16 @@ public class RouteProcessorTest {
                 tracks
         );
 
-        RouteTrackMapping[] result = rp.execute(mockSegments, playlist);
-        RouteSegment[] route1 = { mockSegment1, mockSegment2, mockSegment3 };
-        RouteSegment[] route2 = { mockSegment4 };
-        RouteTrackMapping[] answer = {
-                new RouteTrackMapping(route1, tracks.get(0)),
-                new RouteTrackMapping(route2, tracks.get(1)),
-        };
+        List<RouteTrackMapping> result = rp.execute(mockSegments, playlist);
+        List<RouteSegment> route1 = new ArrayList<>();
+        route1.add(mockSegment1);
+        route1.add(mockSegment2);
+        route1.add(mockSegment3);
+        List<RouteSegment> route2 = new ArrayList<>();
+        route2.add(mockSegment4);
+        List<RouteTrackMapping> answer = new ArrayList<>();
+        answer.add(new RouteTrackMapping(route1, tracks.get(0)));
+        answer.add(new RouteTrackMapping(route2, tracks.get(1)));
 
         assertEqualRouteTrackMapping(result, answer);
     }
