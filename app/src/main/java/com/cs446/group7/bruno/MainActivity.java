@@ -156,7 +156,7 @@ public class MainActivity extends AppCompatActivity implements PermissionRequest
     public void handleHardwareRequest(@NonNull final HardwareRequest request) {
         showAlertDialog(
                 request.getTitle(),
-                request.getMessage(),
+                request.getRequestMessage(),
                 request.getCallback()
         );
     }

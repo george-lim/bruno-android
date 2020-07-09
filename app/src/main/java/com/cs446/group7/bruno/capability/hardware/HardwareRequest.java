@@ -17,6 +17,10 @@ public class HardwareRequest {
         this.callback = callback;
     }
 
+    public Capability getCapability() {
+        return capability;
+    }
+
     public NoFailCallback<Void> getCallback() {
         return callback;
     }
@@ -25,7 +29,7 @@ public class HardwareRequest {
         return TITLE;
     }
 
-    public String getMessage() {
+    public String getRequestMessage() {
         switch (capability) {
             case LOCATION:
                 return "Bruno requires you to enable location services to proceed. Please enable it, then tap \"OK\".";
@@ -34,5 +38,10 @@ public class HardwareRequest {
             default:
                 return null;
         }
+    }
+
+    public String getRejectionMessage() {
+        return "Bruno is still missing " + capability.name().toLowerCase()
+                + " capability. You can enable it through system settings.";
     }
 }
