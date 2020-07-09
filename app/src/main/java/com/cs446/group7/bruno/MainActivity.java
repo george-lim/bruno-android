@@ -175,7 +175,7 @@ public class MainActivity extends AppCompatActivity implements PermissionRequest
 
     // Show a popup describing hardware requirement
     @Override
-    public void showHardwareRequestPrompt(@NonNull HardwareRequest request) {
+    public void showHardwareRequestPrompt(@NonNull final HardwareRequest request) {
         showAlertDialog(
                 request.getTitle(),
                 request.getRequestMessage(),
@@ -211,7 +211,7 @@ public class MainActivity extends AppCompatActivity implements PermissionRequest
 
     // Show a popup describing hardware request rejection
     @Override
-    public void handleHardwareRejection(@NonNull HardwareRequest request) {
+    public void handleHardwareRejection(@NonNull final HardwareRequest request) {
         showAlertDialog(
                 request.getTitle(),
                 request.getRejectionMessage(),
