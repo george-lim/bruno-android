@@ -5,13 +5,17 @@ import android.content.Context;
 import android.location.Location;
 import android.os.Looper;
 
+import com.cs446.group7.bruno.utils.NoFailCallback;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+
 import java.util.ArrayList;
 import java.util.List;
+
+import androidx.annotation.Nullable;
 
 /**
  * Singleton responsible for handling all logic related to querying the location
@@ -55,7 +59,24 @@ public class LocationService {
 
     @SuppressLint("MissingPermission")
     public void startLocationUpdates() {
-        fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
+        startLocationUpdates(null);
+    }
+
+    /**
+     * Allows an optional callback to retrieve the initial location.
+     */
+    @SuppressLint("MissingPermission")
+    public void startLocationUpdates(@Nullable final NoFailCallback<Location> callback) {
+        if (callback == null) {
+            fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
+        } else {
+            fusedLocationClient
+                    .getLastLocation()
+                    .addOnSuccessListener(location -> { // Note: it is possible for 'location' to be null
+                        callback.onSuccess(location);
+                        fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
+                    });
+        }
     }
 
     public void stopLocationUpdates() {
