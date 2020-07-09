@@ -1,5 +1,7 @@
 package com.cs446.group7.bruno.routing;
 
+import com.cs446.group7.bruno.music.BrunoPlaylist;
+import com.cs446.group7.bruno.music.BrunoTrack;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
@@ -21,21 +23,22 @@ public class RouteProcessor {
      * Given a series of route segments and spotify tracks, return a mapping of route segments
      * to each track.
      * @param routeSegments
-     * @param tracks
+     * @param playlist
      * @return
      */
-    public static RouteTrackMapping[] execute(RouteSegment[] routeSegments, BrunoTrack[] tracks) throws TrackIndexOutOfBoundsException {
+    public static RouteTrackMapping[] execute(RouteSegment[] routeSegments, BrunoPlaylist playlist) throws TrackIndexOutOfBoundsException {
         List<RouteTrackMapping> result = new ArrayList<>();
         int currTrackInd = 0;
         // Duration is measured in milliseconds
         long accumulatedRouteSegmentDuration = 0;
         List<RouteSegment> accumulatedRouteSegments = new ArrayList<>();
+        List<BrunoTrack> tracks = playlist.tracks;
         for (RouteSegment routeSegment : routeSegments) {
-            if (currTrackInd > tracks.length) {
+            if (currTrackInd >= tracks.size()) {
                 throw new TrackIndexOutOfBoundsException();
             }
 
-            BrunoTrack currTrack = tracks[currTrackInd];
+            BrunoTrack currTrack = tracks.get(currTrackInd);
 
             LatLng routeSegmentStart = routeSegment.getStartLocation();
             LatLng routeSegmentEnd = routeSegment.getEndLocation();
@@ -86,6 +89,11 @@ public class RouteProcessor {
                 accumulatedRouteSegments.add(routeSegment);
                 accumulatedRouteSegmentDuration += routeSegmentDuration;
             }
+        }
+        if (accumulatedRouteSegments.size() > 0) {
+            RouteTrackMapping rtm = new RouteTrackMapping(accumulatedRouteSegments.toArray(
+                    new RouteSegment[accumulatedRouteSegments.size()]), tracks.get(currTrackInd));
+            result.add(rtm);
         }
         return result.toArray(new RouteTrackMapping[result.size()]);
     }
