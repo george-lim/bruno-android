@@ -16,6 +16,12 @@
         <action
             android:id="@+id/action_fragmenttoplevel_to_fragmentfitnessdetails"
             app:destination="@id/fragment_fitness_details" />
+        <action
+            android:id="@+id/action_fragmenttoplvl_to_fragmenttermsandconditions"
+            app:destination="@id/fragment_terms_and_conditions" />
+        <action
+            android:id="@+id/action_fragmenttoplvl_to_fragmentprivacypolicy"
+            app:destination="@id/fragment_privacy_policy" />
     </fragment>
 
     <fragment
@@ -29,5 +35,17 @@
         android:name="com.cs446.group7.bruno.ui.fitnessdetails.FitnessDetailsFragment"
         android:label="fragment_fitness_details"
         tools:layout="@layout/fragment_fitness_details" />
+
+    <fragment
+        android:id="@+id/fragment_terms_and_conditions"
+        android:name="com.cs446.group7.bruno.ui.settings.TermsAndConditionsFragment"
+        android:label="fragment_terms_and_conditions"
+        tools:layout="@layout/fragment_terms_and_conditions" />
+
+    <fragment
+        android:id="@+id/fragment_privacy_policy"
+        android:name="com.cs446.group7.bruno.ui.settings.PrivacyPolicyFragment"
+        android:label="fragment_privacy_policy"
+        tools:layout="@layout/fragment_privacy_policy" />
 
 </navigation>

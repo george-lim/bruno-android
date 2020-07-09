@@ -1,45 +1,98 @@
 package com.cs446.group7.bruno.ui.routeplanning;
 
+import android.location.Location;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.Toast;
+
+import com.cs446.group7.bruno.MainActivity;
+import com.cs446.group7.bruno.R;
+import com.cs446.group7.bruno.capability.Capability;
+import com.cs446.group7.bruno.location.LocationServiceSubscriber;
+import com.cs446.group7.bruno.utils.Callback;
+import com.cs446.group7.bruno.utils.NoFailCallback;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
-import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
-
-import com.cs446.group7.bruno.R;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
-
 public class RoutePlanningFragment extends Fragment {
 
-    private OnMapReadyCallback callback = new OnMapReadyCallback() {
+    private GoogleMap googleMap;
+    private Marker currentLocationMarker;
+    private boolean isRequestingCapability = false;
+    private final String TAG = getClass().getSimpleName();
 
-        /**
-         * Manipulates the map once available.
-         * This callback is triggered when the map is ready to be used.
-         * This is where we can add markers or lines, add listeners or move the camera.
-         * In this case, we just add a marker near Sydney, Australia.
-         * If Google Play services is not installed on the device, the user will be prompted to
-         * install it inside the SupportMapFragment. This method will only be triggered once the
-         * user has installed Google Play services and returned to the app.
-         */
+    /**
+     * Manipulates the map once available.
+     * This callback is triggered when the map is ready to be used.
+     * This is where we can add markers or lines, add listeners or move the camera.
+     * In this case, we just add a marker near Sydney, Australia.
+     * If Google Play services is not installed on the device, the user will be prompted to
+     * install it inside the SupportMapFragment. This method will only be triggered once the
+     * user has installed Google Play services and returned to the app.
+     */
+    private OnMapReadyCallback onMapReadyCallback = googleMap -> {
+        this.googleMap = googleMap;
+
+        initMarkers();
+    };
+
+    /**
+     * Receives location updates periodically.
+     */
+    private LocationServiceSubscriber onLocationUpdatedCallback = new LocationServiceSubscriber() {
         @Override
-        public void onMapReady(GoogleMap googleMap) {
-            LatLng sydney = new LatLng(-34, 151);
-            googleMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-            googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+        public void onLocationUpdate(@NonNull final Location location) {
+            Log.i(TAG, location.toString());
+            final LatLng newLocation = new LatLng(location.getLatitude(), location.getLongitude());
+            // TODO: Remove
+            Toast.makeText(getContext(), String.format("Location: (%s, %s)", location.getLatitude(), location.getLongitude()), Toast.LENGTH_SHORT).show();
+
+            if (currentLocationMarker == null) return;
+
+            currentLocationMarker.setPosition(newLocation);
+
+            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(newLocation, 15));
         }
     };
+
+    /**
+     * Initial location logic here.
+     */
+    private void initMarkers() {
+        if (googleMap == null) return;
+        requestLocationUpdates(location -> {
+
+            // If tabs are switched really fast right after location is enabled from a paused state, this might be null
+            // because the the service might not be fast enough
+            if (location == null) {
+                Toast.makeText(getContext(), "Initial location is null!" ,Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            final LatLng initialLocation = new LatLng(location.getLatitude(), location.getLongitude());
+            final String msg = String.format("Initial Location: (%s, %s)", initialLocation.latitude, initialLocation.longitude);
+
+            Log.i(TAG, msg);
+
+            Toast.makeText(getContext(), msg, Toast.LENGTH_SHORT).show();
+            currentLocationMarker = googleMap.addMarker(new MarkerOptions().position(initialLocation).title("Your location"));
+        });
+    }
 
     @Nullable
     @Override
@@ -58,8 +111,64 @@ public class RoutePlanningFragment extends Fragment {
         SupportMapFragment mapFragment =
                 (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.planning_map);
         if (mapFragment != null) {
-            mapFragment.getMapAsync(callback);
+            mapFragment.getMapAsync(onMapReadyCallback);
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        MainActivity.getLocationService().addSubscriber(onLocationUpdatedCallback);
+        requestLocationUpdates();
+
+        if (currentLocationMarker == null) {
+            initMarkers();
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        MainActivity.getLocationService().removeSubscriber(onLocationUpdatedCallback);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        MainActivity.getLocationService().stopLocationUpdates();
+    }
+
+    /**
+     * Requests location permissions from Capability service. Requires mutex to prevent duplicate requests
+     */
+    private void requestLocationUpdates() {
+        requestLocationUpdates(null);
+    }
+
+    /**
+     * Requests location permissions from Capability service and takes in a callback that returns the initial position
+     */
+    private void requestLocationUpdates(@Nullable final NoFailCallback<Location> callback) {
+        if (isRequestingCapability) return;
+        isRequestingCapability = true;
+
+        Capability[] capabilities = new Capability[] {
+                Capability.LOCATION,
+                Capability.INTERNET
+        };
+
+        MainActivity.getCapabilityService().request(capabilities, new Callback<Void, Void>() {
+            @Override
+            public void onSuccess(Void result) {
+                MainActivity.getLocationService().startLocationUpdates(callback);
+                isRequestingCapability = false;
+            }
+
+            @Override
+            public void onFailed(Void result) {
+                isRequestingCapability = false;
+            }
+        });
     }
 
     private void handleStartWalkingClick(final View view) {
