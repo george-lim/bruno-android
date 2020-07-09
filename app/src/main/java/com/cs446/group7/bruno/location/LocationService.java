@@ -11,6 +11,8 @@ import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnSuccessListener;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -66,10 +68,14 @@ public class LocationService {
      */
     @SuppressLint("MissingPermission")
     public void startLocationUpdates(@Nullable final NoFailCallback<Location> callback) {
-        if (callback != null) {
-            fusedLocationClient.getLastLocation().addOnSuccessListener(callback::onSuccess);
-        }
-        fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
+        fusedLocationClient
+                .getLastLocation()
+                .addOnSuccessListener(location -> { // Note: it is possible for 'location' to be null
+                    if (callback != null) {
+                        callback.onSuccess(location);
+                    }
+                    fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
+                });
     }
 
     public void stopLocationUpdates() {
