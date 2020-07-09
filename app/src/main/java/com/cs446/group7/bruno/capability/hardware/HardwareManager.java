@@ -7,7 +7,7 @@ import android.net.NetworkInfo;
 
 import com.cs446.group7.bruno.capability.Capability;
 import com.cs446.group7.bruno.utils.Callback;
-import com.cs446.group7.bruno.utils.NoFailCallback;
+import com.cs446.group7.bruno.utils.NoFailClosureQueue;
 
 // Manages hardware capability checking and requests
 public class HardwareManager {
@@ -53,22 +53,41 @@ public class HardwareManager {
 
     // Requests hardware capability if not already enabled
     public void requestHardware(final Capability capability,
-                                final Callback<Void, Void> callback) {
+                                final Callback<Void, Void> clientCallback) {
         if (isHardwareEnabled(capability)) {
-            callback.onSuccess(null);
+            clientCallback.onSuccess(null);
             return;
         }
 
-        // Verify that the user has enabled hardware
-        NoFailCallback<Void> verifyCallback = result -> {
+        NoFailClosureQueue<Void> queue = new NoFailClosureQueue<>();
+
+        // First have delegate show initial hardware request prompt
+        queue.add(callback -> delegate.showHardwareRequestPrompt(new HardwareRequest(capability, callback)));
+
+        // Then check if hardware is enabled after initial prompt
+        queue.add(callback -> {
+            // Complete queue early if user enabled capability themselves
+            if (isHardwareEnabled(capability)) {
+                clientCallback.onSuccess(null);
+                return;
+            }
+
+            // If hardware is still not enabled, have delegate make hardware request
+            delegate.handleHardwareRequest(new HardwareRequest(capability, callback));
+        });
+
+        // Then check if hardware is enabled after hardware request was made
+        queue.add(callback -> {
             if (isHardwareEnabled(capability)) {
                 callback.onSuccess(null);
                 return;
             }
 
-            callback.onFailed(null);
-        };
+            // If hardware is still not enabled, have delegate handle the request rejection
+            delegate.handleHardwareRejection(new HardwareRequest(capability,
+                    result -> clientCallback.onFailed(null)));
+        });
 
-        delegate.handleHardwareRequest(new HardwareRequest(capability, verifyCallback));
+        queue.run(clientCallback);
     }
 }

@@ -2,10 +2,13 @@ package com.cs446.group7.bruno;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.provider.Settings;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.navigation.NavController;
@@ -36,6 +39,7 @@ public class MainActivity extends AppCompatActivity implements PermissionRequest
     private int currentRequestCode = 0;
     // Map request codes to active permission requests
     private HashMap<Integer, PermissionRequest> activePermissionRequests;
+    private HashMap<Integer, HardwareRequest> activeHardwareRequests;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +48,7 @@ public class MainActivity extends AppCompatActivity implements PermissionRequest
 
         capabilityService = new CapabilityService(getApplicationContext(), this, this);
         activePermissionRequests = new HashMap<>();
+        activeHardwareRequests = new HashMap<>();
 
         locationService = new LocationService(getApplicationContext());
     }
@@ -72,6 +77,20 @@ public class MainActivity extends AppCompatActivity implements PermissionRequest
 
     public static LocationService getLocationService() {
         return locationService;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        // Find matching hardware request (if exists)
+        HardwareRequest request = activeHardwareRequests.get(requestCode);
+
+        // Complete initial hardware request if the activity result is from hardware request
+        if (request != null) {
+            activePermissionRequests.remove(requestCode);
+            request.getCallback().onSuccess(null);
+        }
     }
 
     // Creates and shows an alert dialog
@@ -125,38 +144,77 @@ public class MainActivity extends AppCompatActivity implements PermissionRequest
     public void onRequestPermissionsResult(int requestCode,
                                            @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
-        // Find matching permission request and remove it from active permission requests
+        // Find matching permission request (if exists)
         PermissionRequest request = activePermissionRequests.get(requestCode);
-        activePermissionRequests.remove(requestCode);
 
-        // Verify permissions from user
-        for (int permissionStatus : grantResults) {
-            // Show permission denied prompt if any permission is denied
-            if (permissionStatus != PackageManager.PERMISSION_GRANTED) {
-                // Complete initial request callback with failure
-                NoFailCallback<Void> callback = result -> request.getCallback().onFailed(null);
+        if (request != null) {
+            activePermissionRequests.remove(requestCode);
 
-                showAlertDialog(
-                        request.getTitle(),
-                        request.getRejectionMessage(),
-                        callback
-                );
+            // Verify permissions from user
+            for (int permissionStatus : grantResults) {
+                // Show permission denied prompt if any permission is denied
+                if (permissionStatus != PackageManager.PERMISSION_GRANTED) {
+                    // Complete initial request callback with failure
+                    NoFailCallback<Void> callback = result -> request.getCallback().onFailed(null);
 
-                return;
+                    showAlertDialog(
+                            request.getTitle(),
+                            request.getRejectionMessage(),
+                            callback
+                    );
+
+                    return;
+                }
             }
-        }
 
-        request.getCallback().onSuccess(null);
+            request.getCallback().onSuccess(null);
+        }
     }
 
     // MARK: - HardwareRequestDelegate methods
 
-    // Show a popup prompting user to enable hardware capability
+    // Show a popup describing hardware requirement
     @Override
-    public void handleHardwareRequest(@NonNull final HardwareRequest request) {
+    public void showHardwareRequestPrompt(@NonNull HardwareRequest request) {
         showAlertDialog(
                 request.getTitle(),
                 request.getRequestMessage(),
+                request.getCallback()
+        );
+    }
+
+    // Navigate user to settings
+    // NOTE: Navigating to settings will trigger onPause() on MainActivity
+    @Override
+    public void handleHardwareRequest(@NonNull final HardwareRequest request) {
+        Intent intent;
+
+        // Determine which settings page to navigate
+        switch (request.getCapability()) {
+            case LOCATION:
+                intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                break;
+            case INTERNET:
+                intent = new Intent(Settings.ACTION_WIFI_SETTINGS);
+                break;
+            default:
+                return;
+        }
+
+        // Store hardware request into active hardware requests
+        activeHardwareRequests.put(currentRequestCode, request);
+
+        startActivityForResult(intent, currentRequestCode);
+
+        currentRequestCode++;
+    }
+
+    // Show a popup describing hardware request rejection
+    @Override
+    public void handleHardwareRejection(@NonNull HardwareRequest request) {
+        showAlertDialog(
+                request.getTitle(),
+                request.getRejectionMessage(),
                 request.getCallback()
         );
     }

@@ -32,9 +32,9 @@ public class HardwareRequest {
     public String getRequestMessage() {
         switch (capability) {
             case LOCATION:
-                return "Bruno requires you to enable location services to proceed. Please enable it, then tap \"OK\".";
+                return "Bruno requires you to enable device location to proceed.";
             case INTERNET:
-                return "Bruno requires an active internet connection to proceed. Please enable it and wait until you have an active connection, then tap \"OK\".";
+                return "Bruno requires an active internet connection to proceed. Please wait until your device is connected to an active network before proceeding.";
             default:
                 return null;
         }
