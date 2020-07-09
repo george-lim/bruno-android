@@ -115,7 +115,7 @@ public class MainActivity extends AppCompatActivity implements PermissionRequest
 
         showAlertDialog(
                 request.getTitle(),
-                request.getPermissionRequestMessage(),
+                request.getRequestMessage(),
                 callback
         );
     }
@@ -138,7 +138,7 @@ public class MainActivity extends AppCompatActivity implements PermissionRequest
 
                 showAlertDialog(
                         request.getTitle(),
-                        request.getPermissionDeniedMessage(),
+                        request.getRejectionMessage(),
                         callback
                 );
 
