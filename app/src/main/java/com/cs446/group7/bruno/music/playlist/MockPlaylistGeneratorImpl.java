@@ -17,16 +17,16 @@ public class MockPlaylistGeneratorImpl implements PlaylistGenerator {
         ArrayList<String> artists = new ArrayList<String>(2);
         artists.add("Jimin");
         artists.add("Taylor Swift");
-        long three_minutes = 180000; // Milliseconds
-        int track_count = 50;
-        for (int i = 0; i < track_count; ++i) {
+        long threeMinutes = 180000; // Milliseconds
+        int trackCount = 50;
+        for (int i = 0; i < trackCount; ++i) {
             ArrayList<String> artistsClone = (ArrayList<String>) artists.clone();
             tracks.add(new BrunoTrack("name" + i, "album" + i,
-                    three_minutes, artistsClone));
+                    threeMinutes, artistsClone));
         }
 
         BrunoPlaylist playlist = new BrunoPlaylist("name", "description",
-                track_count, three_minutes * track_count, tracks);
+                trackCount, threeMinutes * trackCount, tracks);
         Log.i(TAG, "getPlaylist(): Returning playlist: "
                 + playlist.name);
         callback.onSuccess(playlist);
