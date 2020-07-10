@@ -2,6 +2,8 @@ package com.cs446.group7.bruno.viewmodels;
 
 import android.app.Application;
 import android.content.Context;
+import android.location.Location;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
@@ -10,7 +12,7 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.cs446.group7.bruno.MainActivity;
 import com.cs446.group7.bruno.R;
-import com.cs446.group7.bruno.capability.Capability;
+import com.cs446.group7.bruno.location.LocationServiceSubscriber;
 import com.cs446.group7.bruno.routing.OnRouteResponseCallback;
 import com.cs446.group7.bruno.routing.Route;
 import com.cs446.group7.bruno.routing.RouteGenerator;
@@ -21,10 +23,11 @@ import com.cs446.group7.bruno.utils.Callback;
 import com.google.android.gms.maps.model.LatLng;
 
 
-public class RouteViewModel extends AndroidViewModel implements OnRouteResponseCallback {
+public class RouteViewModel extends AndroidViewModel implements OnRouteResponseCallback, LocationServiceSubscriber {
     private int duration;
     private boolean isWalkingMode = true;
     private MutableLiveData<RouteResult> routeResult = new MutableLiveData<>();
+    private LatLng currentLocation = null;
     private RouteGenerator routeGenerator;
 
     public RouteViewModel(@NonNull Application application) {
@@ -50,22 +53,12 @@ public class RouteViewModel extends AndroidViewModel implements OnRouteResponseC
     }
 
     private void generateRoute() {
-        Callback<Void, Void> permissionCallback = new Callback<Void, Void>() {
-            @Override
-            public void onSuccess(Void result) {
-                // TODO: integrate LocationService to get current location
-                LatLng start = new LatLng(43.652746, -79.383555);
-                double speed = isWalkingMode ? SettingsService.PREFERRED_WALKING_SPEED : SettingsService.PREFERRED_RUNNING_SPEED;
-                double totalDistance = duration * speed;
-                double rotation = Math.random() * 2 * Math.PI;
-                routeGenerator.generateRoute(RouteViewModel.this, start, totalDistance, rotation);
-            }
+        if (currentLocation == null) return;
 
-            @Override
-            public void onFailed(Void result) { }
-        };
-
-        MainActivity.getCapabilityService().request(Capability.LOCATION, permissionCallback);
+        double speed = isWalkingMode ? SettingsService.PREFERRED_WALKING_SPEED : SettingsService.PREFERRED_RUNNING_SPEED;
+        double totalDistance = duration * speed;
+        double rotation = Math.random() * 2 * Math.PI;
+        routeGenerator.generateRoute(RouteViewModel.this, currentLocation, totalDistance, rotation);
     }
 
     @Override
@@ -76,5 +69,36 @@ public class RouteViewModel extends AndroidViewModel implements OnRouteResponseC
     @Override
     public void onRouteError(RouteGeneratorError error, Exception underlyingException) {
         this.routeResult.setValue(new RouteResult(null, error, underlyingException));
+    }
+
+    @Override
+    public void onLocationUpdate(@NonNull Location location) {
+        if (currentLocation == null) {
+            currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
+            generateRoute();
+        } else {
+            currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
+        }
+    }
+
+    public void initCurrentLocation() {
+        MainActivity.getLocationService().startLocationUpdates(new Callback<Location, Exception>() {
+            @Override
+            public void onSuccess(Location location) {
+                if (location != null) {
+                    currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
+                    generateRoute();
+                }
+            }
+
+            @Override
+            public void onFailed(Exception e) {
+                Log.getStackTraceString(e);
+            }
+        });
+    }
+
+    public boolean isStartUp() {
+        return currentLocation == null;
     }
 }

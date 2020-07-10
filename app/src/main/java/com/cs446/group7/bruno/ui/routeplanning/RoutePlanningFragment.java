@@ -16,8 +16,11 @@ import android.widget.Button;
 import android.widget.NumberPicker;
 import android.widget.Toast;
 
+import com.cs446.group7.bruno.MainActivity;
 import com.cs446.group7.bruno.R;
+import com.cs446.group7.bruno.capability.Capability;
 import com.cs446.group7.bruno.routing.Route;
+import com.cs446.group7.bruno.utils.Callback;
 import com.cs446.group7.bruno.viewmodels.RouteViewModel;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -59,8 +62,6 @@ public class RoutePlanningFragment extends Fragment {
         public void onMapReady(GoogleMap googleMap) {
             map = googleMap;
             observeRouteResult();
-            // this generates the first route on launch
-            model.setDuration(DEFAULT_DURATION);
         }
     };
 
@@ -101,6 +102,35 @@ public class RoutePlanningFragment extends Fragment {
         if (mapFragment != null) {
             mapFragment.getMapAsync(callback);
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        Capability[] capabilities = { Capability.LOCATION, Capability.INTERNET };
+        MainActivity.getCapabilityService().request(capabilities, new Callback<Void, Void>() {
+            @Override
+            public void onSuccess(Void result) {
+                MainActivity.getLocationService().addSubscriber(model);
+                if (model.isStartUp()) {
+                    // updating UI to be consistent with DEFAULT_DURATION in case fragment is resumed
+                    // after never receiving location updates and user has fiddled with durationPicker
+                    durationPicker.setValue(0);
+                    model.setDuration(DEFAULT_DURATION);
+                    model.initCurrentLocation();
+                }
+            }
+
+            @Override
+            public void onFailed(Void result) { }
+        });
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        MainActivity.getLocationService().removeSubscriber(model);
     }
 
     private void handleWalkingModeClick(final View view) {
