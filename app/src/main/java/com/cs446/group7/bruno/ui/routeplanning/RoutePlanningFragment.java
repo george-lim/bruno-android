@@ -14,7 +14,6 @@ import com.cs446.group7.bruno.R;
 import com.cs446.group7.bruno.capability.Capability;
 import com.cs446.group7.bruno.location.LocationServiceSubscriber;
 import com.cs446.group7.bruno.utils.Callback;
-import com.cs446.group7.bruno.utils.NoFailCallback;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -75,22 +74,31 @@ public class RoutePlanningFragment extends Fragment {
      */
     private void initMarkers() {
         if (googleMap == null) return;
-        requestLocationUpdates(location -> {
+        requestLocationUpdates(new Callback<Location, Exception>() {
+            @Override
+            public void onSuccess(Location location) {
 
-            // If tabs are switched really fast right after location is enabled from a paused state, this might be null
-            // because the the service might not be fast enough
-            if (location == null) {
-                Toast.makeText(getContext(), "Initial location is null!" ,Toast.LENGTH_SHORT).show();
-                return;
+                // If tabs are switched really fast right after location is enabled from a paused state, this might be null
+                // because the the service might not be fast enough
+                if (location == null) {
+                    Toast.makeText(getContext(), "Initial location is null!" ,Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                final LatLng initialLocation = new LatLng(location.getLatitude(), location.getLongitude());
+                final String msg = String.format("Initial Location: (%s, %s)", initialLocation.latitude, initialLocation.longitude);
+
+                Log.i(TAG, msg);
+
+                Toast.makeText(getContext(), msg, Toast.LENGTH_SHORT).show();
+                currentLocationMarker = googleMap.addMarker(new MarkerOptions().position(initialLocation).title("Your location"));
             }
 
-            final LatLng initialLocation = new LatLng(location.getLatitude(), location.getLongitude());
-            final String msg = String.format("Initial Location: (%s, %s)", initialLocation.latitude, initialLocation.longitude);
-
-            Log.i(TAG, msg);
-
-            Toast.makeText(getContext(), msg, Toast.LENGTH_SHORT).show();
-            currentLocationMarker = googleMap.addMarker(new MarkerOptions().position(initialLocation).title("Your location"));
+            @Override
+            public void onFailed(Exception error) {
+                Log.e(TAG, error.toString());
+                Toast.makeText(getContext(), "Unexpected Error occurred while getting initial location" ,Toast.LENGTH_SHORT).show();
+            }
         });
     }
 
@@ -148,7 +156,7 @@ public class RoutePlanningFragment extends Fragment {
     /**
      * Requests location permissions from Capability service and takes in a callback that returns the initial position
      */
-    private void requestLocationUpdates(@Nullable final NoFailCallback<Location> callback) {
+    private void requestLocationUpdates(@Nullable final Callback<Location, Exception> callback) {
         if (isRequestingCapability) return;
         isRequestingCapability = true;
 
