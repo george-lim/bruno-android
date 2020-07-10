@@ -9,7 +9,6 @@ import androidx.navigation.Navigation;
 
 import android.os.Bundle;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,14 +32,11 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class RoutePlanningFragment extends Fragment {
-    private final String[] DURATION_VALUES = { "15", "30", "45", "60", "75", "90", "105", "120" };
-    // TODO: mechanism to maintain consistency between DEFAULT_DURATION and DURATION_VALUES[0]
-    private final int DEFAULT_DURATION = 15;
-    private final String TAG = getClass().getSimpleName();
+    private final int[] DURATION_VALUES = { 15, 30, 45, 60, 75, 90, 105, 120 };
+    private final int DEFAULT_DURATION = DURATION_VALUES[0];
 
     private RouteViewModel model;
     private GoogleMap map;
@@ -88,7 +84,7 @@ public class RoutePlanningFragment extends Fragment {
         durationPicker = view.findViewById(R.id.num_picker_exercise_duration);
         durationPicker.setMinValue(0);
         durationPicker.setMaxValue(DURATION_VALUES.length - 1);
-        durationPicker.setDisplayedValues(DURATION_VALUES);
+        durationPicker.setDisplayedValues(intArrayToStringArray(DURATION_VALUES));
         durationPicker.setOnScrollListener(this::handleDurationScroll);
         durationPicker.setValue(0);
 
@@ -152,15 +148,8 @@ public class RoutePlanningFragment extends Fragment {
 
     private void handleDurationScroll(final NumberPicker numberPicker, int scrollState) {
         if (scrollState == NumberPicker.OnScrollListener.SCROLL_STATE_IDLE) {
-            try {
-                int duration = Integer.parseInt(DURATION_VALUES[numberPicker.getValue()]);
-                model.setDuration(duration);
-            } catch (NumberFormatException e) {
-                Log.e(TAG, "There's an invalid integer in DURATION_VALUES");
-                // TODO: do we want this fallback?
-                numberPicker.setValue(0);
-                model.setDuration(DEFAULT_DURATION);
-            }
+            int duration = DURATION_VALUES[numberPicker.getValue()];
+            model.setDuration(duration);
         }
     }
 
@@ -237,5 +226,13 @@ public class RoutePlanningFragment extends Fragment {
                 .setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
 
         map.addPolyline(new PolylineOptions().addAll(route.getDecodedPath()));
+    }
+
+    private String[] intArrayToStringArray(int[] intArray) {
+        String[] result = new String[intArray.length];
+        for (int i = 0; i < intArray.length; ++i) {
+            result[i] = Integer.toString(intArray[i]);
+        }
+        return result;
     }
 }
