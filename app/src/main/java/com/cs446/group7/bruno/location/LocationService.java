@@ -5,7 +5,7 @@ import android.content.Context;
 import android.location.Location;
 import android.os.Looper;
 
-import com.cs446.group7.bruno.utils.NoFailCallback;
+import com.cs446.group7.bruno.utils.Callback;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -18,7 +18,9 @@ import java.util.List;
 import androidx.annotation.Nullable;
 
 /**
- * Singleton responsible for handling all logic related to querying the location
+ * Service responsible for handling all logic related to querying the location and receiving location updates.
+ * All methods marked with {@code @SuppressLint("MissingPermission")} requires the client to have the location enabled
+ * before calling. All other methods are safe to call, regardless whether if location permission is granted.
  */
 public class LocationService {
 
@@ -63,10 +65,17 @@ public class LocationService {
     }
 
     /**
-     * Allows an optional callback to retrieve the initial location.
+     * Start periodic location updates for all subscribers. The optional {@code callback} argument enables the client
+     * to request the initial location before starting the location updates.
+     *
+     * NOTE: Location permissions must be enabled before calling this method (or the one above). If it is not, the client
+     * will not receive location updates and if {@code callback} is given, {@code callback::onFailed} will be invoked
+     * with {@link SecurityException}.
+     *
+     * @param callback callback function to handle the result of the initial location (optional)
      */
     @SuppressLint("MissingPermission")
-    public void startLocationUpdates(@Nullable final NoFailCallback<Location> callback) {
+    public void startLocationUpdates(@Nullable final Callback<Location, Exception> callback) {
         if (callback == null) {
             fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
         } else {
@@ -75,7 +84,8 @@ public class LocationService {
                     .addOnSuccessListener(location -> { // Note: it is possible for 'location' to be null
                         callback.onSuccess(location);
                         fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
-                    });
+                    })
+                    .addOnFailureListener(callback::onFailed); // Triggered if permission is not given before calling
         }
     }
 
