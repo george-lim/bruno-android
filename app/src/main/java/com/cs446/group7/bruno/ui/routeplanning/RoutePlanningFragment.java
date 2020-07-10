@@ -46,7 +46,7 @@ public class RoutePlanningFragment extends Fragment {
     private Button runningModeBtn;
     private NumberPicker durationPicker;
     private CardView cardView;
-    private View mapFragment;
+    private View mapFragmentView;
 
     private OnMapReadyCallback mapCallback = new OnMapReadyCallback() {
 
@@ -96,7 +96,7 @@ public class RoutePlanningFragment extends Fragment {
         durationPicker.setValue(0);
 
         cardView = view.findViewById(R.id.card_view_route_planning);
-        mapFragment = view.findViewById(R.id.planning_map);
+        mapFragmentView = view.findViewById(R.id.planning_map);
     }
 
     @Override
@@ -206,7 +206,7 @@ public class RoutePlanningFragment extends Fragment {
 
         DisplayMetrics displayMetrics = getContext().getResources().getDisplayMetrics();
         final float cardViewHeightDp = cardView.getHeight() / displayMetrics.density;
-        final float mapFragmentHeightDp = mapFragment.getHeight() / displayMetrics.density;
+        final float mapFragmentHeightDp = mapFragmentView.getHeight() / displayMetrics.density;
         // from tests it seems like we need to add some height to cardView to get a good blockedScreenFraction
         final double blockedScreenFraction = (cardViewHeightDp + 40) / mapFragmentHeightDp;
 
