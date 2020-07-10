@@ -48,7 +48,7 @@ public class RoutePlanningFragment extends Fragment {
     private CardView cardView;
     private View mapFragment;
 
-    private OnMapReadyCallback callback = new OnMapReadyCallback() {
+    private OnMapReadyCallback mapCallback = new OnMapReadyCallback() {
 
         /**
          * Manipulates the map once available.
@@ -105,7 +105,7 @@ public class RoutePlanningFragment extends Fragment {
         SupportMapFragment mapFragment =
                 (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.planning_map);
         if (mapFragment != null) {
-            mapFragment.getMapAsync(callback);
+            mapFragment.getMapAsync(mapCallback);
         }
     }
 
