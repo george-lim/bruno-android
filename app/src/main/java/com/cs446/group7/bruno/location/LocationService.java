@@ -18,7 +18,9 @@ import java.util.List;
 import androidx.annotation.Nullable;
 
 /**
- * Singleton responsible for handling all logic related to querying the location
+ * Service responsible for handling all logic related to querying the location and receiving location updates.
+ * All methods marked with {@code @SuppressLint("MissingPermission")} requires the client to have the location enabled
+ * before calling. All other methods are safe to call, regardless if location permission is granted.
  */
 public class LocationService {
 
@@ -57,26 +59,49 @@ public class LocationService {
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
     }
 
+    /**
+     * Start the periodic location updates for all subscribers.
+     *
+     * NOTE: Location permissions must be enabled before calling this method. If it is not, subscribers
+     * will not receive location updates.
+     */
     @SuppressLint("MissingPermission")
     public void startLocationUpdates() {
-        startLocationUpdates(null);
+        fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
     }
 
     /**
-     * Allows an optional callback to retrieve the initial location.
+     * Start periodic location updates for all subscribers. The optional {@code initialLocationCallback} argument enables the client
+     * to receive the initial location before starting the regular, periodic updates.
+     *
+     * NOTE: Location permissions must be enabled before calling this method. If it is not, the client
+     * will not receive location updates and {@code initialLocationCallback} will not be invoked.
+     *
+     * @param initialLocationCallback initialLocationCallback function to handle the result of the initial location (optional)
      */
     @SuppressLint("MissingPermission")
-    public void startLocationUpdates(@Nullable final NoFailCallback<Location> callback) {
-        if (callback == null) {
-            fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
-        } else {
-            fusedLocationClient
-                    .getLastLocation()
-                    .addOnSuccessListener(location -> { // Note: it is possible for 'location' to be null
-                        callback.onSuccess(location);
-                        fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
-                    });
+    public void startLocationUpdates(@Nullable final NoFailCallback<Location> initialLocationCallback) {
+        if (initialLocationCallback == null) {
+            startLocationUpdates();
+            return;
         }
+
+        // request for initial location before starting it for the subscribers
+        LocationRequest initialLocationRequest = LocationRequest
+                .create()
+                .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
+                .setNumUpdates(1); // Receive one update as the initial location, then stop
+
+        // Request initial location push, this will only be triggered once
+        fusedLocationClient.requestLocationUpdates(initialLocationRequest, new LocationCallback() {
+
+            // Initial location received, invoke the callback and start the periodic updates for subscribers
+            @Override
+            public void onLocationResult(LocationResult locationResult) {
+                initialLocationCallback.onSuccess(locationResult.getLastLocation());
+                startLocationUpdates();
+            }
+        }, Looper.getMainLooper());
     }
 
     public void stopLocationUpdates() {

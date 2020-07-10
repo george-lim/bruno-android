@@ -76,14 +76,6 @@ public class RoutePlanningFragment extends Fragment {
     private void initMarkers() {
         if (googleMap == null) return;
         requestLocationUpdates(location -> {
-
-            // If tabs are switched really fast right after location is enabled from a paused state, this might be null
-            // because the the service might not be fast enough
-            if (location == null) {
-                Toast.makeText(getContext(), "Initial location is null!" ,Toast.LENGTH_SHORT).show();
-                return;
-            }
-
             final LatLng initialLocation = new LatLng(location.getLatitude(), location.getLongitude());
             final String msg = String.format("Initial Location: (%s, %s)", initialLocation.latitude, initialLocation.longitude);
 
