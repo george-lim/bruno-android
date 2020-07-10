@@ -62,6 +62,7 @@ public class RoutePlanningFragment extends Fragment {
         @Override
         public void onMapReady(GoogleMap googleMap) {
             map = googleMap;
+            map.getUiSettings().setRotateGesturesEnabled(false);
             observeRouteResult();
         }
     };
