@@ -14,7 +14,6 @@ import com.cs446.group7.bruno.R;
 import com.cs446.group7.bruno.music.BrunoPlaylist;
 import com.cs446.group7.bruno.music.BrunoTrack;
 import com.cs446.group7.bruno.music.OnPlaylistCallback;
-import com.cs446.group7.bruno.music.PlaylistGenerator;
 
 import org.json.JSONArray;
 import org.json.JSONException;

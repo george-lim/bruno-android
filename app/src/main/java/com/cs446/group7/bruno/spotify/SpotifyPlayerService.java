@@ -21,7 +21,7 @@ import java.util.List;
 // I am designing this class in a way where it's instantiated once and acts as the main interface to
 // Spotify. We can break this down later into separate components if it makes it easier to work with
 
-public class SpotifyPlayerService extends MusicPlayer {
+public class SpotifyPlayerService implements MusicPlayer {
 
     // Main interface to Spotify, initialized by connectToSpotify()
     private SpotifyAppRemote mSpotifyAppRemote;
