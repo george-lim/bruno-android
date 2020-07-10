@@ -5,7 +5,7 @@ import android.content.Context;
 import android.location.Location;
 import android.os.Looper;
 
-import com.cs446.group7.bruno.utils.Callback;
+import com.cs446.group7.bruno.utils.NoFailCallback;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -20,7 +20,7 @@ import androidx.annotation.Nullable;
 /**
  * Service responsible for handling all logic related to querying the location and receiving location updates.
  * All methods marked with {@code @SuppressLint("MissingPermission")} requires the client to have the location enabled
- * before calling. All other methods are safe to call, regardless whether if location permission is granted.
+ * before calling. All other methods are safe to call, regardless if location permission is granted.
  */
 public class LocationService {
 
@@ -59,34 +59,49 @@ public class LocationService {
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
     }
 
+    /**
+     * Start the periodic location updates for all subscribers.
+     *
+     * NOTE: Location permissions must be enabled before calling this method. If it is not, subscribers
+     * will not receive location updates.
+     */
     @SuppressLint("MissingPermission")
     public void startLocationUpdates() {
-        startLocationUpdates(null);
+        fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
     }
 
     /**
-     * Start periodic location updates for all subscribers. The optional {@code callback} argument enables the client
-     * to request the initial location before starting the location updates.
+     * Start periodic location updates for all subscribers. The optional {@code initialLocationCallback} argument enables the client
+     * to receive the initial location before starting the regular, periodic updates.
      *
-     * NOTE: Location permissions must be enabled before calling this method (or the one above). If it is not, the client
-     * will not receive location updates and if {@code callback} is given, {@code callback::onFailed} will be invoked
-     * with {@link SecurityException}.
+     * NOTE: Location permissions must be enabled before calling this method. If it is not, the client
+     * will not receive location updates and {@code initialLocationCallback} will not be invoked.
      *
-     * @param callback callback function to handle the result of the initial location (optional)
+     * @param initialLocationCallback initialLocationCallback function to handle the result of the initial location (optional)
      */
     @SuppressLint("MissingPermission")
-    public void startLocationUpdates(@Nullable final Callback<Location, Exception> callback) {
-        if (callback == null) {
-            fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
-        } else {
-            fusedLocationClient
-                    .getLastLocation()
-                    .addOnSuccessListener(location -> { // Note: it is possible for 'location' to be null
-                        callback.onSuccess(location);
-                        fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
-                    })
-                    .addOnFailureListener(callback::onFailed); // Triggered if permission is not given before calling
+    public void startLocationUpdates(@Nullable final NoFailCallback<Location> initialLocationCallback) {
+        if (initialLocationCallback == null) {
+            startLocationUpdates();
+            return;
         }
+
+        // request for initial location before starting it for the subscribers
+        LocationRequest initialLocationRequest = LocationRequest
+                .create()
+                .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
+                .setNumUpdates(1); // Receive one update as the initial location, then stop
+
+        // Request initial location push, this will only be triggered once
+        fusedLocationClient.requestLocationUpdates(initialLocationRequest, new LocationCallback() {
+
+            // Initial location received, invoke the callback and start the periodic updates for subscribers
+            @Override
+            public void onLocationResult(LocationResult locationResult) {
+                initialLocationCallback.onSuccess(locationResult.getLastLocation());
+                startLocationUpdates();
+            }
+        }, Looper.getMainLooper());
     }
 
     public void stopLocationUpdates() {
