@@ -36,8 +36,8 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import java.util.List;
 
 public class RoutePlanningFragment extends Fragment {
-    private final int[] DURATION_VALUES = { 15, 30, 45, 60, 75, 90, 105, 120 };
-    private final int DEFAULT_DURATION = DURATION_VALUES[0];
+    private static final int[] DURATION_VALUES = { 15, 30, 45, 60, 75, 90, 105, 120 };
+    private static final Capability[] REQUIRED_CAPABILITIES = { Capability.LOCATION, Capability.INTERNET };
 
     private boolean isRequestingCapability = false;
     private RouteViewModel model;
@@ -119,16 +119,16 @@ public class RoutePlanningFragment extends Fragment {
     private void requestLocationUpdates() {
         if (isRequestingCapability) return;
         isRequestingCapability = true;
-        Capability[] capabilities = { Capability.LOCATION, Capability.INTERNET };
-        MainActivity.getCapabilityService().request(capabilities, new Callback<Void, Void>() {
+
+        MainActivity.getCapabilityService().request(REQUIRED_CAPABILITIES, new Callback<Void, Void>() {
             @Override
             public void onSuccess(Void result) {
                 MainActivity.getLocationService().addSubscriber(model);
                 if (model.isStartUp()) {
-                    // updating UI to be consistent with DEFAULT_DURATION in case fragment is resumed
+                    // updating UI to be consistent with DURATION_VALUES[0] in case fragment is resumed
                     // after never receiving location updates and user has fiddled with durationPicker
                     durationPicker.setValue(0);
-                    model.setDuration(DEFAULT_DURATION);
+                    model.setDuration(DURATION_VALUES[0]);
                     model.initCurrentLocation();
                 }
                 isRequestingCapability = false;
@@ -241,7 +241,7 @@ public class RoutePlanningFragment extends Fragment {
         map.addPolyline(new PolylineOptions().addAll(route.getDecodedPath()));
     }
 
-    private String[] intArrayToStringArray(int[] intArray) {
+    private static String[] intArrayToStringArray(int[] intArray) {
         String[] result = new String[intArray.length];
         for (int i = 0; i < intArray.length; ++i) {
             result[i] = Integer.toString(intArray[i]);
