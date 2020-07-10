@@ -38,6 +38,7 @@ public class RoutePlanningFragment extends Fragment {
     private final int[] DURATION_VALUES = { 15, 30, 45, 60, 75, 90, 105, 120 };
     private final int DEFAULT_DURATION = DURATION_VALUES[0];
 
+    private boolean isRequestingCapability = false;
     private RouteViewModel model;
     private GoogleMap map;
     private Button walkingModeBtn;
@@ -105,7 +106,12 @@ public class RoutePlanningFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        requestLocationUpdates();
+    }
 
+    private void requestLocationUpdates() {
+        if (isRequestingCapability) return;
+        isRequestingCapability = true;
         Capability[] capabilities = { Capability.LOCATION, Capability.INTERNET };
         MainActivity.getCapabilityService().request(capabilities, new Callback<Void, Void>() {
             @Override
@@ -118,10 +124,13 @@ public class RoutePlanningFragment extends Fragment {
                     model.setDuration(DEFAULT_DURATION);
                     model.initCurrentLocation();
                 }
+                isRequestingCapability = false;
             }
 
             @Override
-            public void onFailed(Void result) { }
+            public void onFailed(Void result) {
+                isRequestingCapability = false;
+            }
         });
     }
 
