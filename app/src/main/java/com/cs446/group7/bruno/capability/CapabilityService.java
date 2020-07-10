@@ -9,6 +9,7 @@ import com.cs446.group7.bruno.capability.hardware.HardwareRequestDelegate;
 import com.cs446.group7.bruno.capability.permission.PermissionManager;
 import com.cs446.group7.bruno.capability.permission.PermissionRequestDelegate;
 import com.cs446.group7.bruno.utils.Callback;
+import com.cs446.group7.bruno.utils.ClosureQueue;
 
 /*
     CapabilityService is a service that provides capability invariants to clients. When requesting
@@ -63,5 +64,17 @@ public class CapabilityService {
                 callback.onFailed(null);
             }
         });
+    }
+
+    // Sequentially requests multiple capabilities
+    public void request(@NonNull final Capability[] capabilities,
+                        @NonNull final Callback<Void, Void> clientCallback) {
+        ClosureQueue<Void, Void> queue = new ClosureQueue<>();
+
+        for (Capability capability : capabilities) {
+            queue.add(callback -> request(capability, callback));
+        }
+
+        queue.run(clientCallback);
     }
 }
