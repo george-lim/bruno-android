@@ -8,6 +8,7 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -195,47 +196,46 @@ public class RoutePlanningFragment extends Fragment {
         });
     }
 
-    private void drawRoute(Route route) {
-        final List<LatLng> decodedPath = route.getDecodedPath();
-
-        List<LatLng> markers = new ArrayList<>();
-        int skipInterval = decodedPath.size() / 5;
-        // sample a few points on the route to act as markers
-        for (int i = 0; i < decodedPath.size(); i += skipInterval) {
-            markers.add(decodedPath.get(i));
-        }
-
+    private void drawRoute(final Route route) {
         map.clear();
 
+        DisplayMetrics displayMetrics = getContext().getResources().getDisplayMetrics();
+        final float screenHeightDp = displayMetrics.heightPixels / displayMetrics.density;
+        // added 20dp to give additional offset
+        final double cardViewHeightDp = 340;
+        final double blockedScreenFraction = cardViewHeightDp / screenHeightDp;
+
+        final List<LatLng> decodedPath = route.getDecodedPath();
+
         LatLngBounds.Builder boundsBuilder = new LatLngBounds.Builder();
-        for (final LatLng p : markers) {
+        for (final LatLng p : decodedPath) {
             boundsBuilder.include(p);
         }
 
+        LatLngBounds bounds = boundsBuilder.build();
+        final LatLng minLat = bounds.southwest, minLng = bounds.southwest;
+        final LatLng maxLat = bounds.northeast, maxLng = bounds.northeast;
+        final LatLng[] extremes = { minLat, maxLat, minLng, maxLng };
+
+        // compute offset
+        final double H = maxLat.latitude - minLat.latitude;
+        final double T = H / (1 - blockedScreenFraction);
+        final double offset = T - 2 * H;
+
+        // find mirror points of the 4 extreme LatLng points in path and include them in bounds
+        for (final LatLng p : extremes) {
+            final LatLng mirrorLatLng = new LatLng(2 * minLat.latitude - p.latitude - offset, p.longitude);
+            boundsBuilder.include(mirrorLatLng);
+        }
+
+        bounds = boundsBuilder.build();
+        final int padding = 200;
+        map.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, padding));
+
         map.addMarker(new MarkerOptions()
-                .position(markers.get(0)))
+                .position(decodedPath.get(0)))
                 .setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
 
-        // centering on southernmost latitude and center longitude and then manually zooming
-        // normally we'd just let the LatLngBounds automatically determine the center and zoom level,
-        // but the route planning overlay on the map means we need to offset the route upwards
-        LatLngBounds bounds = boundsBuilder.build();
-        map.moveCamera(CameraUpdateFactory
-                .newLatLngZoom(new LatLng(bounds.southwest.latitude, bounds.getCenter().longitude), zoom(route.getTotalDuration()))
-        );
-
         map.addPolyline(new PolylineOptions().addAll(route.getDecodedPath()));
-    }
-
-
-    // this is a rough algorithm to determine zoom level based on totalDuration of exercise
-    // all numbers chosen are based on trial and error, may need to be tweaked
-    private float zoom(int totalDuration) {
-        final float maxZoom = 18;
-        final double durationUnit = 450d;
-        // approximating run duration as double walk duration for now
-        totalDuration = runningModeBtn.isSelected() ? totalDuration * 2 : totalDuration;
-        float diff = (float) (Math.log(totalDuration / durationUnit) / Math.log(2));
-        return maxZoom - diff;
     }
 }
