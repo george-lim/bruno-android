@@ -28,11 +28,11 @@ public class PermissionRequest {
         return TITLE;
     }
 
-    public String getPermissionRequestMessage() {
+    public String getRequestMessage() {
         return permissionGroup.getRequestMessage();
     }
 
-    public String getPermissionDeniedMessage() {
+    public String getRejectionMessage() {
         return "Bruno requires " + permissionGroup.name().toLowerCase()
                 + " permission to proceed. You can enable the permission through system settings.";
     }
