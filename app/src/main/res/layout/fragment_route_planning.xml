@@ -72,14 +72,17 @@
                     style="?android:attr/buttonBarButtonStyle"
                     android:text="@string/route_planning_running_mode" />
             </LinearLayout>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginTop="19dp"
+                android:layout_marginTop="7dp"
                 android:layout_marginLeft="24dp"
                 android:layout_marginRight="24dp"
-                style="?android:attr/buttonBarStyle" >
+                android:layout_marginBottom="30dp"
+                style="?android:attr/buttonBarStyle">
+
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -89,21 +92,22 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:paddingTop="10dp"
-                        android:paddingBottom="10dp"
+                        android:paddingTop="15dp"
+                        android:paddingBottom="15dp"
                         android:textAlignment="center"
                         android:textSize="16sp"
                         android:background="@drawable/tv_duration_label"
                         android:text="@string/route_planning_duration" />
                 </LinearLayout>
+
                 <NumberPicker
                     android:id="@+id/num_picker_exercise_duration"
                     android:layout_width="0dp"
                     android:layout_height="100dp"
-                    android:scaleY="0.8"
-                    android:theme="@style/DurationNumberPickerTheme"
-                    android:layout_weight="1" />
+                    android:layout_weight="1"
+                    android:theme="@style/DurationNumberPickerTheme" />
             </LinearLayout>
+
             <Button
                 android:id="@+id/buttn_start_walking"
                 android:layout_width="wrap_content"
