@@ -14,6 +14,7 @@ import com.cs446.group7.bruno.R;
 import com.cs446.group7.bruno.capability.Capability;
 import com.cs446.group7.bruno.location.LocationServiceSubscriber;
 import com.cs446.group7.bruno.utils.Callback;
+import com.cs446.group7.bruno.utils.NoFailCallback;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -46,6 +47,8 @@ public class RoutePlanningFragment extends Fragment {
      */
     private OnMapReadyCallback onMapReadyCallback = googleMap -> {
         this.googleMap = googleMap;
+
+        initMarkers();
     };
 
     /**
@@ -59,19 +62,37 @@ public class RoutePlanningFragment extends Fragment {
             // TODO: Remove
             Toast.makeText(getContext(), String.format("Location: (%s, %s)", location.getLatitude(), location.getLongitude()), Toast.LENGTH_SHORT).show();
 
-            if (googleMap == null) return;
+            if (currentLocationMarker == null) return;
 
-            if (currentLocationMarker == null) {
-                currentLocationMarker = googleMap.addMarker(new MarkerOptions().position(newLocation).title("Your location"));
-            } else {
-                currentLocationMarker.setPosition(newLocation);
-            }
+            currentLocationMarker.setPosition(newLocation);
 
-            googleMap.moveCamera(CameraUpdateFactory
-                    .newLatLngZoom(newLocation, 15)
-            );
+            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(newLocation, 15));
         }
     };
+
+    /**
+     * Initial location logic here.
+     */
+    private void initMarkers() {
+        if (googleMap == null) return;
+        requestLocationUpdates(location -> {
+
+            // If tabs are switched really fast right after location is enabled from a paused state, this might be null
+            // because the the service might not be fast enough
+            if (location == null) {
+                Toast.makeText(getContext(), "Initial location is null!" ,Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            final LatLng initialLocation = new LatLng(location.getLatitude(), location.getLongitude());
+            final String msg = String.format("Initial Location: (%s, %s)", initialLocation.latitude, initialLocation.longitude);
+
+            Log.i(TAG, msg);
+
+            Toast.makeText(getContext(), msg, Toast.LENGTH_SHORT).show();
+            currentLocationMarker = googleMap.addMarker(new MarkerOptions().position(initialLocation).title("Your location"));
+        });
+    }
 
     @Nullable
     @Override
@@ -98,8 +119,11 @@ public class RoutePlanningFragment extends Fragment {
     public void onResume() {
         super.onResume();
         MainActivity.getLocationService().addSubscriber(onLocationUpdatedCallback);
-
         requestLocationUpdates();
+
+        if (currentLocationMarker == null) {
+            initMarkers();
+        }
     }
 
     @Override
@@ -118,6 +142,13 @@ public class RoutePlanningFragment extends Fragment {
      * Requests location permissions from Capability service. Requires mutex to prevent duplicate requests
      */
     private void requestLocationUpdates() {
+        requestLocationUpdates(null);
+    }
+
+    /**
+     * Requests location permissions from Capability service and takes in a callback that returns the initial position
+     */
+    private void requestLocationUpdates(@Nullable final NoFailCallback<Location> callback) {
         if (isRequestingCapability) return;
         isRequestingCapability = true;
 
@@ -129,7 +160,7 @@ public class RoutePlanningFragment extends Fragment {
         MainActivity.getCapabilityService().request(capabilities, new Callback<Void, Void>() {
             @Override
             public void onSuccess(Void result) {
-                MainActivity.getLocationService().startLocationUpdates();
+                MainActivity.getLocationService().startLocationUpdates(callback);
                 isRequestingCapability = false;
             }
 

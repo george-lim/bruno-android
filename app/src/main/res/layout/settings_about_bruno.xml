@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+    <LinearLayout style="@style/SettingItemContainer">
+        <TextView
+            style="@style/TextTitle"
+            android:text="@string/about_bruno_title" />
+    </LinearLayout>
+
+    <LinearLayout style="@style/SettingItemContainer">
+        <TextView
+            style="@style/NormalText"
+            android:text="@string/version" />
+        <TextView
+            style="@style/HintText"
+            android:text="@string/app_version" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/settings_terms_and_conditions"
+        style="@style/SettingClickableItemContainer">
+        <TextView
+            style="@style/NormalText"
+            android:text="@string/terms_and_conditions" />
+        <TextView
+            style="@style/HintText"
+            android:text="@string/terms_and_conditions_hint" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/settings_privacy_policy"
+        style="@style/SettingClickableItemContainer">
+        <TextView
+            style="@style/NormalText"
+            android:text="@string/privacy_policy" />
+        <TextView
+            style="@style/HintText"
+            android:text="@string/privacy_policy_hint" />
+    </LinearLayout>
+</merge>
