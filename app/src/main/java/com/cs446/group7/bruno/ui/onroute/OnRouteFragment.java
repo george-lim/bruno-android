@@ -8,6 +8,7 @@ import android.widget.Toast;
 
 import com.cs446.group7.bruno.MainActivity;
 import com.cs446.group7.bruno.R;
+import com.cs446.group7.bruno.music.BrunoTrack;
 import com.cs446.group7.bruno.spotify.SpotifyServiceSubscriber;
 import com.cs446.group7.bruno.utils.Callback;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -64,8 +65,9 @@ public class OnRouteFragment extends Fragment implements SpotifyServiceSubscribe
     }
 
     @Override
-    public void onServiceReady() {
-
+    public void onTrackChanged(final BrunoTrack track) {
+        // new song starts playing
+        Toast.makeText(getContext(), String.format("Now playing: %s", track.name), Toast.LENGTH_SHORT).show();
     }
 
     @Override

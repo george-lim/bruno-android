@@ -9,16 +9,16 @@ import com.cs446.group7.bruno.utils.Callback;
 import com.spotify.android.appremote.api.ConnectionParams;
 import com.spotify.android.appremote.api.Connector;
 import com.spotify.android.appremote.api.SpotifyAppRemote;
-import com.spotify.protocol.client.CallResult;
 import com.spotify.protocol.client.ErrorCallback;
 import com.spotify.protocol.client.Subscription;
 import com.spotify.protocol.types.Artist;
-import com.spotify.protocol.types.Empty;
 import com.spotify.protocol.types.PlayerState;
 import com.spotify.protocol.types.Track;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import androidx.annotation.NonNull;
 
 // I am designing this class in a way where it's instantiated once and acts as the main interface to
 // Spotify. We can break this down later into separate components if it makes it easier to work with
@@ -34,7 +34,8 @@ public class SpotifyPlayerService {
     // Constantly updated from the Spotify player by subscribing to the player state
     // Not to be confused with BrunoTrack, which is a custom container class for our app
     // This Track is Spotify's Track object, which has much more metadata which we don't need
-    private Track currentTrack;
+
+    private PlayerState currentPlayerState;
 
     // connectToSpotify() does the main initialization
     public SpotifyPlayerService(final Context context) {
@@ -105,15 +106,26 @@ public class SpotifyPlayerService {
     private void subscribeToPlayerState() {
         mSpotifyAppRemote.getPlayerApi()
                 .subscribeToPlayerState()
-                .setEventCallback(new Subscription.EventCallback<PlayerState>() {
-                    @Override
-                    public void onEvent(PlayerState playerState) {
-                        Track track = playerState.track;
-                        if (track != null) {
-                            Log.d(TAG, String.format("Curr Track: %s", track.toString()));
-                            currentTrack = track;
+                .setEventCallback(playerState -> {
+                    if (playerState == null || playerState.equals(currentPlayerState))return;
+
+                    Log.i(TAG, playerState.toString());
+                    Track track = playerState.track;
+                    if (track != null) {
+                        if (currentPlayerState != null && track.equals(currentPlayerState.track)) {
+                            // same track, perhaps just paused
+                            Log.d(TAG, "Same track!");
+                        } else {
+                            // track changed, might be good to let client know
+                            for (SpotifyServiceSubscriber subscriber : spotifyServiceSubscribers) {
+                                subscriber.onTrackChanged(makeBrunoTrack(track));
+                            }
                         }
+                        Log.d(TAG, String.format("Curr Track: %s", track.toString()));
+                    } else {
+                        Log.i(TAG, "Track is null!");
                     }
+                    currentPlayerState = playerState;
                 })
                 .setLifecycleCallback(new Subscription.LifecycleCallback() {
                     @Override
@@ -152,24 +164,26 @@ public class SpotifyPlayerService {
 
     // Note that calling this method multiple times will play the custom playlist from the beginning
     public void playMusic(String playlistId) {
-        mSpotifyAppRemote.getPlayerApi().setShuffle(false).setResultCallback(new CallResult.ResultCallback<Empty>() {
-            @Override
-            public void onResult(Empty empty) {
-                mSpotifyAppRemote.getPlayerApi().play("spotify:playlist:" + playlistId);
-            }
-        });
+        mSpotifyAppRemote.getPlayerApi()
+                .setShuffle(false)
+                .setResultCallback(empty -> {
+                    mSpotifyAppRemote.getPlayerApi().play("spotify:playlist:" + playlistId).setResultCallback(empty1 -> Log.i(TAG, "playing!"));
+                });
     }
 
     // Reads the currently playing track from the player
     // and returns a BrunoTrack containing track metadata
     public BrunoTrack getCurrentTrack() {
-        final List<Artist> trackArtists = currentTrack.artists;
-        final ArrayList<String> artistNames = new ArrayList<String>();
+        if (currentPlayerState == null || currentPlayerState.track == null) return null;
+        return makeBrunoTrack(currentPlayerState.track);
+    }
+
+    private BrunoTrack makeBrunoTrack(@NonNull final Track track) {
+        final List<Artist> trackArtists = track.artists;
+        final ArrayList<String> artistNames = new ArrayList<>();
         for (final Artist artist : trackArtists) {
             artistNames.add(artist.name);
         }
-        final BrunoTrack output = new BrunoTrack(currentTrack.name, currentTrack.album.name,
-                currentTrack.duration, artistNames);
-        return output;
+        return new BrunoTrack(track.name, track.album.name, track.duration, artistNames);
     }
 }
