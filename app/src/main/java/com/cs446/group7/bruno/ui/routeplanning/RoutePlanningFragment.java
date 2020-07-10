@@ -68,9 +68,12 @@ public class RoutePlanningFragment extends Fragment {
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_route_planning, container, false);
-
         model = new ViewModelProvider(requireActivity()).get(RouteViewModel.class);
+        buildCardView(view);
+        return view;
+    }
 
+    private void buildCardView(final View view) {
         Button startBtn = view.findViewById(R.id.buttn_start_walking);
         startBtn.setOnClickListener(this::handleStartWalkingClick);
 
@@ -87,8 +90,6 @@ public class RoutePlanningFragment extends Fragment {
         durationPicker.setDisplayedValues(intArrayToStringArray(DURATION_VALUES));
         durationPicker.setOnScrollListener(this::handleDurationScroll);
         durationPicker.setValue(0);
-
-        return view;
     }
 
     @Override
