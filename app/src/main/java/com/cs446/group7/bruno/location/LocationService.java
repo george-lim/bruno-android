@@ -4,8 +4,10 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.location.Location;
 import android.os.Looper;
+import android.util.Log;
 
 import com.cs446.group7.bruno.utils.Callback;
+import com.cs446.group7.bruno.utils.NoFailCallback;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -61,7 +63,7 @@ public class LocationService {
 
     @SuppressLint("MissingPermission")
     public void startLocationUpdates() {
-        startLocationUpdates(null);
+        fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
     }
 
     /**
@@ -75,18 +77,25 @@ public class LocationService {
      * @param callback callback function to handle the result of the initial location (optional)
      */
     @SuppressLint("MissingPermission")
-    public void startLocationUpdates(@Nullable final Callback<Location, Exception> callback) {
+    public void startLocationUpdates(@Nullable final NoFailCallback<Location> callback) {
         if (callback == null) {
-            fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
-        } else {
-            fusedLocationClient
-                    .getLastLocation()
-                    .addOnSuccessListener(location -> { // Note: it is possible for 'location' to be null
-                        callback.onSuccess(location);
-                        fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
-                    })
-                    .addOnFailureListener(callback::onFailed); // Triggered if permission is not given before calling
+            startLocationUpdates();
+            return;
         }
+
+        LocationRequest initialLocationRequest = LocationRequest
+                .create()
+                .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
+                .setNumUpdates(1);
+
+        fusedLocationClient.requestLocationUpdates(initialLocationRequest, new LocationCallback() {
+            @Override
+            public void onLocationResult(LocationResult locationResult) {
+                Log.e("LocationService", locationResult.getLastLocation().toString());
+                callback.onSuccess(locationResult.getLastLocation());
+                startLocationUpdates();
+            }
+        }, Looper.getMainLooper());
     }
 
     public void stopLocationUpdates() {
