@@ -212,20 +212,16 @@ public class RoutePlanningFragment extends Fragment {
         }
 
         LatLngBounds bounds = boundsBuilder.build();
-        final LatLng minLat = bounds.southwest, minLng = bounds.southwest;
-        final LatLng maxLat = bounds.northeast, maxLng = bounds.northeast;
-        final LatLng[] extremes = { minLat, maxLat, minLng, maxLng };
+        final LatLng minLat = bounds.southwest, maxLat = bounds.northeast;
 
         // compute offset
         final double H = maxLat.latitude - minLat.latitude;
         final double T = H / (1 - blockedScreenFraction);
         final double offset = T - 2 * H;
 
-        // find mirror points of the 4 extreme LatLng points in path and include them in bounds
-        for (final LatLng p : extremes) {
-            final LatLng mirrorLatLng = new LatLng(2 * minLat.latitude - p.latitude - offset, p.longitude);
-            boundsBuilder.include(mirrorLatLng);
-        }
+        // find mirror point of maxLat and include in bounds
+        final LatLng mirrorMaxLat= new LatLng(2 * minLat.latitude - maxLat.latitude - offset, maxLat.longitude);
+        boundsBuilder.include(mirrorMaxLat);
 
         bounds = boundsBuilder.build();
         final int padding = 200;
