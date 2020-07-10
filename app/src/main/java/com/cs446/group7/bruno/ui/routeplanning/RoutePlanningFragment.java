@@ -2,6 +2,7 @@ package com.cs446.group7.bruno.ui.routeplanning;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
@@ -44,6 +45,8 @@ public class RoutePlanningFragment extends Fragment {
     private Button walkingModeBtn;
     private Button runningModeBtn;
     private NumberPicker durationPicker;
+    private CardView cardView;
+    private View mapFragment;
 
     private OnMapReadyCallback callback = new OnMapReadyCallback() {
 
@@ -91,6 +94,9 @@ public class RoutePlanningFragment extends Fragment {
         durationPicker.setDisplayedValues(intArrayToStringArray(DURATION_VALUES));
         durationPicker.setOnScrollListener(this::handleDurationScroll);
         durationPicker.setValue(0);
+
+        cardView = view.findViewById(R.id.card_view_route_planning);
+        mapFragment = view.findViewById(R.id.planning_map);
     }
 
     @Override
@@ -199,10 +205,10 @@ public class RoutePlanningFragment extends Fragment {
         map.clear();
 
         DisplayMetrics displayMetrics = getContext().getResources().getDisplayMetrics();
-        final float screenHeightDp = displayMetrics.heightPixels / displayMetrics.density;
-        // added 20dp to give additional offset
-        final double cardViewHeightDp = 340;
-        final double blockedScreenFraction = cardViewHeightDp / screenHeightDp;
+        final float cardViewHeightDp = cardView.getHeight() / displayMetrics.density;
+        final float mapFragmentHeightDp = mapFragment.getHeight() / displayMetrics.density;
+        // from tests it seems like we need to add some height to cardView to get a good blockedScreenFraction
+        final double blockedScreenFraction = (cardViewHeightDp + 40) / mapFragmentHeightDp;
 
         final List<LatLng> decodedPath = route.getDecodedPath();
 
