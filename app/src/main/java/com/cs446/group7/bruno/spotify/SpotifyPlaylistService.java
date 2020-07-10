@@ -14,6 +14,8 @@ import com.cs446.group7.bruno.R;
 import com.cs446.group7.bruno.music.BrunoPlaylist;
 import com.cs446.group7.bruno.music.BrunoTrack;
 import com.cs446.group7.bruno.music.OnPlaylistCallback;
+import com.cs446.group7.bruno.music.playlist.PlaylistGenerator;
+import com.cs446.group7.bruno.utils.Callback;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -28,7 +30,7 @@ import java.util.Map;
 // Communicates with the Spotify Web API through HTTP
 // Uses Volley, an HTTP library: https://developer.android.com/training/volley
 // Could share the request queue between this and RouteGenerator - can turn it into a singleton
-public class SpotifyPlaylistService extends PlaylistGenerator {
+public class SpotifyPlaylistService implements PlaylistGenerator {
 
     final RequestQueue requestQueue;
     // Hard coded to a specific playlist - same as the one in SpotifyService.playMusic()
@@ -173,4 +175,8 @@ public class SpotifyPlaylistService extends PlaylistGenerator {
         return outputPlaylist;
     }
 
+    @Override
+    public void getPlaylist(String playlistId, Callback<BrunoPlaylist, Exception> callback) {
+
+    }
 }
