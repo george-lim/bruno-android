@@ -3,7 +3,6 @@ package com.cs446.group7.bruno.viewmodels;
 import android.app.Application;
 import android.content.Context;
 import android.location.Location;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
@@ -21,8 +20,6 @@ import com.cs446.group7.bruno.routing.RouteGenerator;
 import com.cs446.group7.bruno.routing.RouteGeneratorError;
 import com.cs446.group7.bruno.routing.RouteGeneratorImpl;
 import com.cs446.group7.bruno.settings.SettingsService;
-import com.cs446.group7.bruno.utils.Callback;
-import com.cs446.group7.bruno.utils.NoFailCallback;
 import com.google.android.gms.maps.model.LatLng;
 
 
