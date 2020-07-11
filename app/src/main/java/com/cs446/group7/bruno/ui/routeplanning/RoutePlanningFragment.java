@@ -58,8 +58,17 @@ public class RoutePlanningFragment extends Fragment {
             map = googleMap;
             map.getUiSettings().setRotateGesturesEnabled(false);
             observeRouteResult();
+
+            if (MainActivity.getCapabilityService().isEveryCapabilityEnabled(REQUIRED_CAPABILITIES)) {
+                startRouteGeneration();
+            }
         }
     };
+
+    private void startRouteGeneration() {
+        int duration = DURATION_VALUES[durationPicker.getValue()];
+        model.startRouteGeneration(duration);
+    }
 
     @Nullable
     @Override
@@ -69,12 +78,6 @@ public class RoutePlanningFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_route_planning, container, false);
         model = new ViewModelProvider(requireActivity()).get(RouteViewModel.class);
         buildCardView(view);
-
-        if (MainActivity.getCapabilityService().isCapabilityEnabled(Capability.LOCATION)) {
-            model.setDuration(DURATION_VALUES[0]);
-            model.initCurrentLocation();
-        }
-
         return view;
     }
 
@@ -157,7 +160,7 @@ public class RoutePlanningFragment extends Fragment {
     }
 
     private boolean isRoutePlanningComplete() {
-        return !model.isStartUp() && model.getRouteResult().getValue() != null;
+        return model.getRouteResult().getValue() != null;
     }
 
     private void handleStartWalkingClick(final View view) {
@@ -171,8 +174,8 @@ public class RoutePlanningFragment extends Fragment {
                     NavController navController = Navigation.findNavController(getActivity(), R.id.nav_host_fragment);
                     navController.navigate(R.id.action_fragmenttoplevel_to_fragmentonroute);
                 }
-                else if (model.isStartUp()) {
-                    model.initCurrentLocation();
+                else if (!model.isRouteGenerationReady()) {
+                    startRouteGeneration();
                 }
 
                 isRequestingCapability = false;

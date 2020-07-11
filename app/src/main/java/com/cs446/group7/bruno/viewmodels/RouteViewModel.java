@@ -83,14 +83,19 @@ public class RouteViewModel extends AndroidViewModel implements OnRouteResponseC
         }
     }
 
-    public void initCurrentLocation() {
+    public void startRouteGeneration() {
         MainActivity.getLocationService().startLocationUpdates(location -> {
             currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
             generateRoute();
         });
     }
 
-    public boolean isStartUp() {
-        return currentLocation == null;
+    public void startRouteGeneration(int duration) {
+        this.duration = duration;
+        startRouteGeneration();
+    }
+
+    public boolean isRouteGenerationReady() {
+        return currentLocation != null && duration > 0;
     }
 }
