@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity implements PermissionRequest
         activeHardwareRequests = new HashMap<>();
 
         locationService = new LocationService(getApplicationContext());
-        spotifyPlayerService = new SpotifyService(getApplicationContext());
+        spotifyPlayerService = new SpotifyService();
     }
 
     /**

@@ -175,8 +175,7 @@ public class RoutePlanningFragment extends Fragment {
         nDialog.show();
 
         // Ready to start walking, so try to connect to Spotify
-        MainActivity.getSpotifyPlayerService().connect(new Callback<Void, SpotifyServiceError>() {
-
+        MainActivity.getSpotifyPlayerService().connect(getContext(), new Callback<Void, SpotifyServiceError>() {
             // Success! Start playing music
             @Override
             public void onSuccess(Void result) {

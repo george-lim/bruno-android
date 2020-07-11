@@ -36,15 +36,13 @@ public class SpotifyService implements MusicPlayer {
 
     // Main interface to Spotify, initialized by connectToSpotify()
     private SpotifyAppRemote mSpotifyAppRemote;
-    private Context context;
     private List<SpotifyServiceSubscriber> spotifyServiceSubscribers;
     private final String TAG = getClass().getSimpleName();
 
     private PlayerState currentPlayerState;
     private String playlistId;
 
-    public SpotifyService(final Context context) {
-        this.context = context;
+    public SpotifyService() {
         spotifyServiceSubscribers = new ArrayList<>();
     }
 
@@ -53,7 +51,7 @@ public class SpotifyService implements MusicPlayer {
      * generated in the callback.
      * @param callback callback for handling the result of the connection
      */
-    public void connect(final Callback<Void, SpotifyServiceError> callback) {
+    public void connect(final Context context, final Callback<Void, SpotifyServiceError> callback) {
 
         // Spotify is not installed on the device
         if (!SpotifyAppRemote.isSpotifyInstalled(context)) {
