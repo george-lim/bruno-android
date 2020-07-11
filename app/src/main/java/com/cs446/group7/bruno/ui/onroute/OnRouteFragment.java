@@ -15,6 +15,7 @@ import com.cs446.group7.bruno.spotify.SpotifyServiceSubscriber;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
@@ -30,7 +31,15 @@ public class OnRouteFragment extends Fragment implements SpotifyServiceSubscribe
         // Need to pass the gMaps from the previous fragment somehow
         LatLng sydney = new LatLng(-34, 151);
         googleMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+
+        CameraPosition cameraPosition = new CameraPosition.Builder()
+                .target(sydney)
+                .tilt(60)
+                .zoom(20)
+                .build();
+
+        googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+
     };
 
     @Nullable
@@ -69,8 +78,8 @@ public class OnRouteFragment extends Fragment implements SpotifyServiceSubscribe
     }
 
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
+    public void onStop() {
+        super.onStop();
         MainActivity.getSpotifyPlayerService().pauseMusic();
         MainActivity.getSpotifyPlayerService().disconnect();
     }

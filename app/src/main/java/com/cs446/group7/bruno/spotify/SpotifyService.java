@@ -28,9 +28,9 @@ import java.util.List;
 
 import androidx.annotation.NonNull;
 
-// I am designing this class in a way where it's instantiated once and acts as the main interface to
-// Spotify. We can break this down later into separate components if it makes it easier to work with
-
+/**
+ * Service responsible for connecting to Spotify, play music and notifying subscribers about state changes.
+ */
 public class SpotifyService {
 
     // Main interface to Spotify, initialized by connectToSpotify()
@@ -39,29 +39,21 @@ public class SpotifyService {
     private List<SpotifyServiceSubscriber> spotifyServiceSubscribers;
     private final String TAG = getClass().getSimpleName();
 
-    // Constantly updated from the Spotify player by subscribing to the player state
-    // Not to be confused with BrunoTrack, which is a custom container class for our app
-    // This Track is Spotify's Track object, which has much more metadata which we don't need
-
     private PlayerState currentPlayerState;
 
-    // connectToSpotify() does the main initialization
     public SpotifyService(final Context context) {
         this.context = context;
         spotifyServiceSubscribers = new ArrayList<>();
     }
 
-    // Exception caused by not having Spotify installed
-    public static class SpotifyNotInstalledException extends RuntimeException {
-        public SpotifyNotInstalledException() {
-            super("SpotifyNotInstalledException - Spotify not installed on device");
-        }
-    }
-
-    // Attempts to connect to Spotify by authenticating users
+    /**
+     * Attempts to connect to Spotify via the user's Spotify app. If any error occurs, a {@link SpotifyServiceError} is
+     * generated in the callback.
+     * @param callback callback for handling the result of the connection
+     */
     public void connect(final Callback<Void, SpotifyServiceError> callback) {
 
-        // Spotify is not installed on the device - communicating this via a custom exception
+        // Spotify is not installed on the device
         if (!SpotifyAppRemote.isSpotifyInstalled(context)) {
             callback.onFailed(SpotifyServiceError.APP_NOT_FOUND);
             return;
@@ -133,23 +125,23 @@ public class SpotifyService {
         mSpotifyAppRemote.getPlayerApi()
                 .subscribeToPlayerState()
                 .setEventCallback(playerState -> {
-                    if (playerState == null || playerState.equals(currentPlayerState))return;
+                    if (playerState == null || playerState.equals(currentPlayerState)) return;
 
-                    Log.w(TAG, playerState.toString());
+                    Log.d(TAG, playerState.toString());
                     Track track = playerState.track;
                     if (track != null) {
                         if (currentPlayerState != null && track.equals(currentPlayerState.track)) {
                             // same track, perhaps just paused
                             Log.d(TAG, "Same track!");
                         } else {
-                            // track changed, might be good to let client know
+                            // track changed, let client know
                             for (SpotifyServiceSubscriber subscriber : spotifyServiceSubscribers) {
                                 subscriber.onTrackChanged(makeBrunoTrack(track));
                             }
                         }
                         Log.d(TAG, String.format("Curr Track: %s", track.toString()));
                     } else {
-                        Log.i(TAG, "Track is null!");
+                        Log.w(TAG, "Track is null!");
                     }
                     currentPlayerState = playerState;
                 })
@@ -172,12 +164,13 @@ public class SpotifyService {
     }
 
     // Note that calling this method multiple times will play the custom playlist from the beginning
-    public void playMusic(String playlistId) {
+    public void playMusic(final String playlistId) {
         mSpotifyAppRemote.getPlayerApi()
                 .setShuffle(false)
                 .setResultCallback(empty -> {
                     mSpotifyAppRemote.getPlayerApi().play("spotify:playlist:" + playlistId).setResultCallback(empty1 -> Log.i(TAG, "playing!"));
-                });
+                })
+                .setErrorCallback(throwable -> Log.e(TAG, "playMusic Failed: " + throwable.toString()));
     }
 
     // Reads the currently playing track from the player
@@ -187,7 +180,7 @@ public class SpotifyService {
         return makeBrunoTrack(currentPlayerState.track);
     }
 
-    private BrunoTrack makeBrunoTrack(@NonNull final Track track) {
+    private static BrunoTrack makeBrunoTrack(@NonNull final Track track) {
         final List<Artist> trackArtists = track.artists;
         final ArrayList<String> artistNames = new ArrayList<>();
         for (final Artist artist : trackArtists) {

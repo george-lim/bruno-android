@@ -191,7 +191,7 @@ public class RoutePlanningFragment extends Fragment {
                 nDialog.dismiss();
 
                 new AlertDialog.Builder(getContext())
-                        .setTitle("An error occurred with Spotify")
+                        .setTitle("Spotify Error")
                         .setMessage(error.getErrorMessage())
                         .setPositiveButton("OK", null)
                         .setOnDismissListener(null)
