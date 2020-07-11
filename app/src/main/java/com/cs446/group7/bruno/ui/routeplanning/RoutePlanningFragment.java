@@ -13,6 +13,8 @@ import com.cs446.group7.bruno.MainActivity;
 import com.cs446.group7.bruno.R;
 import com.cs446.group7.bruno.capability.Capability;
 import com.cs446.group7.bruno.location.LocationServiceSubscriber;
+import com.cs446.group7.bruno.spotify.SpotifyService;
+import com.cs446.group7.bruno.ui.onroute.OnRouteFragment;
 import com.cs446.group7.bruno.utils.Callback;
 import com.cs446.group7.bruno.utils.NoFailCallback;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -165,6 +167,22 @@ public class RoutePlanningFragment extends Fragment {
 
     private void handleStartWalkingClick(final View view) {
         NavController navController = Navigation.findNavController(getActivity(), R.id.nav_host_fragment);
-        navController.navigate(R.id.action_fragmenttoplevel_to_fragmentonroute);
+
+        // Ready to start walking, so try to connect to Spotify
+        MainActivity.getSpotifyPlayerService().connect(new Callback<Void, Exception>() {
+
+            // Success! Start playing music
+            @Override
+            public void onSuccess(Void result) {
+                Toast.makeText(getContext(), "Spotify Connected!", Toast.LENGTH_SHORT).show();
+                MainActivity.getSpotifyPlayerService().playMusic("7fPwZk4KFD2yfU7J5O1JVz");
+                navController.navigate(R.id.action_fragmenttoplevel_to_fragmentonroute);
+            }
+
+            @Override
+            public void onFailed(Exception result) {
+                Toast.makeText(getContext(), result.toString(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }

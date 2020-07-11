@@ -48,20 +48,6 @@ public class OnRouteFragment extends Fragment implements SpotifyServiceSubscribe
         if (mapFragment != null) {
             mapFragment.getMapAsync(callback);
         }
-
-        MainActivity.getSpotifyPlayerService().connect(new Callback<Void, Exception>() {
-            @Override
-            public void onSuccess(Void result) {
-                Toast.makeText(getContext(), "Spotify Connected!", Toast.LENGTH_SHORT).show();
-                MainActivity.getSpotifyPlayerService().addSubscriber(OnRouteFragment.this);
-                MainActivity.getSpotifyPlayerService().playMusic("7fPwZk4KFD2yfU7J5O1JVz");
-            }
-
-            @Override
-            public void onFailed(Exception result) {
-                Toast.makeText(getContext(), result.toString(), Toast.LENGTH_SHORT).show();
-            }
-        });
     }
 
     @Override

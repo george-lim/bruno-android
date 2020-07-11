@@ -23,7 +23,7 @@ import androidx.annotation.NonNull;
 // I am designing this class in a way where it's instantiated once and acts as the main interface to
 // Spotify. We can break this down later into separate components if it makes it easier to work with
 
-public class SpotifyPlayerService {
+public class SpotifyService {
 
     // Main interface to Spotify, initialized by connectToSpotify()
     private SpotifyAppRemote mSpotifyAppRemote;
@@ -38,7 +38,7 @@ public class SpotifyPlayerService {
     private PlayerState currentPlayerState;
 
     // connectToSpotify() does the main initialization
-    public SpotifyPlayerService(final Context context) {
+    public SpotifyService(final Context context) {
         this.context = context;
         spotifyServiceSubscribers = new ArrayList<>();
     }

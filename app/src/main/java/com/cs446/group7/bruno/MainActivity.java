@@ -21,7 +21,7 @@ import com.cs446.group7.bruno.capability.hardware.HardwareRequestDelegate;
 import com.cs446.group7.bruno.capability.permission.PermissionRequest;
 import com.cs446.group7.bruno.capability.permission.PermissionRequestDelegate;
 import com.cs446.group7.bruno.location.LocationService;
-import com.cs446.group7.bruno.spotify.SpotifyPlayerService;
+import com.cs446.group7.bruno.spotify.SpotifyService;
 import com.cs446.group7.bruno.ui.toplevel.TopLevelFragment;
 import com.cs446.group7.bruno.utils.NoFailCallback;
 
@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity implements PermissionRequest
 
     private static CapabilityService capabilityService;
     private static LocationService locationService;
-    private static SpotifyPlayerService spotifyPlayerService;
+    private static SpotifyService spotifyPlayerService;
 
     // MARK: - PermissionRequestDelegate members
 
@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity implements PermissionRequest
         activeHardwareRequests = new HashMap<>();
 
         locationService = new LocationService(getApplicationContext());
-        spotifyPlayerService = new SpotifyPlayerService(getApplicationContext());
+        spotifyPlayerService = new SpotifyService(getApplicationContext());
     }
 
     /**
@@ -82,7 +82,7 @@ public class MainActivity extends AppCompatActivity implements PermissionRequest
         return locationService;
     }
 
-    public static SpotifyPlayerService getSpotifyPlayerService() {
+    public static SpotifyService getSpotifyPlayerService() {
         return spotifyPlayerService;
     }
 
