@@ -9,6 +9,16 @@ import com.cs446.group7.bruno.utils.Callback;
 import com.spotify.android.appremote.api.ConnectionParams;
 import com.spotify.android.appremote.api.Connector;
 import com.spotify.android.appremote.api.SpotifyAppRemote;
+import com.spotify.android.appremote.api.error.AuthenticationFailedException;
+import com.spotify.android.appremote.api.error.CouldNotFindSpotifyApp;
+import com.spotify.android.appremote.api.error.LoggedOutException;
+import com.spotify.android.appremote.api.error.NotLoggedInException;
+import com.spotify.android.appremote.api.error.OfflineModeException;
+import com.spotify.android.appremote.api.error.SpotifyConnectionTerminatedException;
+import com.spotify.android.appremote.api.error.SpotifyDisconnectedException;
+import com.spotify.android.appremote.api.error.SpotifyRemoteServiceException;
+import com.spotify.android.appremote.api.error.UnsupportedFeatureVersionException;
+import com.spotify.android.appremote.api.error.UserNotAuthorizedException;
 import com.spotify.protocol.types.Artist;
 import com.spotify.protocol.types.PlayerState;
 import com.spotify.protocol.types.Track;
@@ -49,11 +59,11 @@ public class SpotifyService {
     }
 
     // Attempts to connect to Spotify by authenticating users
-    public void connect(final Callback<Void, Exception> callback) {
+    public void connect(final Callback<Void, SpotifyServiceError> callback) {
 
         // Spotify is not installed on the device - communicating this via a custom exception
         if (!SpotifyAppRemote.isSpotifyInstalled(context)) {
-            callback.onFailed(new SpotifyNotInstalledException());
+            callback.onFailed(SpotifyServiceError.APP_NOT_FOUND);
             return;
         }
 
@@ -80,9 +90,10 @@ public class SpotifyService {
             @Override
             public void onFailure(Throwable throwable) {
                 Log.e(TAG, ".connect onFailure method: " + throwable.toString());
-                callback.onFailed(new Exception(throwable));
+                SpotifyServiceError spotifyServiceError = getErrorFromThrowable(throwable);
+                callback.onFailed(spotifyServiceError);
                 for (SpotifyServiceSubscriber subscriber : spotifyServiceSubscribers) {
-                    subscriber.onError(new Exception(throwable));
+                    subscriber.onError(spotifyServiceError);
                 }
             }
         });
@@ -99,6 +110,20 @@ public class SpotifyService {
 
     public void removeSubscriber(final SpotifyServiceSubscriber subscriber) {
         spotifyServiceSubscribers.remove(subscriber);
+    }
+
+    private static SpotifyServiceError getErrorFromThrowable (final Throwable throwable) {
+        if (throwable instanceof AuthenticationFailedException) { return SpotifyServiceError.AUTHENTICATION_FAILED; }
+        if (throwable instanceof UserNotAuthorizedException) { return SpotifyServiceError.AUTHORIZATION_FAILED; }
+        if (throwable instanceof CouldNotFindSpotifyApp) { return SpotifyServiceError.APP_NOT_FOUND; }
+        if (throwable instanceof LoggedOutException) { return SpotifyServiceError.LOGGED_OUT; }
+        if (throwable instanceof NotLoggedInException) { return SpotifyServiceError.NOT_LOGGED_IN; }
+        if (throwable instanceof OfflineModeException) { return SpotifyServiceError.OFFLINE_MODE; }
+        if (throwable instanceof SpotifyConnectionTerminatedException) { return SpotifyServiceError.CONNECTION_TERMINATED; }
+        if (throwable instanceof SpotifyDisconnectedException) { return SpotifyServiceError.DISCONNECTED; }
+        if (throwable instanceof SpotifyRemoteServiceException) { return SpotifyServiceError.REMOTE_SERVICE_ERROR; }
+        if (throwable instanceof UnsupportedFeatureVersionException) { return SpotifyServiceError.UNSUPPORTED_FEATURE_VERSION; }
+        return SpotifyServiceError.OTHER_ERROR;
     }
 
     // Listen for updates from the Spotify player

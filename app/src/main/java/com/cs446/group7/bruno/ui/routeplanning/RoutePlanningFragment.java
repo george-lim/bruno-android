@@ -24,6 +24,7 @@ import com.cs446.group7.bruno.MainActivity;
 import com.cs446.group7.bruno.R;
 import com.cs446.group7.bruno.capability.Capability;
 import com.cs446.group7.bruno.routing.Route;
+import com.cs446.group7.bruno.spotify.SpotifyServiceError;
 import com.cs446.group7.bruno.utils.Callback;
 import com.cs446.group7.bruno.viewmodels.RouteViewModel;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -168,14 +169,14 @@ public class RoutePlanningFragment extends Fragment {
         NavController navController = Navigation.findNavController(getActivity(), R.id.nav_host_fragment);
 
         ProgressDialog nDialog = new ProgressDialog(getContext());
-        nDialog.setMessage("Preparing Spotify...");
-        nDialog.setTitle("Get Ready");
+        nDialog.setMessage("Bruno is preparing your route and music");
+        nDialog.setTitle("Hold on tight");
         nDialog.setIndeterminate(false);
         nDialog.setCancelable(false);
         nDialog.show();
 
         // Ready to start walking, so try to connect to Spotify
-        MainActivity.getSpotifyPlayerService().connect(new Callback<Void, Exception>() {
+        MainActivity.getSpotifyPlayerService().connect(new Callback<Void, SpotifyServiceError>() {
 
             // Success! Start playing music
             @Override
@@ -186,13 +187,12 @@ public class RoutePlanningFragment extends Fragment {
             }
 
             @Override
-            public void onFailed(Exception result) {
-                Log.e("SpotifyService", "RoutePlanningFragment: " + result.toString());
+            public void onFailed(SpotifyServiceError error) {
                 nDialog.dismiss();
 
                 new AlertDialog.Builder(getContext())
-                        .setTitle("Spotify stopped")
-                        .setMessage(result.toString())
+                        .setTitle("An error occurred with Spotify")
+                        .setMessage(error.getErrorMessage())
                         .setPositiveButton("OK", null)
                         .setOnDismissListener(null)
                         .create()
