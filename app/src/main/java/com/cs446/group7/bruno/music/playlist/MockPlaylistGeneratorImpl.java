@@ -13,7 +13,8 @@ public class MockPlaylistGeneratorImpl implements PlaylistGenerator {
 
     private final String TAG = getClass().getSimpleName();
 
-    private ArrayList<String> cloneArtists(ArrayList<String> artists) {
+    // NOTE: Since ArrayList.clone should not be used, this function is used instead
+    private ArrayList<String> cloneArtists(final ArrayList<String> artists) {
         ArrayList<String> clone = new ArrayList<>();
 
         for (String artist : artists) {
