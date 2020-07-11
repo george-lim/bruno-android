@@ -181,9 +181,9 @@ public class RoutePlanningFragment extends Fragment {
             // Success! Start playing music
             @Override
             public void onSuccess(Void result) {
+                nDialog.dismiss();
                 MainActivity.getSpotifyPlayerService().playMusic("7fPwZk4KFD2yfU7J5O1JVz");
                 navController.navigate(R.id.action_fragmenttoplevel_to_fragmentonroute);
-                nDialog.dismiss();
             }
 
             @Override
