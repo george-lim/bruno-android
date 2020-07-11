@@ -10,12 +10,12 @@ import androidx.navigation.Navigation;
 
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.NumberPicker;
-import android.widget.Toast;
 
 import com.cs446.group7.bruno.MainActivity;
 import com.cs446.group7.bruno.R;
@@ -50,6 +50,8 @@ public class RoutePlanningFragment extends Fragment {
     private CardView cardView;
     private View mapFragmentView;
 
+    public final String TAG = this.getClass().getSimpleName();
+
     private OnMapReadyCallback mapCallback = new OnMapReadyCallback() {
         @Override
         public void onMapReady(GoogleMap googleMap) {
@@ -67,12 +69,18 @@ public class RoutePlanningFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_route_planning, container, false);
         model = new ViewModelProvider(requireActivity()).get(RouteViewModel.class);
         buildCardView(view);
+
+        if (MainActivity.getCapabilityService().isCapabilityEnabled(Capability.LOCATION)) {
+            model.initCurrentLocation();
+        }
+
         return view;
     }
 
     private void buildCardView(final View view) {
         startBtn = view.findViewById(R.id.buttn_start_walking);
         startBtn.setOnClickListener(this::handleStartWalkingClick);
+        setStartBtnState(isRoutePlanningComplete());
 
         walkingModeBtn = view.findViewById(R.id.btn_walking_mode);
         walkingModeBtn.setSelected(true);
@@ -92,6 +100,10 @@ public class RoutePlanningFragment extends Fragment {
         mapFragmentView = view.findViewById(R.id.planning_map);
     }
 
+    private void setStartBtnState(boolean isReady) {
+        startBtn.setText(isReady ? "Start" : "Generate Route");
+    }
+
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -109,40 +121,15 @@ public class RoutePlanningFragment extends Fragment {
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        requestLocationUpdates();
-    }
-
-    private void requestLocationUpdates() {
-        if (isRequestingCapability) return;
-        isRequestingCapability = true;
-
-        MainActivity.getCapabilityService().request(REQUIRED_CAPABILITIES, new Callback<Void, Void>() {
-            @Override
-            public void onSuccess(Void result) {
-                MainActivity.getLocationService().addSubscriber(model);
-                if (model.isStartUp()) {
-                    // updating UI to be consistent with DURATION_VALUES[0] in case fragment is resumed
-                    // after never receiving location updates and user has fiddled with durationPicker
-                    durationPicker.setValue(0);
-                    model.setDuration(DURATION_VALUES[0]);
-                    model.initCurrentLocation();
-                }
-                isRequestingCapability = false;
-            }
-
-            @Override
-            public void onFailed(Void result) {
-                isRequestingCapability = false;
-            }
-        });
-    }
-
-    @Override
     public void onPause() {
         super.onPause();
         MainActivity.getLocationService().removeSubscriber(model);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        MainActivity.getLocationService().addSubscriber(model);
     }
 
     private void handleWalkingModeClick(final View view) {
@@ -168,9 +155,37 @@ public class RoutePlanningFragment extends Fragment {
         }
     }
 
+    private boolean isRoutePlanningComplete() {
+        return !model.isStartUp() && model.getRouteResult().getValue() != null;
+    }
+
     private void handleStartWalkingClick(final View view) {
-        NavController navController = Navigation.findNavController(getActivity(), R.id.nav_host_fragment);
-        navController.navigate(R.id.action_fragmenttoplevel_to_fragmentonroute);
+        if (isRequestingCapability) return;
+        isRequestingCapability = true;
+
+        MainActivity.getCapabilityService().request(REQUIRED_CAPABILITIES, new Callback<Void, Void>() {
+            @Override
+            public void onSuccess(Void result) {
+                if (isRoutePlanningComplete()) {
+                    NavController navController = Navigation.findNavController(getActivity(), R.id.nav_host_fragment);
+                    navController.navigate(R.id.action_fragmenttoplevel_to_fragmentonroute);
+                }
+                else if (model.isStartUp()) {
+                    // updating UI to be consistent with DURATION_VALUES[0] in case fragment is resumed
+                    // after never receiving location updates and user has fiddled with durationPicker
+                    durationPicker.setValue(0);
+                    model.setDuration(DURATION_VALUES[0]);
+                    model.initCurrentLocation();
+                }
+
+                isRequestingCapability = false;
+            }
+
+            @Override
+            public void onFailed(Void result) {
+                isRequestingCapability = false;
+            }
+        });
     }
 
     private void observeRouteResult() {
@@ -178,28 +193,14 @@ public class RoutePlanningFragment extends Fragment {
             if (route.getRoute() != null) {
                 drawRoute(route.getRoute());
             } else if (route.getError() != null) {
-                String errorMessage = "";
-                switch (route.getError()) {
-                    case PARSE_ERROR:
-                        errorMessage = "Error parsing route, please try again!";
-                        break;
-                    case SERVER_ERROR:
-                        errorMessage = "A server error occurred, please try again!";
-                        break;
-                    case NO_CONNECTION_ERROR:
-                        errorMessage = "No network, please enable internet access!";
-                        break;
-                    case OTHER_ERROR:
-                        errorMessage = "Something went wrong, please try again!";
-                        break;
+                Log.e(TAG, route.getError().getDescription());
+
+                if (route.getUnderlyingException() != null) {
+                    Log.e(TAG, route.getUnderlyingException().getLocalizedMessage());
                 }
-
-                Toast errorNotification = Toast.makeText(getContext(), errorMessage, Toast.LENGTH_LONG);
-                errorNotification.show();
-
-                startBtn.setText("Regenerate Route");
-                startBtn.setActivated(false);
             }
+
+            setStartBtnState(isRoutePlanningComplete());
         });
     }
 
