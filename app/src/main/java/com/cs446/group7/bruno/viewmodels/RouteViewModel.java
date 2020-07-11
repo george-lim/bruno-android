@@ -20,6 +20,7 @@ import com.cs446.group7.bruno.routing.RouteGeneratorError;
 import com.cs446.group7.bruno.routing.RouteGeneratorImpl;
 import com.cs446.group7.bruno.settings.SettingsService;
 import com.cs446.group7.bruno.utils.Callback;
+import com.cs446.group7.bruno.utils.NoFailCallback;
 import com.google.android.gms.maps.model.LatLng;
 
 
@@ -82,19 +83,9 @@ public class RouteViewModel extends AndroidViewModel implements OnRouteResponseC
     }
 
     public void initCurrentLocation() {
-        MainActivity.getLocationService().startLocationUpdates(new Callback<Location, Exception>() {
-            @Override
-            public void onSuccess(Location location) {
-                if (location != null) {
-                    currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
-                    generateRoute();
-                }
-            }
-
-            @Override
-            public void onFailed(Exception e) {
-                Log.getStackTraceString(e);
-            }
+        MainActivity.getLocationService().startLocationUpdates(location -> {
+            currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
+            generateRoute();
         });
     }
 
