@@ -18,7 +18,6 @@
     <string name="route_planning_walking_mode">Walking</string>
     <string name="route_planning_running_mode">Running</string>
     <string name="route_planning_duration">Duration (Minutes)</string>
-    <string name="route_planning_start">Start</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <!-- TODO: Should the greeting be dynamic? E.g. good morning, afternoon, etc. -->
