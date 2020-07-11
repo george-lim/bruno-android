@@ -3,7 +3,7 @@ package com.cs446.group7.bruno.capability.hardware;
 import android.content.Context;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
+import android.net.Network;
 
 import com.cs446.group7.bruno.capability.Capability;
 import com.cs446.group7.bruno.utils.Callback;
@@ -35,8 +35,7 @@ public class HardwareManager {
             Toggling WiFi or cellular data is not enough.
      */
     private boolean isConnectedToNetwork() {
-        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+        return connectivityManager.getActiveNetwork() != null;
     }
 
     // Predicate that determines if a hardware capability is enabled
