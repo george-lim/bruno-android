@@ -40,8 +40,10 @@ public class RoutePlanningFragment extends Fragment {
     private static final Capability[] REQUIRED_CAPABILITIES = { Capability.LOCATION, Capability.INTERNET };
 
     private boolean isRequestingCapability = false;
+    private boolean hasDrawnRouteOnce = false;
     private RouteViewModel model;
     private GoogleMap map;
+    private Button startBtn;
     private Button walkingModeBtn;
     private Button runningModeBtn;
     private NumberPicker durationPicker;
@@ -69,7 +71,7 @@ public class RoutePlanningFragment extends Fragment {
     }
 
     private void buildCardView(final View view) {
-        Button startBtn = view.findViewById(R.id.buttn_start_walking);
+        startBtn = view.findViewById(R.id.buttn_start_walking);
         startBtn.setOnClickListener(this::handleStartWalkingClick);
 
         walkingModeBtn = view.findViewById(R.id.btn_walking_mode);
@@ -188,6 +190,9 @@ public class RoutePlanningFragment extends Fragment {
 
                 Toast errorNotification = Toast.makeText(getContext(), errorMessage, Toast.LENGTH_LONG);
                 errorNotification.show();
+
+                startBtn.setText("Regenerate Route");
+                startBtn.setActivated(false);
             }
         });
     }
@@ -222,7 +227,15 @@ public class RoutePlanningFragment extends Fragment {
 
         bounds = boundsBuilder.build();
         final int padding = 200;
-        map.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, padding));
+
+        // Do not animate camera on initial route
+        if (hasDrawnRouteOnce) {
+            map.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, padding));
+        }
+        else {
+            map.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, padding));
+            hasDrawnRouteOnce = true;
+        }
 
         map.addMarker(new MarkerOptions()
                 .position(decodedPath.get(0)))

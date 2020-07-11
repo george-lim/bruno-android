@@ -35,9 +35,10 @@ public class RouteViewModel extends AndroidViewModel implements OnRouteResponseC
 
         Context context = application.getApplicationContext();
         String apiKey = context.getResources().getString(R.string.google_maps_key);
-        routeGenerator = BuildConfig.DEBUG
-                ? new MockRouteGeneratorImpl(context, apiKey)
-                : new RouteGeneratorImpl(context, apiKey);
+        routeGenerator = new RouteGeneratorImpl(context, apiKey);
+//        routeGenerator = BuildConfig.DEBUG
+//                ? new MockRouteGeneratorImpl(context, apiKey)
+//                : new RouteGeneratorImpl(context, apiKey);
     }
 
     public void setDuration(int duration) {
