@@ -1,6 +1,7 @@
 package com.cs446.group7.bruno.ui.onroute;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +24,7 @@ import com.spotify.android.appremote.api.error.UserNotAuthorizedException;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 
 public class OnRouteFragment extends Fragment implements SpotifyServiceSubscriber {
 
@@ -48,6 +50,7 @@ public class OnRouteFragment extends Fragment implements SpotifyServiceSubscribe
         if (mapFragment != null) {
             mapFragment.getMapAsync(callback);
         }
+        MainActivity.getSpotifyPlayerService().addSubscriber(this);
     }
 
     @Override
@@ -58,7 +61,10 @@ public class OnRouteFragment extends Fragment implements SpotifyServiceSubscribe
 
     @Override
     public void onError(Exception exception) {
-        Toast.makeText(getContext(), exception.toString(), Toast.LENGTH_SHORT).show();
+
+        //Toast.makeText(getContext(), exception.toString(), Toast.LENGTH_SHORT).show();
+        Log.e("SpotifyService", String.format("OnRouteFragment: %s", exception.toString()));
+        Navigation.findNavController(getActivity(), R.id.nav_host_fragment).navigateUp();
 //        if (exception instanceof NotLoggedInException || exception instanceof UserNotAuthorizedException) {
 //            // Show login button and trigger the login flow from auth library when clicked
 //        } else if (exception instanceof CouldNotFindSpotifyApp) {

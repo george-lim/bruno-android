@@ -9,8 +9,6 @@ import com.cs446.group7.bruno.utils.Callback;
 import com.spotify.android.appremote.api.ConnectionParams;
 import com.spotify.android.appremote.api.Connector;
 import com.spotify.android.appremote.api.SpotifyAppRemote;
-import com.spotify.protocol.client.ErrorCallback;
-import com.spotify.protocol.client.Subscription;
 import com.spotify.protocol.types.Artist;
 import com.spotify.protocol.types.PlayerState;
 import com.spotify.protocol.types.Track;
@@ -71,7 +69,7 @@ public class SpotifyService {
 
             // Success! Maintain control of the main interface AppRemote
             // and listen for updates to the player. Let the caller know that the
-            // Spotify player is online - can now play/pause music, etc
+            // Spotify player is online - can play/pause music, etc
             @Override
             public void onConnected(SpotifyAppRemote spotifyAppRemote) {
                 mSpotifyAppRemote = spotifyAppRemote;
@@ -81,8 +79,11 @@ public class SpotifyService {
 
             @Override
             public void onFailure(Throwable throwable) {
+                Log.e(TAG, ".connect onFailure method: " + throwable.toString());
                 callback.onFailed(new Exception(throwable));
-                Log.e(TAG, throwable.toString());
+                for (SpotifyServiceSubscriber subscriber : spotifyServiceSubscribers) {
+                    subscriber.onError(new Exception(throwable));
+                }
             }
         });
     }
@@ -109,7 +110,7 @@ public class SpotifyService {
                 .setEventCallback(playerState -> {
                     if (playerState == null || playerState.equals(currentPlayerState))return;
 
-                    Log.i(TAG, playerState.toString());
+                    Log.w(TAG, playerState.toString());
                     Track track = playerState.track;
                     if (track != null) {
                         if (currentPlayerState != null && track.equals(currentPlayerState.track)) {
@@ -127,25 +128,8 @@ public class SpotifyService {
                     }
                     currentPlayerState = playerState;
                 })
-                .setLifecycleCallback(new Subscription.LifecycleCallback() {
-                    @Override
-                    public void onStart() {
-                        Log.d(TAG, "onStart");
-                    }
-
-                    @Override
-                    public void onStop() {
-                        Log.d(TAG, "onStop");
-                    }
-                })
-                .setErrorCallback(new ErrorCallback() {
-                    @Override
-                    public void onError(Throwable throwable) {
-                        Log.e(TAG, throwable.toString());
-                        for (SpotifyServiceSubscriber subscriber : spotifyServiceSubscribers) {
-                            subscriber.onError(new Exception(throwable));
-                        }
-                    }
+                .setErrorCallback(throwable -> { // "Catch" for exceptions in setEventCallback
+                    Log.e(TAG, "playerState setErrorCallback: " + throwable.toString());
                 });
     }
 

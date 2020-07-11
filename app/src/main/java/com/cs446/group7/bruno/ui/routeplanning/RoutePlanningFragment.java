@@ -1,5 +1,6 @@
 package com.cs446.group7.bruno.ui.routeplanning;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.location.Location;
 import android.os.Bundle;
@@ -192,8 +193,16 @@ public class RoutePlanningFragment extends Fragment {
 
             @Override
             public void onFailed(Exception result) {
-                Toast.makeText(getContext(), result.toString(), Toast.LENGTH_SHORT).show();
+                Log.e("SpotifyService", "RoutePlanningFragment: " + result.toString());
                 nDialog.dismiss();
+
+                new AlertDialog.Builder(getContext())
+                        .setTitle("Spotify stopped")
+                        .setMessage(result.toString())
+                        .setPositiveButton("OK", null)
+                        .setOnDismissListener(null)
+                        .create()
+                        .show();
             }
         });
     }
