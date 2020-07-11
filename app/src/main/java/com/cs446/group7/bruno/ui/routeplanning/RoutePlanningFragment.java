@@ -71,6 +71,7 @@ public class RoutePlanningFragment extends Fragment {
         buildCardView(view);
 
         if (MainActivity.getCapabilityService().isCapabilityEnabled(Capability.LOCATION)) {
+            model.setDuration(DURATION_VALUES[0]);
             model.initCurrentLocation();
         }
 
@@ -171,10 +172,6 @@ public class RoutePlanningFragment extends Fragment {
                     navController.navigate(R.id.action_fragmenttoplevel_to_fragmentonroute);
                 }
                 else if (model.isStartUp()) {
-                    // updating UI to be consistent with DURATION_VALUES[0] in case fragment is resumed
-                    // after never receiving location updates and user has fiddled with durationPicker
-                    durationPicker.setValue(0);
-                    model.setDuration(DURATION_VALUES[0]);
                     model.initCurrentLocation();
                 }
 
