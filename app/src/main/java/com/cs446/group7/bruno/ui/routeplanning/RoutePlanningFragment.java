@@ -1,13 +1,6 @@
 package com.cs446.group7.bruno.ui.routeplanning;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.cardview.widget.CardView;
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
@@ -17,10 +10,19 @@ import android.widget.Button;
 import android.widget.NumberPicker;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.cardview.widget.CardView;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+
 import com.cs446.group7.bruno.MainActivity;
 import com.cs446.group7.bruno.R;
 import com.cs446.group7.bruno.capability.Capability;
 import com.cs446.group7.bruno.routing.Route;
+import com.cs446.group7.bruno.utils.BitmapUtils;
 import com.cs446.group7.bruno.utils.Callback;
 import com.cs446.group7.bruno.viewmodels.RouteViewModel;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -226,7 +228,7 @@ public class RoutePlanningFragment extends Fragment {
 
         map.addMarker(new MarkerOptions()
                 .position(decodedPath.get(0)))
-                .setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+                .setIcon(model.getAvatarMarker());
 
         map.addPolyline(new PolylineOptions().addAll(route.getDecodedPath()));
     }

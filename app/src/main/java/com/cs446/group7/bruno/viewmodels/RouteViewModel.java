@@ -2,6 +2,7 @@ package com.cs446.group7.bruno.viewmodels;
 
 import android.app.Application;
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 
 import androidx.annotation.NonNull;
@@ -20,6 +21,9 @@ import com.cs446.group7.bruno.routing.RouteGenerator;
 import com.cs446.group7.bruno.routing.RouteGeneratorError;
 import com.cs446.group7.bruno.routing.RouteGeneratorImpl;
 import com.cs446.group7.bruno.settings.SettingsService;
+import com.cs446.group7.bruno.utils.BitmapUtils;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 
 
@@ -29,6 +33,7 @@ public class RouteViewModel extends AndroidViewModel implements OnRouteResponseC
     private MutableLiveData<RouteResult> routeResult = new MutableLiveData<>();
     private LatLng currentLocation = null;
     private RouteGenerator routeGenerator;
+    private BitmapDescriptor avatarMarker;
 
     public RouteViewModel(@NonNull Application application) {
         super(application);
@@ -38,6 +43,10 @@ public class RouteViewModel extends AndroidViewModel implements OnRouteResponseC
         routeGenerator = BuildConfig.DEBUG
                 ? new MockRouteGeneratorImpl(context, apiKey)
                 : new RouteGeneratorImpl(context, apiKey);
+        // Store avatar bitmap in view model because conversion of vector drawable to bitmap
+        // can be resource heavy
+        Drawable avatarDrawable = context.getResources().getDrawable(R.drawable.ic_avatar_1, null);
+        avatarMarker = BitmapDescriptorFactory.fromBitmap(BitmapUtils.getBitmapFromVectorDrawable(avatarDrawable));
     }
 
     public void setDuration(int duration) {
@@ -52,6 +61,10 @@ public class RouteViewModel extends AndroidViewModel implements OnRouteResponseC
 
     public LiveData<RouteResult> getRouteResult() {
         return routeResult;
+    }
+
+    public BitmapDescriptor getAvatarMarker() {
+        return avatarMarker;
     }
 
     private void generateRoute() {
