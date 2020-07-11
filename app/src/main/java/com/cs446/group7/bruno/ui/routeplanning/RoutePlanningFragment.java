@@ -1,12 +1,15 @@
 package com.cs446.group7.bruno.ui.routeplanning;
 
+import android.app.ProgressDialog;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.cs446.group7.bruno.MainActivity;
@@ -62,7 +65,7 @@ public class RoutePlanningFragment extends Fragment {
             Log.i(TAG, location.toString());
             final LatLng newLocation = new LatLng(location.getLatitude(), location.getLongitude());
             // TODO: Remove
-            Toast.makeText(getContext(), String.format("Location: (%s, %s)", location.getLatitude(), location.getLongitude()), Toast.LENGTH_SHORT).show();
+            //Toast.makeText(getContext(), String.format("Location: (%s, %s)", location.getLatitude(), location.getLongitude()), Toast.LENGTH_SHORT).show();
 
             if (currentLocationMarker == null) return;
 
@@ -166,7 +169,15 @@ public class RoutePlanningFragment extends Fragment {
     }
 
     private void handleStartWalkingClick(final View view) {
+
         NavController navController = Navigation.findNavController(getActivity(), R.id.nav_host_fragment);
+
+        ProgressDialog nDialog = new ProgressDialog(getContext());
+        nDialog.setMessage("Preparing Spotify...");
+        nDialog.setTitle("Get Ready");
+        nDialog.setIndeterminate(false);
+        nDialog.setCancelable(false);
+        nDialog.show();
 
         // Ready to start walking, so try to connect to Spotify
         MainActivity.getSpotifyPlayerService().connect(new Callback<Void, Exception>() {
@@ -174,14 +185,15 @@ public class RoutePlanningFragment extends Fragment {
             // Success! Start playing music
             @Override
             public void onSuccess(Void result) {
-                Toast.makeText(getContext(), "Spotify Connected!", Toast.LENGTH_SHORT).show();
                 MainActivity.getSpotifyPlayerService().playMusic("7fPwZk4KFD2yfU7J5O1JVz");
                 navController.navigate(R.id.action_fragmenttoplevel_to_fragmentonroute);
+                nDialog.dismiss();
             }
 
             @Override
             public void onFailed(Exception result) {
                 Toast.makeText(getContext(), result.toString(), Toast.LENGTH_SHORT).show();
+                nDialog.dismiss();
             }
         });
     }
