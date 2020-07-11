@@ -1,90 +1,61 @@
 package com.cs446.group7.bruno.ui.routeplanning;
 
-import android.location.Location;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.cardview.widget.CardView;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+
 import android.os.Bundle;
-import android.util.Log;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.NumberPicker;
 import android.widget.Toast;
 
 import com.cs446.group7.bruno.MainActivity;
 import com.cs446.group7.bruno.R;
 import com.cs446.group7.bruno.capability.Capability;
-import com.cs446.group7.bruno.location.LocationServiceSubscriber;
+import com.cs446.group7.bruno.routing.Route;
 import com.cs446.group7.bruno.utils.Callback;
-import com.cs446.group7.bruno.utils.NoFailCallback;
+import com.cs446.group7.bruno.viewmodels.RouteViewModel;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolylineOptions;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
+import java.util.List;
 
 public class RoutePlanningFragment extends Fragment {
+    private static final int[] DURATION_VALUES = { 15, 30, 45, 60, 75, 90, 105, 120 };
+    private static final Capability[] REQUIRED_CAPABILITIES = { Capability.LOCATION, Capability.INTERNET };
 
-    private GoogleMap googleMap;
-    private Marker currentLocationMarker;
     private boolean isRequestingCapability = false;
-    private final String TAG = getClass().getSimpleName();
+    private RouteViewModel model;
+    private GoogleMap map;
+    private Button walkingModeBtn;
+    private Button runningModeBtn;
+    private NumberPicker durationPicker;
+    private CardView cardView;
+    private View mapFragmentView;
 
-    /**
-     * Manipulates the map once available.
-     * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera.
-     * In this case, we just add a marker near Sydney, Australia.
-     * If Google Play services is not installed on the device, the user will be prompted to
-     * install it inside the SupportMapFragment. This method will only be triggered once the
-     * user has installed Google Play services and returned to the app.
-     */
-    private OnMapReadyCallback onMapReadyCallback = googleMap -> {
-        this.googleMap = googleMap;
-
-        initMarkers();
-    };
-
-    /**
-     * Receives location updates periodically.
-     */
-    private LocationServiceSubscriber onLocationUpdatedCallback = new LocationServiceSubscriber() {
+    private OnMapReadyCallback mapCallback = new OnMapReadyCallback() {
         @Override
-        public void onLocationUpdate(@NonNull final Location location) {
-            Log.i(TAG, location.toString());
-            final LatLng newLocation = new LatLng(location.getLatitude(), location.getLongitude());
-            // TODO: Remove
-            Toast.makeText(getContext(), String.format("Location: (%s, %s)", location.getLatitude(), location.getLongitude()), Toast.LENGTH_SHORT).show();
-
-            if (currentLocationMarker == null) return;
-
-            currentLocationMarker.setPosition(newLocation);
-
-            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(newLocation, 15));
+        public void onMapReady(GoogleMap googleMap) {
+            map = googleMap;
+            map.getUiSettings().setRotateGesturesEnabled(false);
+            observeRouteResult();
         }
     };
-
-    /**
-     * Initial location logic here.
-     */
-    private void initMarkers() {
-        if (googleMap == null) return;
-        requestLocationUpdates(location -> {
-            final LatLng initialLocation = new LatLng(location.getLatitude(), location.getLongitude());
-            final String msg = String.format("Initial Location: (%s, %s)", initialLocation.latitude, initialLocation.longitude);
-
-            Log.i(TAG, msg);
-
-            Toast.makeText(getContext(), msg, Toast.LENGTH_SHORT).show();
-            currentLocationMarker = googleMap.addMarker(new MarkerOptions().position(initialLocation).title("Your location"));
-        });
-    }
 
     @Nullable
     @Override
@@ -92,9 +63,31 @@ public class RoutePlanningFragment extends Fragment {
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_route_planning, container, false);
-        Button btn = view.findViewById(R.id.buttn_start_walking);
-        btn.setOnClickListener(this::handleStartWalkingClick);
+        model = new ViewModelProvider(requireActivity()).get(RouteViewModel.class);
+        buildCardView(view);
         return view;
+    }
+
+    private void buildCardView(final View view) {
+        Button startBtn = view.findViewById(R.id.buttn_start_walking);
+        startBtn.setOnClickListener(this::handleStartWalkingClick);
+
+        walkingModeBtn = view.findViewById(R.id.btn_walking_mode);
+        walkingModeBtn.setSelected(true);
+        walkingModeBtn.setOnClickListener(this::handleWalkingModeClick);
+
+        runningModeBtn = view.findViewById(R.id.btn_running_mode);
+        runningModeBtn.setOnClickListener(this::handleRunningModeClick);
+
+        durationPicker = view.findViewById(R.id.num_picker_exercise_duration);
+        durationPicker.setMinValue(0);
+        durationPicker.setMaxValue(DURATION_VALUES.length - 1);
+        durationPicker.setDisplayedValues(intArrayToStringArray(DURATION_VALUES));
+        durationPicker.setOnScrollListener(this::handleDurationScroll);
+        durationPicker.setValue(0);
+
+        cardView = view.findViewById(R.id.card_view_route_planning);
+        mapFragmentView = view.findViewById(R.id.planning_map);
     }
 
     @Override
@@ -103,56 +96,31 @@ public class RoutePlanningFragment extends Fragment {
         SupportMapFragment mapFragment =
                 (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.planning_map);
         if (mapFragment != null) {
-            mapFragment.getMapAsync(onMapReadyCallback);
+            mapFragment.getMapAsync(mapCallback);
         }
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        MainActivity.getLocationService().addSubscriber(onLocationUpdatedCallback);
         requestLocationUpdates();
-
-        if (currentLocationMarker == null) {
-            initMarkers();
-        }
     }
 
-    @Override
-    public void onPause() {
-        super.onPause();
-        MainActivity.getLocationService().removeSubscriber(onLocationUpdatedCallback);
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        MainActivity.getLocationService().stopLocationUpdates();
-    }
-
-    /**
-     * Requests location permissions from Capability service. Requires mutex to prevent duplicate requests
-     */
     private void requestLocationUpdates() {
-        requestLocationUpdates(null);
-    }
-
-    /**
-     * Requests location permissions from Capability service and takes in a callback that returns the initial position
-     */
-    private void requestLocationUpdates(@Nullable final NoFailCallback<Location> callback) {
         if (isRequestingCapability) return;
         isRequestingCapability = true;
 
-        Capability[] capabilities = new Capability[] {
-                Capability.LOCATION,
-                Capability.INTERNET
-        };
-
-        MainActivity.getCapabilityService().request(capabilities, new Callback<Void, Void>() {
+        MainActivity.getCapabilityService().request(REQUIRED_CAPABILITIES, new Callback<Void, Void>() {
             @Override
             public void onSuccess(Void result) {
-                MainActivity.getLocationService().startLocationUpdates(callback);
+                MainActivity.getLocationService().addSubscriber(model);
+                if (model.isStartUp()) {
+                    // updating UI to be consistent with DURATION_VALUES[0] in case fragment is resumed
+                    // after never receiving location updates and user has fiddled with durationPicker
+                    durationPicker.setValue(0);
+                    model.setDuration(DURATION_VALUES[0]);
+                    model.initCurrentLocation();
+                }
                 isRequestingCapability = false;
             }
 
@@ -163,8 +131,111 @@ public class RoutePlanningFragment extends Fragment {
         });
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        MainActivity.getLocationService().removeSubscriber(model);
+    }
+
+    private void handleWalkingModeClick(final View view) {
+        if (!walkingModeBtn.isSelected()) {
+            model.setWalkingMode(true);
+            walkingModeBtn.setSelected(true);
+            runningModeBtn.setSelected(false);
+        }
+    }
+
+    private void handleRunningModeClick(final View view) {
+        if (!runningModeBtn.isSelected()) {
+            model.setWalkingMode(false);
+            walkingModeBtn.setSelected(false);
+            runningModeBtn.setSelected(true);
+        }
+    }
+
+    private void handleDurationScroll(final NumberPicker numberPicker, int scrollState) {
+        if (scrollState == NumberPicker.OnScrollListener.SCROLL_STATE_IDLE) {
+            int duration = DURATION_VALUES[numberPicker.getValue()];
+            model.setDuration(duration);
+        }
+    }
+
     private void handleStartWalkingClick(final View view) {
         NavController navController = Navigation.findNavController(getActivity(), R.id.nav_host_fragment);
         navController.navigate(R.id.action_fragmenttoplevel_to_fragmentonroute);
+    }
+
+    private void observeRouteResult() {
+        model.getRouteResult().observe(getViewLifecycleOwner(), route -> {
+            if (route.getRoute() != null) {
+                drawRoute(route.getRoute());
+            } else if (route.getError() != null) {
+                String errorMessage = "";
+                switch (route.getError()) {
+                    case PARSE_ERROR:
+                        errorMessage = "Error parsing route, please try again!";
+                        break;
+                    case SERVER_ERROR:
+                        errorMessage = "A server error occurred, please try again!";
+                        break;
+                    case NO_CONNECTION_ERROR:
+                        errorMessage = "No network, please enable internet access!";
+                        break;
+                    case OTHER_ERROR:
+                        errorMessage = "Something went wrong, please try again!";
+                        break;
+                }
+
+                Toast errorNotification = Toast.makeText(getContext(), errorMessage, Toast.LENGTH_LONG);
+                errorNotification.show();
+            }
+        });
+    }
+
+    private void drawRoute(final Route route) {
+        map.clear();
+
+        DisplayMetrics displayMetrics = getContext().getResources().getDisplayMetrics();
+        final float cardViewHeightDp = cardView.getHeight() / displayMetrics.density;
+        final float mapFragmentHeightDp = mapFragmentView.getHeight() / displayMetrics.density;
+        // from tests it seems like we need to add some height to cardView to get a good blockedScreenFraction
+        final double blockedScreenFraction = (cardViewHeightDp + 40) / mapFragmentHeightDp;
+
+        final List<LatLng> decodedPath = route.getDecodedPath();
+
+        LatLngBounds.Builder boundsBuilder = new LatLngBounds.Builder();
+        for (final LatLng p : decodedPath) {
+            boundsBuilder.include(p);
+        }
+
+        LatLngBounds bounds = boundsBuilder.build();
+        final LatLng minLat = bounds.southwest, maxLat = bounds.northeast;
+
+        // compute offset
+        final double H = maxLat.latitude - minLat.latitude;
+        final double T = H / (1 - blockedScreenFraction);
+        final double offset = T - 2 * H;
+
+        // find mirror point of maxLat and include in bounds
+        final LatLng mirrorMaxLat= new LatLng(2 * minLat.latitude - maxLat.latitude - offset, maxLat.longitude);
+        boundsBuilder.include(mirrorMaxLat);
+
+        bounds = boundsBuilder.build();
+        final int padding = 200;
+        map.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, padding));
+
+        map.addMarker(new MarkerOptions()
+                .position(decodedPath.get(0)))
+                .setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+
+        map.addPolyline(new PolylineOptions().addAll(route.getDecodedPath()));
+    }
+
+    private static String[] intArrayToStringArray(int[] intArray) {
+        String[] result = new String[intArray.length];
+        for (int i = 0; i < intArray.length; ++i) {
+            result[i] = Integer.toString(intArray[i]);
+        }
+        return result;
     }
 }

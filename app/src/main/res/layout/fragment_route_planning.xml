@@ -1,21 +1,128 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <fragment
+    <androidx.fragment.app.FragmentContainerView
         android:id="@+id/planning_map"
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".ui.routeplanning.RoutePlanningFragment" />
 
-    <Button
-        android:id="@+id/buttn_start_walking"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal|bottom"
-        android:layout_marginBottom="30dp"
-        android:text="Start walking" />
+    <androidx.cardview.widget.CardView
+        android:id="@+id/card_view_route_planning"
+        android:layout_width="match_parent"
+        android:layout_height="320dp"
+        android:layout_gravity="bottom"
+        android:clickable="true"
+        android:focusable="true"
+        android:layout_margin="7dp"
+        card_view:cardCornerRadius="20dp">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="24dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="24dp"
+                android:text="@string/route_planning_greeting"
+                android:textSize="16sp" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/route_planning_instruction"
+                android:layout_marginLeft="24dp"
+                android:layout_marginRight="24dp"
+                android:textSize="24sp"
+                android:textStyle="bold"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="19dp"
+                android:layout_marginLeft="24dp"
+                android:layout_marginRight="24dp"
+                style="?android:attr/buttonBarStyle" >
+                <Button
+                    android:id="@+id/btn_walking_mode"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:textSize="16sp"
+                    android:textColor="@drawable/btn_left_exercise_state"
+                    android:background="@drawable/btn_left_exercise_state"
+                    android:minHeight="40dp"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:text="@string/route_planning_walking_mode" />
+                <Button
+                    android:id="@+id/btn_running_mode"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:textSize="16sp"
+                    android:textColor="@drawable/btn_right_exercise_state"
+                    android:background="@drawable/btn_right_exercise_state"
+                    android:minHeight="40dp"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:text="@string/route_planning_running_mode" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="7dp"
+                android:layout_marginLeft="24dp"
+                android:layout_marginRight="24dp"
+                android:layout_marginBottom="30dp"
+                style="?android:attr/buttonBarStyle">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:layout_gravity="center_vertical">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingTop="15dp"
+                        android:paddingBottom="15dp"
+                        android:textAlignment="center"
+                        android:textSize="16sp"
+                        android:background="@drawable/tv_duration_label"
+                        android:text="@string/route_planning_duration" />
+                </LinearLayout>
+
+                <NumberPicker
+                    android:id="@+id/num_picker_exercise_duration"
+                    android:layout_width="0dp"
+                    android:layout_height="100dp"
+                    android:layout_weight="1"
+                    android:descendantFocusability="blocksDescendants"
+                    android:theme="@style/DurationNumberPickerTheme" />
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/buttn_start_walking"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal|bottom"
+                android:layout_marginBottom="15dp"
+                android:paddingLeft="27dp"
+                android:paddingTop="8dp"
+                android:paddingRight="27dp"
+                android:paddingBottom="8dp"
+                android:text="@string/route_planning_start"
+                android:textColor="@color/colorBackground"
+                android:background="@drawable/btn_start_exercise"
+                android:textSize="20sp" />
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
 </FrameLayout>
