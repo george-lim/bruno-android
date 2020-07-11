@@ -11,8 +11,8 @@ import com.cs446.group7.bruno.MainActivity;
 import com.cs446.group7.bruno.R;
 import com.cs446.group7.bruno.music.BrunoTrack;
 import com.cs446.group7.bruno.spotify.SpotifyServiceError;
-import com.cs446.group7.bruno.spotify.SpotifyServiceSubscriber;
 import com.cs446.group7.bruno.utils.Callback;
+import com.cs446.group7.bruno.viewmodels.RouteViewModel;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -23,10 +23,12 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 
-public class OnRouteFragment extends Fragment implements SpotifyServiceSubscriber {
+public class OnRouteFragment extends Fragment {
 
+    private RouteViewModel model;
     private OnMapReadyCallback callback = googleMap -> {
 
         // Need to pass the gMaps from the previous fragment somehow
@@ -42,7 +44,6 @@ public class OnRouteFragment extends Fragment implements SpotifyServiceSubscribe
         googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
 
     };
-
 
     @Nullable
     @Override
@@ -60,19 +61,19 @@ public class OnRouteFragment extends Fragment implements SpotifyServiceSubscribe
         if (mapFragment != null) {
             mapFragment.getMapAsync(callback);
         }
-        MainActivity.getSpotifyPlayerService().addSubscriber(this);
+
+        model = new ViewModelProvider(requireActivity()).get(RouteViewModel.class);
+        MainActivity.getSpotifyPlayerService().addSubscriber(model.getSpotifyViewModel());
+
+        model.getSpotifyViewModel().getCurrentTrack().observe(getViewLifecycleOwner(), this::onTrackChanged);
+        model.getSpotifyViewModel().getCurrentError().observe(getViewLifecycleOwner(), this::onError);
     }
 
-    @Override
-    public void onTrackChanged(@NonNull final BrunoTrack track) {
-        // new song starts playing
-
-        if (getContext() == null) return;
+    private void onTrackChanged(@NonNull final BrunoTrack track) {
         Toast.makeText(getContext(), String.format("Now playing: %s", track.name), Toast.LENGTH_SHORT).show();
     }
 
-    @Override
-    public void onError(@NonNull final SpotifyServiceError error) {
+    private void onError(@NonNull final SpotifyServiceError error) {
         Log.e("SpotifyService", String.format("OnRouteFragment: %s", error.getErrorMessage()));
 
         if (getActivity() == null) return;

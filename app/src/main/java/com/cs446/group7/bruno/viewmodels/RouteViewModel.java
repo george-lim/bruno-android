@@ -29,6 +29,7 @@ public class RouteViewModel extends AndroidViewModel implements OnRouteResponseC
     private MutableLiveData<RouteResult> routeResult = new MutableLiveData<>();
     private LatLng currentLocation = null;
     private RouteGenerator routeGenerator;
+    private SpotifyViewModel spotifyViewModel;
 
     public RouteViewModel(@NonNull Application application) {
         super(application);
@@ -38,6 +39,7 @@ public class RouteViewModel extends AndroidViewModel implements OnRouteResponseC
         routeGenerator = BuildConfig.DEBUG
                 ? new MockRouteGeneratorImpl(context, apiKey)
                 : new RouteGeneratorImpl(context, apiKey);
+        spotifyViewModel = new SpotifyViewModel(application);
     }
 
     public void setDuration(int duration) {
@@ -92,5 +94,9 @@ public class RouteViewModel extends AndroidViewModel implements OnRouteResponseC
 
     public boolean isStartUp() {
         return currentLocation == null;
+    }
+
+    public SpotifyViewModel getSpotifyViewModel() {
+        return spotifyViewModel;
     }
 }
