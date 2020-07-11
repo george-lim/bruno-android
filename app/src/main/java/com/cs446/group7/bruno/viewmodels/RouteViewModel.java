@@ -10,9 +10,11 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.cs446.group7.bruno.BuildConfig;
 import com.cs446.group7.bruno.MainActivity;
 import com.cs446.group7.bruno.R;
 import com.cs446.group7.bruno.location.LocationServiceSubscriber;
+import com.cs446.group7.bruno.routing.MockRouteGeneratorImpl;
 import com.cs446.group7.bruno.routing.OnRouteResponseCallback;
 import com.cs446.group7.bruno.routing.Route;
 import com.cs446.group7.bruno.routing.RouteGenerator;
@@ -36,7 +38,9 @@ public class RouteViewModel extends AndroidViewModel implements OnRouteResponseC
 
         Context context = application.getApplicationContext();
         String apiKey = context.getResources().getString(R.string.google_maps_key);
-        routeGenerator = new RouteGeneratorImpl(context, apiKey);
+        routeGenerator = BuildConfig.DEBUG
+                ? new MockRouteGeneratorImpl(context, apiKey)
+                : new RouteGeneratorImpl(context, apiKey);
     }
 
     public void setDuration(int duration) {
