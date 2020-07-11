@@ -12,7 +12,6 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -181,11 +180,30 @@ public class RoutePlanningFragment extends Fragment {
             // Success! Start playing music
             @Override
             public void onSuccess(Void result) {
-                nDialog.dismiss();
-                MainActivity.getSpotifyPlayerService().playMusic("7fPwZk4KFD2yfU7J5O1JVz");
-                navController.navigate(R.id.action_fragmenttoplevel_to_fragmentonroute);
+                MainActivity.getSpotifyPlayerService().setPlaylist("7fPwZk4KFD2yfU7J5O1JVz");
+                MainActivity.getSpotifyPlayerService().play(new Callback<Void, Exception>() {
+                    @Override
+                    public void onSuccess(Void result) {
+                        nDialog.dismiss();
+                        navController.navigate(R.id.action_fragmenttoplevel_to_fragmentonroute);
+                    }
+
+                    @Override
+                    public void onFailed(Exception error) {
+                        nDialog.dismiss();
+
+                        new AlertDialog.Builder(getContext())
+                                .setTitle("Player Error")
+                                .setMessage(error.getMessage())
+                                .setPositiveButton("OK", null)
+                                .setOnDismissListener(null)
+                                .create()
+                                .show();
+                    }
+                });
             }
 
+            // Connection failure
             @Override
             public void onFailed(SpotifyServiceError error) {
                 nDialog.dismiss();

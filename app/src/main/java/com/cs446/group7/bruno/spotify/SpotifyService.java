@@ -5,6 +5,7 @@ import android.util.Log;
 
 import com.cs446.group7.bruno.R;
 import com.cs446.group7.bruno.music.BrunoTrack;
+import com.cs446.group7.bruno.music.player.MusicPlayer;
 import com.cs446.group7.bruno.utils.Callback;
 import com.spotify.android.appremote.api.ConnectionParams;
 import com.spotify.android.appremote.api.Connector;
@@ -31,7 +32,7 @@ import androidx.annotation.NonNull;
 /**
  * Service responsible for connecting to Spotify, play music and notifying subscribers about state changes.
  */
-public class SpotifyService {
+public class SpotifyService implements MusicPlayer {
 
     // Main interface to Spotify, initialized by connectToSpotify()
     private SpotifyAppRemote mSpotifyAppRemote;
@@ -40,6 +41,7 @@ public class SpotifyService {
     private final String TAG = getClass().getSimpleName();
 
     private PlayerState currentPlayerState;
+    private String playlistId;
 
     public SpotifyService(final Context context) {
         this.context = context;
@@ -84,9 +86,7 @@ public class SpotifyService {
                 Log.e(TAG, ".connect onFailure method: " + throwable.toString());
                 SpotifyServiceError spotifyServiceError = getErrorFromThrowable(throwable);
                 callback.onFailed(spotifyServiceError);
-                for (SpotifyServiceSubscriber subscriber : spotifyServiceSubscribers) {
-                    subscriber.onError(spotifyServiceError);
-                }
+                sendErrorToSubscribers(spotifyServiceError);
             }
         });
     }
@@ -155,22 +155,54 @@ public class SpotifyService {
         SpotifyAppRemote.disconnect(mSpotifyAppRemote);
     }
 
-    public void pauseMusic() {
-        mSpotifyAppRemote.getPlayerApi().pause();
-    }
-
-    public void resumeMusic() {
-        mSpotifyAppRemote.getPlayerApi().resume();
-    }
-
-    // Note that calling this method multiple times will play the custom playlist from the beginning
-    public void playMusic(final String playlistId) {
+    // Plays the playlist which is set by setPlaylist()
+    // Note that calling this method multiple times will play the custom playlist from the beginning each time
+    public void play(Callback<Void, Exception> callback) {
         mSpotifyAppRemote.getPlayerApi()
                 .setShuffle(false)
                 .setResultCallback(empty -> {
-                    mSpotifyAppRemote.getPlayerApi().play("spotify:playlist:" + playlistId).setResultCallback(empty1 -> Log.i(TAG, "playing!"));
+                    mSpotifyAppRemote.getPlayerApi().play("spotify:playlist:" + this.playlistId).setResultCallback(empty1 -> {
+                        Log.i(TAG, "Playing!");
+                        callback.onSuccess(null);
+                    });
                 })
-                .setErrorCallback(throwable -> Log.e(TAG, "playMusic Failed: " + throwable.toString()));
+                .setErrorCallback(throwable -> {
+                    Log.e(TAG, "play failed: " + throwable.toString());
+                    SpotifyServiceError spotifyServiceError = getErrorFromThrowable(throwable);
+                    callback.onFailed(new Exception(throwable));
+                    sendErrorToSubscribers(spotifyServiceError);
+                });
+    }
+
+    // Sets the playlist for the music player
+    public void setPlaylist(String playlistId) { this.playlistId = playlistId; }
+
+    public void pause(Callback<Void, Exception> callback) {
+        mSpotifyAppRemote.getPlayerApi()
+                .pause().setResultCallback(empty -> {
+                    Log.i(TAG, "Paused!");
+                    callback.onSuccess(null);
+                })
+                .setErrorCallback(throwable -> {
+                    Log.e(TAG, "pause failed: " + throwable.toString());
+                    SpotifyServiceError spotifyServiceError = getErrorFromThrowable(throwable);
+                    callback.onFailed(new Exception(throwable));
+                    sendErrorToSubscribers(spotifyServiceError);
+                });
+    }
+
+    public void resume(Callback<Void, Exception> callback) {
+        mSpotifyAppRemote.getPlayerApi()
+                .resume().setResultCallback(empty -> {
+                    Log.i(TAG, "Resumed!");
+                    callback.onSuccess(null);
+                })
+                .setErrorCallback(throwable -> {
+                    Log.e(TAG, "resume failed: " + throwable.toString());
+                    SpotifyServiceError spotifyServiceError = getErrorFromThrowable(throwable);
+                    callback.onFailed(new Exception(throwable));
+                    sendErrorToSubscribers(spotifyServiceError);
+                });
     }
 
     // Reads the currently playing track from the player
@@ -187,5 +219,11 @@ public class SpotifyService {
             artistNames.add(artist.name);
         }
         return new BrunoTrack(track.name, track.album.name, track.duration, artistNames);
+    }
+
+    private void sendErrorToSubscribers(SpotifyServiceError error) {
+        for (SpotifyServiceSubscriber subscriber : spotifyServiceSubscribers) {
+            subscriber.onError(error);
+        }
     }
 }

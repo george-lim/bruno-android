@@ -31,7 +31,7 @@ public class MockMusicPlayerImpl implements MusicPlayer {
         callback.onSuccess(null);
     }
 
-    public void getCurrentTrack(Callback<BrunoTrack, Exception> callback) {
+    public BrunoTrack getCurrentTrack() {
         ArrayList<String> artists = new ArrayList<String>(2);
         artists.add("Bruno Mars");
         artists.add("Burno Mars");
@@ -43,7 +43,7 @@ public class MockMusicPlayerImpl implements MusicPlayer {
             Log.i(TAG, "getCurrentTrack(): Artist "
                     + i + ": " + artists.get(i));
         }
-        callback.onSuccess(track);
+        return track;
     }
 
 }

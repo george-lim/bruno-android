@@ -12,6 +12,7 @@ import com.cs446.group7.bruno.R;
 import com.cs446.group7.bruno.music.BrunoTrack;
 import com.cs446.group7.bruno.spotify.SpotifyServiceError;
 import com.cs446.group7.bruno.spotify.SpotifyServiceSubscriber;
+import com.cs446.group7.bruno.utils.Callback;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -41,6 +42,7 @@ public class OnRouteFragment extends Fragment implements SpotifyServiceSubscribe
         googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
 
     };
+
 
     @Nullable
     @Override
@@ -80,7 +82,16 @@ public class OnRouteFragment extends Fragment implements SpotifyServiceSubscribe
     @Override
     public void onStop() {
         super.onStop();
-        MainActivity.getSpotifyPlayerService().pauseMusic();
-        MainActivity.getSpotifyPlayerService().disconnect();
+        MainActivity.getSpotifyPlayerService().pause(new Callback<Void, Exception>() {
+            @Override
+            public void onSuccess(Void result) {
+                MainActivity.getSpotifyPlayerService().disconnect();
+            }
+
+            @Override
+            public void onFailed(Exception result) {
+
+            }
+        });
     }
 }
