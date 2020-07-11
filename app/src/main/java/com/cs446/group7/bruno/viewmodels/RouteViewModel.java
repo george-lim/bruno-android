@@ -41,6 +41,10 @@ public class RouteViewModel extends AndroidViewModel implements OnRouteResponseC
     }
 
     public void setDuration(int duration) {
+        if (duration == this.duration) {
+            return;
+        }
+
         this.duration = duration;
         generateRoute();
     }
