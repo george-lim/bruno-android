@@ -9,6 +9,8 @@
     <color name="colorOnBackgroundLite">#858181</color>
     <color name="colorDisable">#C4C4C4</color>
     <color name="colorListBackgroundPressed">#ededed</color>
+    <color name="colorOutline">#C4C4C4</color>
+
 
     <array name="colorRouteList">
         <item>#F7CB89</item>
