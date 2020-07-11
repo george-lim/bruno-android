@@ -103,6 +103,12 @@ public class RoutePlanningFragment extends Fragment {
     }
 
     @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        model.getRouteResult().removeObservers(getViewLifecycleOwner());
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
         requestLocationUpdates();
