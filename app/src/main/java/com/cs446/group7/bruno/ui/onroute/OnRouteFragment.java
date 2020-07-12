@@ -39,6 +39,7 @@ public class OnRouteFragment extends Fragment {
     private TextView txtSongTitle;
     private TextView txtSongArtistInfo;
     private Button btnExitRoute;
+    public final String TAG = this.getClass().getSimpleName();
 
     private OnMapReadyCallback callback = googleMap -> {
         map = googleMap;
@@ -83,20 +84,20 @@ public class OnRouteFragment extends Fragment {
         nDialog.setCancelable(false);
         nDialog.show();
 
-        MainActivity.getSpotifyPlayerService().connect(getContext(), new Callback<Void, SpotifyServiceError>() {
+        MainActivity.getSpotifyService().connect(getContext(), new Callback<Void, SpotifyServiceError>() {
             @Override
             public void onSuccess(Void result) { // Connection successful
                 nDialog.dismiss();
-                MainActivity.getSpotifyPlayerService().setPlaylist("7fPwZk4KFD2yfU7J5O1JVz");
-                MainActivity.getSpotifyPlayerService().play(new Callback<Void, Exception>() {
+                MainActivity.getSpotifyService().setPlayerPlaylist("7fPwZk4KFD2yfU7J5O1JVz");
+                MainActivity.getSpotifyService().play(new Callback<Void, Exception>() {
                     @Override
                     public void onSuccess(Void result) { // playback successful
-                        MainActivity.getSpotifyPlayerService().addSubscriber(model.getSpotifyViewModel());
+                        MainActivity.getSpotifyService().addSubscriber(model.getSpotifyViewModel());
                     }
 
                     @Override
                     public void onFailed(Exception error) { // playback failed
-                        Log.e("SpotifyService", "onFailed play: " + error.toString());
+                        Log.e(TAG, "onFailed play: " + error.toString());
                     }
                 });
             }
@@ -104,7 +105,7 @@ public class OnRouteFragment extends Fragment {
             @Override
             public void onFailed(SpotifyServiceError error) { // received unrecoverable Spotify error
                 nDialog.dismiss();
-                Log.e("SpotifyService", "onFailed connect: " + error.toString());
+                Log.e(TAG, "onFailed connect: " + error.toString());
 
                 if (getContext() == null) return;
 
@@ -141,16 +142,16 @@ public class OnRouteFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (MainActivity.getSpotifyPlayerService().isConnected()) {
-            MainActivity.getSpotifyPlayerService().pause(new Callback<Void, Exception>() {
+        if (MainActivity.getSpotifyService().isConnected()) {
+            MainActivity.getSpotifyService().pause(new Callback<Void, Exception>() {
                 @Override
                 public void onSuccess(Void result) {
-                    MainActivity.getSpotifyPlayerService().disconnect();
+                    MainActivity.getSpotifyService().disconnect();
                 }
 
                 @Override
                 public void onFailed(Exception result) {
-                    MainActivity.getSpotifyPlayerService().disconnect();
+                    MainActivity.getSpotifyService().disconnect();
                 }
             });
         }

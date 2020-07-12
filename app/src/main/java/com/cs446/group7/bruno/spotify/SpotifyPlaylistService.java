@@ -33,7 +33,7 @@ import java.util.Map;
 public class SpotifyPlaylistService implements PlaylistGenerator {
 
     final RequestQueue requestQueue;
-    // Hard coded to a specific playlist - same as the one in SpotifyService.playMusic()
+    // Hard coded to a specific playlist - same as the one in SpotifyPlayerService.playMusic()
     final String playlistEndpoint = "https://api.spotify.com/v1/playlists/";
     final String authorizationEndpoint = "https://accounts.spotify.com/api/token";
     final String clientId;
@@ -49,24 +49,24 @@ public class SpotifyPlaylistService implements PlaylistGenerator {
     // Call this to get the BrunoPlaylist - it goes through the sequence necessary to provide
     // the BrunoPlaylist requested by callback
     // All failures are sent back through callback.onPlaylistError()
-    public void getPlaylist(OnPlaylistCallback callback, String playlistId) {
-        getAuthorizationToken(callback, playlistId);
+    public void getPlaylist(String playlistId, Callback<BrunoPlaylist, Exception> callback) {
+        getAuthorizationToken(playlistId, callback);
     }
 
     // In order to use the Spotify API, an authorization token needs to be retrieved from Spotify
     // Using the client id and client secret, we can retrieve this token first before using the API
     // Calls getPlaylistResponse upon success
-    private void getAuthorizationToken(OnPlaylistCallback callback, String playlistId) {
+    private void getAuthorizationToken(String playlistId, Callback<BrunoPlaylist, Exception> callback) {
         final StringRequest authRequest = new StringRequest(Request.Method.POST, authorizationEndpoint,
                 new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 try {
                     final JSONObject responseJson = new JSONObject(response);
-                    getPlaylistResponse(callback,
-                            responseJson.getString("access_token"), playlistId);
+                    getPlaylistResponse(
+                            responseJson.getString("access_token"), playlistId, callback);
                 } catch (JSONException e) {
-                    callback.onPlaylistError(e);
+                    callback.onFailed(e);
                 }
             }
         }, new Response.ErrorListener() {
@@ -91,7 +91,7 @@ public class SpotifyPlaylistService implements PlaylistGenerator {
                 try {
                     return requestBody == null ? null : requestBody.getBytes("utf-8");
                 } catch (UnsupportedEncodingException e) {
-                    callback.onPlaylistError(e);
+                    callback.onFailed(e);
                     return null;
                 }
             }
@@ -103,7 +103,7 @@ public class SpotifyPlaylistService implements PlaylistGenerator {
     // With the authorization token, we can use the playlist API to retrieve a JSON representation
     // of the playlist. This gets parsed in BrunoPlaylist.getPlaylistFromJson, and returned to
     // the callback.
-    private void getPlaylistResponse(OnPlaylistCallback callback, String authToken, String playlistId) {
+    private void getPlaylistResponse(String authToken, String playlistId, Callback<BrunoPlaylist, Exception> callback) {
         final StringRequest stringRequest = new StringRequest(Request.Method.GET,
         playlistEndpoint + playlistId,
             new Response.Listener<String>() {
@@ -112,9 +112,9 @@ public class SpotifyPlaylistService implements PlaylistGenerator {
                     try {
                         final JSONObject responseJson = new JSONObject(response);
                         final BrunoPlaylist playlist = getPlaylistFromJSON(responseJson);
-                        callback.onPlaylistReady(playlist);
+                        callback.onSuccess(playlist);
                     } catch (JSONException e) {
-                        callback.onPlaylistError(e);
+                        callback.onFailed(e);
                     }
                 }
             }, new Response.ErrorListener() {
@@ -173,10 +173,5 @@ public class SpotifyPlaylistService implements PlaylistGenerator {
         final BrunoPlaylist outputPlaylist = new BrunoPlaylist(outputPlaylistName, outputDescription,
                 outputTotalTracks, outputPlaylistDuration, outputTracks);
         return outputPlaylist;
-    }
-
-    @Override
-    public void getPlaylist(String playlistId, Callback<BrunoPlaylist, Exception> callback) {
-
     }
 }

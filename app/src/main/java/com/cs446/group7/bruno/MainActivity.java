@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity implements PermissionRequest
 
     private static CapabilityService capabilityService;
     private static LocationService locationService;
-    private static SpotifyService spotifyPlayerService;
+    private static SpotifyService spotifyService;
 
     // MARK: - PermissionRequestDelegate members
 
@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity implements PermissionRequest
         activeHardwareRequests = new HashMap<>();
 
         locationService = new LocationService(getApplicationContext());
-        spotifyPlayerService = new SpotifyService();
+        spotifyService = new SpotifyService(getApplicationContext());
     }
 
     /**
@@ -86,8 +86,8 @@ public class MainActivity extends AppCompatActivity implements PermissionRequest
         return locationService;
     }
 
-    public static SpotifyService getSpotifyPlayerService() {
-        return spotifyPlayerService;
+    public static SpotifyService getSpotifyService() {
+        return spotifyService;
     }
 
     @Override

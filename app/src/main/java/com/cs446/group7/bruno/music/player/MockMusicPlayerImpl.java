@@ -12,7 +12,7 @@ public class MockMusicPlayerImpl implements MusicPlayer {
     String playlistId = "";
     private final String TAG = getClass().getSimpleName();
 
-    public void setPlaylist(String playlistId) {
+    public void setPlayerPlaylist(String playlistId) {
         this.playlistId = playlistId;
     }
 

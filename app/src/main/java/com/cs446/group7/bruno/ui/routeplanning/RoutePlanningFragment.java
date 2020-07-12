@@ -34,14 +34,6 @@ import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.util.List;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.cardview.widget.CardView;
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-
 public class RoutePlanningFragment extends Fragment {
     private static final int[] DURATION_VALUES = { 15, 30, 45, 60, 75, 90, 105, 120 };
     private static final Capability[] REQUIRED_CAPABILITIES = { Capability.LOCATION, Capability.INTERNET };
