@@ -121,12 +121,6 @@ public class RoutePlanningFragment extends Fragment {
     }
 
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        model.getRouteResult().removeObservers(getViewLifecycleOwner());
-    }
-
-    @Override
     public void onPause() {
         super.onPause();
         MainActivity.getLocationService().removeSubscriber(model);
