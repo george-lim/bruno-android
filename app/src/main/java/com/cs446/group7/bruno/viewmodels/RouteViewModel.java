@@ -40,9 +40,7 @@ public class RouteViewModel extends AndroidViewModel implements OnRouteResponseC
 
         Context context = application.getApplicationContext();
         String apiKey = context.getResources().getString(R.string.google_maps_key);
-        routeGenerator = BuildConfig.DEBUG
-                ? new MockRouteGeneratorImpl(context, apiKey)
-                : new RouteGeneratorImpl(context, apiKey);
+        routeGenerator = new RouteGeneratorImpl(context, apiKey);
         spotifyViewModel = new SpotifyViewModel(application);
         // Store avatar bitmap in view model because conversion of vector drawable to bitmap
         // can be resource heavy
