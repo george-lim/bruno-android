@@ -120,18 +120,6 @@ public class RoutePlanningFragment extends Fragment {
         }
     }
 
-    @Override
-    public void onPause() {
-        super.onPause();
-        MainActivity.getLocationService().removeSubscriber(model);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        MainActivity.getLocationService().addSubscriber(model);
-    }
-
     private void handleWalkingModeClick(final View view) {
         if (!walkingModeBtn.isSelected()) {
             model.setWalkingMode(true);

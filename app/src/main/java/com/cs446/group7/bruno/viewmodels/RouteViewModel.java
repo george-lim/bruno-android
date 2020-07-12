@@ -38,6 +38,14 @@ public class RouteViewModel extends AndroidViewModel implements OnRouteResponseC
         routeGenerator = BuildConfig.DEBUG
                 ? new MockRouteGeneratorImpl(context, apiKey)
                 : new RouteGeneratorImpl(context, apiKey);
+
+        MainActivity.getLocationService().addSubscriber(this);
+    }
+
+    @Override
+    protected void finalize() throws Throwable {
+        super.finalize();
+        MainActivity.getLocationService().removeSubscriber(this);
     }
 
     public void setDuration(int duration) {
