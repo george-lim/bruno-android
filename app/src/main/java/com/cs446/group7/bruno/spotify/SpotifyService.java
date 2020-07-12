@@ -84,7 +84,6 @@ public class SpotifyService implements MusicPlayer {
                 Log.e(TAG, ".connect onFailure method: " + throwable.toString());
                 SpotifyServiceError spotifyServiceError = getErrorFromThrowable(throwable);
                 callback.onFailed(spotifyServiceError);
-                sendErrorToSubscribers(spotifyServiceError);
             }
         });
     }
@@ -167,7 +166,6 @@ public class SpotifyService implements MusicPlayer {
                     Log.e(TAG, "play failed: " + throwable.toString());
                     SpotifyServiceError spotifyServiceError = getErrorFromThrowable(throwable);
                     callback.onFailed(new Exception(throwable));
-                    sendErrorToSubscribers(spotifyServiceError);
                 });
     }
 
@@ -183,7 +181,6 @@ public class SpotifyService implements MusicPlayer {
                     Log.e(TAG, "pause failed: " + throwable.toString());
                     SpotifyServiceError spotifyServiceError = getErrorFromThrowable(throwable);
                     callback.onFailed(new Exception(throwable));
-                    sendErrorToSubscribers(spotifyServiceError);
                 });
     }
 
@@ -197,7 +194,6 @@ public class SpotifyService implements MusicPlayer {
                     Log.e(TAG, "resume failed: " + throwable.toString());
                     SpotifyServiceError spotifyServiceError = getErrorFromThrowable(throwable);
                     callback.onFailed(new Exception(throwable));
-                    sendErrorToSubscribers(spotifyServiceError);
                 });
     }
 
@@ -215,11 +211,5 @@ public class SpotifyService implements MusicPlayer {
             artistNames.add(artist.name);
         }
         return new BrunoTrack(track.name, track.album.name, track.duration, artistNames);
-    }
-
-    private void sendErrorToSubscribers(SpotifyServiceError error) {
-        for (SpotifyServiceSubscriber subscriber : spotifyServiceSubscribers) {
-            subscriber.onError(error);
-        }
     }
 }

@@ -25,7 +25,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
@@ -74,7 +73,6 @@ public class OnRouteFragment extends Fragment {
 
         model = new ViewModelProvider(requireActivity()).get(RouteViewModel.class);
         model.getSpotifyViewModel().getCurrentTrack().observe(getViewLifecycleOwner(), this::onTrackChanged);
-        model.getSpotifyViewModel().getCurrentError().observe(getViewLifecycleOwner(), this::onError);
 
         connectToSpotify();
     }
@@ -88,65 +86,52 @@ public class OnRouteFragment extends Fragment {
         nDialog.show();
 
         MainActivity.getSpotifyPlayerService().connect(getContext(), new Callback<Void, SpotifyServiceError>() {
-            // Success! Start playing music
             @Override
-            public void onSuccess(Void result) {
+            public void onSuccess(Void result) { // Connection successful
+                nDialog.dismiss();
                 MainActivity.getSpotifyPlayerService().setPlaylist("7fPwZk4KFD2yfU7J5O1JVz");
                 MainActivity.getSpotifyPlayerService().play(new Callback<Void, Exception>() {
                     @Override
-                    public void onSuccess(Void result) {
-                        nDialog.dismiss();
+                    public void onSuccess(Void result) { // playback successful
                         MainActivity.getSpotifyPlayerService().addSubscriber(model.getSpotifyViewModel());
                     }
 
                     @Override
-                    public void onFailed(Exception error) {
-                        nDialog.dismiss();
-
-                        new AlertDialog.Builder(getContext())
-                                .setTitle("Player Error")
-                                .setMessage(error.getMessage())
-                                .setPositiveButton("OK", null)
-                                .setOnDismissListener(null)
-                                .create()
-                                .show();
+                    public void onFailed(Exception error) { // playback failed
+                        Log.e("SpotifyService", "onFailed play: " + error.toString());
                     }
                 });
             }
 
-            // Connection failure
             @Override
-            public void onFailed(SpotifyServiceError error) {
+            public void onFailed(SpotifyServiceError error) { // received unrecoverable Spotify error
                 nDialog.dismiss();
+                Log.e("SpotifyService", "onFailed connect: " + error.toString());
 
                 new AlertDialog.Builder(getContext())
                         .setTitle("Spotify Error")
                         .setMessage(error.getErrorMessage())
-                        .setPositiveButton("OK", null)
-                        .setOnDismissListener(null)
+                        .setPositiveButton("OK", (dialogInterface, i) -> exitFragment())
+                        .setCancelable(false)
                         .create()
                         .show();
             }
         });
     }
 
+    private void exitFragment() {
+        Navigation.findNavController(getActivity(), R.id.nav_host_fragment).navigateUp();
+    }
+
     private void onTrackChanged(@NonNull final BrunoTrack track) {
-        // Toast.makeText(getContext(), String.format("Now playing: %s", track.name), Toast.LENGTH_SHORT).show();
         txtSongTitle.setText(track.name);
         txtSongArtistInfo.setText(track.album);
     }
 
-    private void onError(@NonNull final SpotifyServiceError error) {
-        Log.e("SpotifyService", String.format("OnRouteFragment: %s", error.getErrorMessage()));
-
-        if (getActivity() == null) return;
-        Navigation.findNavController(getActivity(), R.id.nav_host_fragment).navigateUp();
-    }
-
     @Override
-    public void onStop() {
-        super.onStop();
-        Toast.makeText(getContext(), "onStop", Toast.LENGTH_SHORT).show();
+    public void onDestroy() {
+        super.onDestroy();
+        Toast.makeText(getContext(), "onDestroy", Toast.LENGTH_SHORT).show();
         if (MainActivity.getSpotifyPlayerService().isConnected()) {
             MainActivity.getSpotifyPlayerService().disconnect();
         }
