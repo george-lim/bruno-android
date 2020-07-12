@@ -12,6 +12,17 @@ public class MockPlaylistGeneratorImpl implements PlaylistGenerator {
 
     private final String TAG = getClass().getSimpleName();
 
+    // NOTE: Since ArrayList.clone should not be used, this function is used instead
+    private ArrayList<String> cloneArtists(final ArrayList<String> artists) {
+        ArrayList<String> clone = new ArrayList<>();
+
+        for (String artist : artists) {
+            clone.add(String.valueOf(artist));
+        }
+
+        return clone;
+    }
+
     public void getPlaylist(String playlistId, Callback<BrunoPlaylist, Exception> callback) {
         ArrayList<BrunoTrack> tracks = new ArrayList<BrunoTrack>(5);
         ArrayList<String> artists = new ArrayList<String>(2);
@@ -20,9 +31,8 @@ public class MockPlaylistGeneratorImpl implements PlaylistGenerator {
         long threeMinutes = 180000; // Milliseconds
         int trackCount = 50;
         for (int i = 0; i < trackCount; ++i) {
-            ArrayList<String> artistsClone = (ArrayList<String>) artists.clone();
             tracks.add(new BrunoTrack("name" + i, "album" + i,
-                    threeMinutes, artistsClone));
+                    threeMinutes, cloneArtists(artists)));
         }
 
         BrunoPlaylist playlist = new BrunoPlaylist("name", "description",

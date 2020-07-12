@@ -22,6 +22,9 @@
         <action
             android:id="@+id/action_fragmenttoplvl_to_fragmentprivacypolicy"
             app:destination="@id/fragment_privacy_policy" />
+        <action
+            android:id="@+id/action_fragmenttoplvl_to_fragmentcredits"
+            app:destination="@id/fragment_credits" />
     </fragment>
 
     <fragment
@@ -47,5 +50,11 @@
         android:name="com.cs446.group7.bruno.ui.settings.PrivacyPolicyFragment"
         android:label="fragment_privacy_policy"
         tools:layout="@layout/fragment_privacy_policy" />
+
+    <fragment
+        android:id="@+id/fragment_credits"
+        android:name="com.cs446.group7.bruno.ui.settings.CreditsFragment"
+        android:label="fragment_credits"
+        tools:layout="@layout/fragment_credits" />
 
 </navigation>

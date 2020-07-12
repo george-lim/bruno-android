@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="credits_text">
+        "Core developers:
+    - Boris Chan
+    - George Lim
+    - Jackie Xu
+    - James Huang
+    - Mohit Patel
+    - Sherry Li
+
+Bruno Icon:
+    Evelyn Gondosiswanto
+
+Action Icons:
+    Font Awesome
+
+Avatar Arts:
+    Icon made by Freepik from www.flaticon.com"
+    </string>
+</resources>
