@@ -10,18 +10,12 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
-
 import com.cs446.group7.bruno.MainActivity;
 import com.cs446.group7.bruno.R;
 import com.cs446.group7.bruno.music.BrunoTrack;
-import com.cs446.group7.bruno.routing.Route;
 import com.cs446.group7.bruno.spotify.SpotifyServiceError;
 import com.cs446.group7.bruno.utils.Callback;
-
+import com.cs446.group7.bruno.viewmodels.RouteResult;
 import com.cs446.group7.bruno.viewmodels.RouteViewModel;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -32,6 +26,10 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 
 public class OnRouteFragment extends Fragment {
@@ -71,7 +69,7 @@ public class OnRouteFragment extends Fragment {
         txtSongTitle = view.findViewById(R.id.text_view_song_title);
         txtSongArtistInfo = view.findViewById(R.id.text_view_song_artist_info);
         btnExitRoute = view.findViewById(R.id.btn_exit_route);
-        btnExitRoute.setOnClickListener(this::onExitRouteClicked);
+        btnExitRoute.setOnClickListener(view1 -> onExitRouteClicked());
 
         model = new ViewModelProvider(requireActivity()).get(RouteViewModel.class);
         model.getSpotifyViewModel().getCurrentTrack().observe(getViewLifecycleOwner(), this::onTrackChanged);
@@ -123,7 +121,7 @@ public class OnRouteFragment extends Fragment {
         });
     }
 
-    private void onExitRouteClicked(final View view) {
+    private void onExitRouteClicked() {
         new AlertDialog.Builder(getContext())
                 .setTitle("Are you sure?")
                 .setMessage("Bruno doesn't like it when you quit in the middle, your current progress will be lost.")
@@ -175,6 +173,9 @@ public class OnRouteFragment extends Fragment {
 
     private void observeUserLocation() {
         model.getCurrentLocation().observe(getViewLifecycleOwner(), location -> {
+
+            // TODO: Permissions aren't checked properly, should fix in the flow later to ensure this doesn't happen
+            if (location == null) return;
             if (userMarker == null) {
                 userMarker = map.addMarker(new MarkerOptions().position(location));
                 userMarker.setIcon(model.getAvatarMarker());
@@ -193,7 +194,14 @@ public class OnRouteFragment extends Fragment {
     }
 
     private void drawRoute() {
-        Route route = model.getRouteResult().getValue().getRoute();
-        map.addPolyline(new PolylineOptions().addAll(route.getDecodedPath()));
+        RouteResult route = model.getRouteResult().getValue();
+
+        // TODO: Permissions aren't checked properly, should fix in the flow later to ensure this doesn't happen
+        if (route == null) return;
+        map.addPolyline(new PolylineOptions().addAll(route.getRoute().getDecodedPath()));
+    }
+
+    public void onBackPress() {
+        onExitRouteClicked();
     }
 }

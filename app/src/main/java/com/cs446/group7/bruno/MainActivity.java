@@ -22,6 +22,7 @@ import com.cs446.group7.bruno.capability.permission.PermissionRequest;
 import com.cs446.group7.bruno.capability.permission.PermissionRequestDelegate;
 import com.cs446.group7.bruno.location.LocationService;
 import com.cs446.group7.bruno.spotify.SpotifyService;
+import com.cs446.group7.bruno.ui.onroute.OnRouteFragment;
 import com.cs446.group7.bruno.ui.toplevel.TopLevelFragment;
 import com.cs446.group7.bruno.utils.NoFailCallback;
 
@@ -67,9 +68,14 @@ public class MainActivity extends AppCompatActivity implements PermissionRequest
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         int curContainerFragmentId = navController.getCurrentDestination().getId();
 
-        // Prevent user from using the back button to exit a route. We will force them to use our custom button to
-        // ensure the fragment is cleaned up properly
-        if (curContainerFragmentId == R.id.fragment_on_route) {return; }
+        // Force the user to follow our exit flow to ensure cleanup is done properly
+        if (curContainerFragmentId == R.id.fragment_on_route) {
+            NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager().getPrimaryNavigationFragment();
+            OnRouteFragment onRouteFragment = (OnRouteFragment) navHostFragment.getChildFragmentManager().getPrimaryNavigationFragment();
+            onRouteFragment.onBackPress();
+            return;
+        }
+
         if (curContainerFragmentId == R.id.fragment_top_lvl) {
             NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager().getPrimaryNavigationFragment();
             TopLevelFragment topLvlFragment = (TopLevelFragment) navHostFragment.getChildFragmentManager().getPrimaryNavigationFragment();
