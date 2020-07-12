@@ -30,7 +30,7 @@ import java.util.Map;
 // Communicates with the Spotify Web API through HTTP
 // Uses Volley, an HTTP library: https://developer.android.com/training/volley
 // Could share the request queue between this and RouteGenerator - can turn it into a singleton
-public class SpotifyPlaylistService implements PlaylistGenerator {
+class SpotifyPlaylistService implements PlaylistGenerator {
 
     final RequestQueue requestQueue;
     // Hard coded to a specific playlist - same as the one in SpotifyPlayerService.playMusic()

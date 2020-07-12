@@ -32,7 +32,7 @@ import androidx.annotation.NonNull;
 /**
  * Service responsible for connecting to Spotify, play music and notifying subscribers about state changes.
  */
-public class SpotifyPlayerService implements MusicPlayer {
+class SpotifyPlayerService implements MusicPlayer {
 
     // Main interface to Spotify, initialized by connectToSpotify()
     private SpotifyAppRemote mSpotifyAppRemote;
