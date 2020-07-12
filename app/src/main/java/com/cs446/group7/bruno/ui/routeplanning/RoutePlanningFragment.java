@@ -1,5 +1,6 @@
 package com.cs446.group7.bruno.ui.routeplanning;
 
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
@@ -46,6 +47,7 @@ public class RoutePlanningFragment extends Fragment {
     private NumberPicker durationPicker;
     private CardView cardView;
     private View mapFragmentView;
+    private int[] routeColours;
 
     private OnMapReadyCallback mapCallback = new OnMapReadyCallback() {
         @Override
@@ -64,6 +66,7 @@ public class RoutePlanningFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_route_planning, container, false);
         model = new ViewModelProvider(requireActivity()).get(RouteViewModel.class);
         buildCardView(view);
+        routeColours = getColours();
         return view;
     }
 
@@ -227,7 +230,35 @@ public class RoutePlanningFragment extends Fragment {
                 .position(decodedPath.get(0)))
                 .setIcon(model.getAvatarMarker());
 
-        map.addPolyline(new PolylineOptions().addAll(route.getDecodedPath()));
+        int numPoints = route.getDecodedPath().size();
+        final float lineWidth = 15;
+
+        if (routeColours == null || routeColours.length < 1 || numPoints < routeColours.length) {
+            map.addPolyline(new PolylineOptions()
+                    .addAll(route.getDecodedPath())
+                    .color(routeColours[0])
+                    .width(lineWidth));
+            return;
+        }
+
+        int interval = numPoints / routeColours.length;
+
+        int pointInd = 0;
+        for (int i = 0; i < routeColours.length; ++i) {
+            map.addPolyline(new PolylineOptions()
+                    .addAll(route.getDecodedPath().subList(pointInd, pointInd + interval))
+                    .color(routeColours[i])
+                    .width(lineWidth));
+            pointInd += interval;
+
+            // fill in breaks between segments
+            if (pointInd < numPoints) {
+                map.addPolyline(new PolylineOptions()
+                        .addAll(route.getDecodedPath().subList(pointInd - 1, pointInd + 1))
+                        .color(routeColours[i])
+                        .width(lineWidth));
+            }
+        }
     }
 
     private static String[] intArrayToStringArray(int[] intArray) {
@@ -236,5 +267,15 @@ public class RoutePlanningFragment extends Fragment {
             result[i] = Integer.toString(intArray[i]);
         }
         return result;
+    }
+
+    private int[] getColours() {
+        int[] colours;
+        try {
+            colours = getResources().getIntArray(R.array.colorRouteList);
+        } catch (Resources.NotFoundException e) {
+            colours = null;
+        }
+        return  colours;
     }
 }
