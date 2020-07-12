@@ -106,7 +106,7 @@ public class RoutePlanningFragment extends Fragment {
     }
 
     private void updateUI() {
-        startBtn.setText(isRoutePlanningComplete() ? "Start" : "Generate Route");
+        startBtn.setText(model.isRoutePlanningComplete() ? "Start" : "Generate Route");
         cardView.setVisibility(View.VISIBLE);
     }
 
@@ -143,10 +143,6 @@ public class RoutePlanningFragment extends Fragment {
         }
     }
 
-    private boolean isRoutePlanningComplete() {
-        return model.getRouteResult().getValue() != null;
-    }
-
     private void handleStartWalkingClick(final View view) {
         if (isRequestingCapability) return;
         isRequestingCapability = true;
@@ -154,7 +150,7 @@ public class RoutePlanningFragment extends Fragment {
         MainActivity.getCapabilityService().request(REQUIRED_CAPABILITIES, new Callback<Void, Void>() {
             @Override
             public void onSuccess(Void result) {
-                if (isRoutePlanningComplete()) {
+                if (model.isRoutePlanningComplete()) {
                     NavController navController = Navigation.findNavController(getActivity(), R.id.nav_host_fragment);
                     navController.navigate(R.id.action_fragmenttoplevel_to_fragmentonroute);
                 }

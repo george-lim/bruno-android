@@ -22,7 +22,6 @@ import com.cs446.group7.bruno.routing.RouteGeneratorImpl;
 import com.cs446.group7.bruno.settings.SettingsService;
 import com.google.android.gms.maps.model.LatLng;
 
-
 public class RouteViewModel extends AndroidViewModel implements OnRouteResponseCallback, LocationServiceSubscriber {
     private int duration;
     private boolean isWalkingMode = true;
@@ -95,11 +94,17 @@ public class RouteViewModel extends AndroidViewModel implements OnRouteResponseC
         }
     }
 
-    public void startRouteGeneration() {
+    private void startLocationUpdates() {
         MainActivity.getLocationService().startLocationUpdates(location -> {
             currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
             generateRoute();
         });
+    }
+
+    public void startRouteGeneration() {
+        if (!isRouteGenerationReady()) {
+            startLocationUpdates();
+        }
     }
 
     public void startRouteGeneration(int duration) {
@@ -109,5 +114,9 @@ public class RouteViewModel extends AndroidViewModel implements OnRouteResponseC
 
     public boolean isRouteGenerationReady() {
         return currentLocation != null && duration > 0;
+    }
+
+    public boolean isRoutePlanningComplete() {
+        return routeResult.getValue() != null;
     }
 }
