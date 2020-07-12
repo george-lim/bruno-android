@@ -130,13 +130,13 @@ public class SpotifyService implements MusicPlayer {
                     if (track != null) {
                         if (currentPlayerState != null && track.equals(currentPlayerState.track)) {
                             // same track, perhaps just paused
-                            Log.d(TAG, "Same track!");
-                        } else {
-                            // track changed, let client know
-                            for (SpotifyServiceSubscriber subscriber : spotifyServiceSubscribers) {
-                                subscriber.onTrackChanged(makeBrunoTrack(track));
-                            }
+                            Log.w(TAG, "Same track!");
                         }
+
+                        for (SpotifyServiceSubscriber subscriber : spotifyServiceSubscribers) {
+                            subscriber.onTrackChanged(makeBrunoTrack(track));
+                        }
+
                         Log.d(TAG, String.format("Curr Track: %s", track.toString()));
                     } else {
                         Log.w(TAG, "Track is null!");
@@ -160,7 +160,6 @@ public class SpotifyService implements MusicPlayer {
                 .setShuffle(false)
                 .setResultCallback(empty -> {
                     mSpotifyAppRemote.getPlayerApi().play("spotify:playlist:" + this.playlistId).setResultCallback(empty1 -> {
-                        Log.i(TAG, "Playing!");
                         callback.onSuccess(null);
                     });
                 })
@@ -178,7 +177,6 @@ public class SpotifyService implements MusicPlayer {
     public void pause(Callback<Void, Exception> callback) {
         mSpotifyAppRemote.getPlayerApi()
                 .pause().setResultCallback(empty -> {
-                    Log.i(TAG, "Paused!");
                     callback.onSuccess(null);
                 })
                 .setErrorCallback(throwable -> {

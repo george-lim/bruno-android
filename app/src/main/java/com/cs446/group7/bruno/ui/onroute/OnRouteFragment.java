@@ -1,5 +1,7 @@
 package com.cs446.group7.bruno.ui.onroute;
 
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -23,6 +25,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
@@ -70,10 +73,61 @@ public class OnRouteFragment extends Fragment {
         txtSongArtistInfo = view.findViewById(R.id.text_view_song_artist_info);
 
         model = new ViewModelProvider(requireActivity()).get(RouteViewModel.class);
-        MainActivity.getSpotifyPlayerService().addSubscriber(model.getSpotifyViewModel());
-
         model.getSpotifyViewModel().getCurrentTrack().observe(getViewLifecycleOwner(), this::onTrackChanged);
         model.getSpotifyViewModel().getCurrentError().observe(getViewLifecycleOwner(), this::onError);
+
+        connectToSpotify();
+    }
+
+    private void connectToSpotify() {
+        ProgressDialog nDialog = new ProgressDialog(getContext());
+        nDialog.setMessage("Bruno is preparing your route and music");
+        nDialog.setTitle("Hold on tight");
+        nDialog.setIndeterminate(false);
+        nDialog.setCancelable(false);
+        nDialog.show();
+
+        MainActivity.getSpotifyPlayerService().connect(getContext(), new Callback<Void, SpotifyServiceError>() {
+            // Success! Start playing music
+            @Override
+            public void onSuccess(Void result) {
+                MainActivity.getSpotifyPlayerService().setPlaylist("7fPwZk4KFD2yfU7J5O1JVz");
+                MainActivity.getSpotifyPlayerService().play(new Callback<Void, Exception>() {
+                    @Override
+                    public void onSuccess(Void result) {
+                        nDialog.dismiss();
+                        MainActivity.getSpotifyPlayerService().addSubscriber(model.getSpotifyViewModel());
+                    }
+
+                    @Override
+                    public void onFailed(Exception error) {
+                        nDialog.dismiss();
+
+                        new AlertDialog.Builder(getContext())
+                                .setTitle("Player Error")
+                                .setMessage(error.getMessage())
+                                .setPositiveButton("OK", null)
+                                .setOnDismissListener(null)
+                                .create()
+                                .show();
+                    }
+                });
+            }
+
+            // Connection failure
+            @Override
+            public void onFailed(SpotifyServiceError error) {
+                nDialog.dismiss();
+
+                new AlertDialog.Builder(getContext())
+                        .setTitle("Spotify Error")
+                        .setMessage(error.getErrorMessage())
+                        .setPositiveButton("OK", null)
+                        .setOnDismissListener(null)
+                        .create()
+                        .show();
+            }
+        });
     }
 
     private void onTrackChanged(@NonNull final BrunoTrack track) {
@@ -92,6 +146,9 @@ public class OnRouteFragment extends Fragment {
     @Override
     public void onStop() {
         super.onStop();
-        MainActivity.getSpotifyPlayerService().disconnect();
+        Toast.makeText(getContext(), "onStop", Toast.LENGTH_SHORT).show();
+        if (MainActivity.getSpotifyPlayerService().isConnected()) {
+            MainActivity.getSpotifyPlayerService().disconnect();
+        }
     }
 }

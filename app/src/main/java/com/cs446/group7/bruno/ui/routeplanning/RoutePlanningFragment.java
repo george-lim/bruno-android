@@ -1,7 +1,5 @@
 package com.cs446.group7.bruno.ui.routeplanning;
 
-import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
@@ -15,7 +13,6 @@ import com.cs446.group7.bruno.MainActivity;
 import com.cs446.group7.bruno.R;
 import com.cs446.group7.bruno.capability.Capability;
 import com.cs446.group7.bruno.routing.Route;
-import com.cs446.group7.bruno.spotify.SpotifyServiceError;
 import com.cs446.group7.bruno.utils.Callback;
 import com.cs446.group7.bruno.viewmodels.RouteViewModel;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -164,58 +161,8 @@ public class RoutePlanningFragment extends Fragment {
     }
 
     private void handleStartWalkingClick(final View view) {
-
         NavController navController = Navigation.findNavController(getActivity(), R.id.nav_host_fragment);
-
-        ProgressDialog nDialog = new ProgressDialog(getContext());
-        nDialog.setMessage("Bruno is preparing your route and music");
-        nDialog.setTitle("Hold on tight");
-        nDialog.setIndeterminate(false);
-        nDialog.setCancelable(false);
-        nDialog.show();
-
-        // Ready to start walking, so try to connect to Spotify
-        MainActivity.getSpotifyPlayerService().connect(getContext(), new Callback<Void, SpotifyServiceError>() {
-            // Success! Start playing music
-            @Override
-            public void onSuccess(Void result) {
-                MainActivity.getSpotifyPlayerService().setPlaylist("7fPwZk4KFD2yfU7J5O1JVz");
-                MainActivity.getSpotifyPlayerService().play(new Callback<Void, Exception>() {
-                    @Override
-                    public void onSuccess(Void result) {
-                        nDialog.dismiss();
-                        navController.navigate(R.id.action_fragmenttoplevel_to_fragmentonroute);
-                    }
-
-                    @Override
-                    public void onFailed(Exception error) {
-                        nDialog.dismiss();
-
-                        new AlertDialog.Builder(getContext())
-                                .setTitle("Player Error")
-                                .setMessage(error.getMessage())
-                                .setPositiveButton("OK", null)
-                                .setOnDismissListener(null)
-                                .create()
-                                .show();
-                    }
-                });
-            }
-
-            // Connection failure
-            @Override
-            public void onFailed(SpotifyServiceError error) {
-                nDialog.dismiss();
-
-                new AlertDialog.Builder(getContext())
-                        .setTitle("Spotify Error")
-                        .setMessage(error.getErrorMessage())
-                        .setPositiveButton("OK", null)
-                        .setOnDismissListener(null)
-                        .create()
-                        .show();
-            }
-        });
+        navController.navigate(R.id.action_fragmenttoplevel_to_fragmentonroute);
     }
 
     private void observeRouteResult() {

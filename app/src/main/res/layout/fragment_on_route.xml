@@ -13,7 +13,7 @@ android:layout_height="match_parent">
     tools:context=".ui.onroute.OnRouteFragment" />
 
     <androidx.cardview.widget.CardView
-        android:id="@+id/card_view_song_info"
+        android:id="@+id/card_view_track_info"
         android:layout_width="match_parent"
         android:layout_height="80dp"
         android:layout_gravity="top"
@@ -34,7 +34,6 @@ android:layout_height="match_parent">
                 android:layout_marginLeft="24dp"
                 android:layout_marginRight="24dp"
                 android:layout_marginTop="8dp"
-                android:text="@string/txt_song_title"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
@@ -45,7 +44,6 @@ android:layout_height="match_parent">
                 android:layout_marginLeft="24dp"
                 android:layout_marginRight="24dp"
                 android:layout_marginTop="10dp"
-                android:text="@string/txt_song_artist_info"
                 android:textSize="16sp" />
         </LinearLayout>
     </androidx.cardview.widget.CardView>
