@@ -23,4 +23,6 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <!-- TODO: Should the greeting be dynamic? E.g. good morning, afternoon, etc. -->
     <string name="route_planning_greeting">Good day,</string>
+    <string name="txt_song_title">[SONG TITLE]</string>
+    <string name="txt_song_artist_info">[SONG ARTISTS INFORMATION]</string>
 </resources>

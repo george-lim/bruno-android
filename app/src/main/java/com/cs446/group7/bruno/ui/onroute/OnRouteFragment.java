@@ -5,6 +5,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.cs446.group7.bruno.MainActivity;
@@ -29,6 +30,9 @@ import androidx.navigation.Navigation;
 public class OnRouteFragment extends Fragment {
 
     private RouteViewModel model;
+    private TextView txtSongTitle;
+    private TextView txtSongArtistInfo;
+
     private OnMapReadyCallback callback = googleMap -> {
 
         // Need to pass the gMaps from the previous fragment somehow
@@ -62,6 +66,9 @@ public class OnRouteFragment extends Fragment {
             mapFragment.getMapAsync(callback);
         }
 
+        txtSongTitle = view.findViewById(R.id.text_view_song_title);
+        txtSongArtistInfo = view.findViewById(R.id.text_view_song_artist_info);
+
         model = new ViewModelProvider(requireActivity()).get(RouteViewModel.class);
         MainActivity.getSpotifyPlayerService().addSubscriber(model.getSpotifyViewModel());
 
@@ -70,7 +77,9 @@ public class OnRouteFragment extends Fragment {
     }
 
     private void onTrackChanged(@NonNull final BrunoTrack track) {
-        Toast.makeText(getContext(), String.format("Now playing: %s", track.name), Toast.LENGTH_SHORT).show();
+        // Toast.makeText(getContext(), String.format("Now playing: %s", track.name), Toast.LENGTH_SHORT).show();
+        txtSongTitle.setText(track.name);
+        txtSongArtistInfo.setText(track.album);
     }
 
     private void onError(@NonNull final SpotifyServiceError error) {
