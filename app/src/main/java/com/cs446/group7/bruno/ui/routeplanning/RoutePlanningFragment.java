@@ -63,9 +63,9 @@ public class RoutePlanningFragment extends Fragment {
 
             if (MainActivity.getCapabilityService().isEveryCapabilityEnabled(REQUIRED_CAPABILITIES)) {
                 startRouteGeneration();
-            } else {
-                updateUI();
             }
+
+            updateUI();
         }
     };
 
@@ -90,6 +90,7 @@ public class RoutePlanningFragment extends Fragment {
         startBtn = view.findViewById(R.id.buttn_start_walking);
         startBtn.setOnClickListener(this::handleStartWalkingClick);
 
+
         walkingModeBtn = view.findViewById(R.id.btn_walking_mode);
         walkingModeBtn.setSelected(true);
         walkingModeBtn.setOnClickListener(this::handleWalkingModeClick);
@@ -109,11 +110,7 @@ public class RoutePlanningFragment extends Fragment {
     }
 
     private void updateUI() {
-        String startBtnText = model.isRoutePlanningComplete()
-                ? getResources().getString(R.string.route_planning_start)
-                : getResources().getString(R.string.route_planning_generate_route);
-
-        startBtn.setText(startBtnText);
+        startBtn.setText(getResources().getString(R.string.route_planning_start));
         cardView.setVisibility(View.VISIBLE);
     }
 
@@ -188,8 +185,6 @@ public class RoutePlanningFragment extends Fragment {
                     Log.e(TAG, route.getUnderlyingException().getLocalizedMessage());
                 }
             }
-
-            updateUI();
         });
     }
 
