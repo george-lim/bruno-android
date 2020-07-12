@@ -26,7 +26,6 @@ import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 
-
 public class RouteViewModel extends AndroidViewModel implements OnRouteResponseCallback, LocationServiceSubscriber {
     private int duration;
     private boolean isWalkingMode = true;
@@ -49,9 +48,22 @@ public class RouteViewModel extends AndroidViewModel implements OnRouteResponseC
         // can be resource heavy
         Drawable avatarDrawable = context.getResources().getDrawable(R.drawable.ic_avatar_1, null);
         avatarMarker = BitmapDescriptorFactory.fromBitmap(BitmapUtils.getBitmapFromVectorDrawable(avatarDrawable));
+
+        MainActivity.getLocationService().addSubscriber(this);
+    }
+
+    @Override
+    protected void finalize() throws Throwable {
+        super.finalize();
+        MainActivity.getLocationService().stopLocationUpdates();
+        MainActivity.getLocationService().removeSubscriber(this);
     }
 
     public void setDuration(int duration) {
+        if (duration == this.duration) {
+            return;
+        }
+
         this.duration = duration;
         generateRoute();
     }
@@ -96,7 +108,7 @@ public class RouteViewModel extends AndroidViewModel implements OnRouteResponseC
         currentLocation.setValue(loc);
     }
 
-    public void initCurrentLocation() {
+    private void startLocationUpdates() {
         MainActivity.getLocationService().startLocationUpdates(location -> {
             LatLng loc = new LatLng(location.getLatitude(), location.getLongitude());
             currentLocation.setValue(loc);
@@ -104,8 +116,21 @@ public class RouteViewModel extends AndroidViewModel implements OnRouteResponseC
         });
     }
 
-    public boolean isStartUp() {
-        return currentLocation.getValue() == null;
+    public void startRouteGeneration() {
+        startLocationUpdates();
+    }
+
+    public void startRouteGeneration(int duration) {
+        this.duration = duration;
+        startRouteGeneration();
+    }
+
+    public boolean hasGeneratedRouteOnce() {
+        return currentLocation != null && duration > 0;
+    }
+
+    public boolean isRoutePlanningComplete() {
+        return routeResult.getValue() != null && routeResult.getValue().getRoute() != null;
     }
 
     public SpotifyViewModel getSpotifyViewModel() {
