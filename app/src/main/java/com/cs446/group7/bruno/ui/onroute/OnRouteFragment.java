@@ -92,16 +92,6 @@ public class OnRouteFragment extends Fragment {
     @Override
     public void onStop() {
         super.onStop();
-        MainActivity.getSpotifyPlayerService().pause(new Callback<Void, Exception>() {
-            @Override
-            public void onSuccess(Void result) {
-                MainActivity.getSpotifyPlayerService().disconnect();
-            }
-
-            @Override
-            public void onFailed(Exception result) {
-
-            }
-        });
+        MainActivity.getSpotifyPlayerService().disconnect();
     }
 }
