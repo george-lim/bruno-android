@@ -1,5 +1,6 @@
 package com.cs446.group7.bruno.spotify;
 
+// See https://github.com/spotify/android-sdk/blob/master/app-remote-lib/ERRORS.md for a description of these errors
 public enum SpotifyServiceError {
     AUTHENTICATION_FAILED("Authenticate with Spotify failed, please log in again in Spotify then trying again."),
     AUTHORIZATION_FAILED("Spotify was not authorized to be used on the Bruno's behalf. Please allow Bruno to use Spotify."),

@@ -13,5 +13,6 @@ public interface MusicPlayer {
     void resume(Callback<Void, Exception> callback);
     // Pauses the current playlist
     void pause(Callback<Void, Exception> callback);
+    // Gets the currently playing track
     BrunoTrack getCurrentTrack();
 }

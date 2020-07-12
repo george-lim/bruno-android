@@ -34,7 +34,7 @@ import androidx.annotation.NonNull;
  */
 class SpotifyPlayerService implements MusicPlayer {
 
-    // Main interface to Spotify, initialized by connectToSpotify()
+    // Main interface to the Spotify app, initialized by connect()
     private SpotifyAppRemote mSpotifyAppRemote;
     private List<SpotifyServiceSubscriber> spotifyServiceSubscribers;
     private final String TAG = getClass().getSimpleName();
@@ -88,6 +88,7 @@ class SpotifyPlayerService implements MusicPlayer {
         });
     }
 
+    // Check if we are connected to the Spotify app
     public boolean isConnected() {
         return mSpotifyAppRemote != null && mSpotifyAppRemote.isConnected();
     }
@@ -101,6 +102,7 @@ class SpotifyPlayerService implements MusicPlayer {
         spotifyServiceSubscribers.remove(subscriber);
     }
 
+    // Converts Spotify-specific exceptions to a SpotifyServiceError
     private static SpotifyServiceError getErrorFromThrowable (final Throwable throwable) {
         if (throwable instanceof AuthenticationFailedException) { return SpotifyServiceError.AUTHENTICATION_FAILED; }
         if (throwable instanceof UserNotAuthorizedException) { return SpotifyServiceError.AUTHORIZATION_FAILED; }
@@ -116,8 +118,9 @@ class SpotifyPlayerService implements MusicPlayer {
     }
 
     // Listen for updates from the Spotify player
-    // Quite noisy (gets called 4 times instead of once during an update)
-    // Currently keeping track of the current track here, but could be modified for more complex logic
+    // Can be quite noisy (gets called 4 times instead of once at the beginning)
+    // Currently keeping track of the player's state, along with any track changes,
+    // but could be modified for more complex logic
     private void subscribeToPlayerState() {
         mSpotifyAppRemote.getPlayerApi()
                 .subscribeToPlayerState()
@@ -180,6 +183,7 @@ class SpotifyPlayerService implements MusicPlayer {
     // Sets the playlist for the music player
     public void setPlayerPlaylist(String playlistId) { this.playlistId = playlistId; }
 
+    // Pause the player
     public void pause(Callback<Void, Exception> callback) {
         mSpotifyAppRemote.getPlayerApi()
                 .pause().setResultCallback(empty -> {
@@ -192,6 +196,7 @@ class SpotifyPlayerService implements MusicPlayer {
                 });
     }
 
+    // Resume the player
     public void resume(Callback<Void, Exception> callback) {
         mSpotifyAppRemote.getPlayerApi()
                 .resume().setResultCallback(empty -> {
@@ -212,6 +217,7 @@ class SpotifyPlayerService implements MusicPlayer {
         return makeBrunoTrack(currentPlayerState.track);
     }
 
+    // Converts Spotify's Track object to a BrunoTrack object
     private static BrunoTrack makeBrunoTrack(@NonNull final Track track) {
         final List<Artist> trackArtists = track.artists;
         final ArrayList<String> artistNames = new ArrayList<>();

@@ -64,7 +64,7 @@ class SpotifyPlaylistService implements PlaylistGenerator {
     }
 
     // In order to use the Spotify API, an authorization token needs to be retrieved from Spotify
-    // Using the client id and client secret, we can retrieve this token first before using the API
+    // Using the client id and client secret, we can retrieve this token first before using the playlist endpoint
     private void getAuthorizationToken(Callback<String, Exception> callback) {
         final StringRequest authRequest = new StringRequest(Request.Method.POST, authorizationEndpoint,
                 response -> {
@@ -106,7 +106,7 @@ class SpotifyPlaylistService implements PlaylistGenerator {
     }
 
     // With the authorization token, we can use the playlist API to retrieve a JSON representation
-    // of the playlist. This gets parsed in BrunoPlaylist.getPlaylistFromJson, and returned to
+    // of the playlist. This gets parsed in BrunoPlaylist.getPlaylistFromJSON(), and returned to
     // the callback.
     private void getPlaylistResponse(String authToken, String playlistId, Callback<BrunoPlaylist, Exception> callback) {
         final StringRequest stringRequest = new StringRequest(Request.Method.GET,

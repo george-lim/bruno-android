@@ -9,6 +9,8 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MutableLiveData;
 
+// Keeps track of Spotify data during the run
+// Could be extended to include other values needed during the run
 public class SpotifyViewModel extends AndroidViewModel implements SpotifyServiceSubscriber {
 
     private MutableLiveData<BrunoTrack> currentTrack = new MutableLiveData<>();

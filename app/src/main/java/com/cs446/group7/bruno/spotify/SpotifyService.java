@@ -8,7 +8,7 @@ import com.cs446.group7.bruno.utils.Callback;
 import com.spotify.android.appremote.api.SpotifyAppRemote;
 
 // Acts as the main interface to Spotify
-// For now, it just calls the same method for the appropriate player/playlist service
+// For now, it just forwards requests of the same method to the appropriate player/playlist service
 public class SpotifyService {
 
     private SpotifyPlayerService playerService;
@@ -59,6 +59,7 @@ public class SpotifyService {
         return playerService.getCurrentTrack();
     }
 
+    // Only call which uses SpotifyPlaylistService
     public void getPlaylist(String playlistId, Callback<BrunoPlaylist, Exception> callback) {
         playlistService.getPlaylist(playlistId, callback);
     }
