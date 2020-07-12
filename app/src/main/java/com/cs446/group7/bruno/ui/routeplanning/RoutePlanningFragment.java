@@ -236,7 +236,6 @@ public class RoutePlanningFragment extends Fragment {
         if (routeColours == null || routeColours.length < 1 || numPoints < routeColours.length) {
             map.addPolyline(new PolylineOptions()
                     .addAll(route.getDecodedPath())
-                    .color(routeColours[0])
                     .width(lineWidth));
             return;
         }
