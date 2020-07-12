@@ -2,11 +2,13 @@ package com.cs446.group7.bruno.ui.onroute;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,6 +36,7 @@ public class OnRouteFragment extends Fragment {
     private RouteViewModel model;
     private TextView txtSongTitle;
     private TextView txtSongArtistInfo;
+    private Button btnExitRoute;
 
     private OnMapReadyCallback callback = googleMap -> {
 
@@ -70,6 +73,8 @@ public class OnRouteFragment extends Fragment {
 
         txtSongTitle = view.findViewById(R.id.text_view_song_title);
         txtSongArtistInfo = view.findViewById(R.id.text_view_song_artist_info);
+        btnExitRoute = view.findViewById(R.id.btn_exit_route);
+        btnExitRoute.setOnClickListener(this::onExitRouteClicked);
 
         model = new ViewModelProvider(requireActivity()).get(RouteViewModel.class);
         model.getSpotifyViewModel().getCurrentTrack().observe(getViewLifecycleOwner(), this::onTrackChanged);
@@ -108,6 +113,8 @@ public class OnRouteFragment extends Fragment {
                 nDialog.dismiss();
                 Log.e("SpotifyService", "onFailed connect: " + error.toString());
 
+                if (getContext() == null) return;
+
                 new AlertDialog.Builder(getContext())
                         .setTitle("Spotify Error")
                         .setMessage(error.getErrorMessage())
@@ -117,6 +124,16 @@ public class OnRouteFragment extends Fragment {
                         .show();
             }
         });
+    }
+
+    private void onExitRouteClicked(final View view) {
+        new AlertDialog.Builder(getContext())
+                .setTitle("Are you sure?")
+                .setMessage("Bruno doesn't like it when you quit in the middle, your current progress will be lost.")
+                .setPositiveButton("YES", (dialogInterface, i) -> exitFragment())
+                .setNegativeButton("NO", null)
+                .create()
+                .show();
     }
 
     private void exitFragment() {
@@ -131,9 +148,18 @@ public class OnRouteFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Toast.makeText(getContext(), "onDestroy", Toast.LENGTH_SHORT).show();
         if (MainActivity.getSpotifyPlayerService().isConnected()) {
-            MainActivity.getSpotifyPlayerService().disconnect();
+            MainActivity.getSpotifyPlayerService().pause(new Callback<Void, Exception>() {
+                @Override
+                public void onSuccess(Void result) {
+                    MainActivity.getSpotifyPlayerService().disconnect();
+                }
+
+                @Override
+                public void onFailed(Exception result) {
+                    MainActivity.getSpotifyPlayerService().disconnect();
+                }
+            });
         }
     }
 }
