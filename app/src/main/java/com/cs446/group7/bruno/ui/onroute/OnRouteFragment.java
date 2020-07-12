@@ -2,6 +2,7 @@ package com.cs446.group7.bruno.ui.onroute;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,6 +14,7 @@ import android.widget.TextView;
 import com.cs446.group7.bruno.MainActivity;
 import com.cs446.group7.bruno.R;
 import com.cs446.group7.bruno.music.BrunoTrack;
+import com.cs446.group7.bruno.routing.Route;
 import com.cs446.group7.bruno.spotify.SpotifyServiceError;
 import com.cs446.group7.bruno.utils.Callback;
 import com.cs446.group7.bruno.viewmodels.RouteResult;
@@ -193,11 +195,53 @@ public class OnRouteFragment extends Fragment {
     }
 
     private void drawRoute() {
-        RouteResult route = model.getRouteResult().getValue();
+        RouteResult routeResult = model.getRouteResult().getValue();
 
         // TODO: Permissions aren't checked properly, should fix in the flow later to ensure this doesn't happen
-        if (route == null) return;
-        map.addPolyline(new PolylineOptions().addAll(route.getRoute().getDecodedPath()));
+        if (routeResult == null) return;
+        Route route = routeResult.getRoute();
+
+        int numPoints = route.getDecodedPath().size();
+        final float lineWidth = 15;
+
+        int[] routeColours = getColours();
+
+        if (routeColours == null || routeColours.length < 1 || numPoints < routeColours.length) {
+            map.addPolyline(new PolylineOptions()
+                    .addAll(route.getDecodedPath())
+                    .width(lineWidth));
+            return;
+        }
+
+
+        int interval = numPoints / routeColours.length;
+
+        int pointInd = 0;
+        for (int i = 0; i < routeColours.length; ++i) {
+            map.addPolyline(new PolylineOptions()
+                    .addAll(route.getDecodedPath().subList(pointInd, pointInd + interval))
+                    .color(routeColours[i])
+                    .width(lineWidth));
+            pointInd += interval;
+
+            // fill in breaks between segments
+            if (pointInd < numPoints) {
+                map.addPolyline(new PolylineOptions()
+                        .addAll(route.getDecodedPath().subList(pointInd - 1, pointInd + 1))
+                        .color(routeColours[i])
+                        .width(lineWidth));
+            }
+        }
+    }
+
+    private int[] getColours() {
+        int[] colours;
+        try {
+            colours = getResources().getIntArray(R.array.colorRouteList);
+        } catch (Resources.NotFoundException e) {
+            colours = null;
+        }
+        return  colours;
     }
 
     public void onBackPress() {
