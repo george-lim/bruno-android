@@ -155,18 +155,26 @@ public class SpotifyService implements MusicPlayer {
     // Plays the playlist which is set by setPlaylist()
     // Note that calling this method multiple times will play the custom playlist from the beginning each time
     public void play(Callback<Void, Exception> callback) {
-        mSpotifyAppRemote.getPlayerApi()
-                .setShuffle(false)
-                .setResultCallback(empty -> {
-                    mSpotifyAppRemote.getPlayerApi().play("spotify:playlist:" + this.playlistId).setResultCallback(empty1 -> {
-                        callback.onSuccess(null);
-                    });
-                })
-                .setErrorCallback(throwable -> {
-                    Log.e(TAG, "play failed: " + throwable.toString());
-                    SpotifyServiceError spotifyServiceError = getErrorFromThrowable(throwable);
-                    callback.onFailed(new Exception(throwable));
+        mSpotifyAppRemote.getPlayerApi().getPlayerState().setResultCallback(playerState -> {
+            if (playerState.playbackRestrictions.canToggleShuffle) { // premium users
+                mSpotifyAppRemote.getPlayerApi()
+                        .setShuffle(false)
+                        .setResultCallback(empty -> {
+                            mSpotifyAppRemote.getPlayerApi().play("spotify:playlist:" + this.playlistId).setResultCallback(empty1 -> {
+                                callback.onSuccess(null);
+                            });
+                        })
+                        .setErrorCallback(throwable -> {
+                            Log.e(TAG, "play failed: " + throwable.toString());
+                            SpotifyServiceError spotifyServiceError = getErrorFromThrowable(throwable);
+                            callback.onFailed(new Exception(throwable));
+                        });
+            } else { // free users
+                mSpotifyAppRemote.getPlayerApi().play("spotify:playlist:" + this.playlistId).setResultCallback(empty1 -> {
+                    callback.onSuccess(null);
                 });
+            }
+        });
     }
 
     // Sets the playlist for the music player
