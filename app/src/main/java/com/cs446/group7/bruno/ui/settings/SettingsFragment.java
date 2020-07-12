@@ -31,6 +31,8 @@ public class SettingsFragment extends Fragment {
         termsAndConditionsItem.setOnClickListener(this::handleNavigateToTermsAndConditions);
         LinearLayout privacyPolicyItem = view.findViewById(R.id.settings_privacy_policy);
         privacyPolicyItem.setOnClickListener(this::handleNavigateToPrivacyPolicy);
+        LinearLayout creditsItem = view.findViewById(R.id.settings_credits);
+        creditsItem.setOnClickListener(this::handleNavigateToCredits);
         return view;
     }
 
@@ -43,5 +45,10 @@ public class SettingsFragment extends Fragment {
     private void handleNavigateToPrivacyPolicy(final View view) {
         NavController navController = Navigation.findNavController(getActivity(), R.id.nav_host_fragment);
         navController.navigate(R.id.action_fragmenttoplvl_to_fragmentprivacypolicy);
+    }
+
+    private void handleNavigateToCredits(final View view) {
+        NavController navController = Navigation.findNavController(getActivity(), R.id.nav_host_fragment);
+        navController.navigate(R.id.action_fragmenttoplvl_to_fragmentcredits);
     }
 }

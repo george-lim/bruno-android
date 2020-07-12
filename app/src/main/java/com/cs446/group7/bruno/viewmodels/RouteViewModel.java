@@ -2,6 +2,7 @@ package com.cs446.group7.bruno.viewmodels;
 
 import android.app.Application;
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 
 import androidx.annotation.NonNull;
@@ -20,6 +21,9 @@ import com.cs446.group7.bruno.routing.RouteGenerator;
 import com.cs446.group7.bruno.routing.RouteGeneratorError;
 import com.cs446.group7.bruno.routing.RouteGeneratorImpl;
 import com.cs446.group7.bruno.settings.SettingsService;
+import com.cs446.group7.bruno.utils.BitmapUtils;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 
 
@@ -27,9 +31,10 @@ public class RouteViewModel extends AndroidViewModel implements OnRouteResponseC
     private int duration;
     private boolean isWalkingMode = true;
     private MutableLiveData<RouteResult> routeResult = new MutableLiveData<>();
-    private LatLng currentLocation = null;
+    private MutableLiveData<LatLng> currentLocation = new MutableLiveData<>(null);
     private RouteGenerator routeGenerator;
     private SpotifyViewModel spotifyViewModel;
+    private BitmapDescriptor avatarMarker;
 
     public RouteViewModel(@NonNull Application application) {
         super(application);
@@ -40,6 +45,10 @@ public class RouteViewModel extends AndroidViewModel implements OnRouteResponseC
                 ? new MockRouteGeneratorImpl(context, apiKey)
                 : new RouteGeneratorImpl(context, apiKey);
         spotifyViewModel = new SpotifyViewModel(application);
+        // Store avatar bitmap in view model because conversion of vector drawable to bitmap
+        // can be resource heavy
+        Drawable avatarDrawable = context.getResources().getDrawable(R.drawable.ic_avatar_1, null);
+        avatarMarker = BitmapDescriptorFactory.fromBitmap(BitmapUtils.getBitmapFromVectorDrawable(avatarDrawable));
     }
 
     public void setDuration(int duration) {
@@ -56,13 +65,19 @@ public class RouteViewModel extends AndroidViewModel implements OnRouteResponseC
         return routeResult;
     }
 
+    public LiveData<LatLng> getCurrentLocation() { return currentLocation; }
+
+    public BitmapDescriptor getAvatarMarker() {
+        return avatarMarker;
+    }
+
     private void generateRoute() {
-        if (currentLocation == null) return;
+        if (currentLocation.getValue() == null) return;
 
         double speed = isWalkingMode ? SettingsService.PREFERRED_WALKING_SPEED : SettingsService.PREFERRED_RUNNING_SPEED;
         double totalDistance = duration * speed;
         double rotation = Math.random() * 2 * Math.PI;
-        routeGenerator.generateRoute(RouteViewModel.this, currentLocation, totalDistance, rotation);
+        routeGenerator.generateRoute(RouteViewModel.this, currentLocation.getValue(), totalDistance, rotation);
     }
 
     @Override
@@ -77,23 +92,20 @@ public class RouteViewModel extends AndroidViewModel implements OnRouteResponseC
 
     @Override
     public void onLocationUpdate(@NonNull Location location) {
-        if (currentLocation == null) {
-            currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
-            generateRoute();
-        } else {
-            currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
-        }
+        LatLng loc = new LatLng(location.getLatitude(), location.getLongitude());
+        currentLocation.setValue(loc);
     }
 
     public void initCurrentLocation() {
         MainActivity.getLocationService().startLocationUpdates(location -> {
-            currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
+            LatLng loc = new LatLng(location.getLatitude(), location.getLongitude());
+            currentLocation.setValue(loc);
             generateRoute();
         });
     }
 
     public boolean isStartUp() {
-        return currentLocation == null;
+        return currentLocation.getValue() == null;
     }
 
     public SpotifyViewModel getSpotifyViewModel() {
