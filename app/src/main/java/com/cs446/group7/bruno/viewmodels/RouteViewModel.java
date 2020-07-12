@@ -54,6 +54,7 @@ public class RouteViewModel extends AndroidViewModel implements OnRouteResponseC
     @Override
     protected void finalize() throws Throwable {
         super.finalize();
+        MainActivity.getLocationService().stopLocationUpdates();
         MainActivity.getLocationService().removeSubscriber(this);
     }
 
