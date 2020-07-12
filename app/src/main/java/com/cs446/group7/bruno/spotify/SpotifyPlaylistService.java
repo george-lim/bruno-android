@@ -13,7 +13,6 @@ import com.android.volley.toolbox.Volley;
 import com.cs446.group7.bruno.R;
 import com.cs446.group7.bruno.music.BrunoPlaylist;
 import com.cs446.group7.bruno.music.BrunoTrack;
-import com.cs446.group7.bruno.music.OnPlaylistCallback;
 import com.cs446.group7.bruno.music.playlist.PlaylistGenerator;
 import com.cs446.group7.bruno.utils.Callback;
 
@@ -33,48 +32,53 @@ import java.util.Map;
 class SpotifyPlaylistService implements PlaylistGenerator {
 
     final RequestQueue requestQueue;
-    // Hard coded to a specific playlist - same as the one in SpotifyPlayerService.playMusic()
     final String playlistEndpoint = "https://api.spotify.com/v1/playlists/";
     final String authorizationEndpoint = "https://accounts.spotify.com/api/token";
     final String clientId;
     final String clientSecret;
-    final public String TAG = this.getClass().getSimpleName();
+    public final String TAG = this.getClass().getSimpleName();
 
+    // Needs context for secret variables
     public SpotifyPlaylistService(Context context) {
         requestQueue = Volley.newRequestQueue(context);
         clientId = context.getResources().getString(R.string.spotify_client_id);
         clientSecret = context.getResources().getString(R.string.spotify_client_secret);
     }
 
-    // Call this to get the BrunoPlaylist - it goes through the sequence necessary to provide
-    // the BrunoPlaylist requested by callback
-    // All failures are sent back through callback.onPlaylistError()
+    // Call this to get the BrunoPlaylist - it goes through authentication and then the playlist
+    // endpoint to provide the BrunoPlaylist requested by callback
+    // All failures are sent back through callback.onFailed
+    // Needs internet access to succeed, since it uses API calls
     public void getPlaylist(String playlistId, Callback<BrunoPlaylist, Exception> callback) {
-        getAuthorizationToken(playlistId, callback);
+        getAuthorizationToken(new Callback<String, Exception>() {
+            @Override
+            public void onSuccess(String authToken) {
+                getPlaylistResponse(authToken, playlistId, callback);
+            }
+
+            @Override
+            public void onFailed(Exception result) {
+                callback.onFailed(result);
+            }
+        });
     }
 
     // In order to use the Spotify API, an authorization token needs to be retrieved from Spotify
     // Using the client id and client secret, we can retrieve this token first before using the API
-    // Calls getPlaylistResponse upon success
-    private void getAuthorizationToken(String playlistId, Callback<BrunoPlaylist, Exception> callback) {
+    private void getAuthorizationToken(Callback<String, Exception> callback) {
         final StringRequest authRequest = new StringRequest(Request.Method.POST, authorizationEndpoint,
-                new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                try {
-                    final JSONObject responseJson = new JSONObject(response);
-                    getPlaylistResponse(
-                            responseJson.getString("access_token"), playlistId, callback);
-                } catch (JSONException e) {
-                    callback.onFailed(e);
-                }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.e("AUTH ERROR: ", error.toString());
-            }
-        })
+                response -> {
+                    try {
+                        final JSONObject responseJson = new JSONObject(response);
+                        callback.onSuccess(responseJson.getString("access_token"));
+                    } catch (JSONException e) {
+                        Log.e(TAG, "getAuthorizationToken: JSON parsing failure");
+                        callback.onFailed(e);
+                    }
+                }, error -> {
+                    Log.e(TAG, "getAuthorizationToken: Error with sending the request");
+                    callback.onFailed(new Exception(error));
+                })
         {
             @Override
             public String getBodyContentType() {
@@ -91,6 +95,7 @@ class SpotifyPlaylistService implements PlaylistGenerator {
                 try {
                     return requestBody == null ? null : requestBody.getBytes("utf-8");
                 } catch (UnsupportedEncodingException e) {
+                    Log.e(TAG, "getAuthorizationToken: Failed to encode request body");
                     callback.onFailed(e);
                     return null;
                 }
@@ -106,23 +111,19 @@ class SpotifyPlaylistService implements PlaylistGenerator {
     private void getPlaylistResponse(String authToken, String playlistId, Callback<BrunoPlaylist, Exception> callback) {
         final StringRequest stringRequest = new StringRequest(Request.Method.GET,
         playlistEndpoint + playlistId,
-            new Response.Listener<String>() {
-                @Override
-                public void onResponse(String response) {
+                response -> {
                     try {
                         final JSONObject responseJson = new JSONObject(response);
                         final BrunoPlaylist playlist = getPlaylistFromJSON(responseJson);
                         callback.onSuccess(playlist);
                     } catch (JSONException e) {
+                        Log.e(TAG, "getPlaylistResponse: JSON parsing failure");
                         callback.onFailed(e);
                     }
-                }
-            }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.e("BAD",error.toString());
-            }
-        })
+                }, error -> {
+                    Log.e(TAG, "getPlaylistResponse: Error with sending the request");
+                    callback.onFailed(new Exception(error));
+                })
         {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
