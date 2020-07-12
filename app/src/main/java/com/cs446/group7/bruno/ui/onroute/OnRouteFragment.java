@@ -18,6 +18,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.cs446.group7.bruno.MainActivity;
 import com.cs446.group7.bruno.R;
 import com.cs446.group7.bruno.music.BrunoTrack;
+import com.cs446.group7.bruno.routing.Route;
 import com.cs446.group7.bruno.spotify.SpotifyServiceError;
 import com.cs446.group7.bruno.utils.Callback;
 
@@ -26,8 +27,10 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolylineOptions;
 
 import androidx.navigation.Navigation;
 
@@ -43,8 +46,8 @@ public class OnRouteFragment extends Fragment {
 
     private OnMapReadyCallback callback = googleMap -> {
         map = googleMap;
-        map.getUiSettings().setRotateGesturesEnabled(false);
         observeUserLocation();
+        drawRoute();
     };
 
     @Nullable
@@ -178,7 +181,19 @@ public class OnRouteFragment extends Fragment {
             } else {
                 userMarker.setPosition(location);
             }
-            map.animateCamera(CameraUpdateFactory.newLatLngZoom(location, 19));
+
+            CameraPosition cameraPosition = new CameraPosition.Builder()
+                    .target(location)
+                    .tilt(60)
+                    .zoom(18)
+                    .build();
+
+            map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
         });
+    }
+
+    private void drawRoute() {
+        Route route = model.getRouteResult().getValue().getRoute();
+        map.addPolyline(new PolylineOptions().addAll(route.getDecodedPath()));
     }
 }
