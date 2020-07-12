@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.NumberPicker;
+import android.widget.Toast;
 
 import com.cs446.group7.bruno.MainActivity;
 import com.cs446.group7.bruno.R;
@@ -106,7 +107,11 @@ public class RoutePlanningFragment extends Fragment {
     }
 
     private void updateUI() {
-        startBtn.setText(model.isRoutePlanningComplete() ? "Start" : "Generate Route");
+        String startBtnText = model.isRoutePlanningComplete()
+                ? getResources().getString(R.string.route_planning_start)
+                : getResources().getString(R.string.route_planning_generate_route);
+
+        startBtn.setText(startBtnText);
         cardView.setVisibility(View.VISIBLE);
     }
 
@@ -154,7 +159,7 @@ public class RoutePlanningFragment extends Fragment {
                     NavController navController = Navigation.findNavController(getActivity(), R.id.nav_host_fragment);
                     navController.navigate(R.id.action_fragmenttoplevel_to_fragmentonroute);
                 }
-                else if (!model.isRouteGenerationReady()) {
+                else if (!model.hasGeneratedRouteOnce()) {
                     startRouteGeneration();
                 }
 
@@ -173,7 +178,9 @@ public class RoutePlanningFragment extends Fragment {
             if (route.getRoute() != null) {
                 drawRoute(route.getRoute());
             } else if (route.getError() != null) {
-                Log.e(TAG, route.getError().getDescription());
+                Toast errorNotification = Toast.makeText(getContext(),
+                        route.getError().getDescription(), Toast.LENGTH_LONG);
+                errorNotification.show();
 
                 if (route.getUnderlyingException() != null) {
                     Log.e(TAG, route.getUnderlyingException().getLocalizedMessage());

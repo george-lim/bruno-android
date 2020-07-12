@@ -102,9 +102,7 @@ public class RouteViewModel extends AndroidViewModel implements OnRouteResponseC
     }
 
     public void startRouteGeneration() {
-        if (!isRouteGenerationReady()) {
-            startLocationUpdates();
-        }
+        startLocationUpdates();
     }
 
     public void startRouteGeneration(int duration) {
@@ -112,11 +110,11 @@ public class RouteViewModel extends AndroidViewModel implements OnRouteResponseC
         startRouteGeneration();
     }
 
-    public boolean isRouteGenerationReady() {
+    public boolean hasGeneratedRouteOnce() {
         return currentLocation != null && duration > 0;
     }
 
     public boolean isRoutePlanningComplete() {
-        return routeResult.getValue() != null;
+        return routeResult.getValue() != null && routeResult.getValue().getRoute() != null;
     }
 }

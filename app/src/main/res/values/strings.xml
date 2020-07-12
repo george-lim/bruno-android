@@ -17,6 +17,8 @@
     <string name="route_planning_instruction">Plan your route with Bruno</string>
     <string name="route_planning_walking_mode">Walking</string>
     <string name="route_planning_running_mode">Running</string>
+    <string name="route_planning_start">Start</string>
+    <string name="route_planning_generate_route">Generate Route</string>
     <string name="route_planning_duration">Duration (Minutes)</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
