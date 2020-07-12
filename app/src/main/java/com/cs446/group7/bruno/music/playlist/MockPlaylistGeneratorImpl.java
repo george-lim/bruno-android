@@ -6,7 +6,6 @@ import com.cs446.group7.bruno.music.BrunoPlaylist;
 import com.cs446.group7.bruno.music.BrunoTrack;
 import com.cs446.group7.bruno.utils.Callback;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class MockPlaylistGeneratorImpl implements PlaylistGenerator {

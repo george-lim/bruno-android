@@ -2,6 +2,7 @@ package com.cs446.group7.bruno.ui.routeplanning;
 
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,13 +40,17 @@ public class RoutePlanningFragment extends Fragment {
     private static final Capability[] REQUIRED_CAPABILITIES = { Capability.LOCATION, Capability.INTERNET };
 
     private boolean isRequestingCapability = false;
+    private boolean hasDrawnRouteOnce = false;
     private RouteViewModel model;
     private GoogleMap map;
+    private Button startBtn;
     private Button walkingModeBtn;
     private Button runningModeBtn;
     private NumberPicker durationPicker;
     private CardView cardView;
     private View mapFragmentView;
+
+    public final String TAG = this.getClass().getSimpleName();
 
     private OnMapReadyCallback mapCallback = new OnMapReadyCallback() {
         @Override
@@ -53,8 +58,19 @@ public class RoutePlanningFragment extends Fragment {
             map = googleMap;
             map.getUiSettings().setRotateGesturesEnabled(false);
             observeRouteResult();
+
+            if (MainActivity.getCapabilityService().isEveryCapabilityEnabled(REQUIRED_CAPABILITIES)) {
+                startRouteGeneration();
+            } else {
+                updateUI();
+            }
         }
     };
+
+    private void startRouteGeneration() {
+        int duration = DURATION_VALUES[durationPicker.getValue()];
+        model.startRouteGeneration(duration);
+    }
 
     @Nullable
     @Override
@@ -68,7 +84,7 @@ public class RoutePlanningFragment extends Fragment {
     }
 
     private void buildCardView(final View view) {
-        Button startBtn = view.findViewById(R.id.buttn_start_walking);
+        startBtn = view.findViewById(R.id.buttn_start_walking);
         startBtn.setOnClickListener(this::handleStartWalkingClick);
 
         walkingModeBtn = view.findViewById(R.id.btn_walking_mode);
@@ -89,6 +105,15 @@ public class RoutePlanningFragment extends Fragment {
         mapFragmentView = view.findViewById(R.id.planning_map);
     }
 
+    private void updateUI() {
+        String startBtnText = model.isRoutePlanningComplete()
+                ? getResources().getString(R.string.route_planning_start)
+                : getResources().getString(R.string.route_planning_generate_route);
+
+        startBtn.setText(startBtnText);
+        cardView.setVisibility(View.VISIBLE);
+    }
+
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -97,43 +122,6 @@ public class RoutePlanningFragment extends Fragment {
         if (mapFragment != null) {
             mapFragment.getMapAsync(mapCallback);
         }
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        requestLocationUpdates();
-    }
-
-    private void requestLocationUpdates() {
-        if (isRequestingCapability) return;
-        isRequestingCapability = true;
-
-        MainActivity.getCapabilityService().request(REQUIRED_CAPABILITIES, new Callback<Void, Void>() {
-            @Override
-            public void onSuccess(Void result) {
-                MainActivity.getLocationService().addSubscriber(model);
-                if (model.isStartUp()) {
-                    // updating UI to be consistent with DURATION_VALUES[0] in case fragment is resumed
-                    // after never receiving location updates and user has fiddled with durationPicker
-                    durationPicker.setValue(0);
-                    model.setDuration(DURATION_VALUES[0]);
-                    model.initCurrentLocation();
-                }
-                isRequestingCapability = false;
-            }
-
-            @Override
-            public void onFailed(Void result) {
-                isRequestingCapability = false;
-            }
-        });
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        MainActivity.getLocationService().removeSubscriber(model);
     }
 
     private void handleWalkingModeClick(final View view) {
@@ -160,8 +148,28 @@ public class RoutePlanningFragment extends Fragment {
     }
 
     private void handleStartWalkingClick(final View view) {
-        NavController navController = Navigation.findNavController(getActivity(), R.id.nav_host_fragment);
-        navController.navigate(R.id.action_fragmenttoplevel_to_fragmentonroute);
+        if (isRequestingCapability) return;
+        isRequestingCapability = true;
+
+        MainActivity.getCapabilityService().request(REQUIRED_CAPABILITIES, new Callback<Void, Void>() {
+            @Override
+            public void onSuccess(Void result) {
+                if (model.isRoutePlanningComplete()) {
+                    NavController navController = Navigation.findNavController(getActivity(), R.id.nav_host_fragment);
+                    navController.navigate(R.id.action_fragmenttoplevel_to_fragmentonroute);
+                }
+                else if (!model.hasGeneratedRouteOnce()) {
+                    startRouteGeneration();
+                }
+
+                isRequestingCapability = false;
+            }
+
+            @Override
+            public void onFailed(Void result) {
+                isRequestingCapability = false;
+            }
+        });
     }
 
     private void observeRouteResult() {
@@ -169,25 +177,16 @@ public class RoutePlanningFragment extends Fragment {
             if (route.getRoute() != null) {
                 drawRoute(route.getRoute());
             } else if (route.getError() != null) {
-                String errorMessage = "";
-                switch (route.getError()) {
-                    case PARSE_ERROR:
-                        errorMessage = "Error parsing route, please try again!";
-                        break;
-                    case SERVER_ERROR:
-                        errorMessage = "A server error occurred, please try again!";
-                        break;
-                    case NO_CONNECTION_ERROR:
-                        errorMessage = "No network, please enable internet access!";
-                        break;
-                    case OTHER_ERROR:
-                        errorMessage = "Something went wrong, please try again!";
-                        break;
-                }
-
-                Toast errorNotification = Toast.makeText(getContext(), errorMessage, Toast.LENGTH_LONG);
+                Toast errorNotification = Toast.makeText(getContext(),
+                        route.getError().getDescription(), Toast.LENGTH_LONG);
                 errorNotification.show();
+
+                if (route.getUnderlyingException() != null) {
+                    Log.e(TAG, route.getUnderlyingException().getLocalizedMessage());
+                }
             }
+
+            updateUI();
         });
     }
 
@@ -221,7 +220,15 @@ public class RoutePlanningFragment extends Fragment {
 
         bounds = boundsBuilder.build();
         final int padding = 200;
-        map.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, padding));
+
+        // Do not animate camera on initial route
+        if (hasDrawnRouteOnce) {
+            map.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, padding));
+        }
+        else {
+            map.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, padding));
+            hasDrawnRouteOnce = true;
+        }
 
         map.addMarker(new MarkerOptions()
                 .position(decodedPath.get(0)))

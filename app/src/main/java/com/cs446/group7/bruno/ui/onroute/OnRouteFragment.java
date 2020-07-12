@@ -10,7 +10,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.cs446.group7.bruno.MainActivity;
 import com.cs446.group7.bruno.R;
 import com.cs446.group7.bruno.viewmodels.RouteViewModel;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -49,18 +48,6 @@ public class OnRouteFragment extends Fragment {
         if (mapFragment != null) {
             mapFragment.getMapAsync(callback);
         }
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        MainActivity.getLocationService().addSubscriber(model);
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        MainActivity.getLocationService().removeSubscriber(model);
     }
 
     private void observeUserLocation() {
