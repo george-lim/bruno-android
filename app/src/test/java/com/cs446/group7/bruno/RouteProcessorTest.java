@@ -227,4 +227,34 @@ public class RouteProcessorTest {
 
         rp.execute(mockSegments, playlist);
     }
+
+    @Test
+    public void routeSegmentDurationLongerThanTrackDuration() {
+        RouteProcessor rp = new RouteProcessor();
+        ArrayList<String> mockArtists = new ArrayList<>();
+        mockArtists.add("test");
+        ArrayList<BrunoTrack> tracks = new ArrayList<>();
+        tracks.add(new BrunoTrack("testName1", "testAlbum1", 70000, mockArtists));
+        tracks.add(new BrunoTrack("testName2", "testAlbum2", 60000, mockArtists));
+        tracks.add(new BrunoTrack("testName3", "testAlbum3", 200000, mockArtists));
+
+        long totalTrackDuration = 0;
+        for (BrunoTrack track : tracks) {
+            totalTrackDuration += track.duration;
+        }
+
+        BrunoPlaylist playlist = new BrunoPlaylist(
+                "playlistName",
+                "playlistDescription",
+                tracks.size(),
+                totalTrackDuration,
+                tracks
+        );
+
+        List<RouteTrackMapping> result = rp.execute(mockSegments, playlist);
+
+        assertEquals(result.get(0).routeSegments.size(), 2);
+        assertEquals(result.get(1).routeSegments.size(), 1);
+        assertEquals(result.get(2).routeSegments.size(), 3);
+    }
 }

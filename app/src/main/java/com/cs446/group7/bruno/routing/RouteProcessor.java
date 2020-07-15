@@ -33,24 +33,24 @@ public class RouteProcessor {
         long accumulatedRouteSegmentDuration = 0;
         List<RouteSegment> accumulatedRouteSegments = new ArrayList<>();
         List<BrunoTrack> tracks = playlist.tracks;
-        for (RouteSegment routeSegment : routeSegments) {
+        int routeSegmentIndex = 0;
+        while (routeSegmentIndex < routeSegments.size()) {
             if (currTrackInd >= tracks.size()) {
                 throw new TrackIndexOutOfBoundsException();
             }
 
             BrunoTrack currTrack = tracks.get(currTrackInd);
 
-            LatLng routeSegmentStart = routeSegment.getStartLocation();
-            LatLng routeSegmentEnd = routeSegment.getEndLocation();
-            long routeSegmentDuration = routeSegment.getDuration();
-
+            LatLng routeSegmentStart = routeSegments.get(routeSegmentIndex).getStartLocation();
+            LatLng routeSegmentEnd = routeSegments.get(routeSegmentIndex).getEndLocation();
+            long routeSegmentDuration = routeSegments.get(routeSegmentIndex).getDuration();
             long lastSongSegment = accumulatedRouteSegmentDuration + routeSegmentDuration;
 
             if (lastSongSegment > currTrack.duration) {
                 // Represents the duration of each half of a segment since it needs to be split
                 long segmentDurationFirstHalf = currTrack.duration - accumulatedRouteSegmentDuration;
                 long segmentDurationSecondHalf = routeSegmentDuration - segmentDurationFirstHalf;
-                long segmentDurationRatio = segmentDurationFirstHalf / routeSegmentDuration;
+                double segmentDurationRatio = (double) segmentDurationFirstHalf / routeSegmentDuration;
 
                 // Represent the difference in lat and long distances, needed for slope calculations
                 double diffLat = routeSegmentEnd.latitude - routeSegmentStart.latitude;
@@ -64,7 +64,7 @@ public class RouteProcessor {
                 RouteSegment segmentFirstHalf = new RouteSegment(routeSegmentStart,
                         segmentMidPoint, segmentDurationFirstHalf);
                 RouteSegment segmentSecondHalf = new RouteSegment(segmentMidPoint,
-                        routeSegment.getEndLocation(), segmentDurationSecondHalf);
+                        routeSegmentEnd, segmentDurationSecondHalf);
 
                 // Create mapping of accumulated segments and first half segment with current track
                 accumulatedRouteSegments.add(segmentFirstHalf);
@@ -73,19 +73,22 @@ public class RouteProcessor {
                 accumulatedRouteSegments.clear();
 
                 // Accommodate the second half of route segment for the next track
-                accumulatedRouteSegments.add(segmentSecondHalf);
-                accumulatedRouteSegmentDuration = segmentDurationSecondHalf;
+                routeSegments.add(routeSegmentIndex + 1, segmentSecondHalf);
+                accumulatedRouteSegmentDuration = 0;
                 currTrackInd++;
+                routeSegmentIndex++;
             } else if (lastSongSegment == currTrack.duration) {
-                accumulatedRouteSegments.add(routeSegment);
+                accumulatedRouteSegments.add(routeSegments.get(routeSegmentIndex));
                 RouteTrackMapping rtm = new RouteTrackMapping(new ArrayList<>(accumulatedRouteSegments), currTrack);
                 result.add(rtm);
                 accumulatedRouteSegments.clear();
                 accumulatedRouteSegmentDuration = 0;
                 currTrackInd++;
+                routeSegmentIndex++;
             } else {
-                accumulatedRouteSegments.add(routeSegment);
+                accumulatedRouteSegments.add(routeSegments.get(routeSegmentIndex));
                 accumulatedRouteSegmentDuration += routeSegmentDuration;
+                routeSegmentIndex++;
             }
         }
         if (accumulatedRouteSegments.size() > 0) {
