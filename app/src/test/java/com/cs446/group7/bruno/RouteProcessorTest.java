@@ -9,7 +9,6 @@ import com.google.android.gms.maps.model.LatLng;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -254,7 +253,13 @@ public class RouteProcessorTest {
         List<RouteTrackMapping> result = rp.execute(mockSegments, playlist);
 
         assertEquals(result.get(0).routeSegments.size(), 2);
+        assertEquals(result.get(0).routeSegments.get(0).getDuration(), 60000);
+        assertEquals(result.get(0).routeSegments.get(1).getDuration(), 10000);
         assertEquals(result.get(1).routeSegments.size(), 1);
+        assertEquals(result.get(1).routeSegments.get(0).getDuration(), 60000);
         assertEquals(result.get(2).routeSegments.size(), 3);
+        assertEquals(result.get(2).routeSegments.get(0).getDuration(), 10000);
+        assertEquals(result.get(2).routeSegments.get(1).getDuration(), 60000);
+        assertEquals(result.get(2).routeSegments.get(2).getDuration(), 80000);
     }
 }
