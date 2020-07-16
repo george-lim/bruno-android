@@ -1,6 +1,5 @@
 package com.cs446.group7.bruno.ui.routeplanning;
 
-import android.graphics.Color;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -34,7 +33,6 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class RoutePlanningFragment extends Fragment {
@@ -237,15 +235,6 @@ public class RoutePlanningFragment extends Fragment {
                 .setIcon(model.getAvatarMarker());
 
         map.addPolyline(new PolylineOptions().addAll(route.getDecodedPath()));
-
-        // testing out new RouteSegments, blue line should lie perfectly over black line
-        List<LatLng> points = new ArrayList<>();
-        int numSegments = route.getRouteSegments().size();
-        for (int i = 0; i < numSegments; ++i) {
-            points.add(route.getRouteSegments().get(i).getStartLocation());
-        }
-        points.add(route.getRouteSegments().get(numSegments - 1).getEndLocation());
-        map.addPolyline(new PolylineOptions().addAll(points).color(Color.BLUE));
     }
 
     private static String[] intArrayToStringArray(int[] intArray) {

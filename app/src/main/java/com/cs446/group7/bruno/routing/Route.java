@@ -32,7 +32,7 @@ public class Route {
             // so calculated duration is always greater than Google's estimate
             double distanceMetres = getLatLngDistance(decodedPath.get(i), decodedPath.get(i + 1))
                     * RouteGenerator.METRES_PER_LAT_DEG;
-            // should not overflow since (distanceMetres / WALKING_SPEED) is very small
+            // should not overflow since (distanceMetres / WALKING_SPEED) is small enough
             double durationMs = (distanceMetres / WALKING_SPEED) * 1000;
             RouteSegment routeSegment = new RouteSegment(decodedPath.get(i), decodedPath.get(i + 1), (long) durationMs);
             routeSegments.add(routeSegment);
