@@ -40,6 +40,8 @@ public class OnRouteFragment extends Fragment {
     private TextView txtSongTitle;
     private TextView txtSongArtistInfo;
     private Button btnExitRoute;
+    private final int CAMERA_TILT = 60;
+    private final int CAMERA_ZOOM = 18;
     public final String TAG = this.getClass().getSimpleName();
 
     private OnMapReadyCallback callback = googleMap -> {
@@ -79,8 +81,8 @@ public class OnRouteFragment extends Fragment {
 
     private void connectToSpotify() {
         ProgressDialog nDialog = new ProgressDialog(getContext());
-        nDialog.setMessage("Bruno is preparing your route and music");
-        nDialog.setTitle("Hold on tight");
+        nDialog.setMessage(getContext().getResources().getString(R.string.run_preparation_message));
+        nDialog.setTitle(R.string.run_preparation_title);
         nDialog.setIndeterminate(false);
         nDialog.setCancelable(false);
         nDialog.show();
@@ -111,7 +113,7 @@ public class OnRouteFragment extends Fragment {
                 if (getContext() == null) return;
 
                 new AlertDialog.Builder(getContext())
-                        .setTitle("Spotify Error")
+                        .setTitle(R.string.spotify_error)
                         .setMessage(error.getErrorMessage())
                         .setPositiveButton("OK", (dialogInterface, i) -> exitFragment())
                         .setCancelable(false)
@@ -123,8 +125,8 @@ public class OnRouteFragment extends Fragment {
 
     private void onExitRouteClicked() {
         new AlertDialog.Builder(getContext())
-                .setTitle("Are you sure?")
-                .setMessage("Bruno doesn't like it when you quit in the middle, your current progress will be lost.")
+                .setTitle(R.string.run_exit_title)
+                .setMessage(R.string.run_exit_message)
                 .setPositiveButton("YES", (dialogInterface, i) -> exitFragment())
                 .setNegativeButton("NO", null)
                 .create()
@@ -158,18 +160,6 @@ public class OnRouteFragment extends Fragment {
         }
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        MainActivity.getLocationService().addSubscriber(model);
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        MainActivity.getLocationService().removeSubscriber(model);
-    }
-
     private void observeUserLocation() {
         model.getCurrentLocation().observe(getViewLifecycleOwner(), location -> {
 
@@ -184,8 +174,8 @@ public class OnRouteFragment extends Fragment {
 
             CameraPosition cameraPosition = new CameraPosition.Builder()
                     .target(location)
-                    .tilt(60)
-                    .zoom(18)
+                    .tilt(CAMERA_TILT)
+                    .zoom(CAMERA_ZOOM)
                     .build();
 
             map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));

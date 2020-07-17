@@ -177,6 +177,10 @@ class SpotifyPlayerService implements MusicPlayer {
                     callback.onSuccess(null);
                 });
             }
+        }).setErrorCallback(throwable -> {
+            Log.e(TAG, "failed to acquire player state in play: " + throwable.toString());
+            SpotifyServiceError spotifyServiceError = getErrorFromThrowable(throwable);
+            callback.onFailed(new Exception(throwable));
         });
     }
 

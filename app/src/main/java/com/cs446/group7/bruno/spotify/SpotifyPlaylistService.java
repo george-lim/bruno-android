@@ -72,11 +72,11 @@ class SpotifyPlaylistService implements PlaylistGenerator {
                         final JSONObject responseJson = new JSONObject(response);
                         callback.onSuccess(responseJson.getString("access_token"));
                     } catch (JSONException e) {
-                        Log.e(TAG, "getAuthorizationToken: JSON parsing failure");
+                        Log.e(TAG, "getAuthorizationToken: JSON parsing failure: " + e.getMessage());
                         callback.onFailed(e);
                     }
                 }, error -> {
-                    Log.e(TAG, "getAuthorizationToken: Error with sending the request");
+                    Log.e(TAG, "getAuthorizationToken: Error with sending the request: " + error.getMessage());
                     callback.onFailed(new Exception(error));
                 })
         {
@@ -95,7 +95,7 @@ class SpotifyPlaylistService implements PlaylistGenerator {
                 try {
                     return requestBody == null ? null : requestBody.getBytes("utf-8");
                 } catch (UnsupportedEncodingException e) {
-                    Log.e(TAG, "getAuthorizationToken: Failed to encode request body");
+                    Log.e(TAG, "getAuthorizationToken: Failed to encode request body: " + e.getMessage());
                     callback.onFailed(e);
                     return null;
                 }
@@ -117,11 +117,11 @@ class SpotifyPlaylistService implements PlaylistGenerator {
                         final BrunoPlaylist playlist = getPlaylistFromJSON(responseJson);
                         callback.onSuccess(playlist);
                     } catch (JSONException e) {
-                        Log.e(TAG, "getPlaylistResponse: JSON parsing failure");
+                        Log.e(TAG, "getPlaylistResponse: JSON parsing failure: " + e.getMessage());
                         callback.onFailed(e);
                     }
                 }, error -> {
-                    Log.e(TAG, "getPlaylistResponse: Error with sending the request");
+                    Log.e(TAG, "getPlaylistResponse: Error with sending the request: " + error.getMessage());
                     callback.onFailed(new Exception(error));
                 })
         {

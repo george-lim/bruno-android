@@ -26,5 +26,10 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <!-- TODO: Should the greeting be dynamic? E.g. good morning, afternoon, etc. -->
     <string name="route_planning_greeting">Good day,</string>
+    <string name="run_preparation_title">Hold on tight</string>
+    <string name="run_preparation_message">Bruno is preparing your route and music</string>
+    <string name="spotify_error">Spotify Error</string>
+    <string name="run_exit_title">Are you sure?</string>
+    <string name="run_exit_message">Bruno doesn\'t like it when you quit in the middle, your current progress will be lost.</string>
     <string name="on_route_stop">EXIT</string>
 </resources>

@@ -26,4 +26,9 @@ Once you have your key (it starts with "AIza"), replace the `google_maps_key` st
 Visit [the Spotify developer dashboard](https://developer.spotify.com/dashboard/applications) and create a new application. You will receive a client id and client secret.
 For the redirect URI, you will need to click "Edit settings" on your dashboard and create a URI from that interface.
 You can then either edit `INSTALL.sh` and paste your keys in there, or call `INSTALL.sh` with the keys through command-line.
+
+### Assumptions
+- This app currently supports Spotify Premium users.
+- When exiting a run early, Spotify will stop playing.
+- All Spotify errors during a run will cause your run to exit early.
 <!-- [END getstarted] -->
