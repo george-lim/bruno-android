@@ -68,7 +68,7 @@ public class MainActivity extends AppCompatActivity implements PermissionRequest
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         int curContainerFragmentId = navController.getCurrentDestination().getId();
 
-        // Force the user to follow our exit flow to ensure cleanup is done properly
+        // NOTE: If the back button is pressed in OnRouteFragment, let OnRouteFragment handle it
         if (curContainerFragmentId == R.id.fragment_on_route) {
             NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager().getPrimaryNavigationFragment();
             OnRouteFragment onRouteFragment = (OnRouteFragment) navHostFragment.getChildFragmentManager().getPrimaryNavigationFragment();
