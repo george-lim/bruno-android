@@ -2,9 +2,11 @@ package com.cs446.group7.bruno.routing;
 
 import com.cs446.group7.bruno.music.BrunoPlaylist;
 import com.cs446.group7.bruno.music.BrunoTrack;
+import com.cs446.group7.bruno.utils.ListConversion;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 public class RouteProcessor {
@@ -34,16 +36,17 @@ public class RouteProcessor {
         List<RouteSegment> accumulatedRouteSegments = new ArrayList<>();
         List<BrunoTrack> tracks = playlist.tracks;
         int routeSegmentIndex = 0;
-        while (routeSegmentIndex < routeSegments.size()) {
+        LinkedList<RouteSegment> routeSegmentsLinked = ListConversion.listToLinkedList(routeSegments);
+        while (routeSegmentIndex < routeSegmentsLinked.size()) {
             if (currTrackInd >= tracks.size()) {
                 throw new TrackIndexOutOfBoundsException();
             }
 
             BrunoTrack currTrack = tracks.get(currTrackInd);
 
-            LatLng routeSegmentStart = routeSegments.get(routeSegmentIndex).getStartLocation();
-            LatLng routeSegmentEnd = routeSegments.get(routeSegmentIndex).getEndLocation();
-            long routeSegmentDuration = routeSegments.get(routeSegmentIndex).getDuration();
+            LatLng routeSegmentStart = routeSegmentsLinked.get(routeSegmentIndex).getStartLocation();
+            LatLng routeSegmentEnd = routeSegmentsLinked.get(routeSegmentIndex).getEndLocation();
+            long routeSegmentDuration = routeSegmentsLinked.get(routeSegmentIndex).getDuration();
             long lastSongSegment = accumulatedRouteSegmentDuration + routeSegmentDuration;
 
             if (lastSongSegment > currTrack.duration) {
@@ -73,12 +76,12 @@ public class RouteProcessor {
                 accumulatedRouteSegments.clear();
 
                 // Accommodate the second half of route segment for the next track
-                routeSegments.add(routeSegmentIndex + 1, segmentSecondHalf);
+                routeSegmentsLinked.add(routeSegmentIndex + 1, segmentSecondHalf);
                 accumulatedRouteSegmentDuration = 0;
                 currTrackInd++;
                 routeSegmentIndex++;
             } else if (lastSongSegment == currTrack.duration) {
-                accumulatedRouteSegments.add(routeSegments.get(routeSegmentIndex));
+                accumulatedRouteSegments.add(routeSegmentsLinked.get(routeSegmentIndex));
                 RouteTrackMapping rtm = new RouteTrackMapping(new ArrayList<>(accumulatedRouteSegments), currTrack);
                 result.add(rtm);
                 accumulatedRouteSegments.clear();
@@ -86,7 +89,7 @@ public class RouteProcessor {
                 currTrackInd++;
                 routeSegmentIndex++;
             } else {
-                accumulatedRouteSegments.add(routeSegments.get(routeSegmentIndex));
+                accumulatedRouteSegments.add(routeSegmentsLinked.get(routeSegmentIndex));
                 accumulatedRouteSegmentDuration += routeSegmentDuration;
                 routeSegmentIndex++;
             }
