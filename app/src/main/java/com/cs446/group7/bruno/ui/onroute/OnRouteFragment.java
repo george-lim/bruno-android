@@ -55,7 +55,6 @@ public class OnRouteFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        model = new ViewModelProvider(requireActivity()).get(RouteViewModel.class);
         return inflater.inflate(R.layout.fragment_on_route, container, false);
     }
 
