@@ -31,11 +31,11 @@ import java.util.Map;
 // Could share the request queue between this and RouteGenerator - can turn it into a singleton
 class SpotifyPlaylistService implements PlaylistGenerator {
 
-    final RequestQueue requestQueue;
-    final String playlistEndpoint = "https://api.spotify.com/v1/playlists/";
-    final String authorizationEndpoint = "https://accounts.spotify.com/api/token";
-    final String clientId;
-    final String clientSecret;
+    private final RequestQueue requestQueue;
+    private final String playlistEndpoint = "https://api.spotify.com/v1/playlists/";
+    private final String authorizationEndpoint = "https://accounts.spotify.com/api/token";
+    private final String clientId;
+    private final String clientSecret;
     public final String TAG = this.getClass().getSimpleName();
 
     // Needs context for secret variables
