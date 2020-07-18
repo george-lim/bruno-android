@@ -20,6 +20,8 @@ import com.cs446.group7.bruno.capability.hardware.HardwareRequestDelegate;
 import com.cs446.group7.bruno.capability.permission.PermissionRequest;
 import com.cs446.group7.bruno.capability.permission.PermissionRequestDelegate;
 import com.cs446.group7.bruno.location.LocationService;
+import com.cs446.group7.bruno.spotify.SpotifyService;
+import com.cs446.group7.bruno.ui.onroute.OnRouteFragment;
 import com.cs446.group7.bruno.ui.toplevel.TopLevelFragment;
 import com.cs446.group7.bruno.utils.NoFailCallback;
 
@@ -31,6 +33,7 @@ public class MainActivity extends AppCompatActivity implements PermissionRequest
 
     private static CapabilityService capabilityService;
     private static LocationService locationService;
+    private static SpotifyService spotifyService;
 
     // MARK: - PermissionRequestDelegate members
 
@@ -50,6 +53,7 @@ public class MainActivity extends AppCompatActivity implements PermissionRequest
         activeHardwareRequests = new HashMap<>();
 
         locationService = new LocationService(getApplicationContext());
+        spotifyService = new SpotifyService(getApplicationContext());
     }
 
     /**
@@ -62,6 +66,15 @@ public class MainActivity extends AppCompatActivity implements PermissionRequest
     public void onBackPressed() {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         int curContainerFragmentId = navController.getCurrentDestination().getId();
+
+        // NOTE: If the back button is pressed in OnRouteFragment, let OnRouteFragment handle it
+        if (curContainerFragmentId == R.id.fragment_on_route) {
+            NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager().getPrimaryNavigationFragment();
+            OnRouteFragment onRouteFragment = (OnRouteFragment) navHostFragment.getChildFragmentManager().getPrimaryNavigationFragment();
+            onRouteFragment.onBackPress();
+            return;
+        }
+
         if (curContainerFragmentId == R.id.fragment_top_lvl) {
             NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager().getPrimaryNavigationFragment();
             TopLevelFragment topLvlFragment = (TopLevelFragment) navHostFragment.getChildFragmentManager().getPrimaryNavigationFragment();
@@ -76,6 +89,10 @@ public class MainActivity extends AppCompatActivity implements PermissionRequest
 
     public static LocationService getLocationService() {
         return locationService;
+    }
+
+    public static SpotifyService getSpotifyService() {
+        return spotifyService;
     }
 
     @Override
