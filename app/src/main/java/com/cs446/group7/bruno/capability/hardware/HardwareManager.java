@@ -3,7 +3,6 @@ package com.cs446.group7.bruno.capability.hardware;
 import android.content.Context;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
-import android.net.Network;
 
 import com.cs446.group7.bruno.capability.Capability;
 import com.cs446.group7.bruno.utils.Callback;
@@ -61,13 +60,14 @@ public class HardwareManager {
         NoFailClosureQueue<Void> queue = new NoFailClosureQueue<>();
 
         // First have delegate show initial hardware request prompt
-        queue.add(callback -> delegate.showHardwareRequestPrompt(new HardwareRequest(capability, callback)));
+        queue.add((result, callback)
+                -> delegate.showHardwareRequestPrompt(new HardwareRequest(capability, callback)));
 
         // Then check if hardware is enabled after initial prompt
-        queue.add(callback -> {
-            // Complete queue early if user enabled capability themselves
+        queue.add((result, callback) -> {
+            // Complete queue early if capability is enabled
             if (isHardwareEnabled(capability)) {
-                clientCallback.onSuccess(null);
+                clientCallback.onSuccess(result);
                 return;
             }
 
@@ -76,17 +76,17 @@ public class HardwareManager {
         });
 
         // Then check if hardware is enabled after hardware request was made
-        queue.add(callback -> {
+        queue.add((result, callback) -> {
+            // Complete queue early if capability is enabled
             if (isHardwareEnabled(capability)) {
-                callback.onSuccess(null);
+                clientCallback.onSuccess(result);
                 return;
             }
 
             // If hardware is still not enabled, have delegate handle the request rejection
-            delegate.handleHardwareRejection(new HardwareRequest(capability,
-                    result -> clientCallback.onFailed(null)));
+            delegate.handleHardwareRejection(new HardwareRequest(capability, clientCallback::onFailed));
         });
 
-        queue.run(clientCallback);
+        queue.run(clientCallback::onSuccess);
     }
 }
