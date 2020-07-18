@@ -13,11 +13,6 @@ public class RouteSegment {
         this.duration = milliseconds;
     }
 
-    // Overload for duration in seconds
-    public RouteSegment(final LatLng startLocation, final LatLng endLocation, final int seconds) {
-        this(startLocation, endLocation, (long)seconds * 1000);
-    }
-
     public LatLng getStartLocation() {
         return startLocation;
     }

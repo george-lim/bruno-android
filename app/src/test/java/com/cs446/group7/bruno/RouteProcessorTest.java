@@ -22,22 +22,22 @@ public class RouteProcessorTest {
     RouteSegment mockSegment1 = new RouteSegment(
             new LatLng(43.476861, -80.539940),
             new LatLng(43.478633, -80.535248),
-            60
+            60000l
     );
     RouteSegment mockSegment2 = new RouteSegment(
             new LatLng(43.478633, -80.535248),
             new LatLng(43.473752, -80.531724),
-            80
+            80000l
     );
     RouteSegment mockSegment3 = new RouteSegment(
             new LatLng(43.473752, -80.531724),
             new LatLng(43.472029, -80.536262),
-            60
+            60000l
     );
     RouteSegment mockSegment4 = new RouteSegment(
             new LatLng(43.472029, -80.536262),
             new LatLng(43.476861, -80.539940),
-            80
+            80000l
     );
     List<RouteSegment> mockSegments = new ArrayList<>();
 
