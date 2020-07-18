@@ -33,17 +33,17 @@ public class RouteProcessor {
         int currTrackInd = 0;
         // Duration is measured in milliseconds
         long accumulatedRouteSegmentDuration = 0;
-        List<RouteSegment> accumulatedRouteSegments = new ArrayList<>();
+        List<RouteSegment> accumulatedRouteSegments = new LinkedList<>();
+        LinkedList<RouteSegment> routeSegmentsCopy = new LinkedList<>(routeSegments);
         List<BrunoTrack> tracks = playlist.tracks;
-        LinkedList<RouteSegment> routeSegmentsLinked = ListConversion.listToLinkedList(routeSegments);
-        while (routeSegmentsLinked.size() > 0) {
+        while (routeSegmentsCopy.size() > 0) {
             if (currTrackInd >= tracks.size()) {
                 throw new TrackIndexOutOfBoundsException();
             }
 
             BrunoTrack currTrack = tracks.get(currTrackInd);
 
-            RouteSegment currentRouteSegment = routeSegmentsLinked.poll();
+            RouteSegment currentRouteSegment = routeSegmentsCopy.poll();
             LatLng routeSegmentStart = currentRouteSegment.getStartLocation();
             LatLng routeSegmentEnd = currentRouteSegment.getEndLocation();
             long routeSegmentDuration = currentRouteSegment.getDuration();
@@ -71,19 +71,19 @@ public class RouteProcessor {
 
                 // Create mapping of accumulated segments and first half segment with current track
                 accumulatedRouteSegments.add(segmentFirstHalf);
-                RouteTrackMapping rtm = new RouteTrackMapping(new ArrayList<>(accumulatedRouteSegments), currTrack);
+                RouteTrackMapping rtm = new RouteTrackMapping(accumulatedRouteSegments, currTrack);
                 result.add(rtm);
-                accumulatedRouteSegments.clear();
+                accumulatedRouteSegments = new LinkedList<>();
 
                 // Accommodate the second half of route segment for the next track
-                routeSegmentsLinked.push(segmentSecondHalf);
+                routeSegmentsCopy.push(segmentSecondHalf);
                 accumulatedRouteSegmentDuration = 0;
                 currTrackInd++;
             } else if (lastSongSegment == currTrack.duration) {
                 accumulatedRouteSegments.add(currentRouteSegment);
-                RouteTrackMapping rtm = new RouteTrackMapping(new ArrayList<>(accumulatedRouteSegments), currTrack);
+                RouteTrackMapping rtm = new RouteTrackMapping(accumulatedRouteSegments, currTrack);
                 result.add(rtm);
-                accumulatedRouteSegments.clear();
+                accumulatedRouteSegments = new LinkedList<>();
                 accumulatedRouteSegmentDuration = 0;
                 currTrackInd++;
             } else {
