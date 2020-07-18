@@ -9,10 +9,10 @@ import com.google.android.gms.maps.model.LatLng;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -23,24 +23,24 @@ public class RouteProcessorTest {
     RouteSegment mockSegment1 = new RouteSegment(
             new LatLng(43.476861, -80.539940),
             new LatLng(43.478633, -80.535248),
-            60
+            60000l
     );
     RouteSegment mockSegment2 = new RouteSegment(
             new LatLng(43.478633, -80.535248),
             new LatLng(43.473752, -80.531724),
-            80
+            80000l
     );
     RouteSegment mockSegment3 = new RouteSegment(
             new LatLng(43.473752, -80.531724),
             new LatLng(43.472029, -80.536262),
-            60
+            60000l
     );
     RouteSegment mockSegment4 = new RouteSegment(
             new LatLng(43.472029, -80.536262),
             new LatLng(43.476861, -80.539940),
-            80
+            80000l
     );
-    List<RouteSegment> mockSegments = new ArrayList<>();
+    LinkedList<RouteSegment> mockSegments = new LinkedList<>();
 
     @Before
     public void setup() {
@@ -83,9 +83,9 @@ public class RouteProcessorTest {
     @Test
     public void routeDurationEqualToSingleTrackDuration() {
         RouteProcessor rp = new RouteProcessor();
-        ArrayList<String> mockArtists = new ArrayList<>();
+        List<String> mockArtists = new LinkedList<>();
         mockArtists.add("test");
-        ArrayList<BrunoTrack> tracks = new ArrayList<>();
+        List<BrunoTrack> tracks = new LinkedList<>();
         tracks.add(new BrunoTrack("testName", "testAlbum", 280000, mockArtists));
         long totalTrackDuration = 0;
         for (BrunoTrack track : tracks) {
@@ -110,9 +110,9 @@ public class RouteProcessorTest {
     @Test
     public void routeDurationEqualsToMultipleTrackDuration() {
         RouteProcessor rp = new RouteProcessor();
-        ArrayList<String> mockArtists = new ArrayList<>();
+        List<String> mockArtists = new LinkedList<>();
         mockArtists.add("test");
-        ArrayList<BrunoTrack> tracks = new ArrayList<>();
+        List<BrunoTrack> tracks = new LinkedList<>();
         tracks.add(new BrunoTrack("testName1", "testAlbum1", 140000, mockArtists));
         tracks.add(new BrunoTrack("testName2", "testAlbum2", 140000, mockArtists));
         long totalTrackDuration = 0;
@@ -129,11 +129,11 @@ public class RouteProcessorTest {
         );
 
         List<RouteTrackMapping> result = rp.execute(mockSegments, playlist);
-        List<RouteSegment> route1 = new ArrayList<>();
+        List<RouteSegment> route1 = new LinkedList<>();
 
         route1.add(mockSegment1);
         route1.add(mockSegment2);
-        List<RouteSegment> route2 = new ArrayList<>();
+        List<RouteSegment> route2 = new LinkedList<>();
         route2.add(mockSegment3);
         route2.add(mockSegment4);
         List<RouteTrackMapping> answer = new ArrayList<>();
@@ -146,9 +146,9 @@ public class RouteProcessorTest {
     @Test
     public void routeDurationShorterThanSingleTrackDuration() {
         RouteProcessor rp = new RouteProcessor();
-        ArrayList<String> mockArtists = new ArrayList<>();
+        List<String> mockArtists = new LinkedList<>();
         mockArtists.add("test");
-        ArrayList<BrunoTrack> tracks = new ArrayList<>();
+        List<BrunoTrack> tracks = new LinkedList<>();
         tracks.add(new BrunoTrack("testName1", "testAlbum1", 300000, mockArtists));
         long totalTrackDuration = 0;
         for (BrunoTrack track : tracks) {
@@ -173,9 +173,9 @@ public class RouteProcessorTest {
     @Test
     public void routeDurationShorterThanMultipleTrackDuration() {
         RouteProcessor rp = new RouteProcessor();
-        ArrayList<String> mockArtists = new ArrayList<>();
+        List<String> mockArtists = new LinkedList<>();
         mockArtists.add("test");
-        ArrayList<BrunoTrack> tracks = new ArrayList<>();
+        List<BrunoTrack> tracks = new LinkedList<>();
         tracks.add(new BrunoTrack("testName1", "testAlbum1", 200000, mockArtists));
         tracks.add(new BrunoTrack("testName2", "testAlbum2", 300000, mockArtists));
         long totalTrackDuration = 0;
@@ -192,11 +192,11 @@ public class RouteProcessorTest {
         );
 
         List<RouteTrackMapping> result = rp.execute(mockSegments, playlist);
-        List<RouteSegment> route1 = new ArrayList<>();
+        List<RouteSegment> route1 = new LinkedList<>();
         route1.add(mockSegment1);
         route1.add(mockSegment2);
         route1.add(mockSegment3);
-        List<RouteSegment> route2 = new ArrayList<>();
+        List<RouteSegment> route2 = new LinkedList<>();
         route2.add(mockSegment4);
         List<RouteTrackMapping> answer = new ArrayList<>();
         answer.add(new RouteTrackMapping(route1, tracks.get(0)));
@@ -208,9 +208,9 @@ public class RouteProcessorTest {
     @Test(expected=RouteProcessor.TrackIndexOutOfBoundsException.class)
     public void routeDurationLongerThanPlaylistDuration() {
         RouteProcessor rp = new RouteProcessor();
-        ArrayList<String> mockArtists = new ArrayList<>();
+        List<String> mockArtists = new LinkedList<>();
         mockArtists.add("test");
-        ArrayList<BrunoTrack> tracks = new ArrayList<>();
+        List<BrunoTrack> tracks = new LinkedList<>();
         tracks.add(new BrunoTrack("testName1", "testAlbum1", 140000, mockArtists));
         long totalTrackDuration = 0;
         for (BrunoTrack track : tracks) {
@@ -226,5 +226,41 @@ public class RouteProcessorTest {
         );
 
         rp.execute(mockSegments, playlist);
+    }
+
+    @Test
+    public void routeSegmentDurationLongerThanTrackDuration() {
+        RouteProcessor rp = new RouteProcessor();
+        List<String> mockArtists = new LinkedList<>();
+        mockArtists.add("test");
+        List<BrunoTrack> tracks = new LinkedList<>();
+        tracks.add(new BrunoTrack("testName1", "testAlbum1", 70000, mockArtists));
+        tracks.add(new BrunoTrack("testName2", "testAlbum2", 60000, mockArtists));
+        tracks.add(new BrunoTrack("testName3", "testAlbum3", 200000, mockArtists));
+
+        long totalTrackDuration = 0;
+        for (BrunoTrack track : tracks) {
+            totalTrackDuration += track.duration;
+        }
+
+        BrunoPlaylist playlist = new BrunoPlaylist(
+                "playlistName",
+                "playlistDescription",
+                tracks.size(),
+                totalTrackDuration,
+                tracks
+        );
+
+        List<RouteTrackMapping> result = rp.execute(mockSegments, playlist);
+
+        assertEquals(result.get(0).routeSegments.size(), 2);
+        assertEquals(result.get(0).routeSegments.get(0).getDuration(), 60000);
+        assertEquals(result.get(0).routeSegments.get(1).getDuration(), 10000);
+        assertEquals(result.get(1).routeSegments.size(), 1);
+        assertEquals(result.get(1).routeSegments.get(0).getDuration(), 60000);
+        assertEquals(result.get(2).routeSegments.size(), 3);
+        assertEquals(result.get(2).routeSegments.get(0).getDuration(), 10000);
+        assertEquals(result.get(2).routeSegments.get(1).getDuration(), 60000);
+        assertEquals(result.get(2).routeSegments.get(2).getDuration(), 80000);
     }
 }

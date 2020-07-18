@@ -5,7 +5,7 @@ import com.cs446.group7.bruno.utils.LatLngUtils;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.maps.android.PolyUtil;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 public class Route {
@@ -26,7 +26,7 @@ public class Route {
     }
 
     private static List<RouteSegment> calculateSegments(final List<LatLng> decodedPath) {
-        List<RouteSegment> routeSegments = new ArrayList<>();
+        List<RouteSegment> routeSegments = new LinkedList<>();
         for (int i = 0; i < decodedPath.size() - 1; ++i) {
             double distanceMetres = LatLngUtils.getLatLngDistanceInMetres(decodedPath.get(i), decodedPath.get(i + 1));
             // should not overflow since (distanceMetres / WALKING_SPEED) is small enough
