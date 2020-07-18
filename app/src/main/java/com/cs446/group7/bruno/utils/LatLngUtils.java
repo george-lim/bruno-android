@@ -1,4 +1,4 @@
-package com.cs446.group7.bruno.routing;
+package com.cs446.group7.bruno.utils;
 
 import com.google.android.gms.maps.model.LatLng;
 

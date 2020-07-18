@@ -1,6 +1,7 @@
 package com.cs446.group7.bruno.routing;
 
 import com.cs446.group7.bruno.settings.SettingsService;
+import com.cs446.group7.bruno.utils.LatLngUtils;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.maps.android.PolyUtil;
 
