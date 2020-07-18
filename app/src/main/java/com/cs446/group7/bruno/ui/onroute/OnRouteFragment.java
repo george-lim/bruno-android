@@ -162,8 +162,6 @@ public class OnRouteFragment extends Fragment {
     private void observeUserLocation() {
         model.getCurrentLocation().observe(getViewLifecycleOwner(), location -> {
 
-            // TODO: Permissions aren't checked properly, should fix in the flow later to ensure this doesn't happen
-            if (location == null) return;
             if (userMarker == null) {
                 userMarker = map.addMarker(new MarkerOptions().position(location));
                 userMarker.setIcon(model.getAvatarMarker());
@@ -183,9 +181,7 @@ public class OnRouteFragment extends Fragment {
 
     private void drawRoute() {
         RouteResult route = model.getRouteResult().getValue();
-
-        // TODO: Permissions aren't checked properly, should fix in the flow later to ensure this doesn't happen
-        if (route == null) return;
+        
         map.addPolyline(new PolylineOptions().addAll(route.getRoute().getDecodedPath()));
     }
 
