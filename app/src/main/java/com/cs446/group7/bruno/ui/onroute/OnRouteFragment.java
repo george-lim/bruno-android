@@ -22,6 +22,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
@@ -161,16 +162,16 @@ public class OnRouteFragment extends Fragment {
 
     private void observeUserLocation() {
         model.getCurrentLocation().observe(getViewLifecycleOwner(), location -> {
-
+            final LatLng locationLatLng = new LatLng(location.getLatitude(), location.getLongitude());
             if (userMarker == null) {
-                userMarker = map.addMarker(new MarkerOptions().position(location));
+                userMarker = map.addMarker(new MarkerOptions().position(locationLatLng));
                 userMarker.setIcon(model.getAvatarMarker());
             } else {
-                userMarker.setPosition(location);
+                userMarker.setPosition(locationLatLng);
             }
 
             CameraPosition cameraPosition = new CameraPosition.Builder()
-                    .target(location)
+                    .target(locationLatLng)
                     .tilt(CAMERA_TILT)
                     .zoom(CAMERA_ZOOM)
                     .build();
