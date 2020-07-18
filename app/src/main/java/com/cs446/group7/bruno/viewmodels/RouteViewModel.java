@@ -30,7 +30,7 @@ public class RouteViewModel extends AndroidViewModel implements OnRouteResponseC
     private int duration;
     private boolean isWalkingMode = true;
     private MutableLiveData<RouteResult> routeResult = new MutableLiveData<>();
-    private MutableLiveData<LatLng> currentLocation = new MutableLiveData<>(null);
+    private MutableLiveData<Location> currentLocation = new MutableLiveData<>(null);
     private RouteGenerator routeGenerator;
     private BitmapDescriptor avatarMarker;
 
@@ -76,7 +76,7 @@ public class RouteViewModel extends AndroidViewModel implements OnRouteResponseC
         return routeResult;
     }
 
-    public LiveData<LatLng> getCurrentLocation() { return currentLocation; }
+    public LiveData<Location> getCurrentLocation() { return currentLocation; }
 
     public BitmapDescriptor getAvatarMarker() {
         return avatarMarker;
@@ -88,7 +88,8 @@ public class RouteViewModel extends AndroidViewModel implements OnRouteResponseC
         double speed = isWalkingMode ? SettingsService.PREFERRED_WALKING_SPEED : SettingsService.PREFERRED_RUNNING_SPEED;
         double totalDistance = duration * speed;
         double rotation = Math.random() * 2 * Math.PI;
-        routeGenerator.generateRoute(RouteViewModel.this, currentLocation.getValue(), totalDistance, rotation);
+        final LatLng locationLatLng = new LatLng(currentLocation.getValue().getLatitude(), currentLocation.getValue().getLongitude());
+        routeGenerator.generateRoute(RouteViewModel.this, locationLatLng, totalDistance, rotation);
     }
 
     @Override
@@ -103,14 +104,12 @@ public class RouteViewModel extends AndroidViewModel implements OnRouteResponseC
 
     @Override
     public void onLocationUpdate(@NonNull Location location) {
-        LatLng loc = new LatLng(location.getLatitude(), location.getLongitude());
-        currentLocation.setValue(loc);
+        currentLocation.setValue(location);
     }
 
     private void startLocationUpdates() {
         MainActivity.getLocationService().startLocationUpdates(location -> {
-            LatLng loc = new LatLng(location.getLatitude(), location.getLongitude());
-            currentLocation.setValue(loc);
+            currentLocation.setValue(location);
             generateRoute();
         });
     }
