@@ -41,6 +41,7 @@ public class ClosureQueue<Success, Failure> implements Closure<Success, Failure>
         });
     }
 
+    // Overload for running a queue without a previous result value
     public void run(final Callback<Success, Failure> callback) {
         run(null, callback);
     }

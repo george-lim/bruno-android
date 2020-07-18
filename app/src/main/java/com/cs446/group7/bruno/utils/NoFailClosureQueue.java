@@ -27,6 +27,7 @@ public class NoFailClosureQueue<Success> implements NoFailClosure<Success> {
         nextStep.run(result, nextResult -> run(nextResult, callback));
     }
 
+    // Overload for running a queue without a previous result value
     public void run(final NoFailCallback<Success> callback) {
         run(null, callback);
     }
