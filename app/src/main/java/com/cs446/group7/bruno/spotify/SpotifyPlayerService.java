@@ -165,21 +165,25 @@ class SpotifyPlayerService implements MusicPlayer {
                         .setResultCallback(empty -> {
                             mSpotifyAppRemote.getPlayerApi().play("spotify:playlist:" + this.playlistId).setResultCallback(empty1 -> {
                                 callback.onSuccess(null);
+                            }).setErrorCallback(throwable -> {
+                                Log.e(TAG, "play after shuffle failed: " + throwable.toString());
+                                callback.onFailed(new Exception(throwable));
                             });
                         })
                         .setErrorCallback(throwable -> {
-                            Log.e(TAG, "play failed: " + throwable.toString());
-                            SpotifyServiceError spotifyServiceError = getErrorFromThrowable(throwable);
+                            Log.e(TAG, "shuffle failed: " + throwable.toString());
                             callback.onFailed(new Exception(throwable));
                         });
             } else { // free users
                 mSpotifyAppRemote.getPlayerApi().play("spotify:playlist:" + this.playlistId).setResultCallback(empty1 -> {
                     callback.onSuccess(null);
+                }).setErrorCallback(throwable -> {
+                    Log.e(TAG, "playing for free users failed: " + throwable.toString());
+                    callback.onFailed(new Exception(throwable));
                 });
             }
         }).setErrorCallback(throwable -> {
             Log.e(TAG, "failed to acquire player state in play: " + throwable.toString());
-            SpotifyServiceError spotifyServiceError = getErrorFromThrowable(throwable);
             callback.onFailed(new Exception(throwable));
         });
     }
@@ -195,7 +199,6 @@ class SpotifyPlayerService implements MusicPlayer {
                 })
                 .setErrorCallback(throwable -> {
                     Log.e(TAG, "pause failed: " + throwable.toString());
-                    SpotifyServiceError spotifyServiceError = getErrorFromThrowable(throwable);
                     callback.onFailed(new Exception(throwable));
                 });
     }
@@ -209,7 +212,6 @@ class SpotifyPlayerService implements MusicPlayer {
                 })
                 .setErrorCallback(throwable -> {
                     Log.e(TAG, "resume failed: " + throwable.toString());
-                    SpotifyServiceError spotifyServiceError = getErrorFromThrowable(throwable);
                     callback.onFailed(new Exception(throwable));
                 });
     }
