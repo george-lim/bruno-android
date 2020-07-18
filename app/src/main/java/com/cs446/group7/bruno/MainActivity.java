@@ -150,8 +150,7 @@ public class MainActivity extends AppCompatActivity implements PermissionRequest
                     showAlertDialog(
                             request.getTitle(),
                             request.getRejectionMessage(),
-                            // Complete initial request callback with failure
-                            result -> request.getCallback().onFailed(null)
+                            request.getCallback()::onFailed
                     );
 
                     return;
