@@ -3,7 +3,7 @@ package com.cs446.group7.bruno.utils;
 import java.util.LinkedList;
 
 // A queue that will execute a bunch of closures sequentially
-public class NoFailClosureQueue<Success> implements Closure<Void, Void> {
+public class NoFailClosureQueue<Success> implements NoFailClosure<Success> {
     private LinkedList<NoFailClosure<Success>> steps;
 
     public NoFailClosureQueue() {
@@ -17,13 +17,17 @@ public class NoFailClosureQueue<Success> implements Closure<Void, Void> {
 
     // Execute closures sequentially
     @Override
-    public void run(final Callback<Void, Void> callback) {
+    public void run(Success result, final NoFailCallback<Success> callback) {
         if (steps.isEmpty()) {
-            callback.onSuccess(null);
+            callback.onSuccess(result);
             return;
         }
 
         NoFailClosure<Success> nextStep = steps.poll();
-        nextStep.run(result -> run(callback));
+        nextStep.run(result, nextResult -> run(nextResult, callback));
+    }
+
+    public void run(final NoFailCallback<Success> callback) {
+        run(null, callback);
     }
 }

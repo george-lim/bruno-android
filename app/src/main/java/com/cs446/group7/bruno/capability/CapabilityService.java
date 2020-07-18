@@ -72,7 +72,7 @@ public class CapabilityService {
         ClosureQueue<Void, Void> queue = new ClosureQueue<>();
 
         for (Capability capability : capabilities) {
-            queue.add(callback -> request(capability, callback));
+            queue.add((result, callback) -> request(capability, callback));
         }
 
         queue.run(clientCallback);
