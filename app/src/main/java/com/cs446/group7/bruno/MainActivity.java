@@ -1,7 +1,6 @@
 package com.cs446.group7.bruno;
 
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -97,19 +96,15 @@ public class MainActivity extends AppCompatActivity implements PermissionRequest
     private void showAlertDialog(final String title,
                                  final String message,
                                  final NoFailCallback<Void> callback) {
-        DialogInterface.OnDismissListener onDismiss = dialogInterface -> {
-            if (callback != null) {
-                callback.onSuccess(null);
-            }
-        };
-
-        String okButtonText = getResources().getString(R.string.ok_button);
-
         new AlertDialog.Builder(this)
                 .setTitle(title)
                 .setMessage(message)
-                .setPositiveButton(okButtonText, null)
-                .setOnDismissListener(onDismiss)
+                .setPositiveButton(getResources().getString(R.string.ok_button), null)
+                .setOnDismissListener(dialogInterface -> {
+                    if (callback != null) {
+                        callback.onSuccess(null);
+                    }
+                })
                 .create()
                 .show();
     }
@@ -120,22 +115,20 @@ public class MainActivity extends AppCompatActivity implements PermissionRequest
     // NOTE: Requesting a permission will trigger onPause() on MainActivity
     @Override
     public void handlePermissionRequest(@NonNull final PermissionRequest request) {
-        // Request permission after showing popup
-        NoFailCallback<Void> callback = result -> {
-            // Store permission request into active permission requests
-            activePermissionRequests.put(currentRequestCode, request);
-
-            ActivityCompat.requestPermissions(MainActivity.this,
-                    request.getPermissionNames(),
-                    currentRequestCode);
-
-            currentRequestCode++;
-        };
-
         showAlertDialog(
                 request.getTitle(),
                 request.getRequestMessage(),
-                callback
+                // Request permission after showing popup
+                result -> {
+                    // Store permission request into active permission requests
+                    activePermissionRequests.put(currentRequestCode, request);
+
+                    ActivityCompat.requestPermissions(MainActivity.this,
+                            request.getPermissionNames(),
+                            currentRequestCode);
+
+                    currentRequestCode++;
+                }
         );
     }
 
@@ -154,13 +147,10 @@ public class MainActivity extends AppCompatActivity implements PermissionRequest
             for (int permissionStatus : grantResults) {
                 // Show permission denied prompt if any permission is denied
                 if (permissionStatus != PackageManager.PERMISSION_GRANTED) {
-                    // Complete initial request callback with failure
-                    NoFailCallback<Void> callback = result -> request.getCallback().onFailed(null);
-
                     showAlertDialog(
                             request.getTitle(),
                             request.getRejectionMessage(),
-                            callback
+                            request.getCallback()::onFailed
                     );
 
                     return;
