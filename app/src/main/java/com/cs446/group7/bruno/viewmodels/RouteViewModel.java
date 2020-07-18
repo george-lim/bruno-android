@@ -32,6 +32,7 @@ public class RouteViewModel extends AndroidViewModel implements OnRouteResponseC
     private MutableLiveData<RouteResult> routeResult = new MutableLiveData<>();
     private MutableLiveData<LatLng> currentLocation = new MutableLiveData<>(null);
     private RouteGenerator routeGenerator;
+    private SpotifyViewModel spotifyViewModel;
     private BitmapDescriptor avatarMarker;
 
     public RouteViewModel(@NonNull Application application) {
@@ -42,7 +43,7 @@ public class RouteViewModel extends AndroidViewModel implements OnRouteResponseC
         routeGenerator = BuildConfig.DEBUG
                 ? new MockRouteGeneratorImpl(context, apiKey)
                 : new RouteGeneratorImpl(context, apiKey);
-
+        spotifyViewModel = new SpotifyViewModel(application);
         // Store avatar bitmap in view model because conversion of vector drawable to bitmap
         // can be resource heavy
         Drawable avatarDrawable = context.getResources().getDrawable(R.drawable.ic_avatar_1, null);
@@ -130,5 +131,9 @@ public class RouteViewModel extends AndroidViewModel implements OnRouteResponseC
 
     public boolean isRoutePlanningComplete() {
         return routeResult.getValue() != null && routeResult.getValue().getRoute() != null;
+    }
+
+    public SpotifyViewModel getSpotifyViewModel() {
+        return spotifyViewModel;
     }
 }

@@ -17,5 +17,4 @@ public class BrunoTrack {
         this.duration = duration;
         this.artists = artists;
     }
-
 }

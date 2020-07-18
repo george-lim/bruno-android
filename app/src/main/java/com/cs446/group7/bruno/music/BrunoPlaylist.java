@@ -20,5 +20,4 @@ public class BrunoPlaylist {
         this.totalDuration = totalDuration;
         this.tracks = tracks;
     }
-
 }
