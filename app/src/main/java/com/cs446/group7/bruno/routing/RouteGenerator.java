@@ -4,7 +4,6 @@ import android.content.Context;
 
 import com.google.android.gms.maps.model.LatLng;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -74,24 +73,7 @@ public abstract class RouteGenerator {
                 .getJSONObject("overview_polyline")
                 .getString("points");
 
-        List<RouteSegment> routeSegments = new ArrayList<>();
-        JSONArray legs = routeJson.getJSONArray("routes").getJSONObject(0).getJSONArray("legs");
-        for (int i = 0; i < legs.length(); ++i) {
-            JSONArray steps = legs.getJSONObject(i).getJSONArray("steps");
-            for (int j = 0; j < steps.length(); ++j) {
-                JSONObject step = steps.getJSONObject(j);
-                JSONObject startObj = step.getJSONObject("start_location");
-                JSONObject endObj = step.getJSONObject("end_location");
-
-                LatLng startLocation = new LatLng(startObj.getDouble("lat"), startObj.getDouble("lng"));
-                LatLng endLocation = new LatLng(endObj.getDouble("lat"), endObj.getDouble("lng"));
-                int duration = step.getJSONObject("duration").getInt("value");
-
-                routeSegments.add(new RouteSegment(startLocation, endLocation, duration));
-            }
-        }
-
-        return new Route(encodedPath, routeSegments);
+        return new Route(encodedPath);
     }
 
     /**

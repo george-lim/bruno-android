@@ -6,7 +6,7 @@ import java.util.LinkedList;
     A queue that will execute a bunch of closures sequentially
     NOTE: If any closure step fails, the client callback will fail
  */
-public class ClosureQueue<Success, Failure> implements Closure<Void, Void> {
+public class ClosureQueue<Success, Failure> implements Closure<Success, Failure> {
     private LinkedList<Closure<Success, Failure>> steps;
 
     public ClosureQueue() {
@@ -20,24 +20,29 @@ public class ClosureQueue<Success, Failure> implements Closure<Void, Void> {
 
     // Execute closures sequentially
     @Override
-    public void run(final Callback<Void, Void> callback) {
+    public void run(Success result, final Callback<Success, Failure> callback) {
         if (steps.isEmpty()) {
-            callback.onSuccess(null);
+            callback.onSuccess(result);
             return;
         }
 
         Closure<Success, Failure> nextStep = steps.poll();
 
-        nextStep.run(new Callback<Success, Failure>() {
+        nextStep.run(result, new Callback<Success, Failure>() {
             @Override
             public void onSuccess(Success result) {
-                run(callback);
+                run(result, callback);
             }
 
             @Override
             public void onFailed(Failure result) {
-                callback.onFailed(null);
+                callback.onFailed(result);
             }
         });
+    }
+
+    // Overload for running a queue without a previous result value
+    public void run(final Callback<Success, Failure> callback) {
+        run(null, callback);
     }
 }
