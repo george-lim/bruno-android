@@ -7,12 +7,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.NumberPicker;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 
 import com.cs446.group7.bruno.R;
 import com.cs446.group7.bruno.models.RouteModel;
@@ -96,7 +99,9 @@ public class RoutePlanningFragment extends Fragment implements RoutePlanningView
     }
 
     private void handleDurationSelected(final NumberPicker numberPicker, int scrollState) {
-        viewModel.handleDurationSelected(scrollState);
+        if (scrollState == NumberPicker.OnScrollListener.SCROLL_STATE_IDLE) {
+            viewModel.handleDurationSelected(numberPicker.getValue());
+        }
     }
 
     // MARK: - RoutePlanningViewModelDelegate methods
@@ -175,5 +180,14 @@ public class RoutePlanningFragment extends Fragment implements RoutePlanningView
                 .setIcon(avatarMarker);
 
         map.addPolyline(new PolylineOptions().addAll(route.getDecodedPath()));
+    }
+
+    public void showRouteGenerationError(final String errorMessage) {
+        Toast.makeText(getContext(), errorMessage, Toast.LENGTH_LONG).show();
+    }
+
+    public void navigateToNextScreen() {
+        NavController navController = Navigation.findNavController(getActivity(), R.id.nav_host_fragment);
+        navController.navigate(R.id.action_fragmenttoplevel_to_fragmentonroute);
     }
 }

@@ -1,8 +1,10 @@
 package com.cs446.group7.bruno.viewmodels;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 
@@ -13,13 +15,18 @@ import com.cs446.group7.bruno.capability.Capability;
 import com.cs446.group7.bruno.location.LocationServiceSubscriber;
 import com.cs446.group7.bruno.models.RouteModel;
 import com.cs446.group7.bruno.routing.MockRouteGeneratorImpl;
+import com.cs446.group7.bruno.routing.OnRouteResponseCallback;
+import com.cs446.group7.bruno.routing.Route;
 import com.cs446.group7.bruno.routing.RouteGenerator;
+import com.cs446.group7.bruno.routing.RouteGeneratorError;
 import com.cs446.group7.bruno.routing.RouteGeneratorImpl;
 import com.cs446.group7.bruno.utils.BitmapUtils;
+import com.cs446.group7.bruno.utils.Callback;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.LatLng;
 
-public class RoutePlanningViewModel implements LocationServiceSubscriber {
+public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRouteResponseCallback {
 
     // MARK: - Constants
 
@@ -28,34 +35,47 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber {
 
     // MARK: - Private members
 
-    private Context context;
+    private Resources resources;
     private RouteModel model;
     private RoutePlanningViewModelDelegate delegate;
 
     private RouteGenerator routeGenerator;
     private BitmapDescriptor avatarMarker;
 
+    private boolean isRequestingCapabilities = false;
+    private boolean hasStartedLocationUpdates = false;
+
     // MARK: - Lifecycle methods
 
     public RoutePlanningViewModel(final Context context,
                                   final RouteModel model,
                                   final RoutePlanningViewModelDelegate delegate) {
-        this.context = context;
+        this.resources = context.getResources();
         this.model = model;
         this.delegate = delegate;
 
-        String googleMapsKey = context.getResources().getString(R.string.google_maps_key);
+        String googleMapsKey = resources.getString(R.string.google_maps_key);
         routeGenerator = BuildConfig.DEBUG
                 ? new MockRouteGeneratorImpl(context, googleMapsKey)
                 : new RouteGeneratorImpl(context, googleMapsKey);
 
-        Drawable avatarDrawable = context.getResources().getDrawable(R.drawable.ic_avatar_1, null);
+        Drawable avatarDrawable = resources.getDrawable(R.drawable.ic_avatar_1, null);
         avatarMarker = BitmapDescriptorFactory.fromBitmap(BitmapUtils.getBitmapFromVectorDrawable(avatarDrawable));
 
         MainActivity.getLocationService().addSubscriber(this);
 
         setupUI();
+        startLocationUpdates();
     }
+
+    @Override
+    protected void finalize() throws Throwable {
+        super.finalize();
+        MainActivity.getLocationService().stopLocationUpdates();
+        MainActivity.getLocationService().removeSubscriber(this);
+    }
+
+    // MARK: - Private methods
 
     private void setupUI() {
         boolean isEveryCapabilityEnabled = MainActivity
@@ -63,8 +83,8 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber {
                 .isEveryCapabilityEnabled(REQUIRED_CAPABILITIES);
 
         String startBtnText = model.getRoute() != null || isEveryCapabilityEnabled
-                ? context.getResources().getString(R.string.route_planning_start)
-                : context.getResources().getString(R.string.route_planning_generate_route);
+                ? resources.getString(R.string.route_planning_start)
+                : resources.getString(R.string.route_planning_generate_route);
 
         String[] durationPickerDisplayedValues = new String[RouteModel.DURATIONS_IN_MINUTES.length];
 
@@ -82,16 +102,51 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber {
         );
     }
 
-    @Override
-    protected void finalize() throws Throwable {
-        super.finalize();
-        MainActivity.getLocationService().stopLocationUpdates();
-        MainActivity.getLocationService().removeSubscriber(this);
+    private void startLocationUpdates() {
+        if (hasStartedLocationUpdates) {
+            return;
+        }
+
+        boolean isEveryCapabilityEnabled = MainActivity
+                .getCapabilityService()
+                .isEveryCapabilityEnabled(REQUIRED_CAPABILITIES);
+
+        if (!isEveryCapabilityEnabled) {
+            return;
+        }
+
+        MainActivity.getLocationService().startLocationUpdates(location -> {
+            LatLng latlng = new LatLng(location.getLatitude(), location.getLongitude());
+            model.setCurrentLocation(latlng);
+            hasStartedLocationUpdates = true;
+        });
     }
 
     // MARK: - User action handlers
 
-    public void handleStartWalkingClick() {}
+    public void handleStartWalkingClick() {
+        if (isRequestingCapabilities) return;
+        isRequestingCapabilities = true;
+
+        MainActivity.getCapabilityService().request(REQUIRED_CAPABILITIES, new Callback<Void, Void>() {
+            @Override
+            public void onSuccess(Void result) {
+                if (model.getRoute() != null) {
+                    delegate.navigateToNextScreen();
+                }
+                else if (!hasStartedLocationUpdates) {
+                    startLocationUpdates();
+                }
+
+                isRequestingCapabilities = false;
+            }
+
+            @Override
+            public void onFailed(Void result) {
+                isRequestingCapabilities = false;
+            }
+        });
+    }
 
     public void handleWalkingModeClick() {
         if (model.getMode() == RouteModel.Mode.WALK) {
@@ -111,12 +166,34 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber {
         delegate.updateSelectedModeBtn(model.getMode() == RouteModel.Mode.WALK);
     }
 
-    public void handleDurationSelected(int scrollState) {}
+    public void handleDurationSelected(int durationIndex) {
+        if (model.getDurationIndex() == durationIndex) {
+            return;
+        }
+
+        model.setDurationIndex(durationIndex);
+    }
 
     // MARK: - LocationServiceSubscriber methods
 
     @Override
     public void onLocationUpdate(@NonNull Location location) {
 
+    }
+
+    // MARK: - OnRouteResponseCallback methods
+
+    @Override
+    public void onRouteReady(final Route route) {
+        model.setRoute(route);
+        delegate.updateStartBtnText(resources.getString(R.string.route_planning_start));
+        delegate.drawRoute(route, avatarMarker);
+    }
+
+    @Override
+    public void onRouteError(final RouteGeneratorError error,
+                             final Exception underlyingException) {
+        delegate.showRouteGenerationError(error.getDescription());
+        Log.e(getClass().getSimpleName(), underlyingException.getLocalizedMessage());
     }
 }

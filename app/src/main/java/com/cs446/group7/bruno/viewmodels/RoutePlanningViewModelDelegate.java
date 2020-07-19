@@ -13,4 +13,6 @@ public interface RoutePlanningViewModelDelegate {
     void updateStartBtnText(final String text);
     void updateSelectedModeBtn(boolean isWalkingModeBtnSelected);
     void drawRoute(final Route route, final BitmapDescriptor avatarMarker);
+    void showRouteGenerationError(final String errorMessage);
+    void navigateToNextScreen();
 }
