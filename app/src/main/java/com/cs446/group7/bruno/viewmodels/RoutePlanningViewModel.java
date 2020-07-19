@@ -95,7 +95,7 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
 
         delegate.setupUI(
                 startBtnText,
-                true,
+                model.getMode() == RouteModel.Mode.WALK,
                 durationPickerDisplayedValues,
                 0,
                 RouteModel.DURATIONS_IN_MINUTES.length - 1,
@@ -119,7 +119,15 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
         MainActivity.getLocationService().startLocationUpdates(location -> {
             hasStartedLocationUpdates = true;
             onLocationUpdate(location);
-            generateRoute();
+
+            Route route = model.getRoute();
+
+            if (route != null) {
+                onRouteReady(route);
+            }
+            else {
+                generateRoute();
+            }
         });
     }
 
