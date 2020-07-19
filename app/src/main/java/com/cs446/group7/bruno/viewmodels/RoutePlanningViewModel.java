@@ -20,6 +20,7 @@ import com.cs446.group7.bruno.routing.Route;
 import com.cs446.group7.bruno.routing.RouteGenerator;
 import com.cs446.group7.bruno.routing.RouteGeneratorError;
 import com.cs446.group7.bruno.routing.RouteGeneratorImpl;
+import com.cs446.group7.bruno.settings.SettingsService;
 import com.cs446.group7.bruno.utils.BitmapUtils;
 import com.cs446.group7.bruno.utils.Callback;
 import com.google.android.gms.maps.model.BitmapDescriptor;
@@ -116,10 +117,29 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
         }
 
         MainActivity.getLocationService().startLocationUpdates(location -> {
-            LatLng latlng = new LatLng(location.getLatitude(), location.getLongitude());
-            model.setCurrentLocation(latlng);
             hasStartedLocationUpdates = true;
+            onLocationUpdate(location);
+            generateRoute();
         });
+    }
+
+    private void generateRoute() {
+        if (model.getCurrentLocation() == null) {
+            return;
+        }
+
+        double speed = model.getMode() == RouteModel.Mode.WALK
+                ? SettingsService.PREFERRED_WALKING_SPEED
+                : SettingsService.PREFERRED_RUNNING_SPEED;
+        double totalDistance = model.getDurationInMinutes() * speed;
+        double rotation = Math.random() * 2 * Math.PI;
+
+        routeGenerator.generateRoute(
+                RoutePlanningViewModel.this,
+                model.getCurrentLocation(),
+                totalDistance,
+                rotation
+        );
     }
 
     // MARK: - User action handlers
@@ -155,6 +175,8 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
 
         model.setMode(RouteModel.Mode.WALK);
         delegate.updateSelectedModeBtn(model.getMode() == RouteModel.Mode.WALK);
+
+        generateRoute();
     }
 
     public void handleRunningModeClick() {
@@ -164,6 +186,8 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
 
         model.setMode(RouteModel.Mode.RUN);
         delegate.updateSelectedModeBtn(model.getMode() == RouteModel.Mode.WALK);
+
+        generateRoute();
     }
 
     public void handleDurationSelected(int durationIndex) {
@@ -172,13 +196,16 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
         }
 
         model.setDurationIndex(durationIndex);
+
+        generateRoute();
     }
 
     // MARK: - LocationServiceSubscriber methods
 
     @Override
     public void onLocationUpdate(@NonNull Location location) {
-
+        LatLng latlng = new LatLng(location.getLatitude(), location.getLongitude());
+        model.setCurrentLocation(latlng);
     }
 
     // MARK: - OnRouteResponseCallback methods
