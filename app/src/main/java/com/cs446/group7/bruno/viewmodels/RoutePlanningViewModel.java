@@ -106,6 +106,18 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
                 RouteModel.DURATIONS_IN_MINUTES.length - 1,
                 model.getDurationIndex()
         );
+
+        Route route = model.getRoute();
+
+        if (route != null) {
+            onRouteReady(route);
+        }
+
+        LatLng currentLocation = model.getCurrentLocation();
+
+        if (currentLocation != null) {
+            delegate.moveUserMarker(currentLocation, userMarkerIcon);
+        }
     }
 
     private void startLocationUpdates() {
@@ -125,12 +137,7 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
             hasStartedLocationUpdates = true;
             onLocationUpdate(location);
 
-            Route route = model.getRoute();
-
-            if (route != null) {
-                onRouteReady(route);
-            }
-            else {
+            if (model.getRoute() == null) {
                 generateRoute();
             }
         });

@@ -9,11 +9,11 @@ import com.google.android.gms.maps.model.LatLng;
 public interface OnRouteViewModelDelegate {
     void setupUI();
     void updateCurrentSongUI(final String name, final String album);
+    void drawRoute(final Route route);
     void animateCamera(final LatLng location,
                        final BitmapDescriptor userMarkerIcon,
                        int cameraTilt,
                        int cameraZoom);
-    void drawRoute(final Route route);
     void showProgressDialog(final String title,
                             final String message,
                             boolean isIndeterminate,

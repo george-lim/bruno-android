@@ -144,16 +144,6 @@ public class RoutePlanningFragment extends Fragment implements RoutePlanningView
         runningModeBtn.setSelected(!isWalkingModeBtnSelected);
     }
 
-    public void moveUserMarker(final LatLng location, final BitmapDescriptor userMarkerIcon) {
-        if (userMarker == null) {
-            userMarker = map.addMarker(new MarkerOptions().position(location));
-            userMarker.setIcon(userMarkerIcon);
-        }
-        else {
-            userMarker.setPosition(location);
-        }
-    }
-
     public void drawRoute(final Route route,
                           final LatLng location,
                           final BitmapDescriptor userMarkerIcon) {
@@ -200,6 +190,16 @@ public class RoutePlanningFragment extends Fragment implements RoutePlanningView
         moveUserMarker(location, userMarkerIcon);
 
         map.addPolyline(new PolylineOptions().addAll(route.getDecodedPath()));
+    }
+
+    public void moveUserMarker(final LatLng location, final BitmapDescriptor userMarkerIcon) {
+        if (userMarker == null) {
+            userMarker = map.addMarker(new MarkerOptions().position(location));
+            userMarker.setIcon(userMarkerIcon);
+        }
+        else {
+            userMarker.setPosition(location);
+        }
     }
 
     public void showRouteGenerationError(final String errorMessage) {

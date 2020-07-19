@@ -13,10 +13,10 @@ public interface RoutePlanningViewModelDelegate {
                  int durationPickerValue);
     void updateStartBtnText(final String text);
     void updateSelectedModeBtn(boolean isWalkingModeBtnSelected);
-    void moveUserMarker(final LatLng location, final BitmapDescriptor userMarkerIcon);
     void drawRoute(final Route route,
                    final LatLng location,
                    final BitmapDescriptor userMarkerIcon);
+    void moveUserMarker(final LatLng location, final BitmapDescriptor userMarkerIcon);
     void showRouteGenerationError(final String errorMessage);
     void navigateToNextScreen();
 }

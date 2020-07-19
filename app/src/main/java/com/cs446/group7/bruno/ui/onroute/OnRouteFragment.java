@@ -105,6 +105,10 @@ public class OnRouteFragment extends Fragment implements OnRouteViewModelDelegat
         txtSongArtistInfo.setText(album);
     }
 
+    public void drawRoute(final Route route) {
+        map.addPolyline(new PolylineOptions().addAll(route.getDecodedPath()));
+    }
+
     public void animateCamera(final LatLng location,
                               final BitmapDescriptor userMarkerIcon,
                               int cameraTilt,
@@ -130,10 +134,6 @@ public class OnRouteFragment extends Fragment implements OnRouteViewModelDelegat
             map.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
             hasDrawnRouteOnce = true;
         }
-    }
-
-    public void drawRoute(final Route route) {
-        map.addPolyline(new PolylineOptions().addAll(route.getDecodedPath()));
     }
 
     public void showProgressDialog(final String title,
