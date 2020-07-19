@@ -28,6 +28,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
@@ -48,6 +49,8 @@ public class RoutePlanningFragment extends Fragment implements RoutePlanningView
     // MARK: - Private members
 
     private RoutePlanningViewModel viewModel;
+
+    private Marker userMarker;
 
     private boolean hasDrawnRouteOnce = false;
 
@@ -141,7 +144,19 @@ public class RoutePlanningFragment extends Fragment implements RoutePlanningView
         runningModeBtn.setSelected(!isWalkingModeBtnSelected);
     }
 
-    public void drawRoute(final Route route, final BitmapDescriptor userMarkerIcon) {
+    public void moveUserMarker(final LatLng location, final BitmapDescriptor userMarkerIcon) {
+        if (userMarker == null) {
+            userMarker = map.addMarker(new MarkerOptions().position(location));
+            userMarker.setIcon(userMarkerIcon);
+        }
+        else {
+            userMarker.setPosition(location);
+        }
+    }
+
+    public void drawRoute(final Route route,
+                          final LatLng location,
+                          final BitmapDescriptor userMarkerIcon) {
         map.clear();
 
         DisplayMetrics displayMetrics = getContext().getResources().getDisplayMetrics();
@@ -181,9 +196,8 @@ public class RoutePlanningFragment extends Fragment implements RoutePlanningView
             hasDrawnRouteOnce = true;
         }
 
-        map.addMarker(new MarkerOptions()
-                .position(decodedPath.get(0)))
-                .setIcon(userMarkerIcon);
+        userMarker = null;
+        moveUserMarker(location, userMarkerIcon);
 
         map.addPolyline(new PolylineOptions().addAll(route.getDecodedPath()));
     }

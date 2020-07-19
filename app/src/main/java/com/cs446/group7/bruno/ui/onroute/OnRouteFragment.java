@@ -112,7 +112,8 @@ public class OnRouteFragment extends Fragment implements OnRouteViewModelDelegat
         if (userMarker == null) {
             userMarker = map.addMarker(new MarkerOptions().position(location));
             userMarker.setIcon(userMarkerIcon);
-        } else {
+        }
+        else {
             userMarker.setPosition(location);
         }
 

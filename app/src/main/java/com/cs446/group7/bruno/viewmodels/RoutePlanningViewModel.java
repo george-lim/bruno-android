@@ -219,6 +219,7 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
     public void onLocationUpdate(@NonNull Location location) {
         LatLng latlng = new LatLng(location.getLatitude(), location.getLongitude());
         model.setCurrentLocation(latlng);
+        delegate.moveUserMarker(latlng, userMarkerIcon);
     }
 
     // MARK: - OnRouteResponseCallback methods
@@ -227,7 +228,7 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
     public void onRouteReady(final Route route) {
         model.setRoute(route);
         delegate.updateStartBtnText(resources.getString(R.string.route_planning_start));
-        delegate.drawRoute(route, userMarkerIcon);
+        delegate.drawRoute(route, model.getCurrentLocation(), userMarkerIcon);
     }
 
     @Override
