@@ -60,6 +60,20 @@ public class OnRouteViewModel implements LocationServiceSubscriber, SpotifyServi
     public void onDestroy() {
         MainActivity.getLocationService().stopLocationUpdates();
         MainActivity.getLocationService().removeSubscriber(this);
+
+        if (MainActivity.getSpotifyService().isConnected()) {
+            MainActivity.getSpotifyService().pause(new Callback<Void, Exception>() {
+                @Override
+                public void onSuccess(Void result) {
+                    MainActivity.getSpotifyService().disconnect();
+                }
+
+                @Override
+                public void onFailed(Exception result) {
+                    MainActivity.getSpotifyService().disconnect();
+                }
+            });
+        }
     }
 
     // MARK: - Private methods
