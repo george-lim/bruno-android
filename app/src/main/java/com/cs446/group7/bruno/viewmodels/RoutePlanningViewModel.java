@@ -41,7 +41,7 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
     private RoutePlanningViewModelDelegate delegate;
 
     private RouteGenerator routeGenerator;
-    private BitmapDescriptor avatarMarker;
+    private BitmapDescriptor userMarkerIcon;
 
     private boolean isRequestingCapabilities = false;
     private boolean hasStartedLocationUpdates = false;
@@ -55,13 +55,8 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
         this.model = model;
         this.delegate = delegate;
 
-        String googleMapsKey = resources.getString(R.string.google_maps_key);
-        routeGenerator = BuildConfig.DEBUG
-                ? new MockRouteGeneratorImpl(context, googleMapsKey)
-                : new RouteGeneratorImpl(context, googleMapsKey);
-
-        Drawable avatarDrawable = resources.getDrawable(R.drawable.ic_avatar_1, null);
-        avatarMarker = BitmapDescriptorFactory.fromBitmap(BitmapUtils.getBitmapFromVectorDrawable(avatarDrawable));
+        routeGenerator = getRouteGenerator(context);
+        userMarkerIcon = getUserMarkerIcon();
 
         MainActivity.getLocationService().addSubscriber(this);
 
@@ -75,6 +70,18 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
     }
 
     // MARK: - Private methods
+
+    private RouteGenerator getRouteGenerator(final Context context) {
+        String googleMapsKey = resources.getString(R.string.google_maps_key);
+        return BuildConfig.DEBUG
+                ? new MockRouteGeneratorImpl(context, googleMapsKey)
+                : new RouteGeneratorImpl(context, googleMapsKey);
+    }
+
+    private BitmapDescriptor getUserMarkerIcon() {
+        Drawable avatarDrawable = resources.getDrawable(R.drawable.ic_avatar_1, null);
+        return BitmapDescriptorFactory.fromBitmap(BitmapUtils.getBitmapFromVectorDrawable(avatarDrawable));
+    }
 
     private void setupUI() {
         boolean isEveryCapabilityEnabled = MainActivity
@@ -220,7 +227,7 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
     public void onRouteReady(final Route route) {
         model.setRoute(route);
         delegate.updateStartBtnText(resources.getString(R.string.route_planning_start));
-        delegate.drawRoute(route, avatarMarker);
+        delegate.drawRoute(route, userMarkerIcon);
     }
 
     @Override

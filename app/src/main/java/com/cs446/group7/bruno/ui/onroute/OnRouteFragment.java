@@ -21,8 +21,14 @@ import com.cs446.group7.bruno.models.RouteModel;
 import com.cs446.group7.bruno.routing.Route;
 import com.cs446.group7.bruno.viewmodels.OnRouteViewModel;
 import com.cs446.group7.bruno.viewmodels.OnRouteViewModelDelegate;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 public class OnRouteFragment extends Fragment implements OnRouteViewModelDelegate {
@@ -38,7 +44,10 @@ public class OnRouteFragment extends Fragment implements OnRouteViewModelDelegat
 
     private OnRouteViewModel viewModel;
 
-    ProgressDialog progressDialog;
+    private ProgressDialog progressDialog;
+    private Marker userMarker;
+
+    private boolean hasDrawnRouteOnce = false;
 
     // MARK: - Lifecycle methods
 
@@ -94,6 +103,32 @@ public class OnRouteFragment extends Fragment implements OnRouteViewModelDelegat
     public void updateCurrentSongUI(final String name, final String album) {
         txtSongTitle.setText(name);
         txtSongArtistInfo.setText(album);
+    }
+
+    public void animateCamera(final LatLng location,
+                              final BitmapDescriptor userMarkerIcon,
+                              int cameraTilt,
+                              int cameraZoom) {
+        if (userMarker == null) {
+            userMarker = map.addMarker(new MarkerOptions().position(location));
+            userMarker.setIcon(userMarkerIcon);
+        } else {
+            userMarker.setPosition(location);
+        }
+
+        CameraPosition cameraPosition = new CameraPosition.Builder()
+                .target(location)
+                .tilt(cameraTilt)
+                .zoom(cameraZoom)
+                .build();
+
+        if (hasDrawnRouteOnce) {
+            map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+        }
+        else {
+            map.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+            hasDrawnRouteOnce = true;
+        }
     }
 
     public void drawRoute(final Route route) {

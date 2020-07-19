@@ -141,7 +141,7 @@ public class RoutePlanningFragment extends Fragment implements RoutePlanningView
         runningModeBtn.setSelected(!isWalkingModeBtnSelected);
     }
 
-    public void drawRoute(final Route route, final BitmapDescriptor avatarMarker) {
+    public void drawRoute(final Route route, final BitmapDescriptor userMarkerIcon) {
         map.clear();
 
         DisplayMetrics displayMetrics = getContext().getResources().getDisplayMetrics();
@@ -183,7 +183,7 @@ public class RoutePlanningFragment extends Fragment implements RoutePlanningView
 
         map.addMarker(new MarkerOptions()
                 .position(decodedPath.get(0)))
-                .setIcon(avatarMarker);
+                .setIcon(userMarkerIcon);
 
         map.addPolyline(new PolylineOptions().addAll(route.getDecodedPath()));
     }

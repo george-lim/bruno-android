@@ -25,7 +25,9 @@ public class OnRouteViewModel implements LocationServiceSubscriber, SpotifyServi
 
     // MARK: - Constants
 
-    private static final String defaultPlaylistId = "7fPwZk4KFD2yfU7J5O1JVz";
+    private static final String DEFAULT_PLAYLIST_ID = "7fPwZk4KFD2yfU7J5O1JVz";
+    private static final int CAMERA_TILT = 60;
+    private static final int CAMERA_ZOOM = 18;
 
     // MARK: - Private members
 
@@ -33,7 +35,7 @@ public class OnRouteViewModel implements LocationServiceSubscriber, SpotifyServi
     private RouteModel model;
     private OnRouteViewModelDelegate delegate;
 
-    private BitmapDescriptor avatarMarker;
+    private BitmapDescriptor userMarkerIcon;
 
     // MARK: - Lifecycle methods
 
@@ -44,16 +46,12 @@ public class OnRouteViewModel implements LocationServiceSubscriber, SpotifyServi
         this.model = model;
         this.delegate = delegate;
 
-        Drawable avatarDrawable = resources.getDrawable(R.drawable.ic_avatar_1, null);
-        avatarMarker = BitmapDescriptorFactory.fromBitmap(BitmapUtils.getBitmapFromVectorDrawable(avatarDrawable));
+        userMarkerIcon = getUserMarkerIcon();
 
         MainActivity.getLocationService().addSubscriber(this);
         MainActivity.getLocationService().startLocationUpdates();
 
         setupUI();
-        delegate.drawRoute(model.getRoute());
-
-        // observeUserLocation
         connectToSpotify(context);
     }
 
@@ -78,6 +76,11 @@ public class OnRouteViewModel implements LocationServiceSubscriber, SpotifyServi
 
     // MARK: - Private methods
 
+    private BitmapDescriptor getUserMarkerIcon() {
+        Drawable avatarDrawable = resources.getDrawable(R.drawable.ic_avatar_1, null);
+        return BitmapDescriptorFactory.fromBitmap(BitmapUtils.getBitmapFromVectorDrawable(avatarDrawable));
+    }
+
     private void setupUI() {
         delegate.setupUI();
 
@@ -86,6 +89,9 @@ public class OnRouteViewModel implements LocationServiceSubscriber, SpotifyServi
         if (currentTrack != null) {
             delegate.updateCurrentSongUI(currentTrack.name, currentTrack.album);
         }
+
+        delegate.drawRoute(model.getRoute());
+        delegate.animateCamera(model.getCurrentLocation(), userMarkerIcon, CAMERA_TILT, CAMERA_ZOOM);
     }
 
     private void connectToSpotify(final Context context) {
@@ -103,7 +109,7 @@ public class OnRouteViewModel implements LocationServiceSubscriber, SpotifyServi
             public void onSuccess(Void result) {
                 delegate.dismissProgressDialog();
 
-                MainActivity.getSpotifyService().setPlayerPlaylist(defaultPlaylistId);
+                MainActivity.getSpotifyService().setPlayerPlaylist(DEFAULT_PLAYLIST_ID);
                 MainActivity.getSpotifyService().play(new Callback<Void, Exception>() {
                     @Override
                     public void onSuccess(Void result) {
@@ -153,6 +159,7 @@ public class OnRouteViewModel implements LocationServiceSubscriber, SpotifyServi
     public void onLocationUpdate(@NonNull Location location) {
         LatLng latlng = new LatLng(location.getLatitude(), location.getLongitude());
         model.setCurrentLocation(latlng);
+        delegate.animateCamera(latlng, userMarkerIcon, CAMERA_TILT, CAMERA_ZOOM);
     }
 
     // MARK: - SpotifyServiceSubscriber methods
