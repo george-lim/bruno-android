@@ -84,6 +84,12 @@ public class RoutePlanningFragment extends Fragment implements RoutePlanningView
         });
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        viewModel.onDestroy();
+    }
+
     // MARK: - User actions
 
     private void handleStartWalkingClick(final View view) {

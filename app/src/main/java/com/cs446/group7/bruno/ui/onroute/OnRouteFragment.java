@@ -1,6 +1,7 @@
 package com.cs446.group7.bruno.ui.onroute;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -17,10 +18,12 @@ import androidx.navigation.Navigation;
 
 import com.cs446.group7.bruno.R;
 import com.cs446.group7.bruno.models.RouteModel;
+import com.cs446.group7.bruno.routing.Route;
 import com.cs446.group7.bruno.viewmodels.OnRouteViewModel;
 import com.cs446.group7.bruno.viewmodels.OnRouteViewModelDelegate;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.PolylineOptions;
 
 public class OnRouteFragment extends Fragment implements OnRouteViewModelDelegate {
 
@@ -34,6 +37,8 @@ public class OnRouteFragment extends Fragment implements OnRouteViewModelDelegat
     // MARK: - Private members
 
     private OnRouteViewModel viewModel;
+
+    ProgressDialog progressDialog;
 
     // MARK: - Lifecycle methods
 
@@ -64,6 +69,12 @@ public class OnRouteFragment extends Fragment implements OnRouteViewModelDelegat
         });
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        viewModel.onDestroy();
+    }
+
     // MARK: - User actions
 
     private void handleExitRouteClick(final View view) {
@@ -78,6 +89,44 @@ public class OnRouteFragment extends Fragment implements OnRouteViewModelDelegat
 
     public void setupUI() {
         btnExitRoute.setOnClickListener(this::handleExitRouteClick);
+    }
+
+    public void drawRoute(final Route route) {
+        map.addPolyline(new PolylineOptions().addAll(route.getDecodedPath()));
+    }
+
+    public void showProgressDialog(final String title,
+                                   final String message,
+                                   boolean isIndeterminate,
+                                   boolean isCancelable) {
+        progressDialog = new ProgressDialog(getContext());
+        progressDialog.setTitle(title);
+        progressDialog.setMessage(message);
+        progressDialog.setIndeterminate(isIndeterminate);
+        progressDialog.setCancelable(isCancelable);
+        progressDialog.show();
+    }
+
+    public void dismissProgressDialog() {
+        if (progressDialog == null) {
+            return;
+        }
+
+        progressDialog.dismiss();
+    }
+
+    public void showAlertDialog(final String title,
+                                final String message,
+                                final String positiveButtonText,
+                                final DialogInterface.OnClickListener positiveButtonClickListener,
+                                boolean isCancelable) {
+        new AlertDialog.Builder(getContext())
+                .setTitle(title)
+                .setMessage(message)
+                .setPositiveButton(positiveButtonText, positiveButtonClickListener)
+                .setCancelable(isCancelable)
+                .create()
+                .show();
     }
 
     public void showAlertDialog(final String title,
