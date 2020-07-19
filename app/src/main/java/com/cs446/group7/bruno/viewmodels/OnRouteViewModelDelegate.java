@@ -6,6 +6,7 @@ import com.cs446.group7.bruno.routing.Route;
 
 public interface OnRouteViewModelDelegate {
     void setupUI();
+    void updateCurrentSongUI(final String name, final String album);
     void drawRoute(final Route route);
     void showProgressDialog(final String title,
                             final String message,

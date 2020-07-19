@@ -91,6 +91,11 @@ public class OnRouteFragment extends Fragment implements OnRouteViewModelDelegat
         btnExitRoute.setOnClickListener(this::handleExitRouteClick);
     }
 
+    public void updateCurrentSongUI(final String name, final String album) {
+        txtSongTitle.setText(name);
+        txtSongArtistInfo.setText(album);
+    }
+
     public void drawRoute(final Route route) {
         map.addPolyline(new PolylineOptions().addAll(route.getDecodedPath()));
     }

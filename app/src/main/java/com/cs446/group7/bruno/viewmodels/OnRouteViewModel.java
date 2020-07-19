@@ -50,7 +50,7 @@ public class OnRouteViewModel implements LocationServiceSubscriber, SpotifyServi
         MainActivity.getLocationService().addSubscriber(this);
         MainActivity.getLocationService().startLocationUpdates();
 
-        delegate.setupUI();
+        setupUI();
         delegate.drawRoute(model.getRoute());
 
         // observeUserLocation
@@ -63,6 +63,16 @@ public class OnRouteViewModel implements LocationServiceSubscriber, SpotifyServi
     }
 
     // MARK: - Private methods
+
+    private void setupUI() {
+        delegate.setupUI();
+
+        BrunoTrack currentTrack = model.getCurrentTrack();
+
+        if (currentTrack != null) {
+            delegate.updateCurrentSongUI(currentTrack.name, currentTrack.album);
+        }
+    }
 
     private void connectToSpotify(final Context context) {
         delegate.showProgressDialog(
@@ -136,5 +146,6 @@ public class OnRouteViewModel implements LocationServiceSubscriber, SpotifyServi
     @Override
     public void onTrackChanged(BrunoTrack track) {
         model.setCurrentTrack(track);
+        delegate.updateCurrentSongUI(track.name, track.album);
     }
 }
