@@ -169,6 +169,9 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
                 else if (!hasStartedLocationUpdates) {
                     startLocationUpdates();
                 }
+                else {
+                    generateRoute();
+                }
 
                 isRequestingCapabilities = false;
             }
