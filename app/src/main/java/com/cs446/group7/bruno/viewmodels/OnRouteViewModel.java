@@ -50,20 +50,6 @@ public class OnRouteViewModel implements LocationServiceSubscriber, SpotifyServi
     public void onDestroy() {
         MainActivity.getLocationService().stopLocationUpdates();
         MainActivity.getLocationService().removeSubscriber(this);
-
-        if (MainActivity.getSpotifyService().isConnected()) {
-            MainActivity.getSpotifyService().pause(new Callback<Void, Exception>() {
-                @Override
-                public void onSuccess(Void result) {
-                    MainActivity.getSpotifyService().disconnect();
-                }
-
-                @Override
-                public void onFailed(Exception result) {
-                    MainActivity.getSpotifyService().disconnect();
-                }
-            });
-        }
     }
 
     // MARK: - Private methods
@@ -126,6 +112,24 @@ public class OnRouteViewModel implements LocationServiceSubscriber, SpotifyServi
         });
     }
 
+    private void disconnectFromSpotify() {
+        if (!MainActivity.getSpotifyService().isConnected()) {
+            return;
+        }
+
+        MainActivity.getSpotifyService().pause(new Callback<Void, Exception>() {
+            @Override
+            public void onSuccess(Void result) {
+                MainActivity.getSpotifyService().disconnect();
+            }
+
+            @Override
+            public void onFailed(Exception result) {
+                MainActivity.getSpotifyService().disconnect();
+            }
+        });
+    }
+
     // MARK: - User action handlers
 
     public void handleExitRoute() {
@@ -133,7 +137,10 @@ public class OnRouteViewModel implements LocationServiceSubscriber, SpotifyServi
                 resources.getString(R.string.run_exit_title),
                 resources.getString(R.string.run_exit_message),
                 resources.getString(R.string.yes_button),
-                (dialogInterface, i) -> delegate.navigateToPreviousScreen(),
+                (dialogInterface, i) -> {
+                    disconnectFromSpotify();
+                    delegate.navigateToPreviousScreen();
+                },
                 resources.getString(R.string.no_button),
                 null,
                 true
