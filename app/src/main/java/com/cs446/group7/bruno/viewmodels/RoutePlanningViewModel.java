@@ -241,6 +241,8 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
     @Override
     public void onRouteError(final RouteGeneratorError error,
                              final Exception underlyingException) {
+        model.setRoute(null);
+        delegate.updateStartBtnText(resources.getString(R.string.route_planning_generate_route));
         delegate.showRouteGenerationError(error.getDescription());
         Log.e(getClass().getSimpleName(), underlyingException.getLocalizedMessage());
     }
