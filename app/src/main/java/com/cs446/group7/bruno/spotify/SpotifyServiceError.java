@@ -27,7 +27,7 @@ public enum SpotifyServiceError {
             case NOT_LOGGED_IN:
                 return "You are not logged in to Spotify. Please log in through the app and try again.";
             case OFFLINE_MODE:
-                return "Spotify is offline mode, but Bruno requires online features. Please enable it via the Spotify app.";
+                return "Spotify is in offline mode, but Bruno requires online features. Please enable it via the Spotify app.";
             case CONNECTION_TERMINATED:
                 return "Connection to the Spotify app was terminated.";
             case DISCONNECTED:
