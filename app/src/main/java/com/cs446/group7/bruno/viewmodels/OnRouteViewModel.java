@@ -102,8 +102,6 @@ public class OnRouteViewModel implements LocationServiceSubscriber, SpotifyServi
                 false
         );
 
-        OnRouteViewModel thisObject = this;
-
         MainActivity.getSpotifyService().connect(context, new Callback<Void, SpotifyServiceError>() {
             @Override
             public void onSuccess(Void result) {
@@ -113,7 +111,7 @@ public class OnRouteViewModel implements LocationServiceSubscriber, SpotifyServi
                 MainActivity.getSpotifyService().play(new Callback<Void, Exception>() {
                     @Override
                     public void onSuccess(Void result) {
-                        MainActivity.getSpotifyService().addSubscriber(thisObject);
+                        MainActivity.getSpotifyService().addSubscriber(OnRouteViewModel.this);
                     }
 
                     @Override
