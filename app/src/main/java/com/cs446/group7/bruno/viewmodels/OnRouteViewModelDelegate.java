@@ -3,15 +3,13 @@ package com.cs446.group7.bruno.viewmodels;
 import android.content.DialogInterface;
 
 import com.cs446.group7.bruno.routing.Route;
-import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.LatLng;
 
 public interface OnRouteViewModelDelegate {
-    void setupUI();
+    void setupUI(int userAvatarDrawableResourceId);
     void updateCurrentSongUI(final String name, final String album);
     void drawRoute(final Route route);
     void animateCamera(final LatLng location,
-                       final BitmapDescriptor userMarkerIcon,
                        int cameraTilt,
                        int cameraZoom);
     void showProgressDialog(final String title,

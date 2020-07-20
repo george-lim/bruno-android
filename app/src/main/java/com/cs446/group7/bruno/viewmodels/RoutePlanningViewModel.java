@@ -2,7 +2,6 @@ package com.cs446.group7.bruno.viewmodels;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.util.Log;
 
@@ -21,10 +20,7 @@ import com.cs446.group7.bruno.routing.RouteGenerator;
 import com.cs446.group7.bruno.routing.RouteGeneratorError;
 import com.cs446.group7.bruno.routing.RouteGeneratorImpl;
 import com.cs446.group7.bruno.settings.SettingsService;
-import com.cs446.group7.bruno.utils.BitmapUtils;
 import com.cs446.group7.bruno.utils.Callback;
-import com.google.android.gms.maps.model.BitmapDescriptor;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 
 public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRouteResponseCallback {
@@ -41,7 +37,6 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
     private RoutePlanningViewModelDelegate delegate;
 
     private RouteGenerator routeGenerator;
-    private BitmapDescriptor userMarkerIcon;
 
     private boolean isRequestingCapabilities = false;
     private boolean hasStartedLocationUpdates = false;
@@ -56,7 +51,6 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
         this.delegate = delegate;
 
         routeGenerator = getRouteGenerator(context);
-        userMarkerIcon = getUserMarkerIcon();
 
         MainActivity.getLocationService().addSubscriber(this);
 
@@ -78,11 +72,6 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
                 : new RouteGeneratorImpl(context, googleMapsKey);
     }
 
-    private BitmapDescriptor getUserMarkerIcon() {
-        Drawable avatarDrawable = resources.getDrawable(R.drawable.ic_avatar_1, null);
-        return BitmapDescriptorFactory.fromBitmap(BitmapUtils.getBitmapFromVectorDrawable(avatarDrawable));
-    }
-
     private void setupUI() {
         boolean isEveryCapabilityEnabled = MainActivity
                 .getCapabilityService()
@@ -98,13 +87,16 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
             durationPickerDisplayedValues[i] = Integer.toString(RouteModel.DURATIONS_IN_MINUTES[i]);
         }
 
+        int userAvatarDrawableResourceId = R.drawable.ic_avatar_1;
+
         delegate.setupUI(
                 startBtnText,
                 model.getMode() == RouteModel.Mode.WALK,
                 durationPickerDisplayedValues,
                 0,
                 RouteModel.DURATIONS_IN_MINUTES.length - 1,
-                model.getDurationIndex()
+                model.getDurationIndex(),
+                userAvatarDrawableResourceId
         );
 
         Route route = model.getRoute();
@@ -116,7 +108,7 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
         LatLng currentLocation = model.getCurrentLocation();
 
         if (currentLocation != null) {
-            delegate.moveUserMarker(currentLocation, userMarkerIcon);
+            delegate.moveUserMarker(currentLocation);
         }
     }
 
@@ -226,7 +218,7 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
     public void onLocationUpdate(@NonNull Location location) {
         LatLng latlng = new LatLng(location.getLatitude(), location.getLongitude());
         model.setCurrentLocation(latlng);
-        delegate.moveUserMarker(latlng, userMarkerIcon);
+        delegate.moveUserMarker(latlng);
     }
 
     // MARK: - OnRouteResponseCallback methods
@@ -235,7 +227,7 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
     public void onRouteReady(final Route route) {
         model.setRoute(route);
         delegate.updateStartBtnText(resources.getString(R.string.route_planning_start));
-        delegate.drawRoute(route, model.getCurrentLocation(), userMarkerIcon);
+        delegate.drawRoute(route, model.getCurrentLocation());
     }
 
     @Override

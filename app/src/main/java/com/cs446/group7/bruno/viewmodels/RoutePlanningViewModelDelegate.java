@@ -1,7 +1,6 @@
 package com.cs446.group7.bruno.viewmodels;
 
 import com.cs446.group7.bruno.routing.Route;
-import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.LatLng;
 
 public interface RoutePlanningViewModelDelegate {
@@ -10,13 +9,12 @@ public interface RoutePlanningViewModelDelegate {
                  final String[] durationPickerDisplayedValues,
                  int durationPickerMinValue,
                  int durationPickerMaxValue,
-                 int durationPickerValue);
+                 int durationPickerValue,
+                 int userAvatarDrawableResourceId);
     void updateStartBtnText(final String text);
     void updateSelectedModeBtn(boolean isWalkingModeBtnSelected);
-    void drawRoute(final Route route,
-                   final LatLng location,
-                   final BitmapDescriptor userMarkerIcon);
-    void moveUserMarker(final LatLng location, final BitmapDescriptor userMarkerIcon);
+    void drawRoute(final Route route, final LatLng location);
+    void moveUserMarker(final LatLng location);
     void showRouteGenerationError(final String errorMessage);
     void navigateToNextScreen();
 }

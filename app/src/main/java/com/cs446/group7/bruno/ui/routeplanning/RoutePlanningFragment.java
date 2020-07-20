@@ -1,5 +1,6 @@
 package com.cs446.group7.bruno.ui.routeplanning;
 
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
@@ -20,12 +21,14 @@ import androidx.navigation.Navigation;
 import com.cs446.group7.bruno.R;
 import com.cs446.group7.bruno.models.RouteModel;
 import com.cs446.group7.bruno.routing.Route;
+import com.cs446.group7.bruno.utils.BitmapUtils;
 import com.cs446.group7.bruno.viewmodels.RoutePlanningViewModel;
 import com.cs446.group7.bruno.viewmodels.RoutePlanningViewModelDelegate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
@@ -51,6 +54,7 @@ public class RoutePlanningFragment extends Fragment implements RoutePlanningView
     private RoutePlanningViewModel viewModel;
 
     private Marker userMarker;
+    private BitmapDescriptor userMarkerIcon;
 
     private boolean hasDrawnRouteOnce = false;
 
@@ -115,12 +119,18 @@ public class RoutePlanningFragment extends Fragment implements RoutePlanningView
 
     // MARK: - RoutePlanningViewModelDelegate methods
 
+    private BitmapDescriptor getUserMarkerIcon(int avatarResourceId) {
+        Drawable avatarDrawable = getResources().getDrawable(avatarResourceId, null);
+        return BitmapDescriptorFactory.fromBitmap(BitmapUtils.getBitmapFromVectorDrawable(avatarDrawable));
+    }
+
     public void setupUI(final String startBtnText,
                         boolean isWalkingModeBtnSelected,
                         final String[] durationPickerDisplayedValues,
                         int durationPickerMinValue,
                         int durationPickerMaxValue,
-                        int durationPickerValue) {
+                        int durationPickerValue,
+                        int userAvatarDrawableResourceId) {
         startBtn.setOnClickListener(this::handleStartWalkingClick);
         walkingModeBtn.setOnClickListener(this::handleWalkingModeClick);
         runningModeBtn.setOnClickListener(this::handleRunningModeClick);
@@ -133,6 +143,8 @@ public class RoutePlanningFragment extends Fragment implements RoutePlanningView
         durationPicker.setMinValue(durationPickerMinValue);
         durationPicker.setMaxValue(durationPickerMaxValue);
         durationPicker.setValue(durationPickerValue);
+
+        userMarkerIcon = getUserMarkerIcon(userAvatarDrawableResourceId);
     }
 
     public void updateStartBtnText(final String text) {
@@ -144,9 +156,7 @@ public class RoutePlanningFragment extends Fragment implements RoutePlanningView
         runningModeBtn.setSelected(!isWalkingModeBtnSelected);
     }
 
-    public void drawRoute(final Route route,
-                          final LatLng location,
-                          final BitmapDescriptor userMarkerIcon) {
+    public void drawRoute(final Route route, final LatLng location) {
         map.clear();
 
         DisplayMetrics displayMetrics = getContext().getResources().getDisplayMetrics();
@@ -187,12 +197,12 @@ public class RoutePlanningFragment extends Fragment implements RoutePlanningView
         }
 
         userMarker = null;
-        moveUserMarker(location, userMarkerIcon);
+        moveUserMarker(location);
 
         map.addPolyline(new PolylineOptions().addAll(route.getDecodedPath()));
     }
 
-    public void moveUserMarker(final LatLng location, final BitmapDescriptor userMarkerIcon) {
+    public void moveUserMarker(final LatLng location) {
         if (userMarker == null) {
             userMarker = map.addMarker(new MarkerOptions().position(location));
             userMarker.setIcon(userMarkerIcon);

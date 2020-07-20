@@ -2,7 +2,6 @@ package com.cs446.group7.bruno.viewmodels;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.util.Log;
 
@@ -15,10 +14,7 @@ import com.cs446.group7.bruno.models.RouteModel;
 import com.cs446.group7.bruno.music.BrunoTrack;
 import com.cs446.group7.bruno.spotify.SpotifyServiceError;
 import com.cs446.group7.bruno.spotify.SpotifyServiceSubscriber;
-import com.cs446.group7.bruno.utils.BitmapUtils;
 import com.cs446.group7.bruno.utils.Callback;
-import com.google.android.gms.maps.model.BitmapDescriptor;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 
 public class OnRouteViewModel implements LocationServiceSubscriber, SpotifyServiceSubscriber {
@@ -35,8 +31,6 @@ public class OnRouteViewModel implements LocationServiceSubscriber, SpotifyServi
     private RouteModel model;
     private OnRouteViewModelDelegate delegate;
 
-    private BitmapDescriptor userMarkerIcon;
-
     // MARK: - Lifecycle methods
 
     public OnRouteViewModel(final Context context,
@@ -45,8 +39,6 @@ public class OnRouteViewModel implements LocationServiceSubscriber, SpotifyServi
         this.resources = context.getResources();
         this.model = model;
         this.delegate = delegate;
-
-        userMarkerIcon = getUserMarkerIcon();
 
         MainActivity.getLocationService().addSubscriber(this);
         MainActivity.getLocationService().startLocationUpdates();
@@ -76,13 +68,10 @@ public class OnRouteViewModel implements LocationServiceSubscriber, SpotifyServi
 
     // MARK: - Private methods
 
-    private BitmapDescriptor getUserMarkerIcon() {
-        Drawable avatarDrawable = resources.getDrawable(R.drawable.ic_avatar_1, null);
-        return BitmapDescriptorFactory.fromBitmap(BitmapUtils.getBitmapFromVectorDrawable(avatarDrawable));
-    }
-
     private void setupUI() {
-        delegate.setupUI();
+        int userAvatarDrawableResourceId = R.drawable.ic_avatar_1;
+
+        delegate.setupUI(userAvatarDrawableResourceId);
 
         BrunoTrack currentTrack = model.getCurrentTrack();
 
@@ -91,7 +80,7 @@ public class OnRouteViewModel implements LocationServiceSubscriber, SpotifyServi
         }
 
         delegate.drawRoute(model.getRoute());
-        delegate.animateCamera(model.getCurrentLocation(), userMarkerIcon, CAMERA_TILT, CAMERA_ZOOM);
+        delegate.animateCamera(model.getCurrentLocation(), CAMERA_TILT, CAMERA_ZOOM);
     }
 
     private void connectToSpotify(final Context context) {
@@ -157,7 +146,7 @@ public class OnRouteViewModel implements LocationServiceSubscriber, SpotifyServi
     public void onLocationUpdate(@NonNull Location location) {
         LatLng latlng = new LatLng(location.getLatitude(), location.getLongitude());
         model.setCurrentLocation(latlng);
-        delegate.animateCamera(latlng, userMarkerIcon, CAMERA_TILT, CAMERA_ZOOM);
+        delegate.animateCamera(latlng, CAMERA_TILT, CAMERA_ZOOM);
     }
 
     // MARK: - SpotifyServiceSubscriber methods

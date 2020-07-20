@@ -3,6 +3,7 @@ package com.cs446.group7.bruno.ui.onroute;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,12 +20,14 @@ import androidx.navigation.Navigation;
 import com.cs446.group7.bruno.R;
 import com.cs446.group7.bruno.models.RouteModel;
 import com.cs446.group7.bruno.routing.Route;
+import com.cs446.group7.bruno.utils.BitmapUtils;
 import com.cs446.group7.bruno.viewmodels.OnRouteViewModel;
 import com.cs446.group7.bruno.viewmodels.OnRouteViewModelDelegate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -46,6 +49,7 @@ public class OnRouteFragment extends Fragment implements OnRouteViewModelDelegat
 
     private ProgressDialog progressDialog;
     private Marker userMarker;
+    private BitmapDescriptor userMarkerIcon;
 
     private boolean hasDrawnRouteOnce = false;
 
@@ -96,8 +100,14 @@ public class OnRouteFragment extends Fragment implements OnRouteViewModelDelegat
 
     // MARK: - OnRouteViewModelDelegate methods
 
-    public void setupUI() {
+    private BitmapDescriptor getUserMarkerIcon(int avatarResourceId) {
+        Drawable avatarDrawable = getResources().getDrawable(avatarResourceId, null);
+        return BitmapDescriptorFactory.fromBitmap(BitmapUtils.getBitmapFromVectorDrawable(avatarDrawable));
+    }
+
+    public void setupUI(int userAvatarDrawableResourceId) {
         btnExitRoute.setOnClickListener(this::handleExitRouteClick);
+        userMarkerIcon = getUserMarkerIcon(userAvatarDrawableResourceId);
     }
 
     public void updateCurrentSongUI(final String name, final String album) {
@@ -110,7 +120,6 @@ public class OnRouteFragment extends Fragment implements OnRouteViewModelDelegat
     }
 
     public void animateCamera(final LatLng location,
-                              final BitmapDescriptor userMarkerIcon,
                               int cameraTilt,
                               int cameraZoom) {
         if (userMarker == null) {
