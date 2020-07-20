@@ -70,6 +70,11 @@ public class OnRouteViewModel implements LocationServiceSubscriber, SpotifyServi
     }
 
     private void connectToSpotify(final Context context) {
+        if (MainActivity.getSpotifyService().isConnected()) {
+            playSpotifyPlaylist();
+            return;
+        }
+
         delegate.showProgressDialog(
                 resources.getString(R.string.run_preparation_title),
                 resources.getString(R.string.run_preparation_message),
@@ -81,19 +86,7 @@ public class OnRouteViewModel implements LocationServiceSubscriber, SpotifyServi
             @Override
             public void onSuccess(Void result) {
                 delegate.dismissProgressDialog();
-
-                MainActivity.getSpotifyService().setPlayerPlaylist(DEFAULT_PLAYLIST_ID);
-                MainActivity.getSpotifyService().play(new Callback<Void, Exception>() {
-                    @Override
-                    public void onSuccess(Void result) {
-                        MainActivity.getSpotifyService().addSubscriber(OnRouteViewModel.this);
-                    }
-
-                    @Override
-                    public void onFailed(Exception result) {
-                        Log.e(getClass().getSimpleName(), "onFailed play: " + result.getLocalizedMessage());
-                    }
-                });
+                playSpotifyPlaylist();
             }
 
             @Override
@@ -108,6 +101,21 @@ public class OnRouteViewModel implements LocationServiceSubscriber, SpotifyServi
                         (dialogInterface, i) -> delegate.navigateToPreviousScreen(),
                         false
                 );
+            }
+        });
+    }
+
+    private void playSpotifyPlaylist() {
+        MainActivity.getSpotifyService().setPlayerPlaylist(DEFAULT_PLAYLIST_ID);
+        MainActivity.getSpotifyService().play(new Callback<Void, Exception>() {
+            @Override
+            public void onSuccess(Void result) {
+                MainActivity.getSpotifyService().addSubscriber(OnRouteViewModel.this);
+            }
+
+            @Override
+            public void onFailed(Exception result) {
+                Log.e(getClass().getSimpleName(), "onFailed play: " + result.getLocalizedMessage());
             }
         });
     }
