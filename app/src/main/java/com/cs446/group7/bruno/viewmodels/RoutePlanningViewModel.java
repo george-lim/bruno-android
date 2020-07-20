@@ -227,7 +227,9 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
     public void onRouteReady(final Route route) {
         model.setRoute(route);
         delegate.updateStartBtnText(resources.getString(R.string.route_planning_start));
-        delegate.drawRoute(route, model.getCurrentLocation());
+        delegate.clearMap();
+        delegate.drawRoute(route);
+        delegate.moveUserMarker(model.getCurrentLocation());
     }
 
     @Override
@@ -235,7 +237,9 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
                              final Exception underlyingException) {
         model.setRoute(null);
         delegate.updateStartBtnText(resources.getString(R.string.route_planning_generate_route));
+        delegate.clearMap();
         delegate.showRouteGenerationError(error.getDescription());
+        delegate.moveUserMarker(model.getCurrentLocation());
         Log.e(getClass().getSimpleName(), underlyingException.getLocalizedMessage());
     }
 }

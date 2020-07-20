@@ -156,9 +156,12 @@ public class RoutePlanningFragment extends Fragment implements RoutePlanningView
         runningModeBtn.setSelected(!isWalkingModeBtnSelected);
     }
 
-    public void drawRoute(final Route route, final LatLng location) {
+    public void clearMap() {
         map.clear();
+        userMarker = null;
+    }
 
+    public void drawRoute(final Route route) {
         DisplayMetrics displayMetrics = getContext().getResources().getDisplayMetrics();
         final float cardViewHeightDp = cardView.getHeight() / displayMetrics.density;
         final float mapFragmentHeightDp = mapFragmentView.getHeight() / displayMetrics.density;
@@ -196,13 +199,14 @@ public class RoutePlanningFragment extends Fragment implements RoutePlanningView
             hasDrawnRouteOnce = true;
         }
 
-        userMarker = null;
-        moveUserMarker(location);
-
         map.addPolyline(new PolylineOptions().addAll(route.getDecodedPath()));
     }
 
     public void moveUserMarker(final LatLng location) {
+        if (location == null) {
+            return;
+        }
+
         if (userMarker == null) {
             userMarker = map.addMarker(new MarkerOptions().position(location));
             userMarker.setIcon(userMarkerIcon);

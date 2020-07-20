@@ -13,7 +13,8 @@ public interface RoutePlanningViewModelDelegate {
                  int userAvatarDrawableResourceId);
     void updateStartBtnText(final String text);
     void updateSelectedModeBtn(boolean isWalkingModeBtnSelected);
-    void drawRoute(final Route route, final LatLng location);
+    void clearMap();
+    void drawRoute(final Route route);
     void moveUserMarker(final LatLng location);
     void showRouteGenerationError(final String errorMessage);
     void navigateToNextScreen();
