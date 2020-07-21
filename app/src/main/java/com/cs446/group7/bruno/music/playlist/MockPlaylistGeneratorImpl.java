@@ -29,7 +29,7 @@ public class MockPlaylistGeneratorImpl implements PlaylistGenerator {
         artists.add("Jimin");
         artists.add("Taylor Swift");
         long threeMinutes = 180000; // Milliseconds
-        int trackCount = 50;
+        int trackCount = 200;
         for (int i = 0; i < trackCount; ++i) {
             tracks.add(new BrunoTrack("name" + i, "album" + i,
                     threeMinutes, cloneArtists(artists)));

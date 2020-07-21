@@ -4,12 +4,13 @@ import android.content.Context;
 
 import com.cs446.group7.bruno.music.BrunoPlaylist;
 import com.cs446.group7.bruno.music.BrunoTrack;
+import com.cs446.group7.bruno.music.playlist.PlaylistGenerator;
 import com.cs446.group7.bruno.utils.Callback;
 import com.spotify.android.appremote.api.SpotifyAppRemote;
 
 // Acts as the main interface to Spotify
 // For now, it just forwards requests of the same method to the appropriate player/playlist service
-public class SpotifyService {
+public class SpotifyService implements PlaylistGenerator {
 
     private SpotifyPlayerService playerService;
     private SpotifyPlaylistService playlistService;
