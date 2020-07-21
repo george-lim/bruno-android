@@ -1,8 +1,8 @@
 package com.cs446.group7.bruno.ui.routeplanning;
 
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,30 +18,31 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
-import com.cs446.group7.bruno.MainActivity;
 import com.cs446.group7.bruno.R;
-import com.cs446.group7.bruno.capability.Capability;
-import com.cs446.group7.bruno.routing.Route;
-import com.cs446.group7.bruno.utils.Callback;
-import com.cs446.group7.bruno.viewmodels.RouteViewModel;
+import com.cs446.group7.bruno.models.RouteModel;
+import com.cs446.group7.bruno.routing.RouteSegment;
+import com.cs446.group7.bruno.routing.RouteTrackMapping;
+import com.cs446.group7.bruno.utils.BitmapUtils;
+import com.cs446.group7.bruno.utils.MapDrawingUtils;
+import com.cs446.group7.bruno.viewmodels.RoutePlanningViewModel;
+import com.cs446.group7.bruno.viewmodels.RoutePlanningViewModelDelegate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.PolylineOptions;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class RoutePlanningFragment extends Fragment {
-    private static final int[] DURATION_VALUES = { 15, 30, 45, 60, 75, 90, 105, 120 };
-    private static final Capability[] REQUIRED_CAPABILITIES = { Capability.LOCATION, Capability.INTERNET };
+public class RoutePlanningFragment extends Fragment implements RoutePlanningViewModelDelegate {
 
-    private boolean isRequestingCapability = false;
-    private boolean hasDrawnRouteOnce = false;
-    private RouteViewModel model;
+    // MARK: - UI components
+
     private GoogleMap map;
     private Button startBtn;
     private Button walkingModeBtn;
@@ -50,27 +51,16 @@ public class RoutePlanningFragment extends Fragment {
     private CardView cardView;
     private View mapFragmentView;
 
-    public final String TAG = this.getClass().getSimpleName();
+    // MARK: - Private members
 
-    private OnMapReadyCallback mapCallback = new OnMapReadyCallback() {
-        @Override
-        public void onMapReady(GoogleMap googleMap) {
-            map = googleMap;
-            map.getUiSettings().setRotateGesturesEnabled(false);
-            observeRouteResult();
+    private RoutePlanningViewModel viewModel;
 
-            if (MainActivity.getCapabilityService().isEveryCapabilityEnabled(REQUIRED_CAPABILITIES)) {
-                startRouteGeneration();
-            } else {
-                updateUI();
-            }
-        }
-    };
+    private Marker userMarker;
+    private BitmapDescriptor userMarkerIcon;
 
-    private void startRouteGeneration() {
-        int duration = DURATION_VALUES[durationPicker.getValue()];
-        model.startRouteGeneration(duration);
-    }
+    private boolean hasDrawnRouteOnce = false;
+
+    // MARK: - Lifecycle methods
 
     @Nullable
     @Override
@@ -78,128 +68,119 @@ public class RoutePlanningFragment extends Fragment {
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_route_planning, container, false);
-        model = new ViewModelProvider(requireActivity()).get(RouteViewModel.class);
-        buildCardView(view);
-        return view;
-    }
-
-    private void buildCardView(final View view) {
         startBtn = view.findViewById(R.id.buttn_start_walking);
-        startBtn.setOnClickListener(this::handleStartWalkingClick);
-
         walkingModeBtn = view.findViewById(R.id.btn_walking_mode);
-        walkingModeBtn.setSelected(true);
-        walkingModeBtn.setOnClickListener(this::handleWalkingModeClick);
-
         runningModeBtn = view.findViewById(R.id.btn_running_mode);
-        runningModeBtn.setOnClickListener(this::handleRunningModeClick);
-
         durationPicker = view.findViewById(R.id.num_picker_exercise_duration);
-        durationPicker.setMinValue(0);
-        durationPicker.setMaxValue(DURATION_VALUES.length - 1);
-        durationPicker.setDisplayedValues(intArrayToStringArray(DURATION_VALUES));
-        durationPicker.setOnScrollListener(this::handleDurationScroll);
-        durationPicker.setValue(0);
-
         cardView = view.findViewById(R.id.card_view_route_planning);
         mapFragmentView = view.findViewById(R.id.planning_map);
-    }
-
-    private void updateUI() {
-        String startBtnText = model.isRoutePlanningComplete()
-                ? getResources().getString(R.string.route_planning_start)
-                : getResources().getString(R.string.route_planning_generate_route);
-
-        startBtn.setText(startBtnText);
-        cardView.setVisibility(View.VISIBLE);
+        return view;
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        SupportMapFragment mapFragment =
-                (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.planning_map);
-        if (mapFragment != null) {
-            mapFragment.getMapAsync(mapCallback);
-        }
+
+        SupportMapFragment mapFragment = (SupportMapFragment)getChildFragmentManager()
+                .findFragmentById(R.id.planning_map);
+
+        mapFragment.getMapAsync(googleMap -> {
+            map = googleMap;
+            map.getUiSettings().setRotateGesturesEnabled(false);
+
+            RouteModel model = new ViewModelProvider(requireActivity()).get(RouteModel.class);
+            viewModel = new RoutePlanningViewModel(getActivity().getApplicationContext(), model, this);
+        });
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        viewModel.onDestroy();
+    }
+
+    // MARK: - User actions
+
+    private void handleStartWalkingClick(final View view) {
+        viewModel.handleStartWalkingClick();
     }
 
     private void handleWalkingModeClick(final View view) {
-        if (!walkingModeBtn.isSelected()) {
-            model.setWalkingMode(true);
-            walkingModeBtn.setSelected(true);
-            runningModeBtn.setSelected(false);
-        }
+        viewModel.handleWalkingModeClick();
     }
 
     private void handleRunningModeClick(final View view) {
-        if (!runningModeBtn.isSelected()) {
-            model.setWalkingMode(false);
-            walkingModeBtn.setSelected(false);
-            runningModeBtn.setSelected(true);
-        }
+        viewModel.handleRunningModeClick();
     }
 
-    private void handleDurationScroll(final NumberPicker numberPicker, int scrollState) {
+    private void handleDurationSelected(final NumberPicker numberPicker, int scrollState) {
         if (scrollState == NumberPicker.OnScrollListener.SCROLL_STATE_IDLE) {
-            int duration = DURATION_VALUES[numberPicker.getValue()];
-            model.setDuration(duration);
+            viewModel.handleDurationSelected(numberPicker.getValue());
         }
     }
 
-    private void handleStartWalkingClick(final View view) {
-        if (isRequestingCapability) return;
-        isRequestingCapability = true;
+    // MARK: - RoutePlanningViewModelDelegate methods
 
-        MainActivity.getCapabilityService().request(REQUIRED_CAPABILITIES, new Callback<Void, Void>() {
-            @Override
-            public void onSuccess(Void result) {
-                if (model.isRoutePlanningComplete()) {
-                    NavController navController = Navigation.findNavController(getActivity(), R.id.nav_host_fragment);
-                    navController.navigate(R.id.action_fragmenttoplevel_to_fragmentonroute);
-                }
-                else if (!model.hasGeneratedRouteOnce()) {
-                    startRouteGeneration();
-                }
-
-                isRequestingCapability = false;
-            }
-
-            @Override
-            public void onFailed(Void result) {
-                isRequestingCapability = false;
-            }
-        });
+    private BitmapDescriptor getUserMarkerIcon(int avatarResourceId) {
+        Drawable avatarDrawable = getResources().getDrawable(avatarResourceId, null);
+        return BitmapDescriptorFactory.fromBitmap(BitmapUtils.getBitmapFromVectorDrawable(avatarDrawable));
     }
 
-    private void observeRouteResult() {
-        model.getRouteResult().observe(getViewLifecycleOwner(), route -> {
-            if (route.getRoute() != null) {
-                drawRoute(route.getRoute());
-            } else if (route.getError() != null) {
-                Toast errorNotification = Toast.makeText(getContext(),
-                        route.getError().getDescription(), Toast.LENGTH_LONG);
-                errorNotification.show();
+    public void setupUI(final String startBtnText,
+                        boolean isWalkingModeBtnSelected,
+                        final String[] durationPickerDisplayedValues,
+                        int durationPickerMinValue,
+                        int durationPickerMaxValue,
+                        int durationPickerValue,
+                        int userAvatarDrawableResourceId) {
+        startBtn.setOnClickListener(this::handleStartWalkingClick);
+        walkingModeBtn.setOnClickListener(this::handleWalkingModeClick);
+        runningModeBtn.setOnClickListener(this::handleRunningModeClick);
+        durationPicker.setOnScrollListener(this::handleDurationSelected);
 
-                if (route.getUnderlyingException() != null) {
-                    Log.e(TAG, route.getUnderlyingException().getLocalizedMessage());
-                }
-            }
+        updateStartBtnText(startBtnText);
+        updateSelectedModeBtn(isWalkingModeBtnSelected);
 
-            updateUI();
-        });
+        durationPicker.setDisplayedValues(durationPickerDisplayedValues);
+        durationPicker.setMinValue(durationPickerMinValue);
+        durationPicker.setMaxValue(durationPickerMaxValue);
+        durationPicker.setValue(durationPickerValue);
+
+        userMarkerIcon = getUserMarkerIcon(userAvatarDrawableResourceId);
     }
 
-    private void drawRoute(final Route route) {
+    public void updateStartBtnText(final String text) {
+        startBtn.setText(text);
+    }
+
+    public void updateSelectedModeBtn(boolean isWalkingModeBtnSelected) {
+        walkingModeBtn.setSelected(isWalkingModeBtnSelected);
+        runningModeBtn.setSelected(!isWalkingModeBtnSelected);
+    }
+
+    public void clearMap() {
         map.clear();
+        userMarker = null;
+    }
+
+    public void drawRoute(final List<RouteTrackMapping> routeTrackMappings, final int[] colours) {
+        if (routeTrackMappings.size() == 0) return;
+
+        MapDrawingUtils.drawColourizedRoute(routeTrackMappings, colours, map);
+
+        final List<LatLng> decodedPath = new ArrayList<>();
+        for (RouteTrackMapping rtm : routeTrackMappings) {
+            for (RouteSegment rs : rtm.routeSegments) {
+                decodedPath.add(rs.getStartLocation());
+            }
+            decodedPath.add(rtm.routeSegments.get(rtm.routeSegments.size() - 1).getEndLocation());
+        }
 
         DisplayMetrics displayMetrics = getContext().getResources().getDisplayMetrics();
         final float cardViewHeightDp = cardView.getHeight() / displayMetrics.density;
         final float mapFragmentHeightDp = mapFragmentView.getHeight() / displayMetrics.density;
         // from tests it seems like we need to add some height to cardView to get a good blockedScreenFraction
         final double blockedScreenFraction = (cardViewHeightDp + 40) / mapFragmentHeightDp;
-
-        final List<LatLng> decodedPath = route.getDecodedPath();
 
         LatLngBounds.Builder boundsBuilder = new LatLngBounds.Builder();
         for (final LatLng p : decodedPath) {
@@ -229,19 +210,28 @@ public class RoutePlanningFragment extends Fragment {
             map.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, padding));
             hasDrawnRouteOnce = true;
         }
-
-        map.addMarker(new MarkerOptions()
-                .position(decodedPath.get(0)))
-                .setIcon(model.getAvatarMarker());
-
-        map.addPolyline(new PolylineOptions().addAll(route.getDecodedPath()));
     }
 
-    private static String[] intArrayToStringArray(int[] intArray) {
-        String[] result = new String[intArray.length];
-        for (int i = 0; i < intArray.length; ++i) {
-            result[i] = Integer.toString(intArray[i]);
+    public void moveUserMarker(final LatLng location) {
+        if (location == null) {
+            return;
         }
-        return result;
+
+        if (userMarker == null) {
+            userMarker = map.addMarker(new MarkerOptions().position(location));
+            userMarker.setIcon(userMarkerIcon);
+        }
+        else {
+            userMarker.setPosition(location);
+        }
+    }
+
+    public void showRouteGenerationError(final String errorMessage) {
+        Toast.makeText(getContext(), errorMessage, Toast.LENGTH_LONG).show();
+    }
+
+    public void navigateToNextScreen() {
+        NavController navController = Navigation.findNavController(getActivity(), R.id.nav_host_fragment);
+        navController.navigate(R.id.action_fragmenttoplevel_to_fragmentonroute);
     }
 }
