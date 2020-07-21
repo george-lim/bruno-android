@@ -50,19 +50,7 @@ public class OnRouteViewModel implements LocationServiceSubscriber, SpotifyServi
         MainActivity.getLocationService().stopLocationUpdates();
         MainActivity.getLocationService().removeSubscriber(this);
 
-        if (MainActivity.getSpotifyService().isConnected()) {
-            MainActivity.getSpotifyService().pause(new Callback<Void, Exception>() {
-                @Override
-                public void onSuccess(Void result) {
-                    MainActivity.getSpotifyService().disconnect();
-                }
-
-                @Override
-                public void onFailed(Exception result) {
-                    MainActivity.getSpotifyService().disconnect();
-                }
-            });
-        }
+        MainActivity.getSpotifyService().removeSubscriber(this);
     }
 
     // MARK: - Private methods
@@ -84,6 +72,11 @@ public class OnRouteViewModel implements LocationServiceSubscriber, SpotifyServi
     }
 
     private void connectToSpotify(final Context context) {
+        if (MainActivity.getSpotifyService().isConnected()) {
+            playSpotifyPlaylist();
+            return;
+        }
+
         delegate.showProgressDialog(
                 resources.getString(R.string.run_preparation_title),
                 resources.getString(R.string.run_preparation_message),
@@ -95,19 +88,7 @@ public class OnRouteViewModel implements LocationServiceSubscriber, SpotifyServi
             @Override
             public void onSuccess(Void result) {
                 delegate.dismissProgressDialog();
-
-                MainActivity.getSpotifyService().setPlayerPlaylist(RouteModel.DEFAULT_PLAYLIST_ID);
-                MainActivity.getSpotifyService().play(new Callback<Void, Exception>() {
-                    @Override
-                    public void onSuccess(Void result) {
-                        MainActivity.getSpotifyService().addSubscriber(OnRouteViewModel.this);
-                    }
-
-                    @Override
-                    public void onFailed(Exception result) {
-                        Log.e(getClass().getSimpleName(), "onFailed play: " + result.getLocalizedMessage());
-                    }
-                });
+                playSpotifyPlaylist();
             }
 
             @Override
@@ -126,6 +107,39 @@ public class OnRouteViewModel implements LocationServiceSubscriber, SpotifyServi
         });
     }
 
+    private void playSpotifyPlaylist() {
+        MainActivity.getSpotifyService().setPlayerPlaylist(RouteModel.DEFAULT_PLAYLIST_ID);
+        MainActivity.getSpotifyService().play(new Callback<Void, Exception>() {
+            @Override
+            public void onSuccess(Void result) {
+                MainActivity.getSpotifyService().addSubscriber(OnRouteViewModel.this);
+            }
+
+            @Override
+            public void onFailed(Exception result) {
+                Log.e(getClass().getSimpleName(), "onFailed play: " + result.getLocalizedMessage());
+            }
+        });
+    }
+
+    private void disconnectFromSpotify() {
+        if (!MainActivity.getSpotifyService().isConnected()) {
+            return;
+        }
+
+        MainActivity.getSpotifyService().pause(new Callback<Void, Exception>() {
+            @Override
+            public void onSuccess(Void result) {
+                MainActivity.getSpotifyService().disconnect();
+            }
+
+            @Override
+            public void onFailed(Exception result) {
+                MainActivity.getSpotifyService().disconnect();
+            }
+        });
+    }
+
     // MARK: - User action handlers
 
     public void handleExitRoute() {
@@ -133,7 +147,10 @@ public class OnRouteViewModel implements LocationServiceSubscriber, SpotifyServi
                 resources.getString(R.string.run_exit_title),
                 resources.getString(R.string.run_exit_message),
                 resources.getString(R.string.yes_button),
-                (dialogInterface, i) -> delegate.navigateToPreviousScreen(),
+                (dialogInterface, i) -> {
+                    disconnectFromSpotify();
+                    delegate.navigateToPreviousScreen();
+                },
                 resources.getString(R.string.no_button),
                 null,
                 true
