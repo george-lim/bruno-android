@@ -21,7 +21,6 @@ public class OnRouteViewModel implements LocationServiceSubscriber, SpotifyServi
 
     // MARK: - Constants
 
-    private static final String DEFAULT_PLAYLIST_ID = "7fPwZk4KFD2yfU7J5O1JVz";
     private static final int CAMERA_TILT = 60;
     private static final int CAMERA_ZOOM = 18;
 
@@ -67,7 +66,8 @@ public class OnRouteViewModel implements LocationServiceSubscriber, SpotifyServi
             delegate.updateCurrentSongUI(currentTrack.name, currentTrack.album);
         }
 
-        delegate.drawRoute(model.getRoute());
+        delegate.drawRoute(model.getRouteTrackMappings(),
+                resources.getIntArray(R.array.colorRouteList));
         delegate.animateCamera(model.getCurrentLocation(), CAMERA_TILT, CAMERA_ZOOM);
     }
 
@@ -108,7 +108,7 @@ public class OnRouteViewModel implements LocationServiceSubscriber, SpotifyServi
     }
 
     private void playSpotifyPlaylist() {
-        MainActivity.getSpotifyService().setPlayerPlaylist(DEFAULT_PLAYLIST_ID);
+        MainActivity.getSpotifyService().setPlayerPlaylist(RouteModel.DEFAULT_PLAYLIST_ID);
         MainActivity.getSpotifyService().play(new Callback<Void, Exception>() {
             @Override
             public void onSuccess(Void result) {

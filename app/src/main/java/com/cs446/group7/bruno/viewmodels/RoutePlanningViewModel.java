@@ -13,15 +13,24 @@ import com.cs446.group7.bruno.R;
 import com.cs446.group7.bruno.capability.Capability;
 import com.cs446.group7.bruno.location.LocationServiceSubscriber;
 import com.cs446.group7.bruno.models.RouteModel;
+import com.cs446.group7.bruno.music.BrunoPlaylist;
+import com.cs446.group7.bruno.music.playlist.MockPlaylistGeneratorImpl;
+import com.cs446.group7.bruno.music.playlist.PlaylistGenerator;
 import com.cs446.group7.bruno.routing.MockRouteGeneratorImpl;
 import com.cs446.group7.bruno.routing.OnRouteResponseCallback;
 import com.cs446.group7.bruno.routing.Route;
 import com.cs446.group7.bruno.routing.RouteGenerator;
 import com.cs446.group7.bruno.routing.RouteGeneratorError;
 import com.cs446.group7.bruno.routing.RouteGeneratorImpl;
+import com.cs446.group7.bruno.routing.RouteProcessor;
+import com.cs446.group7.bruno.routing.RouteTrackMapping;
 import com.cs446.group7.bruno.settings.SettingsService;
+import com.cs446.group7.bruno.spotify.SpotifyService;
 import com.cs446.group7.bruno.utils.Callback;
 import com.google.android.gms.maps.model.LatLng;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRouteResponseCallback {
 
@@ -37,6 +46,7 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
     private RoutePlanningViewModelDelegate delegate;
 
     private RouteGenerator routeGenerator;
+    private PlaylistGenerator playlistGenerator;
 
     private boolean isRequestingCapabilities = false;
     private boolean hasStartedLocationUpdates = false;
@@ -51,6 +61,10 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
         this.delegate = delegate;
 
         routeGenerator = getRouteGenerator(context);
+        playlistGenerator = getPlaylistGenerator(context);
+        if (model.getPlaylist() == null) {
+            requestNewPlaylist();
+        }
 
         MainActivity.getLocationService().addSubscriber(this);
 
@@ -70,6 +84,12 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
         return BuildConfig.DEBUG
                 ? new MockRouteGeneratorImpl(context, googleMapsKey)
                 : new RouteGeneratorImpl(context, googleMapsKey);
+    }
+
+    private PlaylistGenerator getPlaylistGenerator(final Context context) {
+        return BuildConfig.DEBUG
+                ? new MockPlaylistGeneratorImpl()
+                : new SpotifyService(context);
     }
 
     private void setupUI() {
@@ -228,21 +248,58 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
 
     @Override
     public void onRouteReady(final Route route) {
-        model.setRoute(route);
-        delegate.updateStartBtnText(resources.getString(R.string.route_planning_start));
-        delegate.clearMap();
-        delegate.drawRoute(route);
-        delegate.moveUserMarker(model.getCurrentLocation());
+        if (model.getPlaylist() != null) {
+            final List<RouteTrackMapping> routeTrackMappings = mapRouteToTracks(route, model.getPlaylist());
+            model.setRouteTrackMappings(routeTrackMappings);
+            model.setRoute(route);
+
+            delegate.updateStartBtnText(resources.getString(R.string.route_planning_start));
+            delegate.clearMap();
+            delegate.drawRoute(routeTrackMappings, resources.getIntArray(R.array.colorRouteList));
+            delegate.moveUserMarker(model.getCurrentLocation());
+        }
     }
 
     @Override
     public void onRouteError(final RouteGeneratorError error,
                              final Exception underlyingException) {
         model.setRoute(null);
+        model.setRouteTrackMappings(null);
         delegate.updateStartBtnText(resources.getString(R.string.route_planning_generate_route));
         delegate.clearMap();
         delegate.showRouteGenerationError(error.getDescription());
         delegate.moveUserMarker(model.getCurrentLocation());
         Log.e(getClass().getSimpleName(), underlyingException.getLocalizedMessage());
+    }
+
+    private void requestNewPlaylist() {
+        playlistGenerator.getPlaylist(RouteModel.DEFAULT_PLAYLIST_ID, new Callback<BrunoPlaylist, Exception>() {
+            @Override
+            public void onSuccess(BrunoPlaylist playlist) {
+                model.setPlaylist(playlist);
+                // if there is a route already, call onRouteReady because we were waiting on the playlist
+                if (model.getRoute() != null) {
+                    onRouteReady(model.getRoute());
+                }
+            }
+
+            @Override
+            public void onFailed(Exception e) {
+                // assuming that PlaylistGenerator has already attempted retry
+                Log.e(getClass().getSimpleName(), e.getLocalizedMessage());
+            }
+        });
+    }
+
+    private static List<RouteTrackMapping> mapRouteToTracks(final Route route, final BrunoPlaylist playlist) {
+        List<RouteTrackMapping> routeTrackMappings;
+        try {
+            routeTrackMappings = RouteProcessor.execute(route.getRouteSegments(), playlist);
+        } catch (RouteProcessor.TrackIndexOutOfBoundsException e) {
+            // should never reach here because we assume the playlist will always be long enough
+            routeTrackMappings = new ArrayList<>();
+        }
+
+        return routeTrackMappings;
     }
 }

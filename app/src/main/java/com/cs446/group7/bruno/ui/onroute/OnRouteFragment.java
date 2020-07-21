@@ -19,8 +19,9 @@ import androidx.navigation.Navigation;
 
 import com.cs446.group7.bruno.R;
 import com.cs446.group7.bruno.models.RouteModel;
-import com.cs446.group7.bruno.routing.Route;
+import com.cs446.group7.bruno.routing.RouteTrackMapping;
 import com.cs446.group7.bruno.utils.BitmapUtils;
+import com.cs446.group7.bruno.utils.MapDrawingUtils;
 import com.cs446.group7.bruno.viewmodels.OnRouteViewModel;
 import com.cs446.group7.bruno.viewmodels.OnRouteViewModelDelegate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -32,7 +33,8 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.PolylineOptions;
+
+import java.util.List;
 
 public class OnRouteFragment extends Fragment implements OnRouteViewModelDelegate {
 
@@ -115,8 +117,9 @@ public class OnRouteFragment extends Fragment implements OnRouteViewModelDelegat
         txtSongArtistInfo.setText(album);
     }
 
-    public void drawRoute(final Route route) {
-        map.addPolyline(new PolylineOptions().addAll(route.getDecodedPath()));
+    public void drawRoute(final List<RouteTrackMapping> routeTrackMappings, final int[] colours) {
+        if (routeTrackMappings.size() == 0) return;
+        MapDrawingUtils.drawColourizedRoute(routeTrackMappings, colours, map);
     }
 
     public void animateCamera(final LatLng location,

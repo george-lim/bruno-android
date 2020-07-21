@@ -2,13 +2,16 @@ package com.cs446.group7.bruno.viewmodels;
 
 import android.content.DialogInterface;
 
-import com.cs446.group7.bruno.routing.Route;
+import com.cs446.group7.bruno.routing.RouteTrackMapping;
 import com.google.android.gms.maps.model.LatLng;
+
+import java.util.List;
 
 public interface OnRouteViewModelDelegate {
     void setupUI(int userAvatarDrawableResourceId);
     void updateCurrentSongUI(final String name, final String album);
-    void drawRoute(final Route route);
+    void drawRoute(final List<RouteTrackMapping> routeTrackMappings,
+                   final int[] colours);
     void animateCamera(final LatLng location,
                        int cameraTilt,
                        int cameraZoom);

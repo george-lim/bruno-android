@@ -20,8 +20,10 @@ import androidx.navigation.Navigation;
 
 import com.cs446.group7.bruno.R;
 import com.cs446.group7.bruno.models.RouteModel;
-import com.cs446.group7.bruno.routing.Route;
+import com.cs446.group7.bruno.routing.RouteSegment;
+import com.cs446.group7.bruno.routing.RouteTrackMapping;
 import com.cs446.group7.bruno.utils.BitmapUtils;
+import com.cs446.group7.bruno.utils.MapDrawingUtils;
 import com.cs446.group7.bruno.viewmodels.RoutePlanningViewModel;
 import com.cs446.group7.bruno.viewmodels.RoutePlanningViewModelDelegate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -33,8 +35,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.PolylineOptions;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class RoutePlanningFragment extends Fragment implements RoutePlanningViewModelDelegate {
@@ -161,14 +163,24 @@ public class RoutePlanningFragment extends Fragment implements RoutePlanningView
         userMarker = null;
     }
 
-    public void drawRoute(final Route route) {
+    public void drawRoute(final List<RouteTrackMapping> routeTrackMappings, final int[] colours) {
+        if (routeTrackMappings.size() == 0) return;
+
+        MapDrawingUtils.drawColourizedRoute(routeTrackMappings, colours, map);
+
+        final List<LatLng> decodedPath = new ArrayList<>();
+        for (RouteTrackMapping rtm : routeTrackMappings) {
+            for (RouteSegment rs : rtm.routeSegments) {
+                decodedPath.add(rs.getStartLocation());
+            }
+            decodedPath.add(rtm.routeSegments.get(rtm.routeSegments.size() - 1).getEndLocation());
+        }
+
         DisplayMetrics displayMetrics = getContext().getResources().getDisplayMetrics();
         final float cardViewHeightDp = cardView.getHeight() / displayMetrics.density;
         final float mapFragmentHeightDp = mapFragmentView.getHeight() / displayMetrics.density;
         // from tests it seems like we need to add some height to cardView to get a good blockedScreenFraction
         final double blockedScreenFraction = (cardViewHeightDp + 40) / mapFragmentHeightDp;
-
-        final List<LatLng> decodedPath = route.getDecodedPath();
 
         LatLngBounds.Builder boundsBuilder = new LatLngBounds.Builder();
         for (final LatLng p : decodedPath) {
@@ -198,8 +210,6 @@ public class RoutePlanningFragment extends Fragment implements RoutePlanningView
             map.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, padding));
             hasDrawnRouteOnce = true;
         }
-
-        map.addPolyline(new PolylineOptions().addAll(route.getDecodedPath()));
     }
 
     public void moveUserMarker(final LatLng location) {
