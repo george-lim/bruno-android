@@ -70,7 +70,12 @@ public class OnRouteViewModel implements LocationServiceSubscriber, SpotifyServi
 
         delegate.drawRoute(model.getRouteTrackMappings(),
                 resources.getIntArray(R.array.colorRouteList));
-        delegate.animateCamera(model.getCurrentLocation(), CAMERA_TILT, CAMERA_ZOOM);
+
+        final float bearing = model.getCurrentLocation().getBearing();
+        final LatLng currentLatLng = new LatLng(model.getCurrentLocation().getLatitude(),
+                model.getCurrentLocation().getLongitude());
+
+        delegate.animateCamera(currentLatLng, bearing, CAMERA_TILT, CAMERA_ZOOM);
     }
 
     private void connectToSpotify(final Context context) {
@@ -164,8 +169,8 @@ public class OnRouteViewModel implements LocationServiceSubscriber, SpotifyServi
     @Override
     public void onLocationUpdate(@NonNull Location location) {
         LatLng latlng = new LatLng(location.getLatitude(), location.getLongitude());
-        model.setCurrentLocation(latlng);
-        delegate.animateCamera(latlng, CAMERA_TILT, CAMERA_ZOOM);
+        model.setCurrentLocation(location);
+        delegate.animateCamera(latlng, location.getBearing(), CAMERA_TILT, CAMERA_ZOOM);
     }
 
     // MARK: - SpotifyServiceSubscriber methods

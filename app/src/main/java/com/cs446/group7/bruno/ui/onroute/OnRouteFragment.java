@@ -122,9 +122,7 @@ public class OnRouteFragment extends Fragment implements OnRouteViewModelDelegat
         MapDrawingUtils.drawColourizedRoute(routeTrackMappings, colours, map);
     }
 
-    public void animateCamera(final LatLng location,
-                              int cameraTilt,
-                              int cameraZoom) {
+    public void animateCamera(final LatLng location, float bearing, int cameraTilt, int cameraZoom) {
         if (userMarker == null) {
             userMarker = map.addMarker(new MarkerOptions().position(location));
             userMarker.setIcon(userMarkerIcon);
@@ -135,6 +133,7 @@ public class OnRouteFragment extends Fragment implements OnRouteViewModelDelegat
 
         CameraPosition cameraPosition = new CameraPosition.Builder()
                 .target(location)
+                .bearing(bearing)
                 .tilt(cameraTilt)
                 .zoom(cameraZoom)
                 .build();

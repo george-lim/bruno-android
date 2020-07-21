@@ -12,9 +12,7 @@ public interface OnRouteViewModelDelegate {
     void updateCurrentSongUI(final String name, final String album);
     void drawRoute(final List<RouteTrackMapping> routeTrackMappings,
                    final int[] colours);
-    void animateCamera(final LatLng location,
-                       int cameraTilt,
-                       int cameraZoom);
+    void animateCamera(final LatLng location, float bearing, int cameraTilt, int cameraZoom);
     void showProgressDialog(final String title,
                             final String message,
                             boolean isIndeterminate,

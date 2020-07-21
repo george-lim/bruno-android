@@ -1,14 +1,15 @@
 package com.cs446.group7.bruno.models;
 
-import androidx.lifecycle.ViewModel;
+import android.location.Location;
 
 import com.cs446.group7.bruno.music.BrunoPlaylist;
 import com.cs446.group7.bruno.music.BrunoTrack;
 import com.cs446.group7.bruno.routing.Route;
 import com.cs446.group7.bruno.routing.RouteTrackMapping;
-import com.google.android.gms.maps.model.LatLng;
 
 import java.util.List;
+
+import androidx.lifecycle.ViewModel;
 
 public class RouteModel extends ViewModel {
 
@@ -26,7 +27,7 @@ public class RouteModel extends ViewModel {
     private Mode mode = Mode.WALK;
     private int durationIndex = 0;
     private Route route = null;
-    private LatLng currentLocation = null;
+    private Location currentLocation = null;
     private BrunoTrack currentTrack = null;
     private BrunoPlaylist playlist = null;
     private List<RouteTrackMapping> routeTrackMappings = null;
@@ -58,11 +59,11 @@ public class RouteModel extends ViewModel {
         this.route = route;
     }
 
-    public LatLng getCurrentLocation() {
+    public Location getCurrentLocation() {
         return currentLocation;
     }
 
-    public void setCurrentLocation(final LatLng currentLocation) {
+    public void setCurrentLocation(final Location currentLocation) {
         this.currentLocation = currentLocation;
     }
 
