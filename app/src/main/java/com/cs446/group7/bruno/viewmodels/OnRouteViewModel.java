@@ -12,12 +12,13 @@ import com.cs446.group7.bruno.R;
 import com.cs446.group7.bruno.location.LocationServiceSubscriber;
 import com.cs446.group7.bruno.models.RouteModel;
 import com.cs446.group7.bruno.music.BrunoTrack;
+import com.cs446.group7.bruno.sensor.PedometerSubscriber;
 import com.cs446.group7.bruno.spotify.SpotifyServiceError;
 import com.cs446.group7.bruno.spotify.SpotifyServiceSubscriber;
 import com.cs446.group7.bruno.utils.Callback;
 import com.google.android.gms.maps.model.LatLng;
 
-public class OnRouteViewModel implements LocationServiceSubscriber, SpotifyServiceSubscriber {
+public class OnRouteViewModel implements LocationServiceSubscriber, SpotifyServiceSubscriber, PedometerSubscriber {
 
     // MARK: - Constants
 
@@ -41,6 +42,7 @@ public class OnRouteViewModel implements LocationServiceSubscriber, SpotifyServi
 
         MainActivity.getLocationService().addSubscriber(this);
         MainActivity.getLocationService().startLocationUpdates();
+        MainActivity.getSensorService().addPedometerSubscriber(this);
 
         setupUI();
         connectToSpotify(context);
@@ -49,8 +51,8 @@ public class OnRouteViewModel implements LocationServiceSubscriber, SpotifyServi
     public void onDestroy() {
         MainActivity.getLocationService().stopLocationUpdates();
         MainActivity.getLocationService().removeSubscriber(this);
-
         MainActivity.getSpotifyService().removeSubscriber(this);
+        MainActivity.getSensorService().removePedometerSubscriber(this);
     }
 
     // MARK: - Private methods
@@ -172,5 +174,12 @@ public class OnRouteViewModel implements LocationServiceSubscriber, SpotifyServi
     public void onTrackChanged(BrunoTrack track) {
         model.setCurrentTrack(track);
         delegate.updateCurrentSongUI(track.name, track.album);
+    }
+
+    // MARK: - PedometerSubscriber methods
+
+    @Override
+    public void didStep(long timestamp) {
+        model.incrementStep();
     }
 }

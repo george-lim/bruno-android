@@ -30,6 +30,7 @@ public class RouteModel extends ViewModel {
     private BrunoTrack currentTrack = null;
     private BrunoPlaylist playlist = null;
     private List<RouteTrackMapping> routeTrackMappings = null;
+    private int steps = 0;
 
     // MARK: - Getters and setters
 
@@ -87,6 +88,10 @@ public class RouteModel extends ViewModel {
 
     public void setRouteTrackMappings(final List<RouteTrackMapping> routeTrackMappings) {
         this.routeTrackMappings = routeTrackMappings;
+    }
+
+    public void incrementStep() {
+        steps++;
     }
 
     // MARK: - Public methods
