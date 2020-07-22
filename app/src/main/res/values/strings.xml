@@ -11,6 +11,8 @@
     <!--  Onboarding  -->
     <string name="get_started">Get Started</string>
     <string name="next">Next</string>
+    <string name="allow_access">Allow Access</string>
+    <string name="pick_your_avatar">Pick your avatar</string>
 
     <!--  Settings  -->
     <string name="about_bruno_title">About Bruno</string>
