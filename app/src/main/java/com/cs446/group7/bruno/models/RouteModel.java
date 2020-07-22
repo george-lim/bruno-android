@@ -18,7 +18,7 @@ public class RouteModel extends ViewModel {
 
     // MARK: - Constants
 
-    public static final int[] DURATIONS_IN_MINUTES = { 15, 30, 45, 60, 75, 90 };
+    public static final int[] DURATIONS_IN_MINUTES = { 15, 30, 45, 60, 75 };
     public static final String DEFAULT_PLAYLIST_ID = "27q9PVUOHGeSJlz6jSgt2f";
 
     // MARK: - Private members
