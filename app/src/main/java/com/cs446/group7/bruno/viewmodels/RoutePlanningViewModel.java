@@ -248,10 +248,11 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
 
     @Override
     public void onRouteReady(final Route route) {
+        model.setRoute(route);
+
         if (model.getPlaylist() != null) {
             final List<RouteTrackMapping> routeTrackMappings = mapRouteToTracks(route, model.getPlaylist());
             model.setRouteTrackMappings(routeTrackMappings);
-            model.setRoute(route);
 
             delegate.updateStartBtnText(resources.getString(R.string.route_planning_start));
             delegate.clearMap();
@@ -265,10 +266,12 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
                              final Exception underlyingException) {
         model.setRoute(null);
         model.setRouteTrackMappings(null);
+
         delegate.updateStartBtnText(resources.getString(R.string.route_planning_generate_route));
         delegate.clearMap();
         delegate.showRouteGenerationError(error.getDescription());
         delegate.moveUserMarker(model.getCurrentLocation());
+
         Log.e(getClass().getSimpleName(), underlyingException.getLocalizedMessage());
     }
 
@@ -277,6 +280,7 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
             @Override
             public void onSuccess(BrunoPlaylist playlist) {
                 model.setPlaylist(playlist);
+
                 // if there is a route already, call onRouteReady because we were waiting on the playlist
                 if (model.getRoute() != null) {
                     onRouteReady(model.getRoute());
