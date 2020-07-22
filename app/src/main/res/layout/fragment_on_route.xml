@@ -60,6 +60,6 @@ android:layout_height="match_parent">
         android:paddingBottom="8dp"
         android:text="@string/on_route_stop"
         android:textColor="@color/colorBackground"
-        android:background="@drawable/btn_start_exercise"
+        android:background="@drawable/btn_round_corners"
         android:textSize="20sp" />
 </FrameLayout>

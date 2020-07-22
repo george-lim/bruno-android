@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.onboarding.OnboardingDoneFragment">
+
+    <Button
+        android:id="@+id/btn_exit_route"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal|bottom"
+        android:layout_marginBottom="25dp"
+        android:textColor="@color/colorBackground"
+        android:background="@drawable/btn_round_corners"
+        android:text="@string/get_started"
+        android:textSize="20sp"
+        android:textAllCaps="false"/>
+
+</FrameLayout>

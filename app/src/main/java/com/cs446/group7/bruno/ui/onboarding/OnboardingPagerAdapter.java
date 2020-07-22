@@ -21,6 +21,10 @@ public class OnboardingPagerAdapter extends FragmentStateAdapter {
                 return new OnboardingRecordFragment();
             case OnboardingTab.AVATAR:
                 return new OnboardingAvatarFragment();
+            case OnboardingTab.PERMISSION:
+                return new OnboardingPermissionFragment();
+            case OnboardingTab.DONE:
+                return new OnboardingDoneFragment();
             default:
                 return new OnboardingWelcomeFragment();
         }

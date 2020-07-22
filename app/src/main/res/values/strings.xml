@@ -8,6 +8,10 @@
     <string name="yes_button">YES</string>
     <string name="no_button">NO</string>
 
+    <!--  Onboarding  -->
+    <string name="get_started">Get Started</string>
+    <string name="next">Next</string>
+
     <!--  Settings  -->
     <string name="about_bruno_title">About Bruno</string>
     <string name="version">Version</string>
@@ -24,8 +28,7 @@
     <string name="route_planning_start">Start</string>
     <string name="route_planning_generate_route">Generate Route</string>
     <string name="route_planning_duration">Duration (Minutes)</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+
     <!-- TODO: Should the greeting be dynamic? E.g. good morning, afternoon, etc. -->
     <string name="route_planning_greeting">Good day,</string>
     <string name="run_preparation_title">Hold on tight</string>
