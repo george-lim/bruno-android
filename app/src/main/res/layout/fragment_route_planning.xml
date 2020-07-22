@@ -95,7 +95,7 @@
                         android:paddingTop="15dp"
                         android:paddingBottom="15dp"
                         android:textAlignment="center"
-                        android:textSize="16sp"
+                        android:textSize="16dp"
                         android:background="@drawable/tv_duration_label"
                         android:text="@string/route_planning_duration" />
                 </LinearLayout>
