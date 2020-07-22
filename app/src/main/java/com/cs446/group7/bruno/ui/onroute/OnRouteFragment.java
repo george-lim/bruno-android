@@ -113,6 +113,8 @@ public class OnRouteFragment extends Fragment implements OnRouteViewModelDelegat
     public void setupUI(int userAvatarDrawableResourceId) {
         btnExitRoute.setOnClickListener(this::handleExitRouteClick);
         userMarkerIcon = getUserMarkerIcon(userAvatarDrawableResourceId);
+
+        map.getUiSettings().setCompassEnabled(false);
     }
 
     public void updateCurrentSongUI(final String name, final String album) {
