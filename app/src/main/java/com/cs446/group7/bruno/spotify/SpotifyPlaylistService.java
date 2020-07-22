@@ -5,11 +5,8 @@ import android.util.Log;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
+import com.cs446.group7.bruno.MainActivity;
 import com.cs446.group7.bruno.R;
 import com.cs446.group7.bruno.music.BrunoPlaylist;
 import com.cs446.group7.bruno.music.BrunoTrack;
@@ -31,7 +28,6 @@ import java.util.Map;
 // Could share the request queue between this and RouteGenerator - can turn it into a singleton
 class SpotifyPlaylistService implements PlaylistGenerator {
 
-    private final RequestQueue requestQueue;
     private final String playlistEndpoint = "https://api.spotify.com/v1/playlists/";
     private final String authorizationEndpoint = "https://accounts.spotify.com/api/token";
     private final String clientId;
@@ -40,7 +36,6 @@ class SpotifyPlaylistService implements PlaylistGenerator {
 
     // Needs context for secret variables
     public SpotifyPlaylistService(Context context) {
-        requestQueue = Volley.newRequestQueue(context);
         clientId = context.getResources().getString(R.string.spotify_client_id);
         clientSecret = context.getResources().getString(R.string.spotify_client_secret);
     }
@@ -102,7 +97,7 @@ class SpotifyPlaylistService implements PlaylistGenerator {
             }
         };
         authRequest.setTag(TAG);
-        requestQueue.add(authRequest);
+        MainActivity.getVolleyRequestQueue().add(authRequest);
     }
 
     // With the authorization token, we can use the playlist API to retrieve a JSON representation
@@ -134,7 +129,7 @@ class SpotifyPlaylistService implements PlaylistGenerator {
             }
         };
         stringRequest.setTag(TAG);
-        requestQueue.add(stringRequest);
+        MainActivity.getVolleyRequestQueue().add(stringRequest);
     }
 
     // Parses a BrunoPlaylist by reading a response JSON from Spotify's Playlist endpoint

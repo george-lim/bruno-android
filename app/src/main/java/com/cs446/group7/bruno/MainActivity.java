@@ -14,6 +14,8 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.Volley;
 import com.cs446.group7.bruno.capability.CapabilityService;
 import com.cs446.group7.bruno.capability.hardware.HardwareRequest;
 import com.cs446.group7.bruno.capability.hardware.HardwareRequestDelegate;
@@ -37,6 +39,8 @@ public class MainActivity extends AppCompatActivity implements PermissionRequest
     private static SpotifyService spotifyService;
     private static SensorService sensorService;
 
+    private static RequestQueue volleyRequestQueue;
+
     // MARK: - PermissionRequestDelegate members
 
     // Counter for permission request codes
@@ -57,6 +61,7 @@ public class MainActivity extends AppCompatActivity implements PermissionRequest
         locationService = new LocationService(getApplicationContext());
         spotifyService = new SpotifyService(getApplicationContext());
         sensorService = new SensorService(getApplicationContext());
+        volleyRequestQueue = Volley.newRequestQueue(getApplicationContext());
     }
 
     /**
@@ -100,6 +105,10 @@ public class MainActivity extends AppCompatActivity implements PermissionRequest
 
     public static SensorService getSensorService() {
         return sensorService;
+    }
+
+    public static RequestQueue getVolleyRequestQueue() {
+        return volleyRequestQueue;
     }
 
     @Override
