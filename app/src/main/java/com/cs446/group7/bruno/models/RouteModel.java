@@ -94,6 +94,10 @@ public class RouteModel extends ViewModel {
         steps++;
     }
 
+    public void resetSteps() {
+        steps = 0;
+    }
+
     // MARK: - Public methods
 
     public int getDurationInMinutes() {
@@ -106,5 +110,8 @@ public class RouteModel extends ViewModel {
         setRoute(null);
         setCurrentLocation(null);
         setCurrentTrack(null);
+        setPlaylist(null);
+        setRouteTrackMappings(null);
+        resetSteps();
     }
 }
