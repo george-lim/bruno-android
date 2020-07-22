@@ -112,15 +112,16 @@
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="-12.5dp"
                 android:orientation="horizontal"
                 android:layout_gravity="center_horizontal|bottom" >
                 <Button
                     android:id="@+id/buttn_start_walking"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:paddingLeft="27dp"
-                    android:paddingRight="27dp"
-                    android:layout_marginBottom="15dp"
+                    android:paddingLeft="60dp"
+                    android:paddingRight="60dp"
+                    android:layout_marginBottom="12.5dp"
                     android:background="@drawable/btn_start_exercise"
                     android:textColor="@color/colorBackground"
                     android:textSize="20sp"
