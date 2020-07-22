@@ -209,6 +209,8 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
         }
 
         model.setMode(RouteModel.Mode.WALK);
+        model.setRoute(null);
+
         delegate.updateSelectedModeBtn(model.getMode() == RouteModel.Mode.WALK);
 
         generateRoute();
@@ -220,6 +222,8 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
         }
 
         model.setMode(RouteModel.Mode.RUN);
+        model.setRoute(null);
+
         delegate.updateSelectedModeBtn(model.getMode() == RouteModel.Mode.WALK);
 
         generateRoute();
@@ -231,6 +235,7 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
         }
 
         model.setDurationIndex(durationIndex);
+        model.setRoute(null);
 
         generateRoute();
     }
