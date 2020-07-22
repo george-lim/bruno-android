@@ -250,7 +250,10 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
     public void onRouteReady(final Route route) {
         if (model.getPlaylist() != null) {
             final List<RouteTrackMapping> routeTrackMappings = mapRouteToTracks(route, model.getPlaylist());
+            final List<LatLng> routeCheckpoints = RouteProcessor.getCheckpoints(routeTrackMappings);
+
             model.setRouteTrackMappings(routeTrackMappings);
+            model.setRouteCheckpoints(routeCheckpoints);
             model.setRoute(route);
 
             delegate.updateStartBtnText(resources.getString(R.string.route_planning_start));

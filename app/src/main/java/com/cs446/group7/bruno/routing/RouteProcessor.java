@@ -27,7 +27,8 @@ public class RouteProcessor {
      * @param playlist
      * @return
      */
-    public static List<RouteTrackMapping> execute(List<RouteSegment> routeSegments, BrunoPlaylist playlist) throws TrackIndexOutOfBoundsException {
+    public static List<RouteTrackMapping> execute(final List<RouteSegment> routeSegments, final BrunoPlaylist playlist)
+            throws TrackIndexOutOfBoundsException {
         List<RouteTrackMapping> result = new ArrayList<>();
         int currTrackInd = 0;
         // Duration is measured in milliseconds
@@ -94,6 +95,22 @@ public class RouteProcessor {
             RouteTrackMapping rtm = new RouteTrackMapping(accumulatedRouteSegments, tracks.get(currTrackInd));
             result.add(rtm);
         }
+        return result;
+    }
+
+    public static List<LatLng> getCheckpoints(final List<RouteTrackMapping> routeTrackMappings) {
+        List<LatLng> result = new ArrayList<>();
+        for (final RouteTrackMapping mapping : routeTrackMappings) {
+            for (final RouteSegment segment : mapping.routeSegments) {
+                result.add(segment.getStartLocation());
+            }
+        }
+
+        // Last checkpoint should be same as first point
+        if (!result.isEmpty()) {
+            result.add(result.get(0));
+        }
+
         return result;
     }
 }

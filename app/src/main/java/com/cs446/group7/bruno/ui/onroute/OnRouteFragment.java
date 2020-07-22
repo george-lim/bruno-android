@@ -3,6 +3,7 @@ package com.cs446.group7.bruno.ui.onroute;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -30,6 +31,8 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.Circle;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -51,6 +54,8 @@ public class OnRouteFragment extends Fragment implements OnRouteViewModelDelegat
 
     private ProgressDialog progressDialog;
     private Marker userMarker;
+    private Marker checkpointMarker;
+    private Circle checkpointCircle;
     private BitmapDescriptor userMarkerIcon;
 
     private boolean hasDrawnRouteOnce = false;
@@ -107,21 +112,41 @@ public class OnRouteFragment extends Fragment implements OnRouteViewModelDelegat
         return BitmapDescriptorFactory.fromBitmap(BitmapUtils.getBitmapFromVectorDrawable(avatarDrawable));
     }
 
+    @Override
     public void setupUI(int userAvatarDrawableResourceId) {
         btnExitRoute.setOnClickListener(this::handleExitRouteClick);
         userMarkerIcon = getUserMarkerIcon(userAvatarDrawableResourceId);
     }
 
+    @Override
     public void updateCurrentSongUI(final String name, final String album) {
         txtSongTitle.setText(name);
         txtSongArtistInfo.setText(album);
     }
 
+    @Override
     public void drawRoute(final List<RouteTrackMapping> routeTrackMappings, final int[] colours) {
         if (routeTrackMappings.size() == 0) return;
         MapDrawingUtils.drawColourizedRoute(routeTrackMappings, colours, map);
     }
 
+    @Override
+    public void updateCheckpointMarker(final LatLng location) {
+        if (checkpointMarker == null) {
+            checkpointMarker = map.addMarker(new MarkerOptions()
+                    .position(location)
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET))
+            );
+
+            checkpointCircle = map.addCircle(new CircleOptions().center(location).radius(3).strokeColor(Color.RED));
+
+        } else if (!checkpointMarker.getPosition().equals(location)) { // only draw if it's different
+            checkpointMarker.setPosition(location);
+            checkpointCircle.setCenter(location);
+        }
+    }
+
+    @Override
     public void animateCamera(final LatLng location, float bearing, int cameraTilt, int cameraZoom) {
         if (userMarker == null) {
             userMarker = map.addMarker(new MarkerOptions().position(location));
@@ -147,6 +172,7 @@ public class OnRouteFragment extends Fragment implements OnRouteViewModelDelegat
         }
     }
 
+    @Override
     public void showProgressDialog(final String title,
                                    final String message,
                                    boolean isIndeterminate,
@@ -159,6 +185,7 @@ public class OnRouteFragment extends Fragment implements OnRouteViewModelDelegat
         progressDialog.show();
     }
 
+    @Override
     public void dismissProgressDialog() {
         if (progressDialog == null) {
             return;
@@ -167,6 +194,7 @@ public class OnRouteFragment extends Fragment implements OnRouteViewModelDelegat
         progressDialog.dismiss();
     }
 
+    @Override
     public void showAlertDialog(final String title,
                                 final String message,
                                 final String positiveButtonText,
@@ -181,6 +209,7 @@ public class OnRouteFragment extends Fragment implements OnRouteViewModelDelegat
                 .show();
     }
 
+    @Override
     public void showAlertDialog(final String title,
                                 final String message,
                                 final String positiveButtonText,
@@ -198,7 +227,19 @@ public class OnRouteFragment extends Fragment implements OnRouteViewModelDelegat
                 .show();
     }
 
+    @Override
     public void navigateToPreviousScreen() {
         Navigation.findNavController(getActivity(), R.id.nav_host_fragment).navigateUp();
+    }
+
+    // TODO: Remove after testing
+    @Override
+    public void showAllCheckPoints(List<LatLng> checkpoints) {
+//        for (final LatLng checkpoint : checkpoints) {
+//            map.addMarker(new MarkerOptions()
+//                    .position(checkpoint)
+//                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN)));
+//            map.addCircle(new CircleOptions().center(checkpoint).radius(3));
+//        }
     }
 }

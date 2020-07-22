@@ -6,6 +6,7 @@ import com.cs446.group7.bruno.music.BrunoPlaylist;
 import com.cs446.group7.bruno.music.BrunoTrack;
 import com.cs446.group7.bruno.routing.Route;
 import com.cs446.group7.bruno.routing.RouteTrackMapping;
+import com.google.android.gms.maps.model.LatLng;
 
 import java.util.List;
 
@@ -31,7 +32,9 @@ public class RouteModel extends ViewModel {
     private BrunoTrack currentTrack = null;
     private BrunoPlaylist playlist = null;
     private List<RouteTrackMapping> routeTrackMappings = null;
+    private List<LatLng> routeCheckpoints = null;
     private int steps = 0;
+    private int currentCheckpointIndex = 0;
 
     // MARK: - Getters and setters
 
@@ -67,6 +70,15 @@ public class RouteModel extends ViewModel {
         this.currentLocation = currentLocation;
     }
 
+    public LatLng getCurrentCheckpoint() {
+        return routeCheckpoints.get(currentCheckpointIndex);
+    }
+
+    public LatLng advanceCheckpoint() {
+        if (currentCheckpointIndex >= routeCheckpoints.size() - 1) return null;
+        return routeCheckpoints.get(++currentCheckpointIndex);
+    }
+
     public BrunoTrack getCurrentTrack() {
         return currentTrack;
     }
@@ -91,6 +103,14 @@ public class RouteModel extends ViewModel {
         this.routeTrackMappings = routeTrackMappings;
     }
 
+    public List<LatLng> getRouteCheckpoints() {
+        return routeCheckpoints;
+    }
+
+    public void setRouteCheckpoints(final List<LatLng> routeCheckpoints) {
+        this.routeCheckpoints = routeCheckpoints;
+    }
+
     public void incrementStep() {
         steps++;
     }
@@ -107,5 +127,7 @@ public class RouteModel extends ViewModel {
         setRoute(null);
         setCurrentLocation(null);
         setCurrentTrack(null);
+        setRouteCheckpoints(null);
+        currentCheckpointIndex = 0;
     }
 }
