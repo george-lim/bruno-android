@@ -20,6 +20,7 @@ import com.cs446.group7.bruno.capability.hardware.HardwareRequestDelegate;
 import com.cs446.group7.bruno.capability.permission.PermissionRequest;
 import com.cs446.group7.bruno.capability.permission.PermissionRequestDelegate;
 import com.cs446.group7.bruno.location.LocationService;
+import com.cs446.group7.bruno.preferencesstorage.PreferencesStorage;
 import com.cs446.group7.bruno.sensor.SensorService;
 import com.cs446.group7.bruno.spotify.SpotifyService;
 import com.cs446.group7.bruno.ui.onroute.OnRouteFragment;
@@ -36,6 +37,7 @@ public class MainActivity extends AppCompatActivity implements PermissionRequest
     private static LocationService locationService;
     private static SpotifyService spotifyService;
     private static SensorService sensorService;
+    private static PreferencesStorage preferencesStorage;
 
     // MARK: - PermissionRequestDelegate members
 
@@ -57,6 +59,7 @@ public class MainActivity extends AppCompatActivity implements PermissionRequest
         locationService = new LocationService(getApplicationContext());
         spotifyService = new SpotifyService(getApplicationContext());
         sensorService = new SensorService(getApplicationContext());
+        preferencesStorage = new PreferencesStorage(getApplicationContext());
     }
 
     /**
@@ -101,6 +104,8 @@ public class MainActivity extends AppCompatActivity implements PermissionRequest
     public static SensorService getSensorService() {
         return sensorService;
     }
+
+    public static PreferencesStorage getPreferencesStorage() { return preferencesStorage; }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
