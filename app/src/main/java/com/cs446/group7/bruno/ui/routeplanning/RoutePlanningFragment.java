@@ -61,6 +61,7 @@ public class RoutePlanningFragment extends Fragment implements RoutePlanningView
     private BitmapDescriptor userMarkerIcon;
 
     private boolean hasDrawnRouteOnce = false;
+    private int colorDisable = 0;
 
     // MARK: - Lifecycle methods
 
@@ -141,6 +142,8 @@ public class RoutePlanningFragment extends Fragment implements RoutePlanningView
             }
         });
 
+        colorDisable = getResources().getColor(R.color.colorDisable, null);
+
         updateStartBtnEnabled(true);
         updateStartBtnText(startBtnText);
         updateSelectedModeBtn(isWalkingModeBtnSelected);
@@ -162,7 +165,7 @@ public class RoutePlanningFragment extends Fragment implements RoutePlanningView
             startBtn.getBackground().setColorFilter(null);
         }
         else {
-            startBtn.getBackground().setColorFilter(Color.GRAY, PorterDuff.Mode.SRC_IN);
+            startBtn.getBackground().setColorFilter(colorDisable, PorterDuff.Mode.SRC_IN);
         }
     }
 
