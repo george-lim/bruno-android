@@ -344,6 +344,8 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
                              final Exception underlyingException) {
         onProcessColourizedRouteFailure();
         delegate.showRouteProcessingError(error.getDescription());
-        Log.e(getClass().getSimpleName(), underlyingException.getLocalizedMessage());
+
+        final String errorMsg = underlyingException.getLocalizedMessage();
+        Log.e(getClass().getSimpleName(), errorMsg == null ? "Unknown error" : errorMsg);
     }
 }
