@@ -31,19 +31,16 @@
         <ImageView
             android:id="@+id/pick_avatar_1"
             style="@style/OnboardingAvatarContainer"
-            android:background="@drawable/img_btn_border"
             android:src="@drawable/ic_avatar_1" />
 
         <ImageView
             android:id="@+id/pick_avatar_2"
             style="@style/OnboardingAvatarContainer"
-            android:background="@drawable/img_btn_border"
             android:src="@drawable/ic_avatar_2" />
 
         <ImageView
             android:id="@+id/pick_avatar_3"
             style="@style/OnboardingAvatarContainer"
-            android:background="@drawable/img_btn_border"
             android:src="@drawable/ic_avatar_3" />
     </LinearLayout>
 
@@ -61,19 +58,16 @@
         <ImageView
             android:id="@+id/pick_avatar_4"
             style="@style/OnboardingAvatarContainer"
-            android:background="@drawable/img_btn_border"
             android:src="@drawable/ic_avatar_4" />
 
         <ImageView
             android:id="@+id/pick_avatar_5"
             style="@style/OnboardingAvatarContainer"
-            android:background="@drawable/img_btn_border"
             android:src="@drawable/ic_avatar_5" />
 
         <ImageView
             android:id="@+id/pick_avatar_6"
             style="@style/OnboardingAvatarContainer"
-            android:background="@drawable/img_btn_border"
             android:src="@drawable/ic_avatar_6" />
     </LinearLayout>
 
@@ -91,18 +85,16 @@
         <ImageView
             android:id="@+id/pick_avatar_7"
             style="@style/OnboardingAvatarContainer"
-            android:background="@drawable/img_btn_border"
             android:src="@drawable/ic_avatar_7" />
 
         <ImageView
             android:id="@+id/pick_avatar_8"
             style="@style/OnboardingAvatarContainer"
-            android:background="@drawable/img_btn_border"
             android:src="@drawable/ic_avatar_8" />
     </LinearLayout>
 
     <Button
-        android:id="@+id/btn_tab0_next"
+        android:id="@+id/btn_tab2_next"
         style="@style/OnboardingPrimaryActionButton"
         android:text="@string/next"
         app:layout_constraintBottom_toBottomOf="parent"

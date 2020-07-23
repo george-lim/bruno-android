@@ -12,6 +12,7 @@ import com.cs446.group7.bruno.R;
 import com.cs446.group7.bruno.location.LocationServiceSubscriber;
 import com.cs446.group7.bruno.models.RouteModel;
 import com.cs446.group7.bruno.music.BrunoTrack;
+import com.cs446.group7.bruno.preferencesstorage.PreferencesStorage;
 import com.cs446.group7.bruno.sensor.PedometerSubscriber;
 import com.cs446.group7.bruno.spotify.SpotifyServiceError;
 import com.cs446.group7.bruno.spotify.SpotifyServiceSubscriber;
@@ -58,7 +59,8 @@ public class OnRouteViewModel implements LocationServiceSubscriber, SpotifyServi
     // MARK: - Private methods
 
     private void setupUI() {
-        int userAvatarDrawableResourceId = R.drawable.ic_avatar_1;
+        PreferencesStorage pref = MainActivity.getPreferencesStorage();
+        int userAvatarDrawableResourceId = pref.getInt(PreferencesStorage.USER_AVATAR, R.drawable.ic_avatar_1);
 
         delegate.setupUI(userAvatarDrawableResourceId);
 

@@ -4,23 +4,15 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 
 import androidx.fragment.app.Fragment;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
 import androidx.viewpager2.widget.ViewPager2;
 
-import com.cs446.group7.bruno.MainActivity;
 import com.cs446.group7.bruno.R;
-import com.cs446.group7.bruno.capability.Capability;
-import com.cs446.group7.bruno.preferencesstorage.PreferencesStorage;
-import com.cs446.group7.bruno.utils.Callback;
 
 public class OnboardingFragment extends Fragment {
 
     private ViewPager2 viewPager;
-    private Button onboardingPrimaryAction;
     private View[] tabIndicators;
     private int currentTab;
 
@@ -29,15 +21,12 @@ public class OnboardingFragment extends Fragment {
                              Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_onboarding, container, false);
         setupOnboardingTabs(root);
-//
-//        onboardingPrimaryAction = root.findViewById(R.id.btn_onboarding_primary_action);
-//        onboardingPrimaryAction.setOnClickListener(this::handleOnboardingPrimaryAction);
         return root;
     }
 
     private void setupOnboardingTabs(final View view) {
         viewPager = view.findViewById(R.id.onboarding_pager);
-        OnboardingPagerAdapter adapter = new OnboardingPagerAdapter(getActivity());
+        OnboardingPagerAdapter adapter = new OnboardingPagerAdapter(this);
         viewPager.setAdapter(adapter);
 
         tabIndicators = new View[OnboardingTab.NUM_TABS];
@@ -62,46 +51,20 @@ public class OnboardingFragment extends Fragment {
                     tabIndicators[i].setSelected(false);
                 }
             }
-//            if (position == OnboardingTab.AVATAR) {
-//                onboardingPrimaryAction.setText("Get Started");
-//            } else {
-//                onboardingPrimaryAction.setText("Next");
-//            }
             super.onPageSelected(position);
         }
     };
 
-    private void handleOnboardingPrimaryAction(final View view) {
+    public void moveToNextTab() {
         switch (currentTab) {
             case OnboardingTab.WELCOME:
-                handleMoveToRecordOnboarding(); break;
+                viewPager.setCurrentItem(OnboardingTab.RECORD); break;
             case OnboardingTab.RECORD:
                 viewPager.setCurrentItem(OnboardingTab.AVATAR); break;
             case OnboardingTab.AVATAR:
-                finishOnBoardingProcess();
+                viewPager.setCurrentItem(OnboardingTab.PERMISSION); break;
+            case OnboardingTab.DONE:
+                viewPager.setCurrentItem(OnboardingTab.DONE); break;
         }
-    }
-
-    private void handleMoveToRecordOnboarding() {
-        final Capability[] REQUIRED_CAPABILITIES = { Capability.LOCATION, Capability.INTERNET };
-        MainActivity.getCapabilityService().request(REQUIRED_CAPABILITIES, new Callback<Void, Void>() {
-            @Override
-            public void onSuccess(Void result) {
-                viewPager.setCurrentItem(OnboardingTab.RECORD);
-            }
-
-            @Override
-            public void onFailed(Void result) {
-                viewPager.setCurrentItem(OnboardingTab.RECORD);
-            }
-        });
-    }
-
-    private void finishOnBoardingProcess() {
-        PreferencesStorage storage = MainActivity.getPreferencesStorage();
-        storage.setBoolean(PreferencesStorage.COMPLETED_ONBOARDING, true);
-
-        NavController navController = Navigation.findNavController(getActivity(), R.id.nav_host_fragment);
-        navController.navigate(R.id.action_fragmentonboarding_to_fragmenttoplevel);
     }
 }

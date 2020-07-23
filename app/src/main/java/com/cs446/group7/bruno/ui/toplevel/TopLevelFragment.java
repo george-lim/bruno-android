@@ -44,7 +44,7 @@ public class TopLevelFragment extends Fragment implements BottomNavigationView.O
             navController.navigate(R.id.action_fragmenttoplevel_to_fragmentonboarding);
         } else {
             // TODO: remove for testing without clear storage
-            storage.setBoolean(PreferencesStorage.COMPLETED_ONBOARDING, false);
+            storage.putBoolean(PreferencesStorage.COMPLETED_ONBOARDING, false);
         }
     }
 
