@@ -106,7 +106,7 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
 
         String startBtnText = hasColourizedRoute() || isEveryCapabilityEnabled
                 ? resources.getString(R.string.route_planning_start)
-                : resources.getString(R.string.route_planning_generate_route);
+                : resources.getString(R.string.route_planning_create_route);
 
         String[] durationPickerDisplayedValues = new String[RouteModel.DURATIONS_IN_MINUTES.length];
 
@@ -240,7 +240,7 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
         model.setRoute(null);
         model.setRouteTrackMappings(null);
 
-        delegate.updateStartBtnText(resources.getString(R.string.route_planning_generate_route));
+        delegate.updateStartBtnText(resources.getString(R.string.route_planning_create_route));
         delegate.clearMap();
         delegate.moveUserMarker(model.getCurrentLocation());
         delegate.updateStartBtnEnabled(true);
