@@ -211,6 +211,7 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
         model.setMode(RouteModel.Mode.WALK);
         model.setRoute(null);
 
+        delegate.updateStartBtnEnabled(false);
         delegate.updateSelectedModeBtn(model.getMode() == RouteModel.Mode.WALK);
 
         generateRoute();
@@ -224,6 +225,7 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
         model.setMode(RouteModel.Mode.RUN);
         model.setRoute(null);
 
+        delegate.updateStartBtnEnabled(false);
         delegate.updateSelectedModeBtn(model.getMode() == RouteModel.Mode.WALK);
 
         generateRoute();
@@ -234,6 +236,7 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
             return;
         }
 
+        delegate.updateStartBtnEnabled(false);
         model.setDurationIndex(durationIndex);
         model.setRoute(null);
 
@@ -263,6 +266,7 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
             delegate.clearMap();
             delegate.drawRoute(routeTrackMappings, resources.getIntArray(R.array.colorRouteList));
             delegate.moveUserMarker(model.getCurrentLocation());
+            delegate.updateStartBtnEnabled(true);
         }
     }
 
@@ -276,6 +280,7 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
         delegate.clearMap();
         delegate.showRouteGenerationError(error.getDescription());
         delegate.moveUserMarker(model.getCurrentLocation());
+        delegate.updateStartBtnEnabled(true);
 
         Log.e(getClass().getSimpleName(), underlyingException.getLocalizedMessage());
     }

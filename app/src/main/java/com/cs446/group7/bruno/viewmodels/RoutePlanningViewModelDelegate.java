@@ -13,6 +13,7 @@ public interface RoutePlanningViewModelDelegate {
                  int durationPickerMaxValue,
                  int durationPickerValue,
                  int userAvatarDrawableResourceId);
+    void updateStartBtnEnabled(boolean isEnabled);
     void updateStartBtnText(final String text);
     void updateSelectedModeBtn(boolean isWalkingModeBtnSelected);
     void clearMap();

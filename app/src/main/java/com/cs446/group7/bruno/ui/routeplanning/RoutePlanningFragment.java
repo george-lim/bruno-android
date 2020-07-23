@@ -1,5 +1,7 @@
 package com.cs446.group7.bruno.ui.routeplanning;
 
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
@@ -137,6 +139,7 @@ public class RoutePlanningFragment extends Fragment implements RoutePlanningView
         runningModeBtn.setOnClickListener(this::handleRunningModeClick);
         durationPicker.setOnScrollListener(this::handleDurationSelected);
 
+        updateStartBtnEnabled(true);
         updateStartBtnText(startBtnText);
         updateSelectedModeBtn(isWalkingModeBtnSelected);
 
@@ -148,6 +151,17 @@ public class RoutePlanningFragment extends Fragment implements RoutePlanningView
         durationPicker.setValue(durationPickerValue);
 
         userMarkerIcon = getUserMarkerIcon(userAvatarDrawableResourceId);
+    }
+
+    public void updateStartBtnEnabled(boolean isEnabled) {
+        startBtn.setEnabled(isEnabled);
+
+        if (isEnabled) {
+            startBtn.getBackground().setColorFilter(null);
+        }
+        else {
+            startBtn.getBackground().setColorFilter(Color.GRAY, PorterDuff.Mode.SRC_IN);
+        }
     }
 
     public void updateStartBtnText(final String text) {
