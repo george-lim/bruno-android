@@ -28,7 +28,7 @@ public class OnRouteViewModel implements LocationServiceSubscriber, SpotifyServi
 
     private static final int CAMERA_TILT = 60;
     private static final int CAMERA_ZOOM = 18;
-    private static final int BASE_TOLERANCE_RADIUS = 5;
+    private static final int BASE_TOLERANCE_RADIUS = 10;
 
     // MARK: - Private members
 
@@ -170,8 +170,8 @@ public class OnRouteViewModel implements LocationServiceSubscriber, SpotifyServi
 
         final Location currentLocation = model.getCurrentLocation();
 
-        // adjustments to speed within [0, 3] m/s, chosen based on the fact that people run around 2-3 m/s
-        final double speedMargin = Math.min(3, currentLocation.getSpeed());
+        // adjustments to speed within [0, 4] m/s, chosen based on avg speed of around 2-3 m/s, with some extra margin
+        final double speedMargin = Math.min(4, currentLocation.getSpeed());
 
         // max amount of deviation from the actual location (meters)
         final double accuracyDeviation = currentLocation.getAccuracy();
