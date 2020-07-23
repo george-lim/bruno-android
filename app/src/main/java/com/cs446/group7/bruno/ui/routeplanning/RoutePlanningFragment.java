@@ -241,7 +241,7 @@ public class RoutePlanningFragment extends Fragment implements RoutePlanningView
         }
     }
 
-    public void showRouteGenerationError(final String errorMessage) {
+    public void showRouteProcessingError(final String errorMessage) {
         Toast.makeText(getContext(), errorMessage, Toast.LENGTH_LONG).show();
     }
 

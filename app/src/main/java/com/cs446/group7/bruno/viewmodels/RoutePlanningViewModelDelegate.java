@@ -20,6 +20,6 @@ public interface RoutePlanningViewModelDelegate {
     void drawRoute(final List<RouteTrackMapping> routeTrackMappings,
                    final int[] colours);
     void moveUserMarker(final LatLng location);
-    void showRouteGenerationError(final String errorMessage);
+    void showRouteProcessingError(final String errorMessage);
     void navigateToNextScreen();
 }

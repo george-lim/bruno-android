@@ -24,6 +24,7 @@
     <string name="route_planning_start">Start</string>
     <string name="route_planning_generate_route">Generate Route</string>
     <string name="route_planning_duration">Duration (Minutes)</string>
+    <string name="route_planning_playlist_error">Error generating playlist, please try again!</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <!-- TODO: Should the greeting be dynamic? E.g. good morning, afternoon, etc. -->
