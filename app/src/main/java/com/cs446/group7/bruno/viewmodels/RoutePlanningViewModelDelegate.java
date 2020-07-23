@@ -13,12 +13,13 @@ public interface RoutePlanningViewModelDelegate {
                  int durationPickerMaxValue,
                  int durationPickerValue,
                  int userAvatarDrawableResourceId);
+    void updateStartBtnEnabled(boolean isEnabled);
     void updateStartBtnText(final String text);
     void updateSelectedModeBtn(boolean isWalkingModeBtnSelected);
     void clearMap();
     void drawRoute(final List<RouteTrackMapping> routeTrackMappings,
                    final int[] colours);
     void moveUserMarker(final LatLng location);
-    void showRouteGenerationError(final String errorMessage);
+    void showRouteProcessingError(final String errorMessage);
     void navigateToNextScreen();
 }
