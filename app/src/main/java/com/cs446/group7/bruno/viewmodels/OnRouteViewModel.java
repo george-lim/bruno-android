@@ -28,6 +28,7 @@ public class OnRouteViewModel implements LocationServiceSubscriber, SpotifyServi
 
     private static final int CAMERA_TILT = 60;
     private static final int CAMERA_ZOOM = 18;
+    private static final int BASE_TOLERANCE_RADIUS = 5;
 
     // MARK: - Private members
 
@@ -169,30 +170,33 @@ public class OnRouteViewModel implements LocationServiceSubscriber, SpotifyServi
 
         final Location currentLocation = model.getCurrentLocation();
 
-        // the distance the user has to be within to be counted as reaching the checkpoint (meters)
-        final double baseTolerance = 6;
+        // adjustments to speed within [0, 3] m/s, chosen based on the fact that people run around 2-3 m/s
+        final double speedMargin = Math.min(3, currentLocation.getSpeed());
 
         // max amount of deviation from the actual location (meters)
-        final double deviation = currentLocation.getAccuracy();
+        final double accuracyDeviation = currentLocation.getAccuracy();
 
         // total tolerance radius
-        final double toleranceRadius = baseTolerance + deviation;
+        final double toleranceRadius = BASE_TOLERANCE_RADIUS + speedMargin + accuracyDeviation;
 
         final LatLng currentCheckpoint = model.getCurrentCheckpoint();
-        delegate.updateCheckpointMarker(currentCheckpoint, toleranceRadius);
 
-        final Location currLocation = model.getCurrentLocation();
-        final LatLng currLatLng = new LatLng(currLocation.getLatitude(), currLocation.getLongitude());
+        // Note: the radius drawn on UI is always constant as we cannot foresee the other location variables, it's just
+        // to give an idea where the user should be around
+        delegate.updateCheckpointMarker(currentCheckpoint, BASE_TOLERANCE_RADIUS + 3);
+
+        final LatLng currLatLng = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
 
         final double distanceFromCheckpoint = LatLngUtils.getLatLngDistanceInMetres(currLatLng, currentCheckpoint);
 
+        // Checkpoint is counted if and only if  user is within the tolerance radius;
+        // this is calculated dynamically as the location updates, which may be larger than what is drawn
         if (distanceFromCheckpoint <= toleranceRadius) {
             final LatLng nextCheckpoint = model.advanceCheckpoint();
 
             // End of route, no more checkpoints
             if (nextCheckpoint == null) {
                 isCompleted = true;
-                Log.i(getClass().getSimpleName(), "You finished the run!");
                 onRouteCompleted();
             } else {
                 delegate.updateCheckpointMarker(nextCheckpoint, toleranceRadius);
