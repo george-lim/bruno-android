@@ -95,7 +95,7 @@
                         android:paddingTop="15dp"
                         android:paddingBottom="15dp"
                         android:textAlignment="center"
-                        android:textSize="16sp"
+                        android:textSize="16dp"
                         android:background="@drawable/tv_duration_label"
                         android:text="@string/route_planning_duration" />
                 </LinearLayout>
@@ -109,19 +109,24 @@
                     android:theme="@style/DurationNumberPickerTheme" />
             </LinearLayout>
 
-            <Button
-                android:id="@+id/buttn_start_walking"
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal|bottom"
-                android:layout_marginBottom="15dp"
-                android:background="@drawable/btn_start_exercise"
-                android:paddingLeft="27dp"
-                android:paddingTop="8dp"
-                android:paddingRight="27dp"
-                android:paddingBottom="8dp"
-                android:textColor="@color/colorBackground"
-                android:textSize="20sp" />
+                android:layout_marginTop="-12.5dp"
+                android:orientation="horizontal"
+                android:layout_gravity="center_horizontal|bottom" >
+                <Button
+                    android:id="@+id/buttn_start_walking"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:paddingLeft="60dp"
+                    android:paddingRight="60dp"
+                    android:layout_marginBottom="12.5dp"
+                    android:background="@drawable/btn_start_exercise"
+                    android:textColor="@color/colorBackground"
+                    android:textSize="20sp"
+                    android:text="@string/route_planning_start" />
+            </LinearLayout>
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 </FrameLayout>
