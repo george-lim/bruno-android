@@ -207,8 +207,8 @@ public class OnRouteViewModel implements LocationServiceSubscriber, SpotifyServi
     public void onRouteCompleted() {
         disconnectFromSpotify();
         delegate.showAlertDialog(
-                "Route Completed!",
-                "Hooray! You have completed your exercise. You can see how you did in the Fitness Records tab.",
+                resources.getString(R.string.run_completion_title),
+                resources.getString(R.string.run_completion_message),
                 resources.getString(R.string.ok_button),
                 (dialogInterface, i) -> {
                     model.reset();
