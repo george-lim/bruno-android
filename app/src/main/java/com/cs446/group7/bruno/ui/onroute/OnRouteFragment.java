@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
@@ -41,6 +42,7 @@ public class OnRouteFragment extends Fragment implements OnRouteViewModelDelegat
     // MARK: - UI components
 
     private GoogleMap map;
+    private CardView trackInfoCardView;
     private TextView txtSongTitle;
     private TextView txtSongArtistInfo;
     private Button btnExitRoute;
@@ -63,6 +65,7 @@ public class OnRouteFragment extends Fragment implements OnRouteViewModelDelegat
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_on_route, container, false);
+        trackInfoCardView = view.findViewById(R.id.card_view_track_info);
         txtSongTitle = view.findViewById(R.id.text_view_song_title);
         txtSongArtistInfo = view.findViewById(R.id.text_view_song_artist_info);
         btnExitRoute = view.findViewById(R.id.btn_exit_route);
@@ -110,9 +113,12 @@ public class OnRouteFragment extends Fragment implements OnRouteViewModelDelegat
     public void setupUI(int userAvatarDrawableResourceId) {
         btnExitRoute.setOnClickListener(this::handleExitRouteClick);
         userMarkerIcon = getUserMarkerIcon(userAvatarDrawableResourceId);
+
+        map.getUiSettings().setCompassEnabled(false);
     }
 
     public void updateCurrentSongUI(final String name, final String album) {
+        trackInfoCardView.setVisibility(View.VISIBLE);
         txtSongTitle.setText(name);
         txtSongArtistInfo.setText(album);
     }
