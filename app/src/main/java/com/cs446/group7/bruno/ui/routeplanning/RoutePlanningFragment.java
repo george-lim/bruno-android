@@ -114,10 +114,8 @@ public class RoutePlanningFragment extends Fragment implements RoutePlanningView
         viewModel.handleRunningModeClick();
     }
 
-    private void handleDurationSelected(final NumberPicker numberPicker, int scrollState) {
-        if (scrollState == NumberPicker.OnScrollListener.SCROLL_STATE_IDLE) {
-            viewModel.handleDurationSelected(numberPicker.getValue());
-        }
+    private void handleDurationSelected(int durationIndex) {
+        viewModel.handleDurationSelected(durationIndex);
     }
 
     // MARK: - RoutePlanningViewModelDelegate methods
@@ -137,7 +135,11 @@ public class RoutePlanningFragment extends Fragment implements RoutePlanningView
         startBtn.setOnClickListener(this::handleStartWalkingClick);
         walkingModeBtn.setOnClickListener(this::handleWalkingModeClick);
         runningModeBtn.setOnClickListener(this::handleRunningModeClick);
-        durationPicker.setOnScrollListener(this::handleDurationSelected);
+        durationPicker.setOnScrollListener((numberPicker, scrollState) -> {
+            if (scrollState == NumberPicker.OnScrollListener.SCROLL_STATE_IDLE) {
+                handleDurationSelected(numberPicker.getValue());
+            }
+        });
 
         updateStartBtnEnabled(true);
         updateStartBtnText(startBtnText);
