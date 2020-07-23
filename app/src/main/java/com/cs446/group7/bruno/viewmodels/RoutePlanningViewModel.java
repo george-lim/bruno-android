@@ -209,6 +209,8 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
         }
 
         model.setMode(RouteModel.Mode.WALK);
+        model.setRoute(null);
+
         delegate.updateSelectedModeBtn(model.getMode() == RouteModel.Mode.WALK);
 
         generateRoute();
@@ -220,6 +222,8 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
         }
 
         model.setMode(RouteModel.Mode.RUN);
+        model.setRoute(null);
+
         delegate.updateSelectedModeBtn(model.getMode() == RouteModel.Mode.WALK);
 
         generateRoute();
@@ -231,6 +235,7 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
         }
 
         model.setDurationIndex(durationIndex);
+        model.setRoute(null);
 
         generateRoute();
     }
@@ -248,6 +253,8 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
 
     @Override
     public void onRouteReady(final Route route) {
+        model.setRoute(route);
+
         if (model.getPlaylist() != null) {
             final List<RouteTrackMapping> routeTrackMappings = mapRouteToTracks(route, model.getPlaylist());
             final List<LatLng> routeCheckpoints = RouteProcessor.getCheckpoints(routeTrackMappings);
@@ -270,12 +277,14 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
                              final Exception underlyingException) {
         model.setRoute(null);
         model.setRouteTrackMappings(null);
+
         delegate.updateStartBtnText(resources.getString(R.string.route_planning_generate_route));
         delegate.clearMap();
         delegate.showRouteGenerationError(error.getDescription());
 
         final Location currentLocation = model.getCurrentLocation();
         delegate.moveUserMarker(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()));
+
         Log.e(getClass().getSimpleName(), underlyingException.getLocalizedMessage());
     }
 
@@ -284,6 +293,7 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
             @Override
             public void onSuccess(BrunoPlaylist playlist) {
                 model.setPlaylist(playlist);
+
                 // if there is a route already, call onRouteReady because we were waiting on the playlist
                 if (model.getRoute() != null) {
                     onRouteReady(model.getRoute());

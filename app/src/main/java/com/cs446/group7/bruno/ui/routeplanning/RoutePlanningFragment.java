@@ -86,7 +86,6 @@ public class RoutePlanningFragment extends Fragment implements RoutePlanningView
 
         mapFragment.getMapAsync(googleMap -> {
             map = googleMap;
-            map.getUiSettings().setRotateGesturesEnabled(false);
 
             RouteModel model = new ViewModelProvider(requireActivity()).get(RouteModel.class);
             viewModel = new RoutePlanningViewModel(getActivity().getApplicationContext(), model, this);
@@ -140,6 +139,8 @@ public class RoutePlanningFragment extends Fragment implements RoutePlanningView
 
         updateStartBtnText(startBtnText);
         updateSelectedModeBtn(isWalkingModeBtnSelected);
+
+        map.getUiSettings().setRotateGesturesEnabled(false);
 
         durationPicker.setDisplayedValues(durationPickerDisplayedValues);
         durationPicker.setMinValue(durationPickerMinValue);

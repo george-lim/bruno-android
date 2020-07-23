@@ -20,7 +20,7 @@ public class RouteModel extends ViewModel {
 
     // MARK: - Constants
 
-    public static final int[] DURATIONS_IN_MINUTES = { 15, 30, 45, 60, 75, 90 };
+    public static final int[] DURATIONS_IN_MINUTES = { 15, 30, 45, 60, 75 };
     public static final String DEFAULT_PLAYLIST_ID = "27q9PVUOHGeSJlz6jSgt2f";
 
     // MARK: - Private members
@@ -115,6 +115,10 @@ public class RouteModel extends ViewModel {
         steps++;
     }
 
+    public void resetSteps() {
+        steps = 0;
+    }
+
     // MARK: - Public methods
 
     public int getDurationInMinutes() {
@@ -127,7 +131,10 @@ public class RouteModel extends ViewModel {
         setRoute(null);
         setCurrentLocation(null);
         setCurrentTrack(null);
+        setPlaylist(null);
+        setRouteTrackMappings(null);
         setRouteCheckpoints(null);
         currentCheckpointIndex = 0;
+        resetSteps();
     }
 }
