@@ -119,8 +119,7 @@ public class RouteModel extends ViewModel {
         steps = 0;
     }
 
-    // TODO: Make it private later when the reset() logic is polished
-    public void resetCheckpointIndex() {
+    private void resetCheckpointIndex() {
         currentCheckpointIndex = 0;
     }
 
@@ -134,7 +133,6 @@ public class RouteModel extends ViewModel {
         setMode(Mode.WALK);
         setDurationIndex(0);
         setRoute(null);
-        setCurrentLocation(null);
         setCurrentTrack(null);
         setPlaylist(null);
         setRouteTrackMappings(null);

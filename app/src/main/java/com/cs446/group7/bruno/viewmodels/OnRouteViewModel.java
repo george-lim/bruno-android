@@ -162,11 +162,21 @@ public class OnRouteViewModel implements LocationServiceSubscriber, SpotifyServi
         }
 
         /*
-            TODO:
             Set a tolerance radius depending on how fast the user is moving. The faster they are, the more
-            margin we should give them
+            margin we should give them. It should also depend on how accurate the GPS is, the more variance, the bigger
+            the margin should be given.
          */
-        final double toleranceRadius = 5; // ---> currLocation.getSpeed();
+
+        final Location currentLocation = model.getCurrentLocation();
+
+        // the distance the user has to be within to be counted as reaching the checkpoint (meters)
+        final double baseTolerance = 6;
+
+        // max amount of deviation from the actual location (meters)
+        final double deviation = currentLocation.getAccuracy();
+
+        // total tolerance radius
+        final double toleranceRadius = baseTolerance + deviation;
 
         final LatLng currentCheckpoint = model.getCurrentCheckpoint();
         delegate.updateCheckpointMarker(currentCheckpoint, toleranceRadius);
@@ -197,7 +207,7 @@ public class OnRouteViewModel implements LocationServiceSubscriber, SpotifyServi
                 "Hooray! You have completed your exercise. You can see how you did in the Fitness Records tab.",
                 resources.getString(R.string.ok_button),
                 (dialogInterface, i) -> {
-                    model.resetCheckpointIndex(); // TODO: Better reset flow
+                    model.reset();
                     delegate.navigateToPreviousScreen();
                 },
                 false
