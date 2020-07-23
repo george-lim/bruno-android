@@ -115,8 +115,12 @@ public class RouteModel extends ViewModel {
         steps++;
     }
 
-    public void resetSteps() {
+    private void resetSteps() {
         steps = 0;
+    }
+
+    private void resetCheckpointIndex() {
+        currentCheckpointIndex = 0;
     }
 
     // MARK: - Public methods
@@ -134,7 +138,7 @@ public class RouteModel extends ViewModel {
         setPlaylist(null);
         setRouteTrackMappings(null);
         setRouteCheckpoints(null);
-        currentCheckpointIndex = 0;
+        resetCheckpointIndex();
         resetSteps();
     }
 }
