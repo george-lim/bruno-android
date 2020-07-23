@@ -137,14 +137,14 @@ public class OnRouteFragment extends Fragment implements OnRouteViewModelDelegat
     }
 
     @Override
-    public void updateCheckpointMarker(final LatLng location) {
+    public void updateCheckpointMarker(final LatLng location, final double radius) {
         if (checkpointMarker == null) {
             checkpointMarker = map.addMarker(new MarkerOptions()
                     .position(location)
-                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET))
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
             );
 
-            checkpointCircle = map.addCircle(new CircleOptions().center(location).radius(3).strokeColor(Color.RED));
+            checkpointCircle = map.addCircle(new CircleOptions().center(location).radius(radius).strokeColor(Color.RED));
 
         } else if (!checkpointMarker.getPosition().equals(location)) { // only draw if it's different
             checkpointMarker.setPosition(location);
@@ -236,16 +236,5 @@ public class OnRouteFragment extends Fragment implements OnRouteViewModelDelegat
     @Override
     public void navigateToPreviousScreen() {
         Navigation.findNavController(getActivity(), R.id.nav_host_fragment).navigateUp();
-    }
-
-    // TODO: Remove after testing
-    @Override
-    public void showAllCheckPoints(List<LatLng> checkpoints) {
-//        for (final LatLng checkpoint : checkpoints) {
-//            map.addMarker(new MarkerOptions()
-//                    .position(checkpoint)
-//                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN)));
-//            map.addCircle(new CircleOptions().center(checkpoint).radius(3));
-//        }
     }
 }

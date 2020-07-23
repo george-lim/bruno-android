@@ -34,6 +34,7 @@ public class OnRouteViewModel implements LocationServiceSubscriber, SpotifyServi
     private Resources resources;
     private RouteModel model;
     private OnRouteViewModelDelegate delegate;
+    private boolean isCompleted;
 
     // MARK: - Lifecycle methods
 
@@ -43,6 +44,7 @@ public class OnRouteViewModel implements LocationServiceSubscriber, SpotifyServi
         this.resources = context.getResources();
         this.model = model;
         this.delegate = delegate;
+        this.isCompleted = false;
 
         MainActivity.getLocationService().addSubscriber(this);
         MainActivity.getLocationService().startLocationUpdates();
@@ -53,7 +55,6 @@ public class OnRouteViewModel implements LocationServiceSubscriber, SpotifyServi
     }
 
     public void onDestroy() {
-        MainActivity.getLocationService().stopLocationUpdates();
         MainActivity.getLocationService().removeSubscriber(this);
         MainActivity.getSpotifyService().removeSubscriber(this);
         MainActivity.getSensorService().removePedometerSubscriber(this);
@@ -82,7 +83,6 @@ public class OnRouteViewModel implements LocationServiceSubscriber, SpotifyServi
                 model.getCurrentLocation().getLongitude());
 
         delegate.animateCamera(currentLatLng, bearing, CAMERA_TILT, CAMERA_ZOOM);
-        delegate.showAllCheckPoints(model.getRouteCheckpoints());
     }
 
     private void connectToSpotify(final Context context) {
@@ -161,17 +161,19 @@ public class OnRouteViewModel implements LocationServiceSubscriber, SpotifyServi
             return;
         }
 
+        /*
+            TODO:
+            Set a tolerance radius depending on how fast the user is moving. The faster they are, the more
+            margin we should give them
+         */
+        final double toleranceRadius = 5; // ---> currLocation.getSpeed();
+
         final LatLng currentCheckpoint = model.getCurrentCheckpoint();
-        delegate.updateCheckpointMarker(currentCheckpoint);
+        delegate.updateCheckpointMarker(currentCheckpoint, toleranceRadius);
 
         final Location currLocation = model.getCurrentLocation();
         final LatLng currLatLng = new LatLng(currLocation.getLatitude(), currLocation.getLongitude());
 
-        /*
-            Set a tolerance radius depending on how fast the user is moving. The faster they are, the more
-            margin we should give them
-         */
-        final double toleranceRadius = 3; //currLocation.getSpeed();
         final double distanceFromCheckpoint = LatLngUtils.getLatLngDistanceInMetres(currLatLng, currentCheckpoint);
 
         if (distanceFromCheckpoint <= toleranceRadius) {
@@ -179,10 +181,11 @@ public class OnRouteViewModel implements LocationServiceSubscriber, SpotifyServi
 
             // End of route, no more checkpoints
             if (nextCheckpoint == null) {
+                isCompleted = true;
                 Log.i(getClass().getSimpleName(), "You finished the run!");
                 onRouteCompleted();
             } else {
-                delegate.updateCheckpointMarker(nextCheckpoint);
+                delegate.updateCheckpointMarker(nextCheckpoint, toleranceRadius);
             }
         }
     }
@@ -191,12 +194,13 @@ public class OnRouteViewModel implements LocationServiceSubscriber, SpotifyServi
         disconnectFromSpotify();
         delegate.showAlertDialog(
                 "Route Completed!",
-                "Hooray! You have compleleted your exercise. You can see how you did under in the Fitness Records tab.",
+                "Hooray! You have completed your exercise. You can see how you did in the Fitness Records tab.",
                 resources.getString(R.string.ok_button),
                 (dialogInterface, i) -> {
+                    model.resetCheckpointIndex(); // TODO: Better reset flow
                     delegate.navigateToPreviousScreen();
                 },
-                true
+                false
         );
     }
 
@@ -221,6 +225,7 @@ public class OnRouteViewModel implements LocationServiceSubscriber, SpotifyServi
 
     @Override
     public void onLocationUpdate(@NonNull Location location) {
+        if (isCompleted) return;
         LatLng latlng = new LatLng(location.getLatitude(), location.getLongitude());
         model.setCurrentLocation(location);
         delegate.animateCamera(latlng, location.getBearing(), CAMERA_TILT, CAMERA_ZOOM);

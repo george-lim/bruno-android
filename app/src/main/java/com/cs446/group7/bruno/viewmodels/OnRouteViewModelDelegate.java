@@ -11,7 +11,7 @@ public interface OnRouteViewModelDelegate {
     void setupUI(int userAvatarDrawableResourceId);
     void updateCurrentSongUI(final String name, final String album);
     void drawRoute(final List<RouteTrackMapping> routeTrackMappings, final int[] colours);
-    void updateCheckpointMarker(final LatLng location);
+    void updateCheckpointMarker(final LatLng location, final double radius);
     void animateCamera(final LatLng location, float bearing, int cameraTilt, int cameraZoom);
     void showProgressDialog(final String title,
                             final String message,
@@ -31,7 +31,4 @@ public interface OnRouteViewModelDelegate {
                          final DialogInterface.OnClickListener negativeButtonClickListener,
                          boolean isCancelable);
     void navigateToPreviousScreen();
-
-
-    void showAllCheckPoints(final List <LatLng> checkpoints);
 }

@@ -119,7 +119,8 @@ public class RouteModel extends ViewModel {
         steps = 0;
     }
 
-    private void resetCheckpointIndex() {
+    // TODO: Make it private later when the reset() logic is polished
+    public void resetCheckpointIndex() {
         currentCheckpointIndex = 0;
     }
 
