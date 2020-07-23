@@ -1,6 +1,5 @@
 package com.cs446.group7.bruno.ui.routeplanning;
 
-import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
