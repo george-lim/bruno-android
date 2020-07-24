@@ -16,6 +16,6 @@ public interface MusicPlayer {
     void setPlayerPlaylist(String playlistId);
     // Plays the playlist from the beginning
     void play(Callback<Void, Exception> callback);
-    // Pauses the current playlist
-    void pause(Callback<Void, Exception> callback);
+    // Stops the current playlist
+    void stop(Callback<Void, Exception> callback);
 }

@@ -132,7 +132,7 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
     }
 
     private void disconnectPlayer() {
-       musicPlayer.pause(new Callback<Void, Exception>() {
+       musicPlayer.stop(new Callback<Void, Exception>() {
             @Override
             public void onSuccess(Void result) {
                 musicPlayer.disconnect();

@@ -43,8 +43,8 @@ public class MockMusicPlayerImpl implements MusicPlayer {
         callback.onSuccess(null);
     }
 
-    public void pause(Callback<Void, Exception> callback) {
-        Log.i(TAG, "pause(): Paused playlist " + this.playlistId);
+    public void stop(Callback<Void, Exception> callback) {
+        Log.i(TAG, "stop(): Stopped playlist " + this.playlistId);
         callback.onSuccess(null);
     }
 }

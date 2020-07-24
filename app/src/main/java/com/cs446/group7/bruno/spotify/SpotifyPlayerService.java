@@ -80,7 +80,7 @@ class SpotifyPlayerService implements MusicPlayer {
 
             // Success! Maintain control of the main interface AppRemote
             // and listen for updates to the player. Let the caller know that the
-            // Spotify player is online - can play/pause music, etc
+            // Spotify player is online - can play/stop music, etc
             @Override
             public void onConnected(SpotifyAppRemote spotifyAppRemote) {
                 mSpotifyAppRemote = spotifyAppRemote;
@@ -203,14 +203,14 @@ class SpotifyPlayerService implements MusicPlayer {
     // Sets the playlist for the music player
     public void setPlayerPlaylist(String playlistId) { this.playlistId = playlistId; }
 
-    // Pause the player
-    public void pause(Callback<Void, Exception> callback) {
+    // Stop the player by pausing it
+    public void stop(Callback<Void, Exception> callback) {
         mSpotifyAppRemote.getPlayerApi()
                 .pause().setResultCallback(empty -> {
                     callback.onSuccess(null);
                 })
                 .setErrorCallback(throwable -> {
-                    Log.e(TAG, "pause failed: " + throwable.toString());
+                    Log.e(TAG, "stop failed: " + throwable.toString());
                     callback.onFailed(new Exception(throwable));
                 });
     }
