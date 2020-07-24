@@ -1,7 +1,9 @@
 package com.cs446.group7.bruno.spotify;
 
+import com.cs446.group7.bruno.music.player.MusicPlayerError;
+
 // See https://github.com/spotify/android-sdk/blob/master/app-remote-lib/ERRORS.md for a description of these errors
-public enum SpotifyServiceError {
+public enum SpotifyPlayerError implements MusicPlayerError {
     AUTHENTICATION_FAILED,
     AUTHORIZATION_FAILED,
     APP_NOT_FOUND,

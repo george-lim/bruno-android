@@ -7,18 +7,21 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.cs446.group7.bruno.BuildConfig;
 import com.cs446.group7.bruno.MainActivity;
 import com.cs446.group7.bruno.R;
 import com.cs446.group7.bruno.location.LocationServiceSubscriber;
 import com.cs446.group7.bruno.models.RouteModel;
 import com.cs446.group7.bruno.music.BrunoTrack;
+import com.cs446.group7.bruno.music.player.MockMusicPlayerImpl;
+import com.cs446.group7.bruno.music.player.MusicPlayer;
+import com.cs446.group7.bruno.music.player.MusicPlayerError;
 import com.cs446.group7.bruno.sensor.PedometerSubscriber;
-import com.cs446.group7.bruno.spotify.SpotifyServiceError;
-import com.cs446.group7.bruno.spotify.SpotifyServiceSubscriber;
+import com.cs446.group7.bruno.music.player.MusicPlayerSubscriber;
 import com.cs446.group7.bruno.utils.Callback;
 import com.google.android.gms.maps.model.LatLng;
 
-public class OnRouteViewModel implements LocationServiceSubscriber, SpotifyServiceSubscriber, PedometerSubscriber {
+public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerSubscriber, PedometerSubscriber {
 
     // MARK: - Constants
 
@@ -31,6 +34,8 @@ public class OnRouteViewModel implements LocationServiceSubscriber, SpotifyServi
     private RouteModel model;
     private OnRouteViewModelDelegate delegate;
 
+    private MusicPlayer musicPlayer;
+
     // MARK: - Lifecycle methods
 
     public OnRouteViewModel(final Context context,
@@ -40,22 +45,31 @@ public class OnRouteViewModel implements LocationServiceSubscriber, SpotifyServi
         this.model = model;
         this.delegate = delegate;
 
+        musicPlayer = getMusicPlayer();
+
         MainActivity.getLocationService().addSubscriber(this);
         MainActivity.getLocationService().startLocationUpdates();
         MainActivity.getSensorService().addPedometerSubscriber(this);
+        musicPlayer.addSubscriber(this);
 
         setupUI();
-        connectToSpotify(context);
+        connectToPlayer(context);
     }
 
     public void onDestroy() {
         MainActivity.getLocationService().stopLocationUpdates();
         MainActivity.getLocationService().removeSubscriber(this);
-        MainActivity.getSpotifyService().removeSubscriber(this);
         MainActivity.getSensorService().removePedometerSubscriber(this);
+        musicPlayer.removeSubscriber(this);
     }
 
     // MARK: - Private methods
+
+    private MusicPlayer getMusicPlayer() {
+        return BuildConfig.DEBUG
+                ? new MockMusicPlayerImpl()
+                : MainActivity.getSpotifyService().getPlayerService();
+    }
 
     private void setupUI() {
         int userAvatarDrawableResourceId = R.drawable.ic_avatar_1;
@@ -73,9 +87,9 @@ public class OnRouteViewModel implements LocationServiceSubscriber, SpotifyServi
         delegate.animateCamera(model.getCurrentLocation(), CAMERA_TILT, CAMERA_ZOOM);
     }
 
-    private void connectToSpotify(final Context context) {
-        if (MainActivity.getSpotifyService().isConnected()) {
-            playSpotifyPlaylist();
+    private void connectToPlayer(final Context context) {
+        if (musicPlayer.isConnected()) {
+            playPlaylist();
             return;
         }
 
@@ -86,20 +100,20 @@ public class OnRouteViewModel implements LocationServiceSubscriber, SpotifyServi
                 false
         );
 
-        MainActivity.getSpotifyService().connect(context, new Callback<Void, SpotifyServiceError>() {
+        musicPlayer.connect(context, new Callback<Void, MusicPlayerError>() {
             @Override
             public void onSuccess(Void result) {
                 delegate.dismissProgressDialog();
-                playSpotifyPlaylist();
+                playPlaylist();
             }
 
             @Override
-            public void onFailed(SpotifyServiceError result) {
+            public void onFailed(MusicPlayerError result) {
                 delegate.dismissProgressDialog();
                 Log.e(getClass().getSimpleName(), "onFailed connect: " + result.getErrorMessage());
 
                 delegate.showAlertDialog(
-                        resources.getString(R.string.spotify_error),
+                        resources.getString(R.string.player_error),
                         result.getErrorMessage(),
                         resources.getString(R.string.ok_button),
                         (dialogInterface, i) -> delegate.navigateToPreviousScreen(),
@@ -109,13 +123,11 @@ public class OnRouteViewModel implements LocationServiceSubscriber, SpotifyServi
         });
     }
 
-    private void playSpotifyPlaylist() {
-        MainActivity.getSpotifyService().setPlayerPlaylist(RouteModel.DEFAULT_PLAYLIST_ID);
-        MainActivity.getSpotifyService().play(new Callback<Void, Exception>() {
+    private void playPlaylist() {
+        musicPlayer.setPlayerPlaylist(RouteModel.DEFAULT_PLAYLIST_ID);
+        musicPlayer.play(new Callback<Void, Exception>() {
             @Override
-            public void onSuccess(Void result) {
-                MainActivity.getSpotifyService().addSubscriber(OnRouteViewModel.this);
-            }
+            public void onSuccess(Void result) { }
 
             @Override
             public void onFailed(Exception result) {
@@ -124,20 +136,20 @@ public class OnRouteViewModel implements LocationServiceSubscriber, SpotifyServi
         });
     }
 
-    private void disconnectFromSpotify() {
-        if (!MainActivity.getSpotifyService().isConnected()) {
+    private void disconnectPlayer() {
+        if (!musicPlayer.isConnected()) {
             return;
         }
 
-        MainActivity.getSpotifyService().pause(new Callback<Void, Exception>() {
+       musicPlayer.pause(new Callback<Void, Exception>() {
             @Override
             public void onSuccess(Void result) {
-                MainActivity.getSpotifyService().disconnect();
+                musicPlayer.disconnect();
             }
 
             @Override
             public void onFailed(Exception result) {
-                MainActivity.getSpotifyService().disconnect();
+                musicPlayer.disconnect();
             }
         });
     }
@@ -150,7 +162,7 @@ public class OnRouteViewModel implements LocationServiceSubscriber, SpotifyServi
                 resources.getString(R.string.run_exit_message),
                 resources.getString(R.string.yes_button),
                 (dialogInterface, i) -> {
-                    disconnectFromSpotify();
+                    disconnectPlayer();
                     delegate.navigateToPreviousScreen();
                 },
                 resources.getString(R.string.no_button),
@@ -168,7 +180,7 @@ public class OnRouteViewModel implements LocationServiceSubscriber, SpotifyServi
         delegate.animateCamera(latlng, CAMERA_TILT, CAMERA_ZOOM);
     }
 
-    // MARK: - SpotifyServiceSubscriber methods
+    // MARK: - MusicPlayerSubscriber methods
 
     @Override
     public void onTrackChanged(BrunoTrack track) {

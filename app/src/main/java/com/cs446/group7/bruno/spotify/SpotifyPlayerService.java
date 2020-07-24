@@ -6,6 +6,8 @@ import android.util.Log;
 import com.cs446.group7.bruno.R;
 import com.cs446.group7.bruno.music.BrunoTrack;
 import com.cs446.group7.bruno.music.player.MusicPlayer;
+import com.cs446.group7.bruno.music.player.MusicPlayerError;
+import com.cs446.group7.bruno.music.player.MusicPlayerSubscriber;
 import com.cs446.group7.bruno.utils.Callback;
 import com.spotify.android.appremote.api.ConnectionParams;
 import com.spotify.android.appremote.api.Connector;
@@ -36,7 +38,7 @@ class SpotifyPlayerService implements MusicPlayer {
 
     // Main interface to the Spotify app, initialized by connect()
     private SpotifyAppRemote mSpotifyAppRemote;
-    private List<SpotifyServiceSubscriber> spotifyServiceSubscribers;
+    private List<MusicPlayerSubscriber> spotifyServiceSubscribers;
     private final String TAG = getClass().getSimpleName();
 
     private PlayerState currentPlayerState;
@@ -47,15 +49,16 @@ class SpotifyPlayerService implements MusicPlayer {
     }
 
     /**
-     * Attempts to connect to Spotify via the user's Spotify app. If any error occurs, a {@link SpotifyServiceError} is
+     * Attempts to connect to Spotify via the user's Spotify app. If any error occurs, a {@link SpotifyPlayerError} is
      * generated in the callback.
      * @param callback callback for handling the result of the connection
      */
-    public void connect(final Context context, final Callback<Void, SpotifyServiceError> callback) {
+    public void connect(final Context context,
+                        final Callback<Void, MusicPlayerError> callback) {
 
         // Spotify is not installed on the device
         if (!SpotifyAppRemote.isSpotifyInstalled(context)) {
-            callback.onFailed(SpotifyServiceError.APP_NOT_FOUND);
+            callback.onFailed(SpotifyPlayerError.APP_NOT_FOUND);
             return;
         }
 
@@ -82,8 +85,8 @@ class SpotifyPlayerService implements MusicPlayer {
             @Override
             public void onFailure(Throwable throwable) {
                 Log.e(TAG, ".connect onFailure method: " + throwable.toString());
-                SpotifyServiceError spotifyServiceError = getErrorFromThrowable(throwable);
-                callback.onFailed(spotifyServiceError);
+                SpotifyPlayerError spotifyPlayerError = getErrorFromThrowable(throwable);
+                callback.onFailed(spotifyPlayerError);
             }
         });
     }
@@ -93,28 +96,29 @@ class SpotifyPlayerService implements MusicPlayer {
         return mSpotifyAppRemote != null && mSpotifyAppRemote.isConnected();
     }
 
-    public void addSubscriber(final SpotifyServiceSubscriber subscriber) {
+    // New subscribers are added after successfully connecting
+    public void addSubscriber(final MusicPlayerSubscriber subscriber) {
         if (spotifyServiceSubscribers.contains(subscriber)) return;
         spotifyServiceSubscribers.add(subscriber);
     }
 
-    public void removeSubscriber(final SpotifyServiceSubscriber subscriber) {
+    public void removeSubscriber(final MusicPlayerSubscriber subscriber) {
         spotifyServiceSubscribers.remove(subscriber);
     }
 
-    // Converts Spotify-specific exceptions to a SpotifyServiceError
-    private static SpotifyServiceError getErrorFromThrowable (final Throwable throwable) {
-        if (throwable instanceof AuthenticationFailedException) { return SpotifyServiceError.AUTHENTICATION_FAILED; }
-        if (throwable instanceof UserNotAuthorizedException) { return SpotifyServiceError.AUTHORIZATION_FAILED; }
-        if (throwable instanceof CouldNotFindSpotifyApp) { return SpotifyServiceError.APP_NOT_FOUND; }
-        if (throwable instanceof LoggedOutException) { return SpotifyServiceError.LOGGED_OUT; }
-        if (throwable instanceof NotLoggedInException) { return SpotifyServiceError.NOT_LOGGED_IN; }
-        if (throwable instanceof OfflineModeException) { return SpotifyServiceError.OFFLINE_MODE; }
-        if (throwable instanceof SpotifyConnectionTerminatedException) { return SpotifyServiceError.CONNECTION_TERMINATED; }
-        if (throwable instanceof SpotifyDisconnectedException) { return SpotifyServiceError.DISCONNECTED; }
-        if (throwable instanceof SpotifyRemoteServiceException) { return SpotifyServiceError.REMOTE_SERVICE_ERROR; }
-        if (throwable instanceof UnsupportedFeatureVersionException) { return SpotifyServiceError.UNSUPPORTED_FEATURE_VERSION; }
-        return SpotifyServiceError.OTHER_ERROR;
+    // Converts Spotify-specific exceptions to a SpotifyPlayerError
+    private static SpotifyPlayerError getErrorFromThrowable (final Throwable throwable) {
+        if (throwable instanceof AuthenticationFailedException) { return SpotifyPlayerError.AUTHENTICATION_FAILED; }
+        if (throwable instanceof UserNotAuthorizedException) { return SpotifyPlayerError.AUTHORIZATION_FAILED; }
+        if (throwable instanceof CouldNotFindSpotifyApp) { return SpotifyPlayerError.APP_NOT_FOUND; }
+        if (throwable instanceof LoggedOutException) { return SpotifyPlayerError.LOGGED_OUT; }
+        if (throwable instanceof NotLoggedInException) { return SpotifyPlayerError.NOT_LOGGED_IN; }
+        if (throwable instanceof OfflineModeException) { return SpotifyPlayerError.OFFLINE_MODE; }
+        if (throwable instanceof SpotifyConnectionTerminatedException) { return SpotifyPlayerError.CONNECTION_TERMINATED; }
+        if (throwable instanceof SpotifyDisconnectedException) { return SpotifyPlayerError.DISCONNECTED; }
+        if (throwable instanceof SpotifyRemoteServiceException) { return SpotifyPlayerError.REMOTE_SERVICE_ERROR; }
+        if (throwable instanceof UnsupportedFeatureVersionException) { return SpotifyPlayerError.UNSUPPORTED_FEATURE_VERSION; }
+        return SpotifyPlayerError.OTHER_ERROR;
     }
 
     // Listen for updates from the Spotify player
@@ -135,7 +139,7 @@ class SpotifyPlayerService implements MusicPlayer {
                             Log.w(TAG, "Same track!");
                         }
 
-                        for (SpotifyServiceSubscriber subscriber : spotifyServiceSubscribers) {
+                        for (MusicPlayerSubscriber subscriber : spotifyServiceSubscribers) {
                             subscriber.onTrackChanged(makeBrunoTrack(track));
                         }
 
