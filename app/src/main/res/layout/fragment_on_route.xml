@@ -17,23 +17,24 @@ android:layout_height="match_parent">
         android:layout_width="match_parent"
         android:layout_height="80dp"
         android:layout_gravity="top"
+        android:layout_margin="7dp"
         android:clickable="true"
         android:focusable="true"
-        android:layout_margin="7dp"
+        android:visibility="invisible"
         card_view:cardCornerRadius="20dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical" >
+            android:orientation="vertical">
 
             <TextView
                 android:id="@+id/text_view_song_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="24dp"
-                android:layout_marginRight="24dp"
                 android:layout_marginTop="8dp"
+                android:layout_marginRight="24dp"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
@@ -42,8 +43,8 @@ android:layout_height="match_parent">
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="24dp"
-                android:layout_marginRight="24dp"
                 android:layout_marginTop="10dp"
+                android:layout_marginRight="24dp"
                 android:textSize="16sp" />
         </LinearLayout>
     </androidx.cardview.widget.CardView>

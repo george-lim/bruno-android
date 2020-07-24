@@ -1,5 +1,6 @@
 package com.cs446.group7.bruno.ui.routeplanning;
 
+import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
@@ -59,6 +60,7 @@ public class RoutePlanningFragment extends Fragment implements RoutePlanningView
     private BitmapDescriptor userMarkerIcon;
 
     private boolean hasDrawnRouteOnce = false;
+    private int colorDisable = 0;
 
     // MARK: - Lifecycle methods
 
@@ -86,7 +88,6 @@ public class RoutePlanningFragment extends Fragment implements RoutePlanningView
 
         mapFragment.getMapAsync(googleMap -> {
             map = googleMap;
-            map.getUiSettings().setRotateGesturesEnabled(false);
 
             RouteModel model = new ViewModelProvider(requireActivity()).get(RouteModel.class);
             viewModel = new RoutePlanningViewModel(getActivity().getApplicationContext(), model, this);
@@ -113,10 +114,8 @@ public class RoutePlanningFragment extends Fragment implements RoutePlanningView
         viewModel.handleRunningModeClick();
     }
 
-    private void handleDurationSelected(final NumberPicker numberPicker, int scrollState) {
-        if (scrollState == NumberPicker.OnScrollListener.SCROLL_STATE_IDLE) {
-            viewModel.handleDurationSelected(numberPicker.getValue());
-        }
+    private void handleDurationSelected(int durationIndex) {
+        viewModel.handleDurationSelected(durationIndex);
     }
 
     // MARK: - RoutePlanningViewModelDelegate methods
@@ -136,10 +135,19 @@ public class RoutePlanningFragment extends Fragment implements RoutePlanningView
         startBtn.setOnClickListener(this::handleStartWalkingClick);
         walkingModeBtn.setOnClickListener(this::handleWalkingModeClick);
         runningModeBtn.setOnClickListener(this::handleRunningModeClick);
-        durationPicker.setOnScrollListener(this::handleDurationSelected);
+        durationPicker.setOnScrollListener((numberPicker, scrollState) -> {
+            if (scrollState == NumberPicker.OnScrollListener.SCROLL_STATE_IDLE) {
+                handleDurationSelected(numberPicker.getValue());
+            }
+        });
 
+        colorDisable = getResources().getColor(R.color.colorDisable, null);
+
+        updateStartBtnEnabled(true);
         updateStartBtnText(startBtnText);
         updateSelectedModeBtn(isWalkingModeBtnSelected);
+
+        map.getUiSettings().setRotateGesturesEnabled(false);
 
         durationPicker.setDisplayedValues(durationPickerDisplayedValues);
         durationPicker.setMinValue(durationPickerMinValue);
@@ -147,6 +155,17 @@ public class RoutePlanningFragment extends Fragment implements RoutePlanningView
         durationPicker.setValue(durationPickerValue);
 
         userMarkerIcon = getUserMarkerIcon(userAvatarDrawableResourceId);
+    }
+
+    public void updateStartBtnEnabled(boolean isEnabled) {
+        startBtn.setEnabled(isEnabled);
+
+        if (isEnabled) {
+            startBtn.getBackground().setColorFilter(null);
+        }
+        else {
+            startBtn.getBackground().setColorFilter(colorDisable, PorterDuff.Mode.SRC_IN);
+        }
     }
 
     public void updateStartBtnText(final String text) {
@@ -226,7 +245,7 @@ public class RoutePlanningFragment extends Fragment implements RoutePlanningView
         }
     }
 
-    public void showRouteGenerationError(final String errorMessage) {
+    public void showRouteProcessingError(final String errorMessage) {
         Toast.makeText(getContext(), errorMessage, Toast.LENGTH_LONG).show();
     }
 

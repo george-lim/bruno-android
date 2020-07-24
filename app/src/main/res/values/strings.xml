@@ -28,12 +28,13 @@
     <string name="route_planning_walking_mode">Walking</string>
     <string name="route_planning_running_mode">Running</string>
     <string name="route_planning_start">Start</string>
-    <string name="route_planning_generate_route">Generate Route</string>
+    <string name="route_planning_create_route">Create Route</string>
     <string name="route_planning_duration">Duration (Minutes)</string>
-
+    <string name="route_planning_playlist_error">Error generating playlist, please try again!</string>
     <!-- TODO: Should the greeting be dynamic? E.g. good morning, afternoon, etc. -->
     <string name="route_planning_greeting">Good day,</string>
-    <string name="run_preparation_title">Hold on tight</string>
+    <string name="run_preparation_title">Hold on
+        tight</string>
     <string name="run_preparation_message">Bruno is preparing your route and music</string>
     <string name="spotify_error">Spotify Error</string>
     <string name="run_exit_title">Are you sure?</string>

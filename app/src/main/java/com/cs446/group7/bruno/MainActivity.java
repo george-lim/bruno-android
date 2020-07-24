@@ -14,6 +14,8 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.Volley;
 import com.cs446.group7.bruno.capability.CapabilityService;
 import com.cs446.group7.bruno.capability.hardware.HardwareRequest;
 import com.cs446.group7.bruno.capability.hardware.HardwareRequestDelegate;
@@ -39,6 +41,8 @@ public class MainActivity extends AppCompatActivity implements PermissionRequest
     private static SensorService sensorService;
     private static PreferencesStorage preferencesStorage;
 
+    private static RequestQueue volleyRequestQueue;
+
     // MARK: - PermissionRequestDelegate members
 
     // Counter for permission request codes
@@ -60,6 +64,7 @@ public class MainActivity extends AppCompatActivity implements PermissionRequest
         spotifyService = new SpotifyService(getApplicationContext());
         sensorService = new SensorService(getApplicationContext());
         preferencesStorage = new PreferencesStorage(getApplicationContext());
+        volleyRequestQueue = Volley.newRequestQueue(getApplicationContext());
     }
 
     /**
@@ -106,6 +111,10 @@ public class MainActivity extends AppCompatActivity implements PermissionRequest
     }
 
     public static PreferencesStorage getPreferencesStorage() { return preferencesStorage; }
+
+    public static RequestQueue getVolleyRequestQueue() {
+        return volleyRequestQueue;
+    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {

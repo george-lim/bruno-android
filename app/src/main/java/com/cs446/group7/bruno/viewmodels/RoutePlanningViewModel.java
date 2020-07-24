@@ -28,6 +28,7 @@ import com.cs446.group7.bruno.routing.RouteTrackMapping;
 import com.cs446.group7.bruno.settings.SettingsService;
 import com.cs446.group7.bruno.spotify.SpotifyService;
 import com.cs446.group7.bruno.utils.Callback;
+import com.cs446.group7.bruno.utils.NoFailCallback;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
@@ -63,14 +64,16 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
 
         routeGenerator = getRouteGenerator(context);
         playlistGenerator = getPlaylistGenerator(context);
-        if (model.getPlaylist() == null) {
-            requestNewPlaylist();
-        }
 
         MainActivity.getLocationService().addSubscriber(this);
 
         setupUI();
-        startLocationUpdates();
+
+        startLocationUpdates(result -> {
+            if (!hasColourizedRoute()) {
+                processColourizedRoute();
+            }
+        });
     }
 
     public void onDestroy() {
@@ -93,14 +96,18 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
                 : new SpotifyService(context);
     }
 
+    private boolean hasColourizedRoute() {
+        return model.getRoute() != null && model.getPlaylist() != null;
+    }
+
     private void setupUI() {
         boolean isEveryCapabilityEnabled = MainActivity
                 .getCapabilityService()
                 .isEveryCapabilityEnabled(REQUIRED_CAPABILITIES);
 
-        String startBtnText = model.getRoute() != null || isEveryCapabilityEnabled
+        String startBtnText = hasColourizedRoute() || isEveryCapabilityEnabled
                 ? resources.getString(R.string.route_planning_start)
-                : resources.getString(R.string.route_planning_generate_route);
+                : resources.getString(R.string.route_planning_create_route);
 
         String[] durationPickerDisplayedValues = new String[RouteModel.DURATIONS_IN_MINUTES.length];
 
@@ -121,10 +128,8 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
                 userAvatarDrawableResourceId
         );
 
-        Route route = model.getRoute();
-
-        if (route != null) {
-            onRouteReady(route);
+        if (hasColourizedRoute()) {
+            onProcessColourizedRouteSuccess();
         }
 
         LatLng currentLocation = model.getCurrentLocation();
@@ -134,7 +139,7 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
         }
     }
 
-    private void startLocationUpdates() {
+    private void startLocationUpdates(NoFailCallback<Void> callback) {
         if (hasStartedLocationUpdates) {
             return;
         }
@@ -150,9 +155,34 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
         MainActivity.getLocationService().startLocationUpdates(location -> {
             hasStartedLocationUpdates = true;
             onLocationUpdate(location);
+            callback.onSuccess(null);
+        });
+    }
 
-            if (model.getRoute() == null) {
-                generateRoute();
+    private void generatePlaylist() {
+        if (model.getPlaylist() != null) {
+            if (hasColourizedRoute()) {
+                onProcessColourizedRouteSuccess();
+            }
+
+            return;
+        }
+
+        playlistGenerator.getPlaylist(RouteModel.DEFAULT_PLAYLIST_ID, new Callback<BrunoPlaylist, Exception>() {
+            @Override
+            public void onSuccess(BrunoPlaylist playlist) {
+                model.setPlaylist(playlist);
+
+                if (hasColourizedRoute()) {
+                    onProcessColourizedRouteSuccess();
+                }
+            }
+
+            @Override
+            public void onFailed(Exception e) {
+                onProcessColourizedRouteFailure();
+                delegate.showRouteProcessingError(resources.getString(R.string.route_planning_playlist_error));
+                Log.e(getClass().getSimpleName(), e.getLocalizedMessage());
             }
         });
     }
@@ -176,6 +206,48 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
         );
     }
 
+    private List<RouteTrackMapping> mapRouteToTracks(final Route route, final BrunoPlaylist playlist) {
+        List<RouteTrackMapping> routeTrackMappings;
+
+        try {
+            routeTrackMappings = RouteProcessor.execute(route.getRouteSegments(), playlist);
+        } catch (RouteProcessor.TrackIndexOutOfBoundsException e) {
+            // should never reach here because we assume the playlist will always be long enough
+            routeTrackMappings = new ArrayList<>();
+        }
+
+        return routeTrackMappings;
+    }
+
+    private void processColourizedRoute() {
+        model.setRoute(null);
+        delegate.updateStartBtnEnabled(false);
+
+        generatePlaylist();
+        generateRoute();
+    }
+
+    private void onProcessColourizedRouteSuccess() {
+        final List<RouteTrackMapping> routeTrackMappings = mapRouteToTracks(model.getRoute(), model.getPlaylist());
+        model.setRouteTrackMappings(routeTrackMappings);
+
+        delegate.updateStartBtnText(resources.getString(R.string.route_planning_start));
+        delegate.clearMap();
+        delegate.drawRoute(routeTrackMappings, resources.getIntArray(R.array.colorRouteList));
+        delegate.moveUserMarker(model.getCurrentLocation());
+        delegate.updateStartBtnEnabled(true);
+    }
+
+    private void onProcessColourizedRouteFailure() {
+        model.setRoute(null);
+        model.setRouteTrackMappings(null);
+
+        delegate.updateStartBtnText(resources.getString(R.string.route_planning_create_route));
+        delegate.clearMap();
+        delegate.moveUserMarker(model.getCurrentLocation());
+        delegate.updateStartBtnEnabled(true);
+    }
+
     // MARK: - User action handlers
 
     public void handleStartWalkingClick() {
@@ -185,14 +257,18 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
         MainActivity.getCapabilityService().request(REQUIRED_CAPABILITIES, new Callback<Void, Void>() {
             @Override
             public void onSuccess(Void result) {
-                if (model.getRoute() != null) {
+                if (hasColourizedRoute()) {
                     delegate.navigateToNextScreen();
                 }
                 else if (!hasStartedLocationUpdates) {
-                    startLocationUpdates();
+                    startLocationUpdates(nextResult -> {
+                        if (!hasColourizedRoute()) {
+                            processColourizedRoute();
+                        }
+                    });
                 }
                 else {
-                    generateRoute();
+                    processColourizedRoute();
                 }
 
                 isRequestingCapabilities = false;
@@ -213,7 +289,7 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
         model.setMode(RouteModel.Mode.WALK);
         delegate.updateSelectedModeBtn(model.getMode() == RouteModel.Mode.WALK);
 
-        generateRoute();
+        processColourizedRoute();
     }
 
     public void handleRunningModeClick() {
@@ -224,7 +300,7 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
         model.setMode(RouteModel.Mode.RUN);
         delegate.updateSelectedModeBtn(model.getMode() == RouteModel.Mode.WALK);
 
-        generateRoute();
+        processColourizedRoute();
     }
 
     public void handleDurationSelected(int durationIndex) {
@@ -234,7 +310,7 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
 
         model.setDurationIndex(durationIndex);
 
-        generateRoute();
+        processColourizedRoute();
     }
 
     // MARK: - LocationServiceSubscriber methods
@@ -250,58 +326,20 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
 
     @Override
     public void onRouteReady(final Route route) {
-        if (model.getPlaylist() != null) {
-            final List<RouteTrackMapping> routeTrackMappings = mapRouteToTracks(route, model.getPlaylist());
-            model.setRouteTrackMappings(routeTrackMappings);
-            model.setRoute(route);
+        model.setRoute(route);
 
-            delegate.updateStartBtnText(resources.getString(R.string.route_planning_start));
-            delegate.clearMap();
-            delegate.drawRoute(routeTrackMappings, resources.getIntArray(R.array.colorRouteList));
-            delegate.moveUserMarker(model.getCurrentLocation());
+        if (hasColourizedRoute()) {
+            onProcessColourizedRouteSuccess();
         }
     }
 
     @Override
     public void onRouteError(final RouteGeneratorError error,
                              final Exception underlyingException) {
-        model.setRoute(null);
-        model.setRouteTrackMappings(null);
-        delegate.updateStartBtnText(resources.getString(R.string.route_planning_generate_route));
-        delegate.clearMap();
-        delegate.showRouteGenerationError(error.getDescription());
-        delegate.moveUserMarker(model.getCurrentLocation());
-        Log.e(getClass().getSimpleName(), underlyingException.getLocalizedMessage());
-    }
+        onProcessColourizedRouteFailure();
+        delegate.showRouteProcessingError(error.getDescription());
 
-    private void requestNewPlaylist() {
-        playlistGenerator.getPlaylist(RouteModel.DEFAULT_PLAYLIST_ID, new Callback<BrunoPlaylist, Exception>() {
-            @Override
-            public void onSuccess(BrunoPlaylist playlist) {
-                model.setPlaylist(playlist);
-                // if there is a route already, call onRouteReady because we were waiting on the playlist
-                if (model.getRoute() != null) {
-                    onRouteReady(model.getRoute());
-                }
-            }
-
-            @Override
-            public void onFailed(Exception e) {
-                // assuming that PlaylistGenerator has already attempted retry
-                Log.e(getClass().getSimpleName(), e.getLocalizedMessage());
-            }
-        });
-    }
-
-    private static List<RouteTrackMapping> mapRouteToTracks(final Route route, final BrunoPlaylist playlist) {
-        List<RouteTrackMapping> routeTrackMappings;
-        try {
-            routeTrackMappings = RouteProcessor.execute(route.getRouteSegments(), playlist);
-        } catch (RouteProcessor.TrackIndexOutOfBoundsException e) {
-            // should never reach here because we assume the playlist will always be long enough
-            routeTrackMappings = new ArrayList<>();
-        }
-
-        return routeTrackMappings;
+        final String errorMsg = underlyingException.getLocalizedMessage();
+        Log.e(getClass().getSimpleName(), errorMsg == null ? "Unknown error" : errorMsg);
     }
 }
