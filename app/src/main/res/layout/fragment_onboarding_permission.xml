@@ -56,7 +56,7 @@
     <Button
         android:id="@+id/btn_allow_access"
         style="@style/OnboardingPrimaryActionButton"
-        android:text="@string/allow_access"
+        android:text="@string/allow_access_button"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent" />

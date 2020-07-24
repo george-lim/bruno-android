@@ -18,7 +18,7 @@
     <Button
         android:id="@+id/btn_get_started"
         style="@style/OnboardingPrimaryActionButton"
-        android:text="@string/get_started"
+        android:text="@string/get_started_button"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent" />

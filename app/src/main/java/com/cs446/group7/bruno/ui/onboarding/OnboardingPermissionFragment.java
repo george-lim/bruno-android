@@ -15,16 +15,21 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.cs446.group7.bruno.MainActivity;
 import com.cs446.group7.bruno.R;
+import com.cs446.group7.bruno.capability.Capability;
+import com.cs446.group7.bruno.capability.CapabilityService;
 
 public class OnboardingPermissionFragment extends Fragment {
 
     private OnboardingFragment onboardingFragment;
+    private CapabilityService capability;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         onboardingFragment = (OnboardingFragment) this.getParentFragment();
+        capability = MainActivity.getCapabilityService();
     }
 
     @Override
@@ -40,18 +45,34 @@ public class OnboardingPermissionFragment extends Fragment {
     }
 
     private void setupRequestStatus(final View view) {
-        setupRequestUI(view.findViewById(R.id.location_permission_status), true, "Location Permission", "blah");
-        setupRequestUI(view.findViewById(R.id.location_hardware_status), false, "Location Service", "blah");
-        setupRequestUI(view.findViewById(R.id.active_internet_status), false, "Active Internet", "blah");
-        setupRequestUI(view.findViewById(R.id.spotify_status), true, "Spotify", "blah");
+        setupPermissionRequestStatus(
+                view.findViewById(R.id.location_permission_status),
+                capability.isPermissionEnabled(Capability.LOCATION),
+                getResources().getString(R.string.onboarding_request_location_permission_title),
+                getResources().getString(R.string.onboarding_request_location_permission_hint));
+        setupPermissionRequestStatus(
+                view.findViewById(R.id.location_hardware_status),
+                capability.isHardwareCapabilityEnabled(Capability.LOCATION),
+                getResources().getString(R.string.onboarding_request_location_service_title),
+                getResources().getString(R.string.onboarding_request_location_service_hint));
+        setupPermissionRequestStatus(
+                view.findViewById(R.id.active_internet_status),
+                capability.isCapabilityEnabled(Capability.INTERNET),
+                getResources().getString(R.string.onboarding_request_active_internet_title),
+                getResources().getString(R.string.onboarding_request_active_internet_hint));
+        setupPermissionRequestStatus(
+                view.findViewById(R.id.spotify_status),
+                true,
+                getResources().getString(R.string.onboarding_request_spotify_title),
+                getResources().getString(R.string.onboarding_request_spotify_hint));
     }
 
-    private void setupRequestUI(final View view, final boolean hasTrue, final String title, final String hint) {
+    private void setupPermissionRequestStatus(final View view, final boolean enabled, final String title, final String hint) {
         ImageView statusIcon = view.findViewById(R.id.request_status_icon);
-        Drawable icon = hasTrue
+        Drawable icon = enabled
                 ? getResources().getDrawable(R.drawable.ic_check_circle, null)
                 : getResources().getDrawable(R.drawable.ic_times_circle, null);
-        icon.setColorFilter(hasTrue
+        icon.setColorFilter(enabled
             ? getResources().getColor(R.color.colorGood, null)
             : getResources().getColor(R.color.colorError, null), PorterDuff.Mode.SRC_IN);
         statusIcon.setImageDrawable(icon);
@@ -74,7 +95,7 @@ public class OnboardingPermissionFragment extends Fragment {
     }
 
     private void handleAllowAccess(final View view) {
-        onboardingFragment.moveToNextTab();
+        setupRequestStatus(getView());
     }
 
     private void showAlertDialog(final String title,

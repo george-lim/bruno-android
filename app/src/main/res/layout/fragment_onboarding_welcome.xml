@@ -19,7 +19,7 @@
     <Button
         android:id="@+id/btn_tab0_next"
         style="@style/OnboardingPrimaryActionButton"
-        android:text="@string/next"
+        android:text="@string/next_button"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"/>

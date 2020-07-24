@@ -9,10 +9,18 @@
     <string name="no_button">NO</string>
 
     <!--  Onboarding  -->
-    <string name="get_started">Get Started</string>
-    <string name="next">Next</string>
-    <string name="allow_access">Allow Access</string>
-    <string name="pick_your_avatar">Pick your avatar</string>
+    <string name="get_started_button">Get Started</string>
+    <string name="next_button">Next</string>
+    <string name="allow_access_button">Allow Access</string>
+    <string name="onboarding_pick_your_avatar">Pick your avatar</string>
+    <string name="onboarding_request_location_permission_title">Location Permission</string>
+    <string name="onboarding_request_location_permission_hint">Bruno needs location to generate a route.</string>
+    <string name="onboarding_request_location_service_title">Location Service</string>
+    <string name="onboarding_request_location_service_hint">Bruno uses location to track your progress during an excerise.</string>
+    <string name="onboarding_request_active_internet_title">Active Internet</string>
+    <string name="onboarding_request_active_internet_hint">This is how you can discover new music.</string>
+    <string name="onboarding_request_spotify_title">Spotify</string>
+    <string name="onboarding_request_spotify_hint">Brunos requires Spotify Premium.</string>
 
     <!--  Settings  -->
     <string name="about_bruno_title">About Bruno</string>
