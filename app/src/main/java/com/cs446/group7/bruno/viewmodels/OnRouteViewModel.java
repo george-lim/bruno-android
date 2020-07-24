@@ -88,11 +88,6 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
     }
 
     private void connectToPlayer(final Context context) {
-        if (musicPlayer.isConnected()) {
-            playPlaylist();
-            return;
-        }
-
         delegate.showProgressDialog(
                 resources.getString(R.string.run_preparation_title),
                 resources.getString(R.string.run_preparation_message),
@@ -137,10 +132,6 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
     }
 
     private void disconnectPlayer() {
-        if (!musicPlayer.isConnected()) {
-            return;
-        }
-
        musicPlayer.pause(new Callback<Void, Exception>() {
             @Override
             public void onSuccess(Void result) {

@@ -9,7 +9,6 @@ import com.cs446.group7.bruno.utils.Callback;
 public interface MusicPlayer {
     void connect(Context context,
                  Callback<Void, MusicPlayerError> callback);
-    boolean isConnected();
     void disconnect();
     void addSubscriber(final MusicPlayerSubscriber subscriber);
     void removeSubscriber(final MusicPlayerSubscriber subscriber);

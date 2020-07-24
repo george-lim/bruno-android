@@ -21,10 +21,6 @@ public class MockMusicPlayerImpl implements MusicPlayer {
         callback.onSuccess(null);
     }
 
-    public boolean isConnected() {
-        return connected;
-    }
-
     public void disconnect() {
         connected = false;
         Log.i(TAG, "disconnected(): Disconnected");

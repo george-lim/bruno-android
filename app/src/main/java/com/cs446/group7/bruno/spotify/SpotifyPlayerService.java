@@ -56,6 +56,12 @@ class SpotifyPlayerService implements MusicPlayer {
     public void connect(final Context context,
                         final Callback<Void, MusicPlayerError> callback) {
 
+        // Don't connect if it's already connected
+        if (isConnected()) {
+            callback.onSuccess(null);
+            return;
+        }
+
         // Spotify is not installed on the device
         if (!SpotifyAppRemote.isSpotifyInstalled(context)) {
             callback.onFailed(SpotifyPlayerError.APP_NOT_FOUND);
@@ -92,7 +98,7 @@ class SpotifyPlayerService implements MusicPlayer {
     }
 
     // Check if we are connected to the Spotify app
-    public boolean isConnected() {
+    private boolean isConnected() {
         return mSpotifyAppRemote != null && mSpotifyAppRemote.isConnected();
     }
 
@@ -156,7 +162,9 @@ class SpotifyPlayerService implements MusicPlayer {
 
     // Should be called when disconnecting from Spotify
     public void disconnect() {
-        SpotifyAppRemote.disconnect(mSpotifyAppRemote);
+        if (isConnected()) {
+            SpotifyAppRemote.disconnect(mSpotifyAppRemote);
+        }
     }
 
     // Plays the playlist which is set by setPlaylist()
