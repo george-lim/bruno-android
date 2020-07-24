@@ -32,11 +32,19 @@ public class CapabilityService {
         hardwareManager = new HardwareManager(context, hardwareRequestDelegate);
     }
 
+    // Synchronously check if permissions are enabled for a capability
+    public boolean isPermissionEnabled(@NonNull final Capability capability) {
+        return permissionManager.isPermissionGroupGranted(capability.getPermissionGroup());
+    }
+
+    // Synchronously check if hardware dependencies are enabled for a capability
+    public boolean isHardwareCapabilityEnabled(@NonNull final Capability capability) {
+        return hardwareManager.isHardwareEnabled(capability);
+    }
+
     // Synchronously check if a capability is enabled, without requesting user action
     public boolean isCapabilityEnabled(@NonNull final Capability capability) {
-        boolean hasPermissions = permissionManager.isPermissionGroupGranted(capability.getPermissionGroup());
-        boolean hasHardwareCapabilities = hardwareManager.isHardwareEnabled(capability);
-        return hasPermissions && hasHardwareCapabilities;
+        return isPermissionEnabled(capability) && isHardwareCapabilityEnabled(capability);
     }
 
     // Synchronously check if all capabilities are enabled at once, without requesting user action
