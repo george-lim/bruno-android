@@ -207,26 +207,6 @@ class SpotifyPlayerService implements MusicPlayer {
                 });
     }
 
-    // Resume the player
-    public void resume(Callback<Void, Exception> callback) {
-        mSpotifyAppRemote.getPlayerApi()
-                .resume().setResultCallback(empty -> {
-                    Log.i(TAG, "Resumed!");
-                    callback.onSuccess(null);
-                })
-                .setErrorCallback(throwable -> {
-                    Log.e(TAG, "resume failed: " + throwable.toString());
-                    callback.onFailed(new Exception(throwable));
-                });
-    }
-
-    // Reads the currently playing track from the player
-    // and returns a BrunoTrack containing track metadata
-    public BrunoTrack getCurrentTrack() {
-        if (currentPlayerState == null || currentPlayerState.track == null) return null;
-        return makeBrunoTrack(currentPlayerState.track);
-    }
-
     // Converts Spotify's Track object to a BrunoTrack object
     private static BrunoTrack makeBrunoTrack(@NonNull final Track track) {
         final List<Artist> trackArtists = track.artists;
