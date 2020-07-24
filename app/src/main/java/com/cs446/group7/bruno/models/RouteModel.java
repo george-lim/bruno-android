@@ -133,6 +133,7 @@ public class RouteModel extends ViewModel {
         setMode(Mode.WALK);
         setDurationIndex(0);
         setRoute(null);
+        setCurrentLocation(null);
         setCurrentTrack(null);
         setPlaylist(null);
         setRouteTrackMappings(null);
