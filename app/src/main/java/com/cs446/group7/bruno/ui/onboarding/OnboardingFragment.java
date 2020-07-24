@@ -63,7 +63,7 @@ public class OnboardingFragment extends Fragment {
                 viewPager.setCurrentItem(OnboardingTab.AVATAR); break;
             case OnboardingTab.AVATAR:
                 viewPager.setCurrentItem(OnboardingTab.PERMISSION); break;
-            case OnboardingTab.DONE:
+            case OnboardingTab.PERMISSION:
                 viewPager.setCurrentItem(OnboardingTab.DONE); break;
         }
     }

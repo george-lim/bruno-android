@@ -61,8 +61,10 @@ public class OnboardingAvatarFragment extends Fragment {
             avatars[pos].setOnClickListener(this::selectAvatar);
             pos++;
         }
+        // set avatar 1 as default, note that avatars array may not be in order because of hashmap
         curSelectedAvatar = R.drawable.ic_avatar_1;
-        avatars[0].setSelected(true);
+        ImageView avatar1 = view.findViewById(R.id.pick_avatar_1);
+        avatar1.setSelected(true);
         saveUserAvatarSetting(curSelectedAvatar);
     }
 
