@@ -27,6 +27,7 @@ import com.cs446.group7.bruno.routing.RouteTrackMapping;
 import com.cs446.group7.bruno.settings.SettingsService;
 import com.cs446.group7.bruno.spotify.SpotifyService;
 import com.cs446.group7.bruno.utils.Callback;
+import com.cs446.group7.bruno.utils.LatLngUtils;
 import com.cs446.group7.bruno.utils.NoFailCallback;
 import com.google.android.gms.maps.model.LatLng;
 
@@ -132,7 +133,7 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
 
         final Location currentLocation = model.getCurrentLocation();
         if (currentLocation != null) {
-            delegate.moveUserMarker(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()));
+            delegate.moveUserMarker(LatLngUtils.locationToLatLng(currentLocation));
         }
     }
 
@@ -194,11 +195,10 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
                 : SettingsService.PREFERRED_RUNNING_SPEED;
         double totalDistance = model.getDurationInMinutes() * speed;
         double rotation = Math.random() * 2 * Math.PI;
-        final Location currentLocation = model.getCurrentLocation();
 
         routeGenerator.generateRoute(
                 RoutePlanningViewModel.this,
-                new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()),
+                LatLngUtils.locationToLatLng(model.getCurrentLocation()),
                 totalDistance,
                 rotation
         );
@@ -235,10 +235,7 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
         delegate.updateStartBtnText(resources.getString(R.string.route_planning_start));
         delegate.clearMap();
         delegate.drawRoute(routeTrackMappings, resources.getIntArray(R.array.colorRouteList));
-
-        final Location currentLocation = model.getCurrentLocation();
-
-        delegate.moveUserMarker(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()));
+        delegate.moveUserMarker(LatLngUtils.locationToLatLng(model.getCurrentLocation()));
         delegate.updateStartBtnEnabled(true);
     }
 
@@ -249,8 +246,7 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
         delegate.updateStartBtnText(resources.getString(R.string.route_planning_create_route));
         delegate.clearMap();
 
-        final Location currentLocation = model.getCurrentLocation();
-        delegate.moveUserMarker(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()));
+        delegate.moveUserMarker(LatLngUtils.locationToLatLng(model.getCurrentLocation()));
         delegate.updateStartBtnEnabled(true);
     }
 
@@ -323,9 +319,8 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
 
     @Override
     public void onLocationUpdate(@NonNull Location location) {
-        LatLng latlng = new LatLng(location.getLatitude(), location.getLongitude());
         model.setCurrentLocation(location);
-        delegate.moveUserMarker(latlng);
+        delegate.moveUserMarker(LatLngUtils.locationToLatLng(location));
     }
 
     // MARK: - OnRouteResponseCallback methods

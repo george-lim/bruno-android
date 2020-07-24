@@ -98,6 +98,13 @@ public class RouteProcessor {
         return result;
     }
 
+    /**
+     * Checkpoints are defined as the starting location of each route segment of each route track mapping.
+     * The first checkpoint is also added at the end to complete the loop.
+     *
+     * @param routeTrackMappings route track mappings of a route
+     * @return list of checkpoints
+     */
     public static List<LatLng> getCheckpoints(final List<RouteTrackMapping> routeTrackMappings) {
         List<LatLng> result = new ArrayList<>();
         for (final RouteTrackMapping mapping : routeTrackMappings) {
