@@ -123,7 +123,7 @@ class SpotifyPlaylistService implements PlaylistGenerator {
                 response -> {
                     try {
                         final JSONObject responseJson = new JSONObject(response);
-                        final BrunoPlaylist playlist = getPlaylistFromJSON(responseJson);
+                        final BrunoPlaylist playlist = getPlaylistFromJSON(responseJson, playlistId);
                         callback.onSuccess(playlist);
                     } catch (JSONException e) {
                         Log.e(TAG, "getPlaylistResponse: JSON parsing failure: " + e.getMessage());
@@ -154,7 +154,7 @@ class SpotifyPlaylistService implements PlaylistGenerator {
     }
 
     // Parses a BrunoPlaylist by reading a response JSON from Spotify's Playlist endpoint
-    private BrunoPlaylist getPlaylistFromJSON(JSONObject responseJson) throws JSONException {
+    private BrunoPlaylist getPlaylistFromJSON(JSONObject responseJson, String playlistId) throws JSONException {
         final String outputPlaylistName = responseJson.getString("name");
         final String outputDescription = responseJson.getString("description");
         final JSONObject pagingObject = responseJson.getJSONObject("tracks");
@@ -187,7 +187,7 @@ class SpotifyPlaylistService implements PlaylistGenerator {
             outputTracks.add(currentTrack);
         }
 
-        final BrunoPlaylist outputPlaylist = new BrunoPlaylist(outputPlaylistName, outputDescription,
+        final BrunoPlaylist outputPlaylist = new BrunoPlaylist(playlistId, outputPlaylistName, outputDescription,
                 outputTotalTracks, outputPlaylistDuration, outputTracks);
         return outputPlaylist;
     }
