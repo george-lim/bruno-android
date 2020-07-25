@@ -96,8 +96,7 @@ class SpotifyPlayerService implements MusicPlayer {
     private boolean isConnected() {
         return mSpotifyAppRemote != null && mSpotifyAppRemote.isConnected();
     }
-
-    // New subscribers are added after successfully connecting
+    
     public void addSubscriber(final MusicPlayerSubscriber subscriber) {
         if (spotifyServiceSubscribers.contains(subscriber)) return;
         spotifyServiceSubscribers.add(subscriber);
@@ -162,6 +161,7 @@ class SpotifyPlayerService implements MusicPlayer {
         queue.add((result, nextCallback) -> {
             api.getPlayerState()
                     .setResultCallback(playerState -> {
+                        // If player cannot turn off shuffle, just succeed anyway and move on.
                         if (!playerState.playbackRestrictions.canToggleShuffle) {
                             nextCallback.onSuccess(null);
                             return;

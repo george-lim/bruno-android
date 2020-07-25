@@ -33,7 +33,7 @@ class SpotifyPlaylistService implements PlaylistGenerator {
     private final String authorizationEndpoint = "https://accounts.spotify.com/api/token";
     private final String clientId;
     private final String clientSecret;
-    public final String TAG = this.getClass().getSimpleName();
+    private final String TAG = this.getClass().getSimpleName();
     // Default is 2500 MS
     private static final int REQUEST_TIMEOUT_MS = DefaultRetryPolicy.DEFAULT_TIMEOUT_MS;
     // Default is 1 retry, but we use 5 instead
@@ -41,10 +41,10 @@ class SpotifyPlaylistService implements PlaylistGenerator {
     // Default is 1f (i.e. first request waits 2500MS, the next request waits 5000MS, etc...)
     private static final float REQUEST_BACKOFF_MULT = DefaultRetryPolicy.DEFAULT_BACKOFF_MULT;
     // Could be expanded to use different playlists
-    public static final String DEFAULT_PLAYLIST_ID = "27q9PVUOHGeSJlz6jSgt2f";
+    private static final String DEFAULT_PLAYLIST_ID = "27q9PVUOHGeSJlz6jSgt2f";
 
     // Needs context for secret variables
-    public SpotifyPlaylistService(Context context) {
+    public SpotifyPlaylistService(final Context context) {
         clientId = context.getResources().getString(R.string.spotify_client_id);
         clientSecret = context.getResources().getString(R.string.spotify_client_secret);
     }
@@ -53,7 +53,7 @@ class SpotifyPlaylistService implements PlaylistGenerator {
     // endpoint to provide the BrunoPlaylist requested by callback
     // All failures are sent back through callback.onFailed
     // Needs internet access to succeed, since it uses API calls
-    public void getPlaylist(Callback<BrunoPlaylist, Exception> callback) {
+    public void getPlaylist(final Callback<BrunoPlaylist, Exception> callback) {
         getAuthorizationToken(new Callback<String, Exception>() {
             @Override
             public void onSuccess(String authToken) {
@@ -69,7 +69,7 @@ class SpotifyPlaylistService implements PlaylistGenerator {
 
     // In order to use the Spotify API, an authorization token needs to be retrieved from Spotify
     // Using the client id and client secret, we can retrieve this token first before using the playlist endpoint
-    private void getAuthorizationToken(Callback<String, Exception> callback) {
+    private void getAuthorizationToken(final Callback<String, Exception> callback) {
         final StringRequest authRequest = new StringRequest(Request.Method.POST, authorizationEndpoint,
                 response -> {
                     try {
@@ -119,7 +119,9 @@ class SpotifyPlaylistService implements PlaylistGenerator {
     // With the authorization token, we can use the playlist API to retrieve a JSON representation
     // of the playlist. This gets parsed in BrunoPlaylist.getPlaylistFromJSON(), and returned to
     // the callback.
-    private void getPlaylistResponse(String authToken, String playlistId, Callback<BrunoPlaylist, Exception> callback) {
+    private void getPlaylistResponse(final String authToken,
+                                     final String playlistId,
+                                     final Callback<BrunoPlaylist, Exception> callback) {
         final StringRequest stringRequest = new StringRequest(Request.Method.GET,
         playlistEndpoint + playlistId,
                 response -> {
@@ -156,14 +158,14 @@ class SpotifyPlaylistService implements PlaylistGenerator {
     }
 
     // Parses a BrunoPlaylist by reading a response JSON from Spotify's Playlist endpoint
-    private BrunoPlaylist getPlaylistFromJSON(JSONObject responseJson, String playlistId) throws JSONException {
+    private BrunoPlaylist getPlaylistFromJSON(final JSONObject responseJson,
+                                              final String playlistId) throws JSONException {
         final String outputPlaylistName = responseJson.getString("name");
         final String outputDescription = responseJson.getString("description");
         final JSONObject pagingObject = responseJson.getJSONObject("tracks");
 
         final int outputTotalTracks = pagingObject.getInt("total");
         final JSONArray responseTracks = pagingObject.getJSONArray("items");
-        long outputPlaylistDuration = 0;
         final List<BrunoTrack> outputTracks = new ArrayList<BrunoTrack>();
 
         // Iterate through the tracks
@@ -181,7 +183,6 @@ class SpotifyPlaylistService implements PlaylistGenerator {
 
             // implicit int to long conversion - harmless
             final long outputDuration = responseTrack.getInt("duration_ms");
-            outputPlaylistDuration += outputDuration;
             String outputTrackName = responseTrack.getString("name");
 
             BrunoTrack currentTrack = new BrunoTrack(outputTrackName, outputAlbum,
