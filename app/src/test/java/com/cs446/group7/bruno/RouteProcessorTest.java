@@ -93,10 +93,9 @@ public class RouteProcessorTest {
         }
 
         BrunoPlaylist playlist = new BrunoPlaylist(
+                "id",
                 "playlistName",
                 "playlistDescription",
-                tracks.size(),
-                totalTrackDuration,
                 tracks
         );
 
@@ -121,10 +120,9 @@ public class RouteProcessorTest {
         }
 
         BrunoPlaylist playlist = new BrunoPlaylist(
+                "id",
                 "playlistName",
                 "playlistDescription",
-                tracks.size(),
-                totalTrackDuration,
                 tracks
         );
 
@@ -156,10 +154,9 @@ public class RouteProcessorTest {
         }
 
         BrunoPlaylist playlist = new BrunoPlaylist(
+                "id",
                 "playlistName",
                 "playlistDescription",
-                tracks.size(),
-                totalTrackDuration,
                 tracks
         );
 
@@ -184,10 +181,9 @@ public class RouteProcessorTest {
         }
 
         BrunoPlaylist playlist = new BrunoPlaylist(
+                "id",
                 "playlistName",
                 "playlistDescription",
-                tracks.size(),
-                totalTrackDuration,
                 tracks
         );
 
@@ -218,10 +214,9 @@ public class RouteProcessorTest {
         }
 
         BrunoPlaylist playlist = new BrunoPlaylist(
+                "id",
                 "playlistName",
                 "playlistDescription",
-                tracks.size(),
-                totalTrackDuration,
                 tracks
         );
 
@@ -244,10 +239,9 @@ public class RouteProcessorTest {
         }
 
         BrunoPlaylist playlist = new BrunoPlaylist(
+                "id",
                 "playlistName",
                 "playlistDescription",
-                tracks.size(),
-                totalTrackDuration,
                 tracks
         );
 
