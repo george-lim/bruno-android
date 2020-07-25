@@ -25,6 +25,8 @@ import com.cs446.group7.bruno.location.LocationService;
 import com.cs446.group7.bruno.preferencesstorage.PreferencesStorage;
 import com.cs446.group7.bruno.sensor.SensorService;
 import com.cs446.group7.bruno.spotify.SpotifyService;
+import com.cs446.group7.bruno.ui.onboarding.OnboardingFragment;
+import com.cs446.group7.bruno.ui.onboarding.OnboardingTab;
 import com.cs446.group7.bruno.ui.onroute.OnRouteFragment;
 import com.cs446.group7.bruno.ui.toplevel.TopLevelFragment;
 import com.cs446.group7.bruno.utils.NoFailCallback;
@@ -77,6 +79,12 @@ public class MainActivity extends AppCompatActivity implements PermissionRequest
     public void onBackPressed() {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         int curContainerFragmentId = navController.getCurrentDestination().getId();
+
+        if (curContainerFragmentId == R.id.fragment_onboarding) {
+            NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager().getPrimaryNavigationFragment();
+            OnboardingFragment onboardingFragment = (OnboardingFragment) navHostFragment.getChildFragmentManager().getPrimaryNavigationFragment();
+            if (onboardingFragment.onBackPress()) return;
+        }
 
         // NOTE: If the back button is pressed in OnRouteFragment, let OnRouteFragment handle it
         if (curContainerFragmentId == R.id.fragment_on_route) {

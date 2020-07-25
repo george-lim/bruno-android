@@ -10,8 +10,12 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import com.cs446.group7.bruno.R;
 
+import java.util.Stack;
+
 public class OnboardingFragment extends Fragment {
 
+    private Stack<Integer> backstack;
+    private boolean saveToBackstack;
     private ViewPager2 viewPager;
     private View[] tabIndicators;
     private int currentTab;
@@ -25,6 +29,9 @@ public class OnboardingFragment extends Fragment {
     }
 
     private void setupOnboardingTabs(final View view) {
+        backstack = new Stack<>();
+        saveToBackstack = true;
+
         viewPager = view.findViewById(R.id.onboarding_pager);
         OnboardingPagerAdapter adapter = new OnboardingPagerAdapter(this);
         viewPager.setAdapter(adapter);
@@ -44,12 +51,12 @@ public class OnboardingFragment extends Fragment {
         @Override
         public void onPageSelected(int position) {
             currentTab = position;
+            if (saveToBackstack) {
+                backstack.push(currentTab);
+            }
+            // Update tab indicator UI
             for (int i = 0; i < OnboardingTab.NUM_TABS; i++) {
-                if (i == position) {
-                    tabIndicators[i].setSelected(true);
-                } else {
-                    tabIndicators[i].setSelected(false);
-                }
+                tabIndicators[i].setSelected(i == currentTab ? true : false);
             }
             super.onPageSelected(position);
         }
@@ -66,5 +73,16 @@ public class OnboardingFragment extends Fragment {
             case OnboardingTab.PERMISSION:
                 viewPager.setCurrentItem(OnboardingTab.DONE); break;
         }
+    }
+
+    public boolean onBackPress() {
+        backstack.pop();
+        if (!backstack.empty()) {
+            saveToBackstack = false;
+            viewPager.setCurrentItem(backstack.peek());
+            saveToBackstack = true;
+            return true;
+        }
+        return false;
     }
 }
