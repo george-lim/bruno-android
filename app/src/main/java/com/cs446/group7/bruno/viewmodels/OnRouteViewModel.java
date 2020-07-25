@@ -47,6 +47,7 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
         this.delegate = delegate;
 
         musicPlayer = getMusicPlayer();
+        musicPlayer.setPlayerPlaylist(model.getPlaylist());
 
         MainActivity.getLocationService().addSubscriber(this);
         MainActivity.getLocationService().startLocationUpdates();
@@ -135,7 +136,6 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
     }
 
     private void playPlaylist() {
-        musicPlayer.setPlayerPlaylist(model.getPlaylist());
         musicPlayer.play(new Callback<Void, Exception>() {
             @Override
             public void onSuccess(Void result) { }
