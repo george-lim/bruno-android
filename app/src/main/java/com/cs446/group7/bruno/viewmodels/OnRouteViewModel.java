@@ -15,7 +15,7 @@ import com.cs446.group7.bruno.models.RouteModel;
 import com.cs446.group7.bruno.music.BrunoTrack;
 import com.cs446.group7.bruno.music.player.MockMusicPlayerImpl;
 import com.cs446.group7.bruno.music.player.MusicPlayer;
-import com.cs446.group7.bruno.music.player.MusicPlayerError;
+import com.cs446.group7.bruno.music.player.MusicPlayerException;
 import com.cs446.group7.bruno.sensor.PedometerSubscriber;
 import com.cs446.group7.bruno.music.player.MusicPlayerSubscriber;
 import com.cs446.group7.bruno.utils.Callback;
@@ -117,7 +117,7 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
     private void connectPlayer(final Context context, final NoFailCallback<Void> callback) {
         showPlayerConnectProgressDialog();
 
-        musicPlayer.connect(context, new Callback<Void, MusicPlayerError>() {
+        musicPlayer.connect(context, new Callback<Void, MusicPlayerException>() {
             @Override
             public void onSuccess(Void result) {
                 dismissPlayerConnectProgressDialog();
@@ -125,8 +125,8 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
             }
 
             @Override
-            public void onFailed(MusicPlayerError result) {
-                String errorMessage = result.getErrorMessage();
+            public void onFailed(MusicPlayerException result) {
+                String errorMessage = result.getLocalizedMessage();
                 Log.e(getClass().getSimpleName(), "onFailed connect: " + errorMessage);
 
                 dismissPlayerConnectProgressDialog();

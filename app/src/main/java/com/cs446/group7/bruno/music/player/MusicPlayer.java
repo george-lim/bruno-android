@@ -8,7 +8,7 @@ import com.cs446.group7.bruno.utils.Callback;
 // Any music player should implement this interface
 public interface MusicPlayer {
     void connect(final Context context,
-                 final Callback<Void, MusicPlayerError> callback);
+                 final Callback<Void, MusicPlayerException> callback);
     void disconnect();
     void addSubscriber(final MusicPlayerSubscriber subscriber);
     void removeSubscriber(final MusicPlayerSubscriber subscriber);

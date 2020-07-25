@@ -7,7 +7,7 @@ import com.cs446.group7.bruno.R;
 import com.cs446.group7.bruno.music.BrunoPlaylist;
 import com.cs446.group7.bruno.music.BrunoTrack;
 import com.cs446.group7.bruno.music.player.MusicPlayer;
-import com.cs446.group7.bruno.music.player.MusicPlayerError;
+import com.cs446.group7.bruno.music.player.MusicPlayerException;
 import com.cs446.group7.bruno.music.player.MusicPlayerSubscriber;
 import com.cs446.group7.bruno.utils.Callback;
 import com.cs446.group7.bruno.utils.ClosureQueue;
@@ -15,16 +15,7 @@ import com.spotify.android.appremote.api.ConnectionParams;
 import com.spotify.android.appremote.api.Connector;
 import com.spotify.android.appremote.api.PlayerApi;
 import com.spotify.android.appremote.api.SpotifyAppRemote;
-import com.spotify.android.appremote.api.error.AuthenticationFailedException;
 import com.spotify.android.appremote.api.error.CouldNotFindSpotifyApp;
-import com.spotify.android.appremote.api.error.LoggedOutException;
-import com.spotify.android.appremote.api.error.NotLoggedInException;
-import com.spotify.android.appremote.api.error.OfflineModeException;
-import com.spotify.android.appremote.api.error.SpotifyConnectionTerminatedException;
-import com.spotify.android.appremote.api.error.SpotifyDisconnectedException;
-import com.spotify.android.appremote.api.error.SpotifyRemoteServiceException;
-import com.spotify.android.appremote.api.error.UnsupportedFeatureVersionException;
-import com.spotify.android.appremote.api.error.UserNotAuthorizedException;
 import com.spotify.protocol.types.Artist;
 import com.spotify.protocol.types.PlayerState;
 import com.spotify.protocol.types.Track;
@@ -52,12 +43,12 @@ class SpotifyPlayerService implements MusicPlayer {
     }
 
     /**
-     * Attempts to connect to Spotify via the user's Spotify app. If any error occurs, a {@link SpotifyPlayerError} is
+     * Attempts to connect to Spotify via the user's Spotify app. If any error occurs, a {@link SpotifyPlayerException} is
      * generated in the callback.
      * @param callback callback for handling the result of the connection
      */
     public void connect(final Context context,
-                        final Callback<Void, MusicPlayerError> callback) {
+                        final Callback<Void, MusicPlayerException> callback) {
 
         // Don't connect if it's already connected
         if (isConnected()) {
@@ -67,7 +58,8 @@ class SpotifyPlayerService implements MusicPlayer {
 
         // Spotify is not installed on the device
         if (!SpotifyAppRemote.isSpotifyInstalled(context)) {
-            callback.onFailed(SpotifyPlayerError.APP_NOT_FOUND);
+            SpotifyPlayerException exception = new SpotifyPlayerException(new CouldNotFindSpotifyApp());
+            callback.onFailed(exception);
             return;
         }
 
@@ -94,8 +86,8 @@ class SpotifyPlayerService implements MusicPlayer {
             @Override
             public void onFailure(Throwable throwable) {
                 Log.e(TAG, ".connect onFailure method: " + throwable.toString());
-                SpotifyPlayerError spotifyPlayerError = getErrorFromThrowable(throwable);
-                callback.onFailed(spotifyPlayerError);
+                MusicPlayerException exception = new SpotifyPlayerException(throwable);
+                callback.onFailed(exception);
             }
         });
     }
@@ -113,21 +105,6 @@ class SpotifyPlayerService implements MusicPlayer {
 
     public void removeSubscriber(final MusicPlayerSubscriber subscriber) {
         spotifyServiceSubscribers.remove(subscriber);
-    }
-
-    // Converts Spotify-specific exceptions to a SpotifyPlayerError
-    private static SpotifyPlayerError getErrorFromThrowable (final Throwable throwable) {
-        if (throwable instanceof AuthenticationFailedException) { return SpotifyPlayerError.AUTHENTICATION_FAILED; }
-        if (throwable instanceof UserNotAuthorizedException) { return SpotifyPlayerError.AUTHORIZATION_FAILED; }
-        if (throwable instanceof CouldNotFindSpotifyApp) { return SpotifyPlayerError.APP_NOT_FOUND; }
-        if (throwable instanceof LoggedOutException) { return SpotifyPlayerError.LOGGED_OUT; }
-        if (throwable instanceof NotLoggedInException) { return SpotifyPlayerError.NOT_LOGGED_IN; }
-        if (throwable instanceof OfflineModeException) { return SpotifyPlayerError.OFFLINE_MODE; }
-        if (throwable instanceof SpotifyConnectionTerminatedException) { return SpotifyPlayerError.CONNECTION_TERMINATED; }
-        if (throwable instanceof SpotifyDisconnectedException) { return SpotifyPlayerError.DISCONNECTED; }
-        if (throwable instanceof SpotifyRemoteServiceException) { return SpotifyPlayerError.REMOTE_SERVICE_ERROR; }
-        if (throwable instanceof UnsupportedFeatureVersionException) { return SpotifyPlayerError.UNSUPPORTED_FEATURE_VERSION; }
-        return SpotifyPlayerError.OTHER_ERROR;
     }
 
     // Listen for updates from the Spotify player

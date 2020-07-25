@@ -55,7 +55,7 @@ public class MockMusicPlayerImpl implements MusicPlayer {
     // MARK: - MusicPlayer methods
 
     public void connect(final Context context,
-                        final Callback<Void, MusicPlayerError> callback) {
+                        final Callback<Void, MusicPlayerException> callback) {
         callback.onSuccess(null);
     }
 
