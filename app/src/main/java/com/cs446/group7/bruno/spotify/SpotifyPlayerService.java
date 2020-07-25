@@ -231,6 +231,17 @@ class SpotifyPlayerService implements MusicPlayer {
                 });
     }
 
+    // Stop the player then disconnect
+    public void stopAndDisconnect() {
+        mSpotifyAppRemote.getPlayerApi()
+                .pause()
+                .setResultCallback(empty -> disconnect())
+                .setErrorCallback(throwable -> {
+                    Log.e(TAG, "Stop playlist failed with error: " + throwable.toString());
+                    disconnect();
+                });
+    }
+
     // Converts Spotify's Track object to a BrunoTrack object
     private static BrunoTrack makeBrunoTrack(@NonNull final Track track) {
         final List<Artist> trackArtists = track.artists;

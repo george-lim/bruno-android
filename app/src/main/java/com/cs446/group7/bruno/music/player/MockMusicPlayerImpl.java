@@ -82,4 +82,9 @@ public class MockMusicPlayerImpl implements MusicPlayer {
     public void stop() {
         playSongsThread.interrupt();
     }
+
+    public void stopAndDisconnect() {
+        stop();
+        disconnect();
+    }
 }

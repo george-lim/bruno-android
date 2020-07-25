@@ -18,4 +18,6 @@ public interface MusicPlayer {
     void play();
     // Stops the current playlist
     void stop();
+    // Stops the current playlist and disconnects
+    void stopAndDisconnect();
 }
