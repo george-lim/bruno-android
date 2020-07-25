@@ -35,8 +35,8 @@ public class MockPlaylistGeneratorImpl implements PlaylistGenerator {
                     threeMinutes, cloneArtists(artists)));
         }
 
-        BrunoPlaylist playlist = new BrunoPlaylist("id", "name", "description",
-                trackCount, threeMinutes * trackCount, tracks);
+        BrunoPlaylist playlist = new BrunoPlaylist("id", "name",
+                "description", tracks);
         Log.i(TAG, "getPlaylist(): Returning playlist: "
                 + playlist.name);
         callback.onSuccess(playlist);

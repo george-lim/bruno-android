@@ -9,21 +9,15 @@ public class BrunoPlaylist {
     public final String id;
     public final String name;
     public final String description;
-    public final int totalTracks;
-    public final long totalDuration;
     public final List<BrunoTrack> tracks;
 
     public BrunoPlaylist(final String id,
                          final String name,
                          final String description,
-                         final int totalTracks,
-                         final long totalDuration,
                          final List<BrunoTrack> tracks) {
         this.id = id;
         this.name = name;
         this.description = description;
-        this.totalTracks = totalTracks;
-        this.totalDuration = totalDuration;
         this.tracks = tracks;
     }
 }

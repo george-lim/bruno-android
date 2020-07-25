@@ -187,8 +187,8 @@ class SpotifyPlaylistService implements PlaylistGenerator {
             outputTracks.add(currentTrack);
         }
 
-        final BrunoPlaylist outputPlaylist = new BrunoPlaylist(playlistId, outputPlaylistName, outputDescription,
-                outputTotalTracks, outputPlaylistDuration, outputTracks);
+        final BrunoPlaylist outputPlaylist = new BrunoPlaylist(playlistId, outputPlaylistName,
+                outputDescription, outputTracks);
         return outputPlaylist;
     }
 }
