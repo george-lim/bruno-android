@@ -12,11 +12,16 @@ import com.cs446.group7.bruno.R;
 import com.cs446.group7.bruno.location.LocationServiceSubscriber;
 import com.cs446.group7.bruno.models.RouteModel;
 import com.cs446.group7.bruno.music.BrunoTrack;
+import com.cs446.group7.bruno.routing.RouteTrackMapping;
 import com.cs446.group7.bruno.sensor.PedometerSubscriber;
+import com.cs446.group7.bruno.settings.SettingsService;
 import com.cs446.group7.bruno.spotify.SpotifyServiceError;
 import com.cs446.group7.bruno.spotify.SpotifyServiceSubscriber;
 import com.cs446.group7.bruno.utils.Callback;
+import com.cs446.group7.bruno.utils.LatLngUtils;
 import com.google.android.gms.maps.model.LatLng;
+
+import java.util.List;
 
 public class OnRouteViewModel implements LocationServiceSubscriber, SpotifyServiceSubscriber, PedometerSubscriber {
 
@@ -24,12 +29,17 @@ public class OnRouteViewModel implements LocationServiceSubscriber, SpotifyServi
 
     private static final int CAMERA_TILT = 60;
     private static final int CAMERA_ZOOM = 18;
+    private static final int BASE_TOLERANCE_RADIUS = 10;
+    private static final int EXTRA_TOLERANCE_MARGIN = 1;
 
     // MARK: - Private members
 
     private Resources resources;
     private RouteModel model;
     private OnRouteViewModelDelegate delegate;
+
+    // TODO: Remove this when there's a better reset logic
+    private boolean isRouteCompleted;
 
     // MARK: - Lifecycle methods
 
@@ -39,6 +49,7 @@ public class OnRouteViewModel implements LocationServiceSubscriber, SpotifyServi
         this.resources = context.getResources();
         this.model = model;
         this.delegate = delegate;
+        this.isRouteCompleted = false;
 
         MainActivity.getLocationService().addSubscriber(this);
         MainActivity.getLocationService().startLocationUpdates();
@@ -49,7 +60,6 @@ public class OnRouteViewModel implements LocationServiceSubscriber, SpotifyServi
     }
 
     public void onDestroy() {
-        MainActivity.getLocationService().stopLocationUpdates();
         MainActivity.getLocationService().removeSubscriber(this);
         MainActivity.getSpotifyService().removeSubscriber(this);
         MainActivity.getSensorService().removePedometerSubscriber(this);
@@ -68,9 +78,13 @@ public class OnRouteViewModel implements LocationServiceSubscriber, SpotifyServi
             delegate.updateCurrentSongUI(currentTrack.name, currentTrack.album);
         }
 
-        delegate.drawRoute(model.getRouteTrackMappings(),
-                resources.getIntArray(R.array.colorRouteList));
-        delegate.animateCamera(model.getCurrentLocation(), CAMERA_TILT, CAMERA_ZOOM);
+        delegate.drawRoute(model.getRouteTrackMappings(), resources.getIntArray(R.array.colorRouteList));
+
+        checkCheckpointUpdates();
+
+        final Location currentLocation = model.getCurrentLocation();
+        final float bearing = currentLocation.getBearing();
+        delegate.animateCamera(LatLngUtils.locationToLatLng(currentLocation), bearing, CAMERA_TILT, CAMERA_ZOOM);
     }
 
     private void connectToSpotify(final Context context) {
@@ -142,6 +156,75 @@ public class OnRouteViewModel implements LocationServiceSubscriber, SpotifyServi
         });
     }
 
+    private void checkCheckpointUpdates() {
+        final List<RouteTrackMapping> routeTrackMapping = model.getRouteTrackMappings();
+        if (routeTrackMapping.isEmpty()) {
+            Log.w(getClass().getSimpleName(), "RouteTrackMapping is empty! No checkpoints generated");
+            return;
+        }
+
+        /*
+            Set a tolerance radius depending on how fast the user is moving. The faster they are, the more
+            margin we should give them. It should also depend on how accurate the GPS is, the more variance, the bigger
+            the margin should be given.
+         */
+
+        final Location currentLocation = model.getCurrentLocation();
+
+        // give extra tolerance if the user is moving faster as their location is more uncertain
+        final double speedMargin = Math.min(SettingsService.PREFERRED_RUNNING_SPEED / 60 + EXTRA_TOLERANCE_MARGIN,
+                currentLocation.getSpeed());
+
+        // max amount of deviation from the actual location (meters)
+        final double accuracyDeviation = currentLocation.getAccuracy();
+
+        // total tolerance radius
+        final double toleranceRadius = BASE_TOLERANCE_RADIUS + speedMargin + accuracyDeviation;
+
+        final LatLng currentCheckpoint = model.getCurrentCheckpoint();
+
+        // Note: the radius drawn on UI is always constant as we cannot foresee the other location variables, it's just
+        // to give an idea where the user should be around
+        delegate.updateCheckpointMarker(currentCheckpoint, BASE_TOLERANCE_RADIUS);
+
+        final LatLng currLatLng = LatLngUtils.locationToLatLng(currentLocation);
+
+        final double distanceFromCheckpoint = LatLngUtils.getLatLngDistanceInMetres(currLatLng, currentCheckpoint);
+
+        // Checkpoint is counted if and only if  user is within the tolerance radius;
+        // this is calculated dynamically as the location updates, which may be larger than what is drawn
+        if (distanceFromCheckpoint <= toleranceRadius) {
+            final LatLng nextCheckpoint = model.advanceCheckpoint();
+
+            // End of route, no more checkpoints
+            if (nextCheckpoint == null) {
+                isRouteCompleted = true;
+                onRouteCompleted();
+            } else {
+                delegate.updateCheckpointMarker(nextCheckpoint, toleranceRadius);
+            }
+        }
+    }
+
+    /**
+     * Logic when the route is completed goes here.
+     */
+    public void onRouteCompleted() {
+        disconnectFromSpotify();
+
+        // TODO: Currently temporary; in the future we will probably take the user to the fitness details of this run
+        delegate.showAlertDialog(
+                resources.getString(R.string.run_completion_title),
+                resources.getString(R.string.run_completion_message),
+                resources.getString(R.string.ok_button),
+                (dialogInterface, i) -> {
+                    model.reset();
+                    delegate.navigateToPreviousScreen();
+                },
+                false
+        );
+    }
+
     // MARK: - User action handlers
 
     public void handleExitRoute() {
@@ -163,9 +246,10 @@ public class OnRouteViewModel implements LocationServiceSubscriber, SpotifyServi
 
     @Override
     public void onLocationUpdate(@NonNull Location location) {
-        LatLng latlng = new LatLng(location.getLatitude(), location.getLongitude());
-        model.setCurrentLocation(latlng);
-        delegate.animateCamera(latlng, CAMERA_TILT, CAMERA_ZOOM);
+        if (isRouteCompleted) return;
+        model.setCurrentLocation(location);
+        delegate.animateCamera(LatLngUtils.locationToLatLng(location), location.getBearing(), CAMERA_TILT, CAMERA_ZOOM);
+        checkCheckpointUpdates();
     }
 
     // MARK: - SpotifyServiceSubscriber methods
