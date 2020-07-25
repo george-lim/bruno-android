@@ -19,6 +19,7 @@ import com.cs446.group7.bruno.music.player.MusicPlayerError;
 import com.cs446.group7.bruno.sensor.PedometerSubscriber;
 import com.cs446.group7.bruno.music.player.MusicPlayerSubscriber;
 import com.cs446.group7.bruno.utils.Callback;
+import com.cs446.group7.bruno.utils.NoFailCallback;
 import com.google.android.gms.maps.model.LatLng;
 
 public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerSubscriber, PedometerSubscriber {
@@ -53,7 +54,9 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
         musicPlayer.addSubscriber(this);
 
         setupUI();
-        connectToPlayer(context);
+
+        // Connect player, and play playlist after connection succeeds
+        connectPlayer(context, result -> playPlaylist());
     }
 
     public void onDestroy() {
@@ -87,33 +90,46 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
         delegate.animateCamera(model.getCurrentLocation(), CAMERA_TILT, CAMERA_ZOOM);
     }
 
-    private void connectToPlayer(final Context context) {
+    private void showPlayerConnectProgressDialog() {
         delegate.showProgressDialog(
-                resources.getString(R.string.run_preparation_title),
-                resources.getString(R.string.run_preparation_message),
+                resources.getString(R.string.run_player_connect_title),
+                resources.getString(R.string.run_player_connect_message),
                 false,
                 false
         );
+    }
+
+    private void dismissPlayerConnectProgressDialog() {
+        delegate.dismissProgressDialog();
+    }
+
+    private void showPlayerConnectFailureDialog(final String errorMessage) {
+        delegate.showAlertDialog(
+                resources.getString(R.string.player_error),
+                errorMessage,
+                resources.getString(R.string.ok_button),
+                (dialogInterface, i) -> delegate.navigateToPreviousScreen(),
+                false
+        );
+    }
+
+    private void connectPlayer(final Context context, final NoFailCallback<Void> callback) {
+        showPlayerConnectProgressDialog();
 
         musicPlayer.connect(context, new Callback<Void, MusicPlayerError>() {
             @Override
             public void onSuccess(Void result) {
-                delegate.dismissProgressDialog();
-                playPlaylist();
+                dismissPlayerConnectProgressDialog();
+                callback.onSuccess(null);
             }
 
             @Override
             public void onFailed(MusicPlayerError result) {
-                delegate.dismissProgressDialog();
-                Log.e(getClass().getSimpleName(), "onFailed connect: " + result.getErrorMessage());
+                String errorMessage = result.getErrorMessage();
+                Log.e(getClass().getSimpleName(), "onFailed connect: " + errorMessage);
 
-                delegate.showAlertDialog(
-                        resources.getString(R.string.player_error),
-                        result.getErrorMessage(),
-                        resources.getString(R.string.ok_button),
-                        (dialogInterface, i) -> delegate.navigateToPreviousScreen(),
-                        false
-                );
+                dismissPlayerConnectProgressDialog();
+                showPlayerConnectFailureDialog(errorMessage);
             }
         });
     }
