@@ -7,15 +7,15 @@ import com.cs446.group7.bruno.utils.Callback;
 
 // Any music player should implement this interface
 public interface MusicPlayer {
-    void connect(Context context,
-                 Callback<Void, MusicPlayerError> callback);
+    void connect(final Context context,
+                 final Callback<Void, MusicPlayerError> callback);
     void disconnect();
     void addSubscriber(final MusicPlayerSubscriber subscriber);
     void removeSubscriber(final MusicPlayerSubscriber subscriber);
     // Sets the playlist which play() will start playing
-    void setPlayerPlaylist(BrunoPlaylist playlist);
+    void setPlayerPlaylist(final BrunoPlaylist playlist);
     // Plays the playlist from the beginning
-    void play(Callback<Void, Exception> callback);
+    void play(final Callback<Void, Exception> callback);
     // Stops the current playlist
-    void stop(Callback<Void, Exception> callback);
+    void stop(final Callback<Void, Exception> callback);
 }

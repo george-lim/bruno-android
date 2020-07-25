@@ -1,51 +1,87 @@
 package com.cs446.group7.bruno.music.player;
 
 import android.content.Context;
-import android.util.Log;
+import android.os.Handler;
+import android.os.Looper;
 
 import com.cs446.group7.bruno.music.BrunoPlaylist;
 import com.cs446.group7.bruno.music.BrunoTrack;
 import com.cs446.group7.bruno.utils.Callback;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class MockMusicPlayerImpl implements MusicPlayer {
 
-    BrunoPlaylist playlist;
-    private final String TAG = getClass().getSimpleName();
-    boolean connected = false;
+    // MARK: - Private members
+
+    private BrunoPlaylist playlist;
+    private List<MusicPlayerSubscriber> subscribers;
+    private Thread playSongsThread;
+
+    // MARK: - Lifecycle methods
+
+    public MockMusicPlayerImpl() {
+        playlist = null;
+        subscribers = new ArrayList<>();
+        playSongsThread = new Thread(() -> playSongs());
+    }
+
+    // MARK: - Private methods
+
+    // Simulates playing the playlist in the background, with proper track delay.
+    private void playSongs() {
+        try {
+            // Play each song
+            for (BrunoTrack track : playlist.tracks) {
+                // Dispatch to UI thread
+                new Handler(Looper.getMainLooper()).post(() -> {
+                    // Notify all subscribers of new track
+                    for (MusicPlayerSubscriber subscriber : subscribers) {
+                        subscriber.onTrackChanged(track);
+                    }
+                });
+
+                // Sleep for song duration to simulate song playing
+                Thread.sleep(track.duration);
+            }
+        }
+        // Return from the method immediately. Safely terminates thread.
+        catch (InterruptedException e) {
+            return;
+        }
+    }
+
+    // MARK: - MusicPlayer methods
 
     public void connect(final Context context,
                         final Callback<Void, MusicPlayerError> callback) {
-        Log.i(TAG, "connect(): Connected");
-        connected = true;
         callback.onSuccess(null);
     }
 
     public void disconnect() {
-        connected = false;
-        Log.i(TAG, "disconnected(): Disconnected");
+        // NOOP
     }
 
-    // Simulating player state change on subscription for demoing purposes
-    // Normally, Spotify itself will have a player state change and notify subscribers about the
-    // current track
     public void addSubscriber(final MusicPlayerSubscriber subscriber) {
+        subscribers.add(subscriber);
     }
 
-    public void removeSubscriber(final MusicPlayerSubscriber subscriber) { }
+    public void removeSubscriber(final MusicPlayerSubscriber subscriber) {
+        subscribers.remove(subscriber);
+    }
 
-    public void setPlayerPlaylist(BrunoPlaylist playlist) {
+    public void setPlayerPlaylist(final BrunoPlaylist playlist) {
         this.playlist = playlist;
     }
 
-    public void play(Callback<Void, Exception> callback) {
-        Log.i(TAG, "play(): Playing playlist " + this.playlist.name);
+    public void play(final Callback<Void, Exception> callback) {
+        playSongsThread.start();
         callback.onSuccess(null);
     }
 
-    public void stop(Callback<Void, Exception> callback) {
-        Log.i(TAG, "stop(): Stopped playlist " + this.playlist.name);
+    public void stop(final Callback<Void, Exception> callback) {
+        playSongsThread.interrupt();
         callback.onSuccess(null);
     }
 }
