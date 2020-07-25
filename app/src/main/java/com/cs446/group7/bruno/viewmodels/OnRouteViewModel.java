@@ -57,7 +57,7 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
         setupUI();
 
         // Connect player, and play playlist after connection succeeds
-        connectPlayer(context, result -> playPlaylist());
+        connectPlayer(context, result -> musicPlayer.play());
     }
 
     public void onDestroy() {
@@ -135,32 +135,6 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
         });
     }
 
-    private void playPlaylist() {
-        musicPlayer.play(new Callback<Void, Exception>() {
-            @Override
-            public void onSuccess(Void result) { }
-
-            @Override
-            public void onFailed(Exception result) {
-                Log.e(getClass().getSimpleName(), "onFailed play: " + result.getLocalizedMessage());
-            }
-        });
-    }
-
-    private void disconnectPlayer() {
-       musicPlayer.stop(new Callback<Void, Exception>() {
-            @Override
-            public void onSuccess(Void result) {
-                musicPlayer.disconnect();
-            }
-
-            @Override
-            public void onFailed(Exception result) {
-                musicPlayer.disconnect();
-            }
-        });
-    }
-
     // MARK: - User action handlers
 
     public void handleExitRoute() {
@@ -169,7 +143,8 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
                 resources.getString(R.string.run_exit_message),
                 resources.getString(R.string.yes_button),
                 (dialogInterface, i) -> {
-                    disconnectPlayer();
+                    musicPlayer.stop();
+                    musicPlayer.disconnect();
                     delegate.navigateToPreviousScreen();
                 },
                 resources.getString(R.string.no_button),

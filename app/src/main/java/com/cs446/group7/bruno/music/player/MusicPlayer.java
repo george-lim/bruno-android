@@ -15,7 +15,7 @@ public interface MusicPlayer {
     // Sets the playlist which play() will start playing
     void setPlayerPlaylist(final BrunoPlaylist playlist);
     // Plays the playlist from the beginning
-    void play(final Callback<Void, Exception> callback);
+    void play();
     // Stops the current playlist
-    void stop(final Callback<Void, Exception> callback);
+    void stop();
 }

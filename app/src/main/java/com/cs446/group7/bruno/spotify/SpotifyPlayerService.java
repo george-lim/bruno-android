@@ -10,8 +10,10 @@ import com.cs446.group7.bruno.music.player.MusicPlayer;
 import com.cs446.group7.bruno.music.player.MusicPlayerError;
 import com.cs446.group7.bruno.music.player.MusicPlayerSubscriber;
 import com.cs446.group7.bruno.utils.Callback;
+import com.cs446.group7.bruno.utils.ClosureQueue;
 import com.spotify.android.appremote.api.ConnectionParams;
 import com.spotify.android.appremote.api.Connector;
+import com.spotify.android.appremote.api.PlayerApi;
 import com.spotify.android.appremote.api.SpotifyAppRemote;
 import com.spotify.android.appremote.api.error.AuthenticationFailedException;
 import com.spotify.android.appremote.api.error.CouldNotFindSpotifyApp;
@@ -170,34 +172,51 @@ class SpotifyPlayerService implements MusicPlayer {
 
     // Plays the playlist which is set by setPlaylist()
     // Note that calling this method multiple times will play the custom playlist from the beginning each time
-    public void play(Callback<Void, Exception> callback) {
-        mSpotifyAppRemote.getPlayerApi().getPlayerState().setResultCallback(playerState -> {
-            if (playerState.playbackRestrictions.canToggleShuffle) { // premium users
-                mSpotifyAppRemote.getPlayerApi()
-                        .setShuffle(false)
-                        .setResultCallback(empty -> {
-                            mSpotifyAppRemote.getPlayerApi().play("spotify:playlist:" + this.playlist.id).setResultCallback(empty1 -> {
-                                callback.onSuccess(null);
-                            }).setErrorCallback(throwable -> {
-                                Log.e(TAG, "play after shuffle failed: " + throwable.toString());
-                                callback.onFailed(new Exception(throwable));
-                            });
-                        })
-                        .setErrorCallback(throwable -> {
-                            Log.e(TAG, "shuffle failed: " + throwable.toString());
-                            callback.onFailed(new Exception(throwable));
-                        });
-            } else { // free users
-                mSpotifyAppRemote.getPlayerApi().play("spotify:playlist:" + this.playlist.id).setResultCallback(empty1 -> {
-                    callback.onSuccess(null);
-                }).setErrorCallback(throwable -> {
-                    Log.e(TAG, "playing for free users failed: " + throwable.toString());
-                    callback.onFailed(new Exception(throwable));
-                });
+    // NOTE: It is possible for a premium member to not be able to shuffle if they already have queued songs
+    public void play() {
+        PlayerApi api = mSpotifyAppRemote.getPlayerApi();
+
+        ClosureQueue<Void, Throwable> queue = new ClosureQueue<>();
+
+        /*
+            Set player shuffle to off if possible.
+            NOTE: Free users cannot turn off shuffle. It is also possible for a premium user NOT to
+                  be able to turn off shuffle if they previously had songs queued up.
+         */
+        queue.add((result, nextCallback) -> {
+            api.getPlayerState()
+                    .setResultCallback(playerState -> {
+                        if (!playerState.playbackRestrictions.canToggleShuffle) {
+                            nextCallback.onSuccess(null);
+                            return;
+                        }
+
+                        api.setShuffle(false)
+                                .setResultCallback(empty -> nextCallback.onSuccess(null))
+                                .setErrorCallback(throwable -> nextCallback.onFailed(throwable));
+                    })
+                    .setErrorCallback(throwable -> nextCallback.onFailed(throwable));
+        });
+
+        // Now start playing playlist
+        queue.add((result, nextCallback) -> {
+            String playlistUrl = "spotify:playlist:" + playlist.id;
+
+            api.play(playlistUrl)
+                    .setResultCallback(empty -> nextCallback.onSuccess(null))
+                    .setErrorCallback(throwable -> nextCallback.onFailed(throwable));
+        });
+
+        queue.run(new Callback<Void, Throwable>() {
+            @Override
+            public void onSuccess(Void result) {
+                // NOOP
             }
-        }).setErrorCallback(throwable -> {
-            Log.e(TAG, "failed to acquire player state in play: " + throwable.toString());
-            callback.onFailed(new Exception(throwable));
+
+            @Override
+            public void onFailed(Throwable result) {
+                Log.e(TAG, "Play playlist failed with error: " + result.toString());
+            }
         });
     }
 
@@ -205,14 +224,11 @@ class SpotifyPlayerService implements MusicPlayer {
     public void setPlayerPlaylist(BrunoPlaylist playlist) { this.playlist = playlist; }
 
     // Stop the player by pausing it
-    public void stop(Callback<Void, Exception> callback) {
+    public void stop() {
         mSpotifyAppRemote.getPlayerApi()
-                .pause().setResultCallback(empty -> {
-                    callback.onSuccess(null);
-                })
+                .pause()
                 .setErrorCallback(throwable -> {
-                    Log.e(TAG, "stop failed: " + throwable.toString());
-                    callback.onFailed(new Exception(throwable));
+                    Log.e(TAG, "Stop playlist failed with error: " + throwable.toString());
                 });
     }
 

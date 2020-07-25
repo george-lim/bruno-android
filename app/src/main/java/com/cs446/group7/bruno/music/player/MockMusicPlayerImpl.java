@@ -75,13 +75,11 @@ public class MockMusicPlayerImpl implements MusicPlayer {
         this.playlist = playlist;
     }
 
-    public void play(final Callback<Void, Exception> callback) {
+    public void play() {
         playSongsThread.start();
-        callback.onSuccess(null);
     }
 
-    public void stop(final Callback<Void, Exception> callback) {
+    public void stop() {
         playSongsThread.interrupt();
-        callback.onSuccess(null);
     }
 }
