@@ -40,6 +40,8 @@ class SpotifyPlaylistService implements PlaylistGenerator {
     private static final int REQUEST_MAX_RETRIES = 5;
     // Default is 1f (i.e. first request waits 2500MS, the next request waits 5000MS, etc...)
     private static final float REQUEST_BACKOFF_MULT = DefaultRetryPolicy.DEFAULT_BACKOFF_MULT;
+    // Could be expanded to use different playlists
+    public static final String DEFAULT_PLAYLIST_ID = "27q9PVUOHGeSJlz6jSgt2f";
 
     // Needs context for secret variables
     public SpotifyPlaylistService(Context context) {
@@ -51,11 +53,11 @@ class SpotifyPlaylistService implements PlaylistGenerator {
     // endpoint to provide the BrunoPlaylist requested by callback
     // All failures are sent back through callback.onFailed
     // Needs internet access to succeed, since it uses API calls
-    public void getPlaylist(String playlistId, Callback<BrunoPlaylist, Exception> callback) {
+    public void getPlaylist(Callback<BrunoPlaylist, Exception> callback) {
         getAuthorizationToken(new Callback<String, Exception>() {
             @Override
             public void onSuccess(String authToken) {
-                getPlaylistResponse(authToken, playlistId, callback);
+                getPlaylistResponse(authToken, DEFAULT_PLAYLIST_ID, callback);
             }
 
             @Override

@@ -23,7 +23,7 @@ public class MockPlaylistGeneratorImpl implements PlaylistGenerator {
         return clone;
     }
 
-    public void getPlaylist(String playlistId, Callback<BrunoPlaylist, Exception> callback) {
+    public void getPlaylist(Callback<BrunoPlaylist, Exception> callback) {
         ArrayList<BrunoTrack> tracks = new ArrayList<BrunoTrack>(5);
         ArrayList<String> artists = new ArrayList<String>(2);
         artists.add("Jimin");
