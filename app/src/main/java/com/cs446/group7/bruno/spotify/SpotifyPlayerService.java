@@ -172,7 +172,6 @@ class SpotifyPlayerService implements MusicPlayer {
 
     // Plays the playlist which is set by setPlaylist()
     // Note that calling this method multiple times will play the custom playlist from the beginning each time
-    // NOTE: It is possible for a premium member to not be able to shuffle if they already have queued songs
     public void play() {
         PlayerApi api = mSpotifyAppRemote.getPlayerApi();
 
