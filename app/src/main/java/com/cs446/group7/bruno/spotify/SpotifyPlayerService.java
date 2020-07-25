@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.Log;
 
 import com.cs446.group7.bruno.R;
+import com.cs446.group7.bruno.music.BrunoPlaylist;
 import com.cs446.group7.bruno.music.BrunoTrack;
 import com.cs446.group7.bruno.music.player.MusicPlayer;
 import com.cs446.group7.bruno.music.player.MusicPlayerError;
@@ -42,7 +43,7 @@ class SpotifyPlayerService implements MusicPlayer {
     private final String TAG = getClass().getSimpleName();
 
     private PlayerState currentPlayerState;
-    private String playlistId;
+    private BrunoPlaylist playlist;
 
     public SpotifyPlayerService() {
         spotifyServiceSubscribers = new ArrayList<>();
@@ -175,7 +176,7 @@ class SpotifyPlayerService implements MusicPlayer {
                 mSpotifyAppRemote.getPlayerApi()
                         .setShuffle(false)
                         .setResultCallback(empty -> {
-                            mSpotifyAppRemote.getPlayerApi().play("spotify:playlist:" + this.playlistId).setResultCallback(empty1 -> {
+                            mSpotifyAppRemote.getPlayerApi().play("spotify:playlist:" + this.playlist.id).setResultCallback(empty1 -> {
                                 callback.onSuccess(null);
                             }).setErrorCallback(throwable -> {
                                 Log.e(TAG, "play after shuffle failed: " + throwable.toString());
@@ -187,7 +188,7 @@ class SpotifyPlayerService implements MusicPlayer {
                             callback.onFailed(new Exception(throwable));
                         });
             } else { // free users
-                mSpotifyAppRemote.getPlayerApi().play("spotify:playlist:" + this.playlistId).setResultCallback(empty1 -> {
+                mSpotifyAppRemote.getPlayerApi().play("spotify:playlist:" + this.playlist.id).setResultCallback(empty1 -> {
                     callback.onSuccess(null);
                 }).setErrorCallback(throwable -> {
                     Log.e(TAG, "playing for free users failed: " + throwable.toString());
@@ -201,7 +202,7 @@ class SpotifyPlayerService implements MusicPlayer {
     }
 
     // Sets the playlist for the music player
-    public void setPlayerPlaylist(String playlistId) { this.playlistId = playlistId; }
+    public void setPlayerPlaylist(BrunoPlaylist playlist) { this.playlist = playlist; }
 
     // Stop the player by pausing it
     public void stop(Callback<Void, Exception> callback) {

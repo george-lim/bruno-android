@@ -119,7 +119,7 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
     }
 
     private void playPlaylist() {
-        musicPlayer.setPlayerPlaylist(RouteModel.DEFAULT_PLAYLIST_ID);
+        musicPlayer.setPlayerPlaylist(model.getPlaylist());
         musicPlayer.play(new Callback<Void, Exception>() {
             @Override
             public void onSuccess(Void result) { }
