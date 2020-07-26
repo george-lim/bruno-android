@@ -1,7 +1,6 @@
 package com.cs446.group7.bruno.ui.onboarding;
 
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -12,69 +11,89 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.cs446.group7.bruno.MainActivity;
 import com.cs446.group7.bruno.R;
-import com.cs446.group7.bruno.capability.Capability;
-import com.cs446.group7.bruno.capability.CapabilityService;
 
-public class OnboardingPermissionFragment extends Fragment {
+public class OnboardingPermissionFragment extends Fragment implements OnboardingPermissionViewModelDelegate {
 
     private OnboardingFragment onboardingFragment;
-    private CapabilityService capability;
+    private OnboardingPermissionViewModel viewModel;
+    private Button btnAllowAccess;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         onboardingFragment = (OnboardingFragment) this.getParentFragment();
-        capability = MainActivity.getCapabilityService();
+        viewModel = new OnboardingPermissionViewModel(getActivity().getApplicationContext(), this);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_onboarding_permission, container, false);
-        setupRequestStatus(view);
         Button btnSkip = view.findViewById(R.id.btn_skip);
         btnSkip.setOnClickListener(this::handleSkip);
-        Button btnAllowAccess = view.findViewById(R.id.btn_allow_access);
+        btnAllowAccess = view.findViewById(R.id.btn_allow_access);
         btnAllowAccess.setOnClickListener(this::handleAllowAccess);
         return view;
     }
 
-    private void setupRequestStatus(final View view) {
-        setupPermissionRequestStatus(
-                view.findViewById(R.id.location_permission_status),
-                capability.isPermissionEnabled(Capability.LOCATION),
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        viewModel.updateUserAccess();
+    }
+
+    private void handleSkip(final View view) {
+        viewModel.handleSkip();
+    }
+
+    private void handleAllowAccess(final View view) {
+        viewModel.handleAllowAccess();
+    }
+
+
+    public void updatePrimaryButton(final String text) {
+        btnAllowAccess.setText(text);
+    }
+
+    public void updateAllAccessRequestStatus(final boolean accessToLocationPermission,
+                                              final boolean accessToLocationService,
+                                              final boolean accessToActiveInternet,
+                                              final boolean accessToSpotify) {
+        updateAccessRequestStatus(
+                getView().findViewById(R.id.location_permission_status),
+                accessToLocationPermission,
                 getResources().getString(R.string.onboarding_request_location_permission_title),
                 getResources().getString(R.string.onboarding_request_location_permission_hint));
-        setupPermissionRequestStatus(
-                view.findViewById(R.id.location_hardware_status),
-                capability.isHardwareCapabilityEnabled(Capability.LOCATION),
+        updateAccessRequestStatus(
+                getView().findViewById(R.id.location_hardware_status),
+                accessToLocationService,
                 getResources().getString(R.string.onboarding_request_location_service_title),
                 getResources().getString(R.string.onboarding_request_location_service_hint));
-        setupPermissionRequestStatus(
-                view.findViewById(R.id.active_internet_status),
-                capability.isCapabilityEnabled(Capability.INTERNET),
+        updateAccessRequestStatus(
+                getView().findViewById(R.id.active_internet_status),
+                accessToActiveInternet,
                 getResources().getString(R.string.onboarding_request_active_internet_title),
                 getResources().getString(R.string.onboarding_request_active_internet_hint));
-        setupPermissionRequestStatus(
-                view.findViewById(R.id.spotify_status),
-                true,
+        updateAccessRequestStatus(
+                getView().findViewById(R.id.spotify_status),
+                accessToSpotify,
                 getResources().getString(R.string.onboarding_request_spotify_title),
                 getResources().getString(R.string.onboarding_request_spotify_hint));
     }
 
-    private void setupPermissionRequestStatus(final View view, final boolean enabled, final String title, final String hint) {
+    private void updateAccessRequestStatus(final View view, final boolean enabled, final String title, final String hint) {
         ImageView statusIcon = view.findViewById(R.id.request_status_icon);
         Drawable icon = enabled
                 ? getResources().getDrawable(R.drawable.ic_check_circle, null)
                 : getResources().getDrawable(R.drawable.ic_times_circle, null);
         icon.setColorFilter(enabled
-            ? getResources().getColor(R.color.colorGood, null)
-            : getResources().getColor(R.color.colorError, null), PorterDuff.Mode.SRC_IN);
+                ? getResources().getColor(R.color.colorGood, null)
+                : getResources().getColor(R.color.colorError, null), PorterDuff.Mode.SRC_IN);
         statusIcon.setImageDrawable(icon);
         TextView titleView = view.findViewById(R.id.request_title);
         titleView.setText(title);
@@ -82,33 +101,21 @@ public class OnboardingPermissionFragment extends Fragment {
         hintView.setText(hint);
     }
 
-    private void handleSkip(final View view) {
-        showAlertDialog(
-                null,
-                "Permission can be added in settings. Please make sure you alos",
-                getResources().getString(R.string.ok_button),
-                (dialogInterface, i) -> {
-                    onboardingFragment.moveToNextTab();
-                },
-                true
-        );
-    }
-
-    private void handleAllowAccess(final View view) {
-        setupRequestStatus(getView());
-    }
-
-    private void showAlertDialog(final String title,
-                                final String message,
-                                final String positiveButtonText,
-                                final DialogInterface.OnClickListener positiveButtonClickListener,
-                                boolean isCancelable) {
+    public void showSkipAllowAccessPopUp() {
         new AlertDialog.Builder(getContext())
-                .setTitle(title)
-                .setMessage(message)
-                .setPositiveButton(positiveButtonText, positiveButtonClickListener)
-                .setCancelable(isCancelable)
+                .setTitle(getResources().getString(R.string.onboarding_missing_access_title))
+                .setMessage(getResources().getString(R.string.onboarding_missing_access_text))
+                .setPositiveButton(
+                        getResources().getString(R.string.ok_button),
+                        (dialogInterface, i) -> {
+                           moveToNextTab();
+                        })
+                .setCancelable(true)
                 .create()
                 .show();
+    }
+
+    public void moveToNextTab() {
+        onboardingFragment.moveToNextTab();
     }
 }

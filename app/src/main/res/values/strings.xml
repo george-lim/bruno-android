@@ -19,6 +19,8 @@
     <string name="onboarding_request_location_service_hint">Bruno uses location to track your progress during an excerise.</string>
     <string name="onboarding_request_active_internet_title">Active Internet</string>
     <string name="onboarding_request_active_internet_hint">This is how you can discover new music.</string>
+    <string name="onboarding_missing_access_title">Missing Access</string>
+    <string name="onboarding_missing_access_text">You can continue to move ahead of the onboarding process. But Bruno requires these access to function properly. Permission can be turned on in settings.</string>
     <string name="onboarding_request_spotify_title">Spotify</string>
     <string name="onboarding_request_spotify_hint">Brunos requires Spotify Premium.</string>
 
