@@ -14,8 +14,6 @@ import java.util.Stack;
 
 public class OnboardingFragment extends Fragment {
 
-    private Stack<Integer> backstack;
-    private boolean saveToBackstack;
     private ViewPager2 viewPager;
     private View[] tabIndicators;
     private int currentTab;
@@ -28,11 +26,7 @@ public class OnboardingFragment extends Fragment {
         return root;
     }
 
-    private void setupOnboardingTabs(final View view) {
-        backstack = new Stack<>();
-        saveToBackstack = true;
-
-        viewPager = view.findViewById(R.id.onboarding_pager);
+    private void setupOnboardingTabs(final View view) {viewPager = view.findViewById(R.id.onboarding_pager);
         OnboardingPagerAdapter adapter = new OnboardingPagerAdapter(this);
         viewPager.setAdapter(adapter);
 
@@ -51,10 +45,6 @@ public class OnboardingFragment extends Fragment {
         @Override
         public void onPageSelected(int position) {
             currentTab = position;
-            if (saveToBackstack) {
-                backstack.push(currentTab);
-            }
-            // Update tab indicator UI
             for (int i = 0; i < OnboardingTab.NUM_TABS; i++) {
                 tabIndicators[i].setSelected(i == currentTab ? true : false);
             }
@@ -76,13 +66,17 @@ public class OnboardingFragment extends Fragment {
     }
 
     public boolean onBackPress() {
-        backstack.pop();
-        if (!backstack.empty()) {
-            saveToBackstack = false;
-            viewPager.setCurrentItem(backstack.peek());
-            saveToBackstack = true;
-            return true;
+        switch (currentTab) {
+            case OnboardingTab.RECORD:
+                viewPager.setCurrentItem(OnboardingTab.WELCOME); return true;
+            case OnboardingTab.AVATAR:
+                viewPager.setCurrentItem(OnboardingTab.RECORD); return true;
+            case OnboardingTab.PERMISSION:
+                viewPager.setCurrentItem(OnboardingTab.AVATAR); return true;
+            case OnboardingTab.DONE:
+                viewPager.setCurrentItem(OnboardingTab.PERMISSION); return true;
+            default:
+                return false;
         }
-        return false;
     }
 }
