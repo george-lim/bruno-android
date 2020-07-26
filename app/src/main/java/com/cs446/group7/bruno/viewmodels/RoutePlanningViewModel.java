@@ -228,9 +228,11 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
     private void onProcessColourizedRouteSuccess() {
         final List<RouteTrackMapping> routeTrackMappings = mapRouteToTracks(model.getRoute(), model.getPlaylist());
         final List<LatLng> routeCheckpoints = RouteProcessor.getCheckpoints(routeTrackMappings);
+        final List<LatLng> trackEndpoints = RouteProcessor.getTrackEndpoints(routeTrackMappings);
 
         model.setRouteTrackMappings(routeTrackMappings);
         model.setRouteCheckpoints(routeCheckpoints);
+        model.setTrackEndpoints(trackEndpoints);
 
         delegate.updateStartBtnText(resources.getString(R.string.route_planning_start));
         delegate.clearMap();

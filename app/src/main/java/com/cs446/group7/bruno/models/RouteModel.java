@@ -33,8 +33,10 @@ public class RouteModel extends ViewModel {
     private BrunoPlaylist playlist = null;
     private List<RouteTrackMapping> routeTrackMappings = null;
     private List<LatLng> routeCheckpoints = null;
+    private List<LatLng> trackEndpoints = null;
     private int steps = 0;
     private int currentCheckpointIndex = 0;
+    private int currentTrackEndpointIndex = 0;
 
     // MARK: - Getters and setters
 
@@ -79,6 +81,14 @@ public class RouteModel extends ViewModel {
         return routeCheckpoints.get(++currentCheckpointIndex);
     }
 
+    public LatLng getCurrentTrackEndpoint() {
+        return trackEndpoints.get(currentTrackEndpointIndex);
+    }
+
+    public void advanceTrackEndpoint() {
+        ++currentTrackEndpointIndex;
+    }
+
     public BrunoTrack getCurrentTrack() {
         return currentTrack;
     }
@@ -109,6 +119,10 @@ public class RouteModel extends ViewModel {
 
     public void setRouteCheckpoints(final List<LatLng> routeCheckpoints) {
         this.routeCheckpoints = routeCheckpoints;
+    }
+
+    public void setTrackEndpoints(final List<LatLng> trackEndpoints) {
+        this.trackEndpoints = trackEndpoints;
     }
 
     public void incrementStep() {

@@ -7,6 +7,7 @@ import com.cs446.group7.bruno.R;
 import com.cs446.group7.bruno.music.BrunoTrack;
 import com.cs446.group7.bruno.music.player.MusicPlayer;
 import com.cs446.group7.bruno.utils.Callback;
+import com.cs446.group7.bruno.utils.NoFailCallback;
 import com.spotify.android.appremote.api.ConnectionParams;
 import com.spotify.android.appremote.api.Connector;
 import com.spotify.android.appremote.api.SpotifyAppRemote;
@@ -221,6 +222,13 @@ class SpotifyPlayerService implements MusicPlayer {
     public BrunoTrack getCurrentTrack() {
         if (currentPlayerState == null || currentPlayerState.track == null) return null;
         return makeBrunoTrack(currentPlayerState.track);
+    }
+
+    public void getPlaybackPosition(NoFailCallback<Long> callback) {
+        if (!isConnected()) return;
+        mSpotifyAppRemote.getPlayerApi().getPlayerState().setResultCallback(playerState -> {
+            callback.onSuccess(playerState.playbackPosition);
+        });
     }
 
     // Converts Spotify's Track object to a BrunoTrack object

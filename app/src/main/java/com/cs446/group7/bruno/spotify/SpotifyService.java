@@ -6,6 +6,7 @@ import com.cs446.group7.bruno.music.BrunoPlaylist;
 import com.cs446.group7.bruno.music.BrunoTrack;
 import com.cs446.group7.bruno.music.playlist.PlaylistGenerator;
 import com.cs446.group7.bruno.utils.Callback;
+import com.cs446.group7.bruno.utils.NoFailCallback;
 import com.spotify.android.appremote.api.SpotifyAppRemote;
 
 // Acts as the main interface to Spotify
@@ -58,6 +59,11 @@ public class SpotifyService implements PlaylistGenerator {
 
     public BrunoTrack getCurrentTrack() {
         return playerService.getCurrentTrack();
+    }
+
+    public void getPlaybackPosition(NoFailCallback<Long> callback) {
+        if (!isConnected()) return;
+        playerService.getPlaybackPosition(callback);
     }
 
     // Only call which uses SpotifyPlaylistService

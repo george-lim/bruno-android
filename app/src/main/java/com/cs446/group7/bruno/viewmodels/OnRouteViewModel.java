@@ -194,6 +194,10 @@ public class OnRouteViewModel implements LocationServiceSubscriber, SpotifyServi
         // Checkpoint is counted if and only if  user is within the tolerance radius;
         // this is calculated dynamically as the location updates, which may be larger than what is drawn
         if (distanceFromCheckpoint <= toleranceRadius) {
+            // trackEndpoints are a subset of checkpoints
+            if (LatLngUtils.LatLngEquals(model.getCurrentCheckpoint(), model.getCurrentTrackEndpoint())) {
+                model.advanceTrackEndpoint();
+            }
             final LatLng nextCheckpoint = model.advanceCheckpoint();
 
             // End of route, no more checkpoints
@@ -204,6 +208,46 @@ public class OnRouteViewModel implements LocationServiceSubscriber, SpotifyServi
                 delegate.updateCheckpointMarker(nextCheckpoint, toleranceRadius);
             }
         }
+    }
+
+    /* Route progress refers to the distance to the next trackEndpoint, as well as how far
+       ahead or behind the song the user is based on their current speed. */
+    private void checkRouteProgress() {
+        final List<RouteTrackMapping> routeTrackMappings = model.getRouteTrackMappings();
+        if (routeTrackMappings.isEmpty()) {
+            Log.w(getClass().getSimpleName(), "RouteTrackMappings is empty! Route progress is not applicable!");
+            return;
+        }
+
+        LatLng currentLatLng = LatLngUtils.locationToLatLng(model.getCurrentLocation());
+        double distanceToTrackEndpoint =
+                LatLngUtils.getLatLngDistanceInMetres(currentLatLng, model.getCurrentTrackEndpoint());
+        delegate.updateDistanceToTrackEndpoint((int)distanceToTrackEndpoint + " m");
+
+        // placeholder displays until player and current track are ready
+        if (!MainActivity.getSpotifyService().isConnected() || model.getCurrentTrack() == null) {
+            delegate.updateProgressToTrackEndpoint("0 m",
+                    resources.getDrawable(R.drawable.ic_angle_double_up, null),
+                    resources.getColor(R.color.colorSecondaryVariant, null));
+            return;
+        }
+
+        MainActivity.getSpotifyService().getPlaybackPosition(playbackPosition -> {
+            long songDurationToCheckpoint = model.getCurrentTrack().duration - playbackPosition;
+            // expectedDistance is the predicted distance the user will travel before the current song ends
+            double expectedDistance = model.getCurrentLocation().getSpeed() * (songDurationToCheckpoint / 1000d);
+            int diff = (int)(expectedDistance - distanceToTrackEndpoint);
+
+            if (diff < 0) {
+                delegate.updateProgressToTrackEndpoint(-diff + " m",
+                        resources.getDrawable(R.drawable.ic_angle_double_down, null),
+                        resources.getColor(R.color.colorPrimary, null));
+            } else {
+                delegate.updateProgressToTrackEndpoint(diff + " m",
+                        resources.getDrawable(R.drawable.ic_angle_double_up, null),
+                        resources.getColor(R.color.colorSecondaryVariant, null));
+            }
+        });
     }
 
     /**
@@ -250,6 +294,7 @@ public class OnRouteViewModel implements LocationServiceSubscriber, SpotifyServi
         model.setCurrentLocation(location);
         delegate.animateCamera(LatLngUtils.locationToLatLng(location), location.getBearing(), CAMERA_TILT, CAMERA_ZOOM);
         checkCheckpointUpdates();
+        checkRouteProgress();
     }
 
     // MARK: - SpotifyServiceSubscriber methods

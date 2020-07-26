@@ -1,6 +1,7 @@
 package com.cs446.group7.bruno.viewmodels;
 
 import android.content.DialogInterface;
+import android.graphics.drawable.Drawable;
 
 import com.cs446.group7.bruno.routing.RouteTrackMapping;
 import com.google.android.gms.maps.model.LatLng;
@@ -31,4 +32,8 @@ public interface OnRouteViewModelDelegate {
                          final DialogInterface.OnClickListener negativeButtonClickListener,
                          boolean isCancelable);
     void navigateToPreviousScreen();
+    void updateDistanceToTrackEndpoint(final String distanceText);
+    void updateProgressToTrackEndpoint(final String progressText,
+                                       final Drawable progressIcon,
+                                       int colour);
 }
