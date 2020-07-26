@@ -210,8 +210,10 @@ public class OnRouteViewModel implements LocationServiceSubscriber, SpotifyServi
         }
     }
 
-    /* Route progress refers to the distance to the next trackEndpoint, as well as how far
-       ahead or behind the song the user is based on their current speed. */
+    /**
+     * Route progress refers to the distance to the next trackEndpoint, as well as how far
+     * ahead or behind the song the user is based on their current speed.
+     */
     private void checkRouteProgress() {
         final List<RouteTrackMapping> routeTrackMappings = model.getRouteTrackMappings();
         if (routeTrackMappings.isEmpty()) {

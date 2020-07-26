@@ -120,20 +120,4 @@ public class RouteProcessor {
 
         return result;
     }
-
-    /**
-     * TrackEndpoints are the endpoints of the last route segment in each route track mapping
-     *
-     * @param routeTrackMappings route track mappings of a route
-     * @return list of trackEndpoints
-     */
-    public static List<LatLng> getTrackEndpoints(final List<RouteTrackMapping> routeTrackMappings) {
-        List<LatLng> result = new ArrayList<>();
-        for (final RouteTrackMapping rtm : routeTrackMappings) {
-            int numSegments = rtm.routeSegments.size();
-            result.add(rtm.routeSegments.get(numSegments - 1).getEndLocation());
-        }
-
-        return result;
-    }
 }
