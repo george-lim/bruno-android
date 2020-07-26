@@ -118,7 +118,8 @@
                     android:layout_weight="1"
                     android:background="@drawable/btn_exit_route"
                     android:src="@drawable/ic_cancel"
-                    android:tint="@color/colorOnBackgroundLite" />
+                    android:tint="@color/colorOnBackgroundLite"
+                    android:contentDescription="@string/on_route_stop" />
             </LinearLayout>
         </androidx.cardview.widget.CardView>
     </LinearLayout>
