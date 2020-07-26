@@ -51,6 +51,8 @@
     <string name="run_preparation_title">Hold on
         tight</string>
     <string name="run_preparation_message">Bruno is preparing your route and music</string>
+    <string name="run_completion_title">Route Completed</string>
+    <string name="run_completion_message">Hooray! You have completed your exercise. You can find details in the Fitness Records tab.</string>
     <string name="spotify_error">Spotify Error</string>
     <string name="run_exit_title">Are you sure?</string>
     <string name="run_exit_message">Bruno doesn\'t like it when you quit in the middle, your current progress will be lost.</string>

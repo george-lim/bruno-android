@@ -1,6 +1,6 @@
 package com.cs446.group7.bruno.models;
 
-import androidx.lifecycle.ViewModel;
+import android.location.Location;
 
 import com.cs446.group7.bruno.music.BrunoPlaylist;
 import com.cs446.group7.bruno.music.BrunoTrack;
@@ -9,6 +9,8 @@ import com.cs446.group7.bruno.routing.RouteTrackMapping;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.List;
+
+import androidx.lifecycle.ViewModel;
 
 public class RouteModel extends ViewModel {
 
@@ -26,11 +28,13 @@ public class RouteModel extends ViewModel {
     private Mode mode = Mode.WALK;
     private int durationIndex = 0;
     private Route route = null;
-    private LatLng currentLocation = null;
+    private Location currentLocation = null;
     private BrunoTrack currentTrack = null;
     private BrunoPlaylist playlist = null;
     private List<RouteTrackMapping> routeTrackMappings = null;
+    private List<LatLng> routeCheckpoints = null;
     private int steps = 0;
+    private int currentCheckpointIndex = 0;
 
     // MARK: - Getters and setters
 
@@ -58,12 +62,21 @@ public class RouteModel extends ViewModel {
         this.route = route;
     }
 
-    public LatLng getCurrentLocation() {
+    public Location getCurrentLocation() {
         return currentLocation;
     }
 
-    public void setCurrentLocation(final LatLng currentLocation) {
+    public void setCurrentLocation(final Location currentLocation) {
         this.currentLocation = currentLocation;
+    }
+
+    public LatLng getCurrentCheckpoint() {
+        return routeCheckpoints.get(currentCheckpointIndex);
+    }
+
+    public LatLng advanceCheckpoint() {
+        if (currentCheckpointIndex >= routeCheckpoints.size() - 1) return null;
+        return routeCheckpoints.get(++currentCheckpointIndex);
     }
 
     public BrunoTrack getCurrentTrack() {
@@ -90,12 +103,24 @@ public class RouteModel extends ViewModel {
         this.routeTrackMappings = routeTrackMappings;
     }
 
+    public List<LatLng> getRouteCheckpoints() {
+        return routeCheckpoints;
+    }
+
+    public void setRouteCheckpoints(final List<LatLng> routeCheckpoints) {
+        this.routeCheckpoints = routeCheckpoints;
+    }
+
     public void incrementStep() {
         steps++;
     }
 
-    public void resetSteps() {
+    private void resetSteps() {
         steps = 0;
+    }
+
+    private void resetCheckpointIndex() {
+        currentCheckpointIndex = 0;
     }
 
     // MARK: - Public methods
@@ -112,6 +137,8 @@ public class RouteModel extends ViewModel {
         setCurrentTrack(null);
         setPlaylist(null);
         setRouteTrackMappings(null);
+        setRouteCheckpoints(null);
+        resetCheckpointIndex();
         resetSteps();
     }
 }

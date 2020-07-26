@@ -1,5 +1,7 @@
 package com.cs446.group7.bruno.utils;
 
+import android.location.Location;
+
 import com.google.android.gms.maps.model.LatLng;
 
 public class LatLngUtils {
@@ -16,5 +18,9 @@ public class LatLngUtils {
         // the haversine formula for distance between two points on a sphere
         return 2 * EARTH_RADIUS_METRES * Math.asin(Math.sqrt(haversine(diffLatRad) +
                 (Math.cos(start.latitude) * Math.cos(end.latitude) * haversine(diffLngRad))));
+    }
+
+    public static LatLng locationToLatLng(final Location location) {
+        return new LatLng(location.getLatitude(), location.getLongitude());
     }
 }
