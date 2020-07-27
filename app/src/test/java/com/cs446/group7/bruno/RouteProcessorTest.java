@@ -87,16 +87,11 @@ public class RouteProcessorTest {
         mockArtists.add("test");
         List<BrunoTrack> tracks = new LinkedList<>();
         tracks.add(new BrunoTrack("testName", "testAlbum", 280000, mockArtists));
-        long totalTrackDuration = 0;
-        for (BrunoTrack track : tracks) {
-            totalTrackDuration += track.duration;
-        }
 
         BrunoPlaylist playlist = new BrunoPlaylist(
+                "id",
                 "playlistName",
                 "playlistDescription",
-                tracks.size(),
-                totalTrackDuration,
                 tracks
         );
 
@@ -115,16 +110,11 @@ public class RouteProcessorTest {
         List<BrunoTrack> tracks = new LinkedList<>();
         tracks.add(new BrunoTrack("testName1", "testAlbum1", 140000, mockArtists));
         tracks.add(new BrunoTrack("testName2", "testAlbum2", 140000, mockArtists));
-        long totalTrackDuration = 0;
-        for (BrunoTrack track : tracks) {
-            totalTrackDuration += track.duration;
-        }
 
         BrunoPlaylist playlist = new BrunoPlaylist(
+                "id",
                 "playlistName",
                 "playlistDescription",
-                tracks.size(),
-                totalTrackDuration,
                 tracks
         );
 
@@ -150,16 +140,11 @@ public class RouteProcessorTest {
         mockArtists.add("test");
         List<BrunoTrack> tracks = new LinkedList<>();
         tracks.add(new BrunoTrack("testName1", "testAlbum1", 300000, mockArtists));
-        long totalTrackDuration = 0;
-        for (BrunoTrack track : tracks) {
-            totalTrackDuration += track.duration;
-        }
 
         BrunoPlaylist playlist = new BrunoPlaylist(
+                "id",
                 "playlistName",
                 "playlistDescription",
-                tracks.size(),
-                totalTrackDuration,
                 tracks
         );
 
@@ -178,16 +163,11 @@ public class RouteProcessorTest {
         List<BrunoTrack> tracks = new LinkedList<>();
         tracks.add(new BrunoTrack("testName1", "testAlbum1", 200000, mockArtists));
         tracks.add(new BrunoTrack("testName2", "testAlbum2", 300000, mockArtists));
-        long totalTrackDuration = 0;
-        for (BrunoTrack track : tracks) {
-            totalTrackDuration += track.duration;
-        }
 
         BrunoPlaylist playlist = new BrunoPlaylist(
+                "id",
                 "playlistName",
                 "playlistDescription",
-                tracks.size(),
-                totalTrackDuration,
                 tracks
         );
 
@@ -212,16 +192,11 @@ public class RouteProcessorTest {
         mockArtists.add("test");
         List<BrunoTrack> tracks = new LinkedList<>();
         tracks.add(new BrunoTrack("testName1", "testAlbum1", 140000, mockArtists));
-        long totalTrackDuration = 0;
-        for (BrunoTrack track : tracks) {
-            totalTrackDuration += track.duration;
-        }
 
         BrunoPlaylist playlist = new BrunoPlaylist(
+                "id",
                 "playlistName",
                 "playlistDescription",
-                tracks.size(),
-                totalTrackDuration,
                 tracks
         );
 
@@ -238,16 +213,10 @@ public class RouteProcessorTest {
         tracks.add(new BrunoTrack("testName2", "testAlbum2", 60000, mockArtists));
         tracks.add(new BrunoTrack("testName3", "testAlbum3", 200000, mockArtists));
 
-        long totalTrackDuration = 0;
-        for (BrunoTrack track : tracks) {
-            totalTrackDuration += track.duration;
-        }
-
         BrunoPlaylist playlist = new BrunoPlaylist(
+                "id",
                 "playlistName",
                 "playlistDescription",
-                tracks.size(),
-                totalTrackDuration,
                 tracks
         );
 
