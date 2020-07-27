@@ -149,6 +149,11 @@ class SpotifyPlayerService implements MusicPlayer {
     // Plays the playlist which is set by setPlaylist()
     // Note that calling this method multiple times will play the custom playlist from the beginning each time
     public void play() {
+        if (playlist == null) {
+            Log.w(TAG, "Missing playlist when calling play()");
+            return;
+        }
+
         PlayerApi api = mSpotifyAppRemote.getPlayerApi();
 
         ClosureQueue<Void, Throwable> queue = new ClosureQueue<>();

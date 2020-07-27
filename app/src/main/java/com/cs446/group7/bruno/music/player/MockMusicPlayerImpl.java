@@ -3,6 +3,7 @@ package com.cs446.group7.bruno.music.player;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 
 import com.cs446.group7.bruno.music.BrunoPlaylist;
 import com.cs446.group7.bruno.music.BrunoTrack;
@@ -76,10 +77,19 @@ public class MockMusicPlayerImpl implements MusicPlayer {
     }
 
     public void play() {
+        if (playlist == null) {
+            Log.w(getClass().getSimpleName(), "Missing playlist when calling play()");
+            return;
+        }
+
         playSongsThread.start();
     }
 
     public void stop() {
+        if (!playSongsThread.isAlive()) {
+            return;
+        }
+
         playSongsThread.interrupt();
     }
 
