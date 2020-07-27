@@ -23,7 +23,7 @@ public class MockPlaylistGeneratorImpl implements PlaylistGenerator {
         return clone;
     }
 
-    public void getPlaylist(String playlistId, Callback<BrunoPlaylist, Exception> callback) {
+    public void getPlaylist(final Callback<BrunoPlaylist, Exception> callback) {
         ArrayList<BrunoTrack> tracks = new ArrayList<BrunoTrack>(5);
         ArrayList<String> artists = new ArrayList<String>(2);
         artists.add("Jimin");
@@ -35,8 +35,8 @@ public class MockPlaylistGeneratorImpl implements PlaylistGenerator {
                     threeMinutes, cloneArtists(artists)));
         }
 
-        BrunoPlaylist playlist = new BrunoPlaylist("name", "description",
-                trackCount, threeMinutes * trackCount, tracks);
+        BrunoPlaylist playlist = new BrunoPlaylist("id", "name",
+                "description", tracks);
         Log.i(TAG, "getPlaylist(): Returning playlist: "
                 + playlist.name);
         callback.onSuccess(playlist);
