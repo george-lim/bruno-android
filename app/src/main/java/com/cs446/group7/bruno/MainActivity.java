@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -27,6 +28,9 @@ import com.cs446.group7.bruno.spotify.SpotifyService;
 import com.cs446.group7.bruno.ui.onroute.OnRouteFragment;
 import com.cs446.group7.bruno.ui.toplevel.TopLevelFragment;
 import com.cs446.group7.bruno.utils.NoFailCallback;
+import com.spotify.sdk.android.auth.AuthorizationClient;
+import com.spotify.sdk.android.auth.AuthorizationRequest;
+import com.spotify.sdk.android.auth.AuthorizationResponse;
 
 import java.util.HashMap;
 
@@ -45,6 +49,8 @@ public class MainActivity extends AppCompatActivity implements PermissionRequest
 
     // Counter for permission request codes
     private int currentRequestCode = 0;
+    private static final int SPOTIFY_REQUEST_CODE = 123;
+
     // Map request codes to active permission requests
     private HashMap<Integer, PermissionRequest> activePermissionRequests;
     private HashMap<Integer, HardwareRequest> activeHardwareRequests;
@@ -62,6 +68,16 @@ public class MainActivity extends AppCompatActivity implements PermissionRequest
         spotifyService = new SpotifyService(getApplicationContext());
         sensorService = new SensorService(getApplicationContext());
         volleyRequestQueue = Volley.newRequestQueue(getApplicationContext());
+
+        final String REDIRECT_URI = getApplicationContext().getResources().getString(R.string.spotify_redirect_uri);
+        final String CLIENT_ID = getApplicationContext().getResources().getString(R.string.spotify_client_id);
+        AuthorizationRequest.Builder builder = new AuthorizationRequest.Builder(
+                CLIENT_ID, AuthorizationResponse.Type.TOKEN, REDIRECT_URI);
+        builder.setShowDialog(false);
+        builder.setScopes(new String[]{"app-remote-control", "playlist-read-private"});
+        AuthorizationRequest request = builder.build();
+        //AuthorizationClient.openDownloadSpotifyActivity(this);
+        AuthorizationClient.openLoginActivity(this, SPOTIFY_REQUEST_CODE, request);
     }
 
     /**
@@ -122,6 +138,20 @@ public class MainActivity extends AppCompatActivity implements PermissionRequest
         if (request != null) {
             activePermissionRequests.remove(requestCode);
             request.getCallback().onSuccess(null);
+        }
+
+        if (requestCode == SPOTIFY_REQUEST_CODE) {
+            AuthorizationResponse response = AuthorizationClient.getResponse(resultCode, data);
+            switch (response.getType()) {
+                case TOKEN:
+                    Log.e("x", "GOT TOKEN");
+                    break;
+                case ERROR:
+                    Log.e("x", "GOT ERROR");
+                    break;
+                default:
+                    Log.e("x", "GOT DEFAULT");
+            }
         }
     }
 
