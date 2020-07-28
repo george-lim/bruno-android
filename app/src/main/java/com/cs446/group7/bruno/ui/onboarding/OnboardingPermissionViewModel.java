@@ -15,8 +15,6 @@ public class OnboardingPermissionViewModel {
 
     private Context context;
     private OnboardingPermissionViewModelDelegate delegate;
-    private CapabilityService capability;
-    private MusicPlayer spotify;
 
     private boolean accessToLocationPermission = false;
     private boolean accessToLocationService = false;
@@ -27,8 +25,6 @@ public class OnboardingPermissionViewModel {
     public OnboardingPermissionViewModel(final Context context, final OnboardingPermissionViewModelDelegate delegate) {
         this.context = context;
         this.delegate = delegate;
-        capability = MainActivity.getCapabilityService();
-        spotify = MainActivity.getSpotifyService().getPlayerService();
     }
 
     public void handleSkip() {
@@ -46,7 +42,9 @@ public class OnboardingPermissionViewModel {
         // Capability request are chained instead of requesting in bulk is to update UI in between to match state of
         // granted access to icon UI.
         NoFailClosureQueue<Void> queue = new NoFailClosureQueue<>();
-        queue.add((result, callback) -> capability.request(Capability.LOCATION, new Callback<Void, Void>() {
+        CapabilityService capabilityService = MainActivity.getCapabilityService();
+        MusicPlayer spotifyPlayer = MainActivity.getSpotifyService().getPlayerService();
+        queue.add((result, callback) -> capabilityService.request(Capability.LOCATION, new Callback<Void, Void>() {
             @Override
             public void onSuccess(Void result) {
                 updateUserAccess();
@@ -58,7 +56,7 @@ public class OnboardingPermissionViewModel {
                 callback.onSuccess(null);
             }
         }));
-        queue.add((result, callback) -> capability.request(Capability.INTERNET, new Callback<Void, Void>() {
+        queue.add((result, callback) -> capabilityService.request(Capability.INTERNET, new Callback<Void, Void>() {
             @Override
             public void onSuccess(Void result) {
                 updateUserAccess();
@@ -70,12 +68,12 @@ public class OnboardingPermissionViewModel {
                 callback.onSuccess(null);
             }
         }));
-        queue.add((result, callback) -> spotify.connect(context, new Callback<Void, MusicPlayerException>() {
+        queue.add((result, callback) -> spotifyPlayer.connect(context, new Callback<Void, MusicPlayerException>() {
             @Override
             public void onSuccess(Void result) {
                 accessToSpotify = true;
                 updateUserAccess();
-                spotify.disconnect();
+                spotifyPlayer.disconnect();
                 callback.onSuccess(null);
             }
 
@@ -88,9 +86,10 @@ public class OnboardingPermissionViewModel {
     }
 
     public void updateUserAccess() {
-        accessToLocationPermission = capability.isPermissionEnabled(Capability.LOCATION);
-        accessToLocationService = capability.isHardwareCapabilityEnabled(Capability.LOCATION);
-        accessToActiveInternet = capability.isCapabilityEnabled(Capability.INTERNET);
+        CapabilityService capabilityService = MainActivity.getCapabilityService();
+        accessToLocationPermission = capabilityService.isPermissionEnabled(Capability.LOCATION);
+        accessToLocationService = capabilityService.isHardwareCapabilityEnabled(Capability.LOCATION);
+        accessToActiveInternet = capabilityService.isCapabilityEnabled(Capability.INTERNET);
         updateAccessRequestStatus();
         updatePrimaryAction();
     }
