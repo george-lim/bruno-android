@@ -2,10 +2,12 @@ package com.cs446.group7.bruno.ui.onboarding;
 
 import android.content.Context;
 
+import com.cs446.group7.bruno.BuildConfig;
 import com.cs446.group7.bruno.MainActivity;
 import com.cs446.group7.bruno.R;
 import com.cs446.group7.bruno.capability.Capability;
 import com.cs446.group7.bruno.capability.CapabilityService;
+import com.cs446.group7.bruno.music.player.MockMusicPlayerImpl;
 import com.cs446.group7.bruno.music.player.MusicPlayer;
 import com.cs446.group7.bruno.music.player.MusicPlayerException;
 import com.cs446.group7.bruno.utils.Callback;
@@ -43,7 +45,7 @@ public class OnboardingPermissionViewModel {
         // granted access to icon UI.
         NoFailClosureQueue<Void> queue = new NoFailClosureQueue<>();
         CapabilityService capabilityService = MainActivity.getCapabilityService();
-        MusicPlayer spotifyPlayer = MainActivity.getSpotifyService().getPlayerService();
+        MusicPlayer spotifyPlayer = getMusicPlayer();
         queue.add((result, callback) -> capabilityService.request(Capability.LOCATION, new Callback<Void, Void>() {
             @Override
             public void onSuccess(Void result) {
@@ -83,6 +85,12 @@ public class OnboardingPermissionViewModel {
             }
         }));
         queue.run(result -> { /* NOOP since UI is already updated*/ });
+    }
+
+    private MusicPlayer getMusicPlayer() {
+        return BuildConfig.DEBUG
+                ? new MockMusicPlayerImpl()
+                : MainActivity.getSpotifyService().getPlayerService();
     }
 
     public void updateUserAccess() {
