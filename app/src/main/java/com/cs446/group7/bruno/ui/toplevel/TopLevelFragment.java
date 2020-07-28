@@ -53,7 +53,7 @@ public class TopLevelFragment extends Fragment implements BottomNavigationView.O
     private void setupBottomNavigation(final View view) {
         viewPager = view.findViewById(R.id.main_screen_pager);
         btmNav = view.findViewById(R.id.bttm_nav);
-        BottomNavPagerAdapter adaptor = new BottomNavPagerAdapter(getActivity());
+        BottomNavPagerAdapter adaptor = new BottomNavPagerAdapter(this);
         adaptor.addFragment(new RoutePlanningFragment());
         adaptor.addFragment(new FitnessRecordsFragment());
         adaptor.addFragment(new SettingsFragment());
