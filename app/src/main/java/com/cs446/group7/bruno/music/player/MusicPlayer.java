@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.cs446.group7.bruno.music.BrunoPlaylist;
 import com.cs446.group7.bruno.utils.Callback;
+import com.cs446.group7.bruno.utils.NoFailCallback;
 
 // Any music player should implement this interface
 public interface MusicPlayer {
@@ -20,4 +21,6 @@ public interface MusicPlayer {
     void stop();
     // Stops the current playlist and disconnects
     void stopAndDisconnect();
+    // Gets the playback position of the current song
+    void  getPlaybackPosition(NoFailCallback<Long> callback);
 }

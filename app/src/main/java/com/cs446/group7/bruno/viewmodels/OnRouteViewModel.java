@@ -220,14 +220,14 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
         delegate.updateDistanceToTrackEndpoint((int)distanceToTrackEndpoint + " m");
 
         // placeholder displays until player and current track are ready
-        if (!MainActivity.getSpotifyService().isConnected() || model.getCurrentTrack() == null) {
+        if (model.getCurrentTrack() == null) {
             delegate.updateProgressToTrackEndpoint("0 m",
                     resources.getDrawable(R.drawable.ic_angle_double_up, null),
                     resources.getColor(R.color.colorSecondaryVariant, null));
             return;
         }
 
-        MainActivity.getSpotifyService().getPlaybackPosition(playbackPosition -> {
+        musicPlayer.getPlaybackPosition(playbackPosition -> {
             long songDurationToCheckpoint = model.getCurrentTrack().duration - playbackPosition;
             // expectedDistance is the predicted distance the user will travel before the current song ends
             double expectedDistance = model.getCurrentLocation().getSpeed() * (songDurationToCheckpoint / 1000d);
