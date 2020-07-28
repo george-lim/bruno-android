@@ -6,8 +6,8 @@ import com.cs446.group7.bruno.MainActivity;
 import com.cs446.group7.bruno.R;
 import com.cs446.group7.bruno.capability.Capability;
 import com.cs446.group7.bruno.capability.CapabilityService;
-import com.cs446.group7.bruno.spotify.SpotifyService;
-import com.cs446.group7.bruno.spotify.SpotifyServiceError;
+import com.cs446.group7.bruno.music.player.MusicPlayer;
+import com.cs446.group7.bruno.music.player.MusicPlayerException;
 import com.cs446.group7.bruno.utils.Callback;
 import com.cs446.group7.bruno.utils.NoFailClosureQueue;
 
@@ -16,7 +16,7 @@ public class OnboardingPermissionViewModel {
     private Context context;
     private OnboardingPermissionViewModelDelegate delegate;
     private CapabilityService capability;
-    private SpotifyService spotify;
+    private MusicPlayer spotify;
 
     private boolean accessToLocationPermission = false;
     private boolean accessToLocationService = false;
@@ -28,7 +28,7 @@ public class OnboardingPermissionViewModel {
         this.context = context;
         this.delegate = delegate;
         capability = MainActivity.getCapabilityService();
-        spotify = MainActivity.getSpotifyService();
+        spotify = MainActivity.getSpotifyService().getPlayerService();
     }
 
     public void handleSkip() {
@@ -70,7 +70,7 @@ public class OnboardingPermissionViewModel {
                 callback.onSuccess(null);
             }
         }));
-        queue.add((result, callback) -> spotify.connect(context, new Callback<Void, SpotifyServiceError>() {
+        queue.add((result, callback) -> spotify.connect(context, new Callback<Void, MusicPlayerException>() {
             @Override
             public void onSuccess(Void result) {
                 accessToSpotify = true;
@@ -80,7 +80,7 @@ public class OnboardingPermissionViewModel {
             }
 
             @Override
-            public void onFailed(SpotifyServiceError result) {
+            public void onFailed(MusicPlayerException result) {
                 callback.onSuccess(null);
             }
         }));

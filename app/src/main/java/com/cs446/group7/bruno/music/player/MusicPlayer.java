@@ -1,18 +1,23 @@
 package com.cs446.group7.bruno.music.player;
 
-import com.cs446.group7.bruno.music.BrunoTrack;
+import android.content.Context;
+
+import com.cs446.group7.bruno.music.BrunoPlaylist;
 import com.cs446.group7.bruno.utils.Callback;
 
 // Any music player should implement this interface
 public interface MusicPlayer {
+    void connect(final Context context,
+                 final Callback<Void, MusicPlayerException> callback);
+    void disconnect();
+    void addSubscriber(final MusicPlayerSubscriber subscriber);
+    void removeSubscriber(final MusicPlayerSubscriber subscriber);
     // Sets the playlist which play() will start playing
-    void setPlayerPlaylist(String playlistId);
+    void setPlayerPlaylist(final BrunoPlaylist playlist);
     // Plays the playlist from the beginning
-    void play(Callback<Void, Exception> callback);
-    // Resumes the current playlist
-    void resume(Callback<Void, Exception> callback);
-    // Pauses the current playlist
-    void pause(Callback<Void, Exception> callback);
-    // Gets the currently playing track
-    BrunoTrack getCurrentTrack();
+    void play();
+    // Stops the current playlist
+    void stop();
+    // Stops the current playlist and disconnects
+    void stopAndDisconnect();
 }

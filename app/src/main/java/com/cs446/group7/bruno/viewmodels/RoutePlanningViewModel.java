@@ -26,7 +26,6 @@ import com.cs446.group7.bruno.routing.RouteGeneratorImpl;
 import com.cs446.group7.bruno.routing.RouteProcessor;
 import com.cs446.group7.bruno.routing.RouteTrackMapping;
 import com.cs446.group7.bruno.settings.SettingsService;
-import com.cs446.group7.bruno.spotify.SpotifyService;
 import com.cs446.group7.bruno.utils.Callback;
 import com.cs446.group7.bruno.utils.LatLngUtils;
 import com.cs446.group7.bruno.utils.NoFailCallback;
@@ -64,7 +63,7 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
         this.delegate = delegate;
 
         routeGenerator = getRouteGenerator(context);
-        playlistGenerator = getPlaylistGenerator(context);
+        playlistGenerator = getPlaylistGenerator();
 
         MainActivity.getLocationService().addSubscriber(this);
 
@@ -91,10 +90,10 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
                 : new RouteGeneratorImpl(context, googleMapsKey);
     }
 
-    private PlaylistGenerator getPlaylistGenerator(final Context context) {
+    private PlaylistGenerator getPlaylistGenerator() {
         return BuildConfig.DEBUG
                 ? new MockPlaylistGeneratorImpl()
-                : new SpotifyService(context);
+                : MainActivity.getSpotifyService().getPlaylistService();
     }
 
     private boolean hasColourizedRoute() {
@@ -168,7 +167,7 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
             return;
         }
 
-        playlistGenerator.getPlaylist(RouteModel.DEFAULT_PLAYLIST_ID, new Callback<BrunoPlaylist, Exception>() {
+        playlistGenerator.getPlaylist(new Callback<BrunoPlaylist, Exception>() {
             @Override
             public void onSuccess(BrunoPlaylist playlist) {
                 model.setPlaylist(playlist);
