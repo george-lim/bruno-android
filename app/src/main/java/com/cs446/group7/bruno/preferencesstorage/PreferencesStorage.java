@@ -21,21 +21,21 @@ public class PreferencesStorage {
         pref = PreferenceManager.getDefaultSharedPreferences(context);
     }
 
-    public boolean getBoolean(@NonNull final String key, @NonNull final boolean defaultVal) {
+    public boolean getBoolean(final String key, final boolean defaultVal) {
         return pref.getBoolean(key, defaultVal);
     }
 
-    public void putBoolean(@NonNull final String key, @NonNull final boolean value) {
+    public void putBoolean(final String key, final boolean value) {
         SharedPreferences.Editor editor = pref.edit();
         editor.putBoolean(key, value);
         editor.apply();
     }
 
-    public int getInt(@NonNull final String key, @NonNull final int defaultVal) {
+    public int getInt(final String key, final int defaultVal) {
         return pref.getInt(key, defaultVal);
     }
 
-    public void putInt(@NonNull final String key, @NonNull final int value) {
+    public void putInt(final String key, final int value) {
         SharedPreferences.Editor editor = pref.edit();
         editor.putInt(key, value);
         editor.apply();

@@ -87,8 +87,8 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
     }
 
     private void setupUI() {
-        PreferencesStorage pref = MainActivity.getPreferencesStorage();
-        int userAvatarDrawableResourceId = pref.getInt(PreferencesStorage.USER_AVATAR, PreferencesStorage.DEFAULT_AVATAR);
+        int userAvatarDrawableResourceId = MainActivity.getPreferencesStorage()
+                .getInt(PreferencesStorage.USER_AVATAR, PreferencesStorage.DEFAULT_AVATAR);
 
         delegate.setupUI(userAvatarDrawableResourceId);
 

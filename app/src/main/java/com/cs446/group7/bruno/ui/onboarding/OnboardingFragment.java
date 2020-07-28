@@ -10,8 +10,6 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import com.cs446.group7.bruno.R;
 
-import java.util.Stack;
-
 public class OnboardingFragment extends Fragment {
 
     private ViewPager2 viewPager;
@@ -19,23 +17,24 @@ public class OnboardingFragment extends Fragment {
     private int currentTab;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_onboarding, container, false);
         setupOnboardingTabs(root);
         return root;
     }
 
-    private void setupOnboardingTabs(final View view) {viewPager = view.findViewById(R.id.onboarding_pager);
+    private void setupOnboardingTabs(final View view) {
+        viewPager = view.findViewById(R.id.onboarding_pager);
         OnboardingPagerAdapter adapter = new OnboardingPagerAdapter(this);
         viewPager.setAdapter(adapter);
 
-        tabIndicators = new View[OnboardingTab.NUM_TABS];
-        tabIndicators[0] = view.findViewById(R.id.tab0_indicator);
-        tabIndicators[1] = view.findViewById(R.id.tab1_indicator);
-        tabIndicators[2] = view.findViewById(R.id.tab2_indicator);
-        tabIndicators[3] = view.findViewById(R.id.tab3_indicator);
-        tabIndicators[4] = view.findViewById(R.id.tab4_indicator);
+        tabIndicators = new View[]{
+                view.findViewById(R.id.tab0_indicator),
+                view.findViewById(R.id.tab1_indicator),
+                view.findViewById(R.id.tab2_indicator),
+                view.findViewById(R.id.tab3_indicator),
+                view.findViewById(R.id.tab4_indicator)
+        };
         currentTab = OnboardingTab.WELCOME;
         viewPager.setCurrentItem(currentTab);
         viewPager.registerOnPageChangeCallback(pageChangeCallback);
@@ -46,7 +45,7 @@ public class OnboardingFragment extends Fragment {
         public void onPageSelected(int position) {
             currentTab = position;
             for (int i = 0; i < OnboardingTab.NUM_TABS; i++) {
-                tabIndicators[i].setSelected(i == currentTab ? true : false);
+                tabIndicators[i].setSelected(i == currentTab);
             }
             super.onPageSelected(position);
         }
@@ -55,26 +54,39 @@ public class OnboardingFragment extends Fragment {
     public void moveToNextTab() {
         switch (currentTab) {
             case OnboardingTab.WELCOME:
-                viewPager.setCurrentItem(OnboardingTab.RECORD); break;
+                viewPager.setCurrentItem(OnboardingTab.RECORD);
+                break;
             case OnboardingTab.RECORD:
-                viewPager.setCurrentItem(OnboardingTab.AVATAR); break;
+                viewPager.setCurrentItem(OnboardingTab.AVATAR);
+                break;
             case OnboardingTab.AVATAR:
-                viewPager.setCurrentItem(OnboardingTab.PERMISSION); break;
+                viewPager.setCurrentItem(OnboardingTab.PERMISSION);
+                break;
             case OnboardingTab.PERMISSION:
-                viewPager.setCurrentItem(OnboardingTab.DONE); break;
+                viewPager.setCurrentItem(OnboardingTab.DONE);
+                break;
         }
     }
 
+    /**
+     * Backpress will bring user back to the logically previous tab based on onboarding flow.
+     *
+     * @return true if backpress is handled, otherwise false and delegate back to TopLevelFragment to handle
+     */
     public boolean onBackPress() {
         switch (currentTab) {
             case OnboardingTab.RECORD:
-                viewPager.setCurrentItem(OnboardingTab.WELCOME); return true;
+                viewPager.setCurrentItem(OnboardingTab.WELCOME);
+                return true;
             case OnboardingTab.AVATAR:
-                viewPager.setCurrentItem(OnboardingTab.RECORD); return true;
+                viewPager.setCurrentItem(OnboardingTab.RECORD);
+                return true;
             case OnboardingTab.PERMISSION:
-                viewPager.setCurrentItem(OnboardingTab.AVATAR); return true;
+                viewPager.setCurrentItem(OnboardingTab.AVATAR);
+                return true;
             case OnboardingTab.DONE:
-                viewPager.setCurrentItem(OnboardingTab.PERMISSION); return true;
+                viewPager.setCurrentItem(OnboardingTab.PERMISSION);
+                return true;
             default:
                 return false;
         }

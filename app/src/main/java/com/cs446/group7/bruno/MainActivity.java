@@ -26,7 +26,6 @@ import com.cs446.group7.bruno.preferencesstorage.PreferencesStorage;
 import com.cs446.group7.bruno.sensor.SensorService;
 import com.cs446.group7.bruno.spotify.SpotifyService;
 import com.cs446.group7.bruno.ui.onboarding.OnboardingFragment;
-import com.cs446.group7.bruno.ui.onboarding.OnboardingTab;
 import com.cs446.group7.bruno.ui.onroute.OnRouteFragment;
 import com.cs446.group7.bruno.ui.toplevel.TopLevelFragment;
 import com.cs446.group7.bruno.utils.NoFailCallback;

@@ -115,8 +115,8 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
             durationPickerDisplayedValues[i] = Integer.toString(RouteModel.DURATIONS_IN_MINUTES[i]);
         }
 
-        PreferencesStorage pref = MainActivity.getPreferencesStorage();
-        int userAvatarDrawableResourceId = pref.getInt(PreferencesStorage.USER_AVATAR, PreferencesStorage.DEFAULT_AVATAR);
+        int userAvatarDrawableResourceId = MainActivity.getPreferencesStorage()
+                .getInt(PreferencesStorage.USER_AVATAR, PreferencesStorage.DEFAULT_AVATAR);
 
         delegate.setupUI(
                 startBtnText,

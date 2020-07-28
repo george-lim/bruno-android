@@ -31,8 +31,7 @@ public class OnboardingPermissionFragment extends Fragment implements Onboarding
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_onboarding_permission, container, false);
         Button btnSkip = view.findViewById(R.id.btn_skip);
         btnSkip.setOnClickListener(this::handleSkip);
@@ -61,9 +60,9 @@ public class OnboardingPermissionFragment extends Fragment implements Onboarding
     }
 
     public void updateAllAccessRequestStatus(final boolean accessToLocationPermission,
-                                              final boolean accessToLocationService,
-                                              final boolean accessToActiveInternet,
-                                              final boolean accessToSpotify) {
+                                             final boolean accessToLocationService,
+                                             final boolean accessToActiveInternet,
+                                             final boolean accessToSpotify) {
         updateAccessRequestStatus(
                 getView().findViewById(R.id.location_permission_status),
                 accessToLocationPermission,
@@ -108,7 +107,7 @@ public class OnboardingPermissionFragment extends Fragment implements Onboarding
                 .setPositiveButton(
                         getResources().getString(R.string.ok_button),
                         (dialogInterface, i) -> {
-                           moveToNextTab();
+                            moveToNextTab();
                         })
                 .setCancelable(true)
                 .create()

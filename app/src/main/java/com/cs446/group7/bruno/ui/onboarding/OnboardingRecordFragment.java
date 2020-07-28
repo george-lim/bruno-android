@@ -22,8 +22,7 @@ public class OnboardingRecordFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_onboarding_record, container, false);
         Button btnNext = view.findViewById(R.id.btn_tab1_next);
         btnNext.setOnClickListener(this::handleNext);
