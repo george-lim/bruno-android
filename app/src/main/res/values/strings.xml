@@ -13,22 +13,21 @@
     <string name="next_button">Next</string>
     <string name="allow_access_button">Allow Access</string>
     <string name="onboarding_welcome">Welcome to Bruno!</string>
-    <string name="onboarding_welcome_text">Bruno is a fitness app that leverage music discovery as a means to motivate you to meet your fitness goals.</string>
-    <string name="onboarding_record">Keep Track of Yourself</string>
-    <string name="onboarding_record_text">Bruno keeps track of your past excerise so that you can always know what you did.</string>
-    <string name="onboarding_pick_your_avatar">Pick your avatar</string>
+    <string name="onboarding_welcome_text">Bruno is a fitness app that augments your walk or run routines with randomly generated routes and music discovery.</string>
+    <string name="onboarding_record">Learn More About Yourself</string>
+    <string name="onboarding_record_text">Bruno automatically archives your past routines, so you can monitor your progress.</string>
+    <string name="onboarding_pick_your_avatar">Pick Your Avatar</string>
     <string name="onboarding_request_location_permission_title">Location Permission</string>
-    <string name="onboarding_request_location_permission_hint">Bruno needs location to generate a route.</string>
+    <string name="onboarding_request_location_permission_hint">Generate routes and track route progress</string>
     <string name="onboarding_request_location_service_title">Location Service</string>
-    <string name="onboarding_request_location_service_hint">Bruno uses location to track your progress during an excerise.</string>
+    <string name="onboarding_request_location_service_hint">Generate routes and track route progress</string>
     <string name="onboarding_request_active_internet_title">Active Internet</string>
-    <string name="onboarding_request_active_internet_hint">This is how you can discover new music.</string>
+    <string name="onboarding_request_active_internet_hint">Load map data, generate routes, and stream music</string>
     <string name="onboarding_missing_access_title">Missing Access</string>
-    <string name="onboarding_missing_access_text">You can continue to move ahead of the onboarding process. But Bruno requires these access to function properly. Permission can be turned on in settings.</string>
+    <string name="onboarding_missing_access_text">Bruno requires the following capabilities to function properly. Permissions can always be granted from system settings.</string>
     <string name="onboarding_request_spotify_title">Spotify</string>
-    <string name="onboarding_request_spotify_hint">Brunos requires Spotify Premium.</string>
+    <string name="onboarding_request_spotify_hint">Requires Spotify Premium</string>
     <string name="onboarding_all_done">All Done!</string>
-
     <!--  Settings  -->
     <string name="about_bruno_title">About Bruno</string>
     <string name="version">Version</string>
