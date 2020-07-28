@@ -6,6 +6,8 @@ import android.content.SharedPreferences;
 import androidx.annotation.NonNull;
 import androidx.preference.PreferenceManager;
 
+import com.cs446.group7.bruno.R;
+
 public class PreferencesStorage {
     // Android's share preference key value storage
     private SharedPreferences pref;
@@ -13,6 +15,7 @@ public class PreferencesStorage {
     // String identifier to get share preference value
     public static String COMPLETED_ONBOARDING = "completed_onboarding";
     public static String USER_AVATAR = "user_avatar";
+    public static int DEFAULT_AVATAR = R.drawable.ic_avatar_1;
 
     public PreferencesStorage(@NonNull final Context context) {
         pref = PreferenceManager.getDefaultSharedPreferences(context);

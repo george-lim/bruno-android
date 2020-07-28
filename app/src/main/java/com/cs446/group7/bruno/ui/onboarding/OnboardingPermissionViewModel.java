@@ -9,7 +9,7 @@ import com.cs446.group7.bruno.capability.CapabilityService;
 import com.cs446.group7.bruno.spotify.SpotifyService;
 import com.cs446.group7.bruno.spotify.SpotifyServiceError;
 import com.cs446.group7.bruno.utils.Callback;
-import com.cs446.group7.bruno.utils.ClosureQueue;
+import com.cs446.group7.bruno.utils.NoFailClosureQueue;
 
 public class OnboardingPermissionViewModel {
 
@@ -43,62 +43,48 @@ public class OnboardingPermissionViewModel {
         }
 
         // Request access from the user
-        ClosureQueue<Void, Void> queue = new ClosureQueue<>();
-        queue.add((result, callback) -> {
-            capability.request(Capability.LOCATION, new Callback<Void, Void>() {
-                @Override
-                public void onSuccess(Void result) {
-                    updateUserAccess();
-                    callback.onSuccess(null);
-                }
-
-                @Override
-                public void onFailed(Void result) {
-                    callback.onSuccess(null);
-                }
-            });
-        });
-        queue.add((result, callback) -> {
-            capability.request(Capability.INTERNET, new Callback<Void, Void>() {
-                @Override
-                public void onSuccess(Void result) {
-                    updateUserAccess();
-                    callback.onSuccess(null);
-                }
-
-                @Override
-                public void onFailed(Void result) {
-                    callback.onSuccess(null);
-                }
-            });
-        });
-        queue.add((result, callback) -> {
-            spotify.connect(context, new Callback<Void, SpotifyServiceError>() {
-                @Override
-                public void onSuccess(Void result) {
-                    accessToSpotify = true;
-                    updateAccessRequestStatus();
-                    spotify.disconnect();
-                    callback.onSuccess(null);
-                }
-
-                @Override
-                public void onFailed(SpotifyServiceError result) {
-                    callback.onSuccess(null);
-                }
-            });
-        });
-        queue.run(new Callback<Void, Void>() {
+        // Capability request are chained instead of requesting in bulk is to update UI in between to match state of
+        // granted access to icon UI.
+        NoFailClosureQueue<Void> queue = new NoFailClosureQueue<>();
+        queue.add((result, callback) -> capability.request(Capability.LOCATION, new Callback<Void, Void>() {
             @Override
             public void onSuccess(Void result) {
                 updateUserAccess();
+                callback.onSuccess(null);
             }
 
             @Override
             public void onFailed(Void result) {
-                // NOOP
+                callback.onSuccess(null);
             }
-        });
+        }));
+        queue.add((result, callback) -> capability.request(Capability.INTERNET, new Callback<Void, Void>() {
+            @Override
+            public void onSuccess(Void result) {
+                updateUserAccess();
+                callback.onSuccess(null);
+            }
+
+            @Override
+            public void onFailed(Void result) {
+                callback.onSuccess(null);
+            }
+        }));
+        queue.add((result, callback) -> spotify.connect(context, new Callback<Void, SpotifyServiceError>() {
+            @Override
+            public void onSuccess(Void result) {
+                accessToSpotify = true;
+                updateUserAccess();
+                spotify.disconnect();
+                callback.onSuccess(null);
+            }
+
+            @Override
+            public void onFailed(SpotifyServiceError result) {
+                callback.onSuccess(null);
+            }
+        }));
+        queue.run(result -> { /* NOOP since UI is already updated*/ });
     }
 
     public void updateUserAccess() {

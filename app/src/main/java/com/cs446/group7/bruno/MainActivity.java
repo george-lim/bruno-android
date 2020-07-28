@@ -80,6 +80,7 @@ public class MainActivity extends AppCompatActivity implements PermissionRequest
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         int curContainerFragmentId = navController.getCurrentDestination().getId();
 
+        // NOTE: If the back button is pressed in OnboardingFragment, let the fragment handle it unless it delegates back
         if (curContainerFragmentId == R.id.fragment_onboarding) {
             NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager().getPrimaryNavigationFragment();
             OnboardingFragment onboardingFragment = (OnboardingFragment) navHostFragment.getChildFragmentManager().getPrimaryNavigationFragment();

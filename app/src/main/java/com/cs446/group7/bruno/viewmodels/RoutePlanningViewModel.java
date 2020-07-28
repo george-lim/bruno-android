@@ -117,7 +117,7 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
         }
 
         PreferencesStorage pref = MainActivity.getPreferencesStorage();
-        int userAvatarDrawableResourceId = pref.getInt(PreferencesStorage.USER_AVATAR, R.drawable.ic_avatar_1);
+        int userAvatarDrawableResourceId = pref.getInt(PreferencesStorage.USER_AVATAR, PreferencesStorage.DEFAULT_AVATAR);
 
         delegate.setupUI(
                 startBtnText,
