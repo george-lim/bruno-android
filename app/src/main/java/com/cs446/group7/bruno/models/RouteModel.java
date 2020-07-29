@@ -135,6 +135,10 @@ public class RouteModel extends ViewModel {
         currentCheckpointIndex = 0;
     }
 
+    private void resetTrackEndpointIndex() {
+        currentTrackEndpointIndex = 0;
+    }
+
     // MARK: - Public methods
 
     public int getDurationInMinutes() {
@@ -151,6 +155,7 @@ public class RouteModel extends ViewModel {
         setRouteTrackMappings(null);
         setRouteCheckpoints(null);
         resetCheckpointIndex();
+        resetTrackEndpointIndex();
         resetSteps();
     }
 }
