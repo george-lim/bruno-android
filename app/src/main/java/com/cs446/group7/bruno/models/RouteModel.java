@@ -79,6 +79,10 @@ public class RouteModel extends ViewModel {
         return routeCheckpoints.get(++currentCheckpointIndex);
     }
 
+    public int getCurrentCheckpointIndex() {
+        return currentCheckpointIndex;
+    }
+
     public LatLng getCurrentTrackEndpoint() {
         // index should always be valid because we would have finished the route otherwise
         if (currentTrackEndpointIndex >= routeTrackMappings.size()) return null;

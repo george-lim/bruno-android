@@ -209,6 +209,9 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
      * ahead or behind the song the user is based on their current speed.
      */
     private void checkRouteProgress() {
+        // fail-safe check, this method is never called if route has been completed
+        if (isRouteCompleted) return;
+
         final List<RouteTrackMapping> routeTrackMappings = model.getRouteTrackMappings();
         if (routeTrackMappings.isEmpty()) {
             Log.w(getClass().getSimpleName(), "RouteTrackMappings is empty! Route progress is not applicable!");
@@ -216,8 +219,7 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
         }
 
         LatLng currentLatLng = LatLngUtils.locationToLatLng(model.getCurrentLocation());
-        double distanceToTrackEndpoint =
-                LatLngUtils.getLatLngDistanceInMetres(currentLatLng, model.getCurrentTrackEndpoint());
+        double distanceToTrackEndpoint = calculateDistanceToTrackEndpoint(currentLatLng);
         delegate.updateDistanceToTrackEndpoint((int)distanceToTrackEndpoint + " m");
 
         // placeholder display until current track is ready
@@ -259,11 +261,33 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
         });
     }
 
+    private double calculateDistanceToTrackEndpoint(final LatLng currentLatLng) {
+        double distanceToTrackEndpoint =
+                LatLngUtils.getLatLngDistanceInMetres(currentLatLng, model.getCurrentCheckpoint());
+
+        int currentCheckpointIndex = model.getCurrentCheckpointIndex();
+        while (!model.getRouteCheckpoints().get(currentCheckpointIndex)
+                .equals(model.getCurrentTrackEndpoint())) {
+            /* ++currentCheckpointIndex is always within bounds because the next checkpoint is
+               either before or exactly at the currentTrackEndpoint, which is within bounds */
+            distanceToTrackEndpoint += LatLngUtils.getLatLngDistanceInMetres(
+                    model.getRouteCheckpoints().get(currentCheckpointIndex),
+                    model.getRouteCheckpoints().get(++currentCheckpointIndex));
+        }
+
+        return distanceToTrackEndpoint;
+    }
+
     /**
      * Logic when the route is completed goes here.
      */
     public void onRouteCompleted() {
         musicPlayer.stopAndDisconnect();
+
+        delegate.updateDistanceToTrackEndpoint("0 m");
+        delegate.updateProgressToTrackEndpoint("0 m",
+                resources.getDrawable(R.drawable.ic_angle_double_up, null),
+                resources.getColor(R.color.colorSecondaryVariant, null));
 
         // TODO: Currently temporary; in the future we will probably take the user to the fitness details of this run
         delegate.showAlertDialog(
