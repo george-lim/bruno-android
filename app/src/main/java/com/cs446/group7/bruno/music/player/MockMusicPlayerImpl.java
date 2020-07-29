@@ -19,6 +19,7 @@ public class MockMusicPlayerImpl implements MusicPlayer {
     private BrunoPlaylist playlist;
     private List<MusicPlayerSubscriber> subscribers;
     private Thread playSongsThread;
+    private long songStartTime;
 
     // MARK: - Lifecycle methods
 
@@ -43,6 +44,7 @@ public class MockMusicPlayerImpl implements MusicPlayer {
                     }
                 });
 
+                songStartTime = System.currentTimeMillis();
                 // Sleep for song duration to simulate song playing
                 Thread.sleep(track.duration);
             }
@@ -99,6 +101,6 @@ public class MockMusicPlayerImpl implements MusicPlayer {
     }
 
     public void getPlaybackPosition(final Callback<Long, Throwable> callback) {
-
+        callback.onSuccess(System.currentTimeMillis() - songStartTime);
     }
 }
