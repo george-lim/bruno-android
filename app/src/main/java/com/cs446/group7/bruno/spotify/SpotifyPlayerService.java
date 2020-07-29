@@ -16,6 +16,7 @@ import com.spotify.android.appremote.api.Connector;
 import com.spotify.android.appremote.api.PlayerApi;
 import com.spotify.android.appremote.api.SpotifyAppRemote;
 import com.spotify.android.appremote.api.error.CouldNotFindSpotifyApp;
+import com.spotify.android.appremote.api.error.SpotifyDisconnectedException;
 import com.spotify.protocol.types.Artist;
 import com.spotify.protocol.types.PlayerState;
 import com.spotify.protocol.types.Track;
@@ -222,6 +223,19 @@ class SpotifyPlayerService implements MusicPlayer {
                     Log.e(TAG, "Stop playlist failed with error: " + throwable.toString());
                     disconnect();
                 });
+    }
+
+    public void getPlaybackPosition(final Callback<Long, Throwable> callback) {
+        if (!isConnected()) {
+            callback.onFailed(new SpotifyDisconnectedException());
+            return;
+        }
+
+        mSpotifyAppRemote
+                .getPlayerApi()
+                .getPlayerState()
+                .setResultCallback(playerState -> callback.onSuccess(playerState.playbackPosition))
+                .setErrorCallback(callback::onFailed);
     }
 
     // Converts Spotify's Track object to a BrunoTrack object

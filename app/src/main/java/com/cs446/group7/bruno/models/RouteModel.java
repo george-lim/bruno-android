@@ -34,6 +34,7 @@ public class RouteModel extends ViewModel {
     private List<LatLng> routeCheckpoints = null;
     private int steps = 0;
     private int currentCheckpointIndex = 0;
+    private int currentTrackEndpointIndex = 0;
 
     // MARK: - Getters and setters
 
@@ -76,6 +77,22 @@ public class RouteModel extends ViewModel {
     public LatLng advanceCheckpoint() {
         if (currentCheckpointIndex >= routeCheckpoints.size() - 1) return null;
         return routeCheckpoints.get(++currentCheckpointIndex);
+    }
+
+    public int getCurrentCheckpointIndex() {
+        return currentCheckpointIndex;
+    }
+
+    public LatLng getCurrentTrackEndpoint() {
+        // index should always be valid because we would have finished the route otherwise
+        if (currentTrackEndpointIndex >= routeTrackMappings.size()) return null;
+        RouteTrackMapping currentRtm = routeTrackMappings.get(currentTrackEndpointIndex);
+        int numSegments = currentRtm.routeSegments.size();
+        return currentRtm.routeSegments.get(numSegments - 1).getEndLocation();
+    }
+
+    public void advanceTrackEndpoint() {
+        ++currentTrackEndpointIndex;
     }
 
     public BrunoTrack getCurrentTrack() {
@@ -122,6 +139,10 @@ public class RouteModel extends ViewModel {
         currentCheckpointIndex = 0;
     }
 
+    private void resetTrackEndpointIndex() {
+        currentTrackEndpointIndex = 0;
+    }
+
     // MARK: - Public methods
 
     public int getDurationInMinutes() {
@@ -138,6 +159,7 @@ public class RouteModel extends ViewModel {
         setRouteTrackMappings(null);
         setRouteCheckpoints(null);
         resetCheckpointIndex();
+        resetTrackEndpointIndex();
         resetSteps();
     }
 }
