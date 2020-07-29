@@ -36,4 +36,5 @@ public interface OnRouteViewModelDelegate {
     void updateProgressToTrackEndpoint(final String progressText,
                                        final Drawable progressIcon,
                                        int colour);
+    void showRouteInfoCard();
 }

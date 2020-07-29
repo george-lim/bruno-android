@@ -231,9 +231,9 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
         musicPlayer.getPlaybackPosition(new Callback<Long, Throwable>() {
             @Override
             public void onSuccess(Long playbackPosition) {
-                long songDurationToCheckpoint = model.getCurrentTrack().duration - playbackPosition;
+                long songDurationToEndpoint = model.getCurrentTrack().duration - playbackPosition;
                 // expectedDistance is the predicted distance the user will travel before the current song ends
-                double expectedDistance = model.getCurrentLocation().getSpeed() * (songDurationToCheckpoint / 1000d);
+                double expectedDistance = model.getCurrentLocation().getSpeed() * (songDurationToEndpoint / 1000d);
                 int diff = (int)(expectedDistance - distanceToTrackEndpoint);
 
                 if (diff < 0) {
@@ -312,6 +312,7 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
     public void onTrackChanged(BrunoTrack track) {
         model.setCurrentTrack(track);
         delegate.updateCurrentSongUI(track.name, track.album);
+        delegate.showRouteInfoCard();
     }
 
     // MARK: - PedometerSubscriber methods

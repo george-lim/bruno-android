@@ -63,7 +63,8 @@
             android:layout_margin="7dp"
             android:clickable="true"
             android:focusable="true"
-            card_view:cardCornerRadius="20dp">
+            card_view:cardCornerRadius="20dp"
+            android:visibility="invisible">
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"

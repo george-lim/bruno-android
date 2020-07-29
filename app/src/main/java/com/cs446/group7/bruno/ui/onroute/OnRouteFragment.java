@@ -47,6 +47,7 @@ public class OnRouteFragment extends Fragment implements OnRouteViewModelDelegat
 
     private GoogleMap map;
     private CardView trackInfoCardView;
+    private CardView routeInfoCardView;
     private TextView txtSongTitle;
     private TextView txtSongArtistInfo;
     private ImageView progressIndicator;
@@ -75,6 +76,7 @@ public class OnRouteFragment extends Fragment implements OnRouteViewModelDelegat
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_on_route, container, false);
         trackInfoCardView = view.findViewById(R.id.card_view_track_info);
+        routeInfoCardView = view.findViewById(R.id.card_view_route_info);
         txtSongTitle = view.findViewById(R.id.text_view_song_title);
         txtSongArtistInfo = view.findViewById(R.id.text_view_song_artist_info);
         progressIndicator = view.findViewById(R.id.image_view_progress_to_track_endpoint_icon);
@@ -258,5 +260,10 @@ public class OnRouteFragment extends Fragment implements OnRouteViewModelDelegat
         progressIndicator.setColorFilter(colour);
         progressIndicator.setVisibility(View.VISIBLE);
         txtProgressToTrackEndpoint.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void showRouteInfoCard() {
+        routeInfoCardView.setVisibility(View.VISIBLE);
     }
 }
