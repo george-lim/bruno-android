@@ -67,6 +67,63 @@ class SpotifyPlaylistService implements PlaylistGenerator {
         });
     }
 
+    // Retrieves a list of the user's playlists which they can select from for their fallback playlist
+    // NOTE: The tracks within the playlists will not be retrieved, since it is not used during playlist selection
+    public void getUserPlaylists(final String accessToken, final Callback<List<BrunoPlaylist>, Exception> callback) {
+        final StringRequest stringRequest = new StringRequest(Request.Method.GET,
+                "https://api.spotify.com/v1/me/playlists",
+                response -> {
+                    try {
+                        List<BrunoPlaylist> userPlaylists = new ArrayList<>();
+                        final JSONObject pagingJson = new JSONObject(response);
+                        final JSONArray playlists = pagingJson.getJSONArray("items");
+
+                        for ( int i = 0; i < playlists.length(); ++i) {
+                            final JSONObject currentPlaylist = playlists.getJSONObject(i);
+
+                            final String playlistId = currentPlaylist.getString("id");
+                            final String playlistName = currentPlaylist.getString("name");
+                            final String playlistDescription = currentPlaylist.getString("description");
+                            final JSONObject playlistTracks = currentPlaylist.getJSONObject("tracks");
+                            final int tracksLength = playlistTracks.getInt("total");
+                            final List<BrunoTrack> unfetchedTracks = new ArrayList<>(tracksLength);
+                            for (int j = 0; j < tracksLength; ++j) {
+                                unfetchedTracks.add(null);
+                            }
+
+                            userPlaylists.add(new BrunoPlaylist(playlistId, playlistName,
+                                    playlistDescription, unfetchedTracks));
+                        }
+
+                        callback.onSuccess(userPlaylists);
+                    } catch (JSONException e) {
+                        Log.e(TAG, "getUserPlaylists: JSON parsing failure: " + e.getMessage());
+                        callback.onFailed(e);
+                    }
+                }, error -> {
+            Log.e(TAG, "getUserPlaylists: Error with sending the request: " + error.getMessage());
+            callback.onFailed(new Exception(error));
+        })
+        {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                final Map<String, String> headers = new HashMap<String, String>();
+                headers.put("Content-Type", "application/json; charset=utf-8");
+                headers.put("Authorization", "Bearer " + accessToken);
+                return headers;
+            }
+        };
+
+        stringRequest.setTag(TAG);
+        stringRequest.setRetryPolicy(new DefaultRetryPolicy(
+                this.REQUEST_TIMEOUT_MS,
+                this.REQUEST_MAX_RETRIES,
+                this.REQUEST_BACKOFF_MULT
+        ));
+
+        MainActivity.getVolleyRequestQueue().add(stringRequest);
+    }
+
     // In order to use the Spotify API, an authorization token needs to be retrieved from Spotify
     // Using the client id and client secret, we can retrieve this token first before using the playlist endpoint
     private void getAuthorizationToken(final Callback<String, Exception> callback) {

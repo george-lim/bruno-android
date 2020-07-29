@@ -20,4 +20,12 @@ public class BrunoPlaylist {
         this.description = description;
         this.tracks = tracks;
     }
+
+    public int getLength() {
+        return tracks.size();
+    }
+
+    public boolean isTrackFetched() {
+        return tracks != null;
+    }
 }

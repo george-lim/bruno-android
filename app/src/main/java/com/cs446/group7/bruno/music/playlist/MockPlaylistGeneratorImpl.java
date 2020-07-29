@@ -7,6 +7,7 @@ import com.cs446.group7.bruno.music.BrunoTrack;
 import com.cs446.group7.bruno.utils.Callback;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class MockPlaylistGeneratorImpl implements PlaylistGenerator {
 
@@ -41,6 +42,19 @@ public class MockPlaylistGeneratorImpl implements PlaylistGenerator {
                 + playlist.name);
         callback.onSuccess(playlist);
 
+    }
+
+    public void getUserPlaylists(String accessToken, final Callback<List<BrunoPlaylist>, Exception> callback) {
+        ArrayList<String> artists = new ArrayList<String>(2);
+        artists.add("Jimin");
+        artists.add("Taylor Swift");
+        int trackCount = 200;
+        ArrayList<BrunoTrack> tracks = new ArrayList<BrunoTrack>(trackCount);
+        BrunoPlaylist playlist = new BrunoPlaylist("id", "name",
+                "description", tracks);
+        List<BrunoPlaylist> playlists = new ArrayList<>(1);
+        playlists.add(playlist);
+        callback.onSuccess(playlists);
     }
 
 }
