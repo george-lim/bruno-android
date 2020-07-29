@@ -45,7 +45,7 @@ public class OnboardingPermissionViewModel {
         // granted access to icon UI.
         NoFailClosureQueue<Void> queue = new NoFailClosureQueue<>();
         CapabilityService capabilityService = MainActivity.getCapabilityService();
-        MusicPlayer spotifyPlayer = getMusicPlayer();
+        MusicPlayer player = getMusicPlayer();
         queue.add((result, callback) -> capabilityService.request(Capability.LOCATION, new Callback<Void, Void>() {
             @Override
             public void onSuccess(Void result) {
@@ -70,12 +70,12 @@ public class OnboardingPermissionViewModel {
                 callback.onSuccess(null);
             }
         }));
-        queue.add((result, callback) -> spotifyPlayer.connect(context, new Callback<Void, MusicPlayerException>() {
+        queue.add((result, callback) -> player.connect(context, new Callback<Void, MusicPlayerException>() {
             @Override
             public void onSuccess(Void result) {
                 accessToSpotify = true;
                 updateUserAccess();
-                spotifyPlayer.disconnect();
+                player.disconnect();
                 callback.onSuccess(null);
             }
 
