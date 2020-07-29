@@ -5,6 +5,23 @@
         <item name="android:textColorSecondary">@color/colorOnBackgroundLite</item>
     </style>
 
+    <!--  Onboarding  -->
+    <style name="OnboardingPrimaryActionButton">
+        <item name="android:layout_width">250dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginBottom">25dp</item>
+        <item name="android:textColor">@color/colorBackground</item>
+        <item name="android:background">@drawable/btn_round_corners</item>
+        <item name="android:textSize">20sp</item>
+    </style>
+    <style name="OnboardingAvatarContainer">
+        <item name="android:layout_width">80dp</item>
+        <item name="android:layout_height">80dp</item>
+        <item name="android:padding">10dp</item>
+        <item name="android:layout_margin">15dp</item>
+        <item name="android:background">@drawable/img_btn_border</item>
+    </style>
+
     <!--  Settings  -->
     <style name="SettingItemContainer">
         <item name="android:layout_width">match_parent</item>

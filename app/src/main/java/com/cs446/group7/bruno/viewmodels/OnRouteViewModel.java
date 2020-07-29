@@ -16,13 +16,14 @@ import com.cs446.group7.bruno.music.BrunoTrack;
 import com.cs446.group7.bruno.music.player.MockMusicPlayerImpl;
 import com.cs446.group7.bruno.music.player.MusicPlayer;
 import com.cs446.group7.bruno.music.player.MusicPlayerException;
+import com.cs446.group7.bruno.music.player.MusicPlayerSubscriber;
+import com.cs446.group7.bruno.preferencesstorage.PreferencesStorage;
 import com.cs446.group7.bruno.routing.RouteTrackMapping;
 import com.cs446.group7.bruno.sensor.PedometerSubscriber;
 import com.cs446.group7.bruno.settings.SettingsService;
-import com.cs446.group7.bruno.music.player.MusicPlayerSubscriber;
 import com.cs446.group7.bruno.utils.Callback;
-import com.cs446.group7.bruno.utils.NoFailCallback;
 import com.cs446.group7.bruno.utils.LatLngUtils;
+import com.cs446.group7.bruno.utils.NoFailCallback;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.List;
@@ -86,7 +87,8 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
     }
 
     private void setupUI() {
-        int userAvatarDrawableResourceId = R.drawable.ic_avatar_1;
+        int userAvatarDrawableResourceId = MainActivity.getPreferencesStorage()
+                .getInt(PreferencesStorage.USER_AVATAR, PreferencesStorage.DEFAULT_AVATAR);
 
         delegate.setupUI(userAvatarDrawableResourceId);
 
