@@ -1,6 +1,7 @@
 package com.cs446.group7.bruno.ui.onboarding;
 
 import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -100,16 +101,16 @@ public class OnboardingPermissionFragment extends Fragment implements Onboarding
         hintView.setText(hint);
     }
 
-    public void showSkipAllowAccessPopUp() {
+    public void showPopUp(final String title,
+                     final String message,
+                     final String positiveButtonText,
+                     final DialogInterface.OnClickListener positiveButtonClickListener,
+                     boolean isCancelable) {
         new AlertDialog.Builder(getContext())
-                .setTitle(getResources().getString(R.string.onboarding_missing_access_title))
-                .setMessage(getResources().getString(R.string.onboarding_missing_access_text))
-                .setPositiveButton(
-                        getResources().getString(R.string.ok_button),
-                        (dialogInterface, i) -> {
-                            moveToNextTab();
-                        })
-                .setCancelable(true)
+                .setTitle(title)
+                .setMessage(message)
+                .setPositiveButton(positiveButtonText, positiveButtonClickListener)
+                .setCancelable(isCancelable)
                 .create()
                 .show();
     }

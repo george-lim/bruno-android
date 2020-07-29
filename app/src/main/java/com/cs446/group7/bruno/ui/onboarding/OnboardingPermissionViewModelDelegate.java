@@ -1,11 +1,17 @@
 package com.cs446.group7.bruno.ui.onboarding;
 
+import android.content.DialogInterface;
+
 public interface OnboardingPermissionViewModelDelegate {
     void updateAllAccessRequestStatus(boolean accessToLocationPermission,
                                       boolean accessToLocationService,
                                       boolean accessToActiveInternet,
                                       boolean accessToSpotify);
-    void showSkipAllowAccessPopUp();
-    void updatePrimaryButton(final String text);
+    void showPopUp(final String title,
+                   final String message,
+                   final String positiveButtonText,
+                   final DialogInterface.OnClickListener positiveButtonClickListener,
+                   boolean isCancelable);
+    void updatePrimaryButton(String text);
     void moveToNextTab();
 }

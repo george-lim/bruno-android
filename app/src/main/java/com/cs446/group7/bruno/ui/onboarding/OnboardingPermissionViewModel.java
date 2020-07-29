@@ -12,6 +12,7 @@ import com.cs446.group7.bruno.music.player.MusicPlayer;
 import com.cs446.group7.bruno.music.player.MusicPlayerException;
 import com.cs446.group7.bruno.utils.Callback;
 import com.cs446.group7.bruno.utils.NoFailClosureQueue;
+import com.spotify.android.appremote.api.error.CouldNotFindSpotifyApp;
 
 public class OnboardingPermissionViewModel {
 
@@ -30,7 +31,13 @@ public class OnboardingPermissionViewModel {
     }
 
     public void handleSkip() {
-        delegate.showSkipAllowAccessPopUp();
+        delegate.showPopUp(
+                context.getResources().getString(R.string.onboarding_missing_access_title),
+                context.getResources().getString(R.string.onboarding_missing_access_text),
+                context.getResources().getString(R.string.ok_button),
+                (dialogInterface, i) -> delegate.moveToNextTab(),
+                true
+        );
     }
 
     public void handleAllowAccess() {
@@ -80,7 +87,16 @@ public class OnboardingPermissionViewModel {
             }
 
             @Override
-            public void onFailed(MusicPlayerException result) {
+            public void onFailed(MusicPlayerException exception) {
+                if (exception.getCause() instanceof CouldNotFindSpotifyApp) {
+                    delegate.showPopUp(
+                            context.getResources().getString(R.string.onboarding_missing_spotify_installation_title),
+                            exception.getMessage(),
+                            context.getResources().getString(R.string.ok_button),
+                            (dialogInterface, i) -> dialogInterface.dismiss(),
+                            true
+                    );
+                }
                 callback.onSuccess(null);
             }
         }));

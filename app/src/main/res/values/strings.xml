@@ -23,10 +23,11 @@
     <string name="onboarding_request_location_service_hint">Generate routes and track route progress</string>
     <string name="onboarding_request_active_internet_title">Active Internet</string>
     <string name="onboarding_request_active_internet_hint">Load map data, generate routes, and stream music</string>
-    <string name="onboarding_missing_access_title">Missing Access</string>
-    <string name="onboarding_missing_access_text">Bruno requires the following capabilities to function properly. Permissions can always be granted from system settings.</string>
     <string name="onboarding_request_spotify_title">Spotify</string>
     <string name="onboarding_request_spotify_hint">Requires Spotify Premium</string>
+    <string name="onboarding_missing_spotify_installation_title">Spotify Not Installed</string>
+    <string name="onboarding_missing_access_title">Missing Access</string>
+    <string name="onboarding_missing_access_text">Bruno requires the following capabilities to function properly. Permissions can always be granted from system settings.</string>
     <string name="onboarding_all_done">All Done!</string>
     <!--  Settings  -->
     <string name="about_bruno_title">About Bruno</string>
