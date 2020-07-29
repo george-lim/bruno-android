@@ -8,7 +8,6 @@ import android.util.Log;
 import com.cs446.group7.bruno.music.BrunoPlaylist;
 import com.cs446.group7.bruno.music.BrunoTrack;
 import com.cs446.group7.bruno.utils.Callback;
-import com.cs446.group7.bruno.utils.NoFailCallback;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -99,7 +98,7 @@ public class MockMusicPlayerImpl implements MusicPlayer {
         disconnect();
     }
 
-    public void getPlaybackPosition(NoFailCallback<Long> callback) {
+    public void getPlaybackPosition(final Callback<Long, Throwable> callback) {
 
     }
 }

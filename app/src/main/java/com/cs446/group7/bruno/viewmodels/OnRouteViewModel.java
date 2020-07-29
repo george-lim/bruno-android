@@ -99,6 +99,7 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
         delegate.drawRoute(model.getRouteTrackMappings(), resources.getIntArray(R.array.colorRouteList));
 
         checkCheckpointUpdates();
+        checkRouteProgress();
 
         final Location currentLocation = model.getCurrentLocation();
         final float bearing = currentLocation.getBearing();
@@ -219,7 +220,7 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
                 LatLngUtils.getLatLngDistanceInMetres(currentLatLng, model.getCurrentTrackEndpoint());
         delegate.updateDistanceToTrackEndpoint((int)distanceToTrackEndpoint + " m");
 
-        // placeholder displays until player and current track are ready
+        // placeholder display until current track is ready
         if (model.getCurrentTrack() == null) {
             delegate.updateProgressToTrackEndpoint("0 m",
                     resources.getDrawable(R.drawable.ic_angle_double_up, null),
@@ -227,20 +228,33 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
             return;
         }
 
-        musicPlayer.getPlaybackPosition(playbackPosition -> {
-            long songDurationToCheckpoint = model.getCurrentTrack().duration - playbackPosition;
-            // expectedDistance is the predicted distance the user will travel before the current song ends
-            double expectedDistance = model.getCurrentLocation().getSpeed() * (songDurationToCheckpoint / 1000d);
-            int diff = (int)(expectedDistance - distanceToTrackEndpoint);
+        musicPlayer.getPlaybackPosition(new Callback<Long, Throwable>() {
+            @Override
+            public void onSuccess(Long playbackPosition) {
+                long songDurationToCheckpoint = model.getCurrentTrack().duration - playbackPosition;
+                // expectedDistance is the predicted distance the user will travel before the current song ends
+                double expectedDistance = model.getCurrentLocation().getSpeed() * (songDurationToCheckpoint / 1000d);
+                int diff = (int)(expectedDistance - distanceToTrackEndpoint);
 
-            if (diff < 0) {
-                delegate.updateProgressToTrackEndpoint(-diff + " m",
-                        resources.getDrawable(R.drawable.ic_angle_double_down, null),
-                        resources.getColor(R.color.colorPrimary, null));
-            } else {
-                delegate.updateProgressToTrackEndpoint(diff + " m",
-                        resources.getDrawable(R.drawable.ic_angle_double_up, null),
-                        resources.getColor(R.color.colorSecondaryVariant, null));
+                if (diff < 0) {
+                    delegate.updateProgressToTrackEndpoint(
+                            -diff + " m",
+                            resources.getDrawable(R.drawable.ic_angle_double_down, null),
+                            resources.getColor(R.color.colorPrimary, null));
+                } else {
+                    delegate.updateProgressToTrackEndpoint(
+                            diff + " m",
+                            resources.getDrawable(R.drawable.ic_angle_double_up, null),
+                            resources.getColor(R.color.colorSecondaryVariant, null));
+                }
+            }
+
+            @Override
+            public void onFailed(Throwable error) {
+                Log.e(getClass().getSimpleName(),
+                        error.getLocalizedMessage() == null
+                                ? "Error occurred when getting playback position"
+                                : error.getLocalizedMessage());
             }
         });
     }

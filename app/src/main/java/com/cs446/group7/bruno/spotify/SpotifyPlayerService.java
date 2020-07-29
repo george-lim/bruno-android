@@ -11,12 +11,12 @@ import com.cs446.group7.bruno.music.player.MusicPlayerException;
 import com.cs446.group7.bruno.music.player.MusicPlayerSubscriber;
 import com.cs446.group7.bruno.utils.Callback;
 import com.cs446.group7.bruno.utils.ClosureQueue;
-import com.cs446.group7.bruno.utils.NoFailCallback;
 import com.spotify.android.appremote.api.ConnectionParams;
 import com.spotify.android.appremote.api.Connector;
 import com.spotify.android.appremote.api.PlayerApi;
 import com.spotify.android.appremote.api.SpotifyAppRemote;
 import com.spotify.android.appremote.api.error.CouldNotFindSpotifyApp;
+import com.spotify.android.appremote.api.error.SpotifyDisconnectedException;
 import com.spotify.protocol.types.Artist;
 import com.spotify.protocol.types.PlayerState;
 import com.spotify.protocol.types.Track;
@@ -225,11 +225,17 @@ class SpotifyPlayerService implements MusicPlayer {
                 });
     }
 
-    public void getPlaybackPosition(NoFailCallback<Long> callback) {
-        if (!isConnected()) return;
-        mSpotifyAppRemote.getPlayerApi().getPlayerState().setResultCallback(playerState -> {
-            callback.onSuccess(playerState.playbackPosition);
-        });
+    public void getPlaybackPosition(final Callback<Long, Throwable> callback) {
+        if (!isConnected()) {
+            callback.onFailed(new SpotifyDisconnectedException());
+            return;
+        }
+
+        mSpotifyAppRemote
+                .getPlayerApi()
+                .getPlayerState()
+                .setResultCallback(playerState -> callback.onSuccess(playerState.playbackPosition))
+                .setErrorCallback(callback::onFailed);
     }
 
     // Converts Spotify's Track object to a BrunoTrack object
