@@ -189,7 +189,7 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
         // this is calculated dynamically as the location updates, which may be larger than what is drawn
         if (distanceFromCheckpoint <= toleranceRadius) {
             // trackEndpoints are a subset of checkpoints
-            if (LatLngUtils.LatLngEquals(model.getCurrentCheckpoint(), model.getCurrentTrackEndpoint())) {
+            if (model.getCurrentCheckpoint().equals(model.getCurrentTrackEndpoint())) {
                 model.advanceTrackEndpoint();
             }
             final LatLng nextCheckpoint = model.advanceCheckpoint();

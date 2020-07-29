@@ -23,9 +23,4 @@ public class LatLngUtils {
     public static LatLng locationToLatLng(final Location location) {
         return new LatLng(location.getLatitude(), location.getLongitude());
     }
-
-    public static boolean LatLngEquals(final LatLng pointA, final LatLng pointB) {
-        return pointA.latitude == pointB.latitude &&
-                pointA.longitude == pointB.longitude;
-    }
 }
