@@ -11,6 +11,11 @@
         android:label="fragment_top_level"
         tools:layout="@layout/fragment_top_level">
         <action
+            android:id="@+id/action_fragmenttoplevel_to_fragmentonboarding"
+            app:destination="@id/fragment_onboarding"
+            app:popUpTo="@id/fragment_top_lvl"
+            app:popUpToInclusive="true" />
+        <action
             android:id="@+id/action_fragmenttoplevel_to_fragmentonroute"
             app:destination="@id/fragment_on_route" />
         <action
@@ -25,6 +30,18 @@
         <action
             android:id="@+id/action_fragmenttoplvl_to_fragmentcredits"
             app:destination="@id/fragment_credits" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/fragment_onboarding"
+        android:name="com.cs446.group7.bruno.ui.onboarding.OnboardingFragment"
+        android:label="fragment_onboarding"
+        tools:layout="@layout/fragment_onboarding">
+        <action
+            android:id="@+id/action_fragmentonboarding_to_fragmenttoplevel"
+            app:destination="@id/fragment_top_lvl"
+            app:popUpTo="@id/fragment_onboarding"
+            app:popUpToInclusive="true" />
     </fragment>
 
     <fragment

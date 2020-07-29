@@ -122,7 +122,7 @@
                     android:paddingLeft="20dp"
                     android:paddingRight="20dp"
                     android:layout_marginBottom="12.5dp"
-                    android:background="@drawable/btn_start_exercise"
+                    android:background="@drawable/btn_round_corners"
                     android:textColor="@color/colorBackground"
                     android:textSize="20sp"
                     android:text="@string/route_planning_create_route" />
