@@ -13,6 +13,7 @@
     <string name="get_started_button">Get Started</string>
     <string name="next_button">Next</string>
     <string name="allow_access_button">Allow Access</string>
+    <string name="save_button">Save</string>
     <string name="onboarding_welcome">Welcome to Bruno!</string>
     <string name="onboarding_welcome_text">Bruno is a fitness app that augments your walk or run routines with randomly generated routes and music discovery.</string>
     <string name="onboarding_record">Learn More About Yourself</string>
@@ -29,11 +30,15 @@
     <string name="onboarding_missing_spotify_installation_title">Spotify Not Installed</string>
     <string name="onboarding_missing_access_title">Missing Access</string>
     <string name="onboarding_missing_access_text">Bruno requires the following capabilities to function properly. Permissions can always be granted from system settings.</string>
+    <string name="onboarding_fallback_playlist_title">Pick a Fallback Playlist</string>
+    <string name="onboarding_fallback_playlist_hint">Select a Spotify playlist to use during your route if you lose connection to the Internet. Make sure that this playlist is downloaded on your device.</string>
     <string name="onboarding_all_done">All Done!</string>
     <!--  Settings  -->
     <string name="settings_user_preferences_title">Your Preferences</string>
     <string name="settings_avatar_title">Avatar</string>
     <string name="settings_avatar_hint">Pick a new avatar.</string>
+    <string name="settings_fallback_playlist_title">Fallback Playlist</string>
+    <string name="settings_fallback_playlist_hint">Spotify playlist used when you lose Internet connection</string>
     <string name="about_bruno_title">About Bruno</string>
     <string name="version">Version</string>
     <string name="terms_and_conditions">Terms and Conditions</string>
@@ -60,4 +65,6 @@
     <string name="run_exit_title">Are you exhausted?</string>
     <string name="run_exit_message">Bruno doesn\'t like it when you quit in the middle. He will stop playing your music.</string>
     <string name="on_route_stop">EXIT</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

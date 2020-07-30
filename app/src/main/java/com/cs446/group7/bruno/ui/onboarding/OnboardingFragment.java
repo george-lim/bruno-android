@@ -33,7 +33,8 @@ public class OnboardingFragment extends Fragment {
                 view.findViewById(R.id.tab1_indicator),
                 view.findViewById(R.id.tab2_indicator),
                 view.findViewById(R.id.tab3_indicator),
-                view.findViewById(R.id.tab4_indicator)
+                view.findViewById(R.id.tab4_indicator),
+                view.findViewById(R.id.tab5_indicator)
         };
         currentTab = OnboardingTab.WELCOME;
         viewPager.setCurrentItem(currentTab);
@@ -63,6 +64,9 @@ public class OnboardingFragment extends Fragment {
                 viewPager.setCurrentItem(OnboardingTab.PERMISSION);
                 break;
             case OnboardingTab.PERMISSION:
+                viewPager.setCurrentItem(OnboardingTab.FALLBACK_PLAYLIST);
+                break;
+            case OnboardingTab.FALLBACK_PLAYLIST:
                 viewPager.setCurrentItem(OnboardingTab.DONE);
                 break;
         }
@@ -84,8 +88,11 @@ public class OnboardingFragment extends Fragment {
             case OnboardingTab.PERMISSION:
                 viewPager.setCurrentItem(OnboardingTab.AVATAR);
                 return true;
-            case OnboardingTab.DONE:
+            case OnboardingTab.FALLBACK_PLAYLIST:
                 viewPager.setCurrentItem(OnboardingTab.PERMISSION);
+                return true;
+            case OnboardingTab.DONE:
+                viewPager.setCurrentItem(OnboardingTab.FALLBACK_PLAYLIST);
                 return true;
             default:
                 return false;
