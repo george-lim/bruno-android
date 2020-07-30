@@ -12,6 +12,7 @@ import com.cs446.group7.bruno.R;
 import com.cs446.group7.bruno.music.BrunoPlaylist;
 import com.cs446.group7.bruno.music.BrunoTrack;
 import com.cs446.group7.bruno.music.playlist.PlaylistGenerator;
+import com.cs446.group7.bruno.music.playlist.PlaylistInfo;
 import com.cs446.group7.bruno.utils.Callback;
 
 import org.json.JSONArray;
@@ -69,12 +70,12 @@ class SpotifyPlaylistService implements PlaylistGenerator {
 
     // Retrieves a list of the user's playlists which they can select from for their fallback playlist
     // NOTE: The tracks within the playlists will not be retrieved, since it is not used during playlist selection
-    public void getUserPlaylists(final String accessToken, final Callback<List<BrunoPlaylist>, Exception> callback) {
+    public void getUserPlaylists(final String accessToken, final Callback<List<PlaylistInfo>, Exception> callback) {
         final StringRequest stringRequest = new StringRequest(Request.Method.GET,
                 "https://api.spotify.com/v1/me/playlists",
                 response -> {
                     try {
-                        List<BrunoPlaylist> userPlaylists = new ArrayList<>();
+                        List<PlaylistInfo> userPlaylists = new ArrayList<>();
                         final JSONObject pagingJson = new JSONObject(response);
                         final JSONArray playlists = pagingJson.getJSONArray("items");
 
@@ -86,13 +87,9 @@ class SpotifyPlaylistService implements PlaylistGenerator {
                             final String playlistDescription = currentPlaylist.getString("description");
                             final JSONObject playlistTracks = currentPlaylist.getJSONObject("tracks");
                             final int tracksLength = playlistTracks.getInt("total");
-                            final List<BrunoTrack> unfetchedTracks = new ArrayList<>(tracksLength);
-                            for (int j = 0; j < tracksLength; ++j) {
-                                unfetchedTracks.add(null);
-                            }
 
-                            userPlaylists.add(new BrunoPlaylist(playlistId, playlistName,
-                                    playlistDescription, unfetchedTracks));
+                            userPlaylists.add(new PlaylistInfo(playlistId, playlistName,
+                                    playlistDescription, tracksLength));
                         }
 
                         callback.onSuccess(userPlaylists);

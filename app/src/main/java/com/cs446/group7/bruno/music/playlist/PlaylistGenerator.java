@@ -9,5 +9,5 @@ import java.util.List;
 public interface PlaylistGenerator {
     // Gets a BrunoPlaylist. May require an API call.
     void getPlaylist(final Callback<BrunoPlaylist, Exception> callback);
-    void getUserPlaylists(final String accessToken, final Callback<List<BrunoPlaylist>, Exception> callback);
+    void getUserPlaylists(final String accessToken, final Callback<List<PlaylistInfo>, Exception> callback);
 }
