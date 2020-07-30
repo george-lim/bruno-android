@@ -61,6 +61,7 @@ public class OnRouteFragment extends Fragment implements OnRouteViewModelDelegat
     private OnRouteViewModel viewModel;
 
     private ProgressDialog progressDialog;
+    private AlertDialog alertDialog;
     private Marker userMarker;
     private Marker checkpointMarker;
     private Circle checkpointCircle;
@@ -216,13 +217,21 @@ public class OnRouteFragment extends Fragment implements OnRouteViewModelDelegat
                                 final String positiveButtonText,
                                 final DialogInterface.OnClickListener positiveButtonClickListener,
                                 boolean isCancelable) {
-        new AlertDialog.Builder(getContext())
+
+        // We don't want multiple, overlapping dialogues
+        if (alertDialog != null) {
+            alertDialog.dismiss();
+        }
+
+        alertDialog = new AlertDialog.Builder(getContext())
                 .setTitle(title)
                 .setMessage(message)
                 .setPositiveButton(positiveButtonText, positiveButtonClickListener)
+                .setOnCancelListener(dialogInterface -> alertDialog = null)
                 .setCancelable(isCancelable)
-                .create()
-                .show();
+                .create();
+
+        alertDialog.show();
     }
 
     @Override
@@ -233,14 +242,21 @@ public class OnRouteFragment extends Fragment implements OnRouteViewModelDelegat
                                 final String negativeButtonText,
                                 final DialogInterface.OnClickListener negativeButtonClickListener,
                                 boolean isCancelable) {
-        new AlertDialog.Builder(getContext())
+
+        if (alertDialog != null) {
+            alertDialog.dismiss();
+        }
+
+        alertDialog = new AlertDialog.Builder(getContext())
                 .setTitle(title)
                 .setMessage(message)
                 .setPositiveButton(positiveButtonText, positiveButtonClickListener)
                 .setNegativeButton(negativeButtonText, negativeButtonClickListener)
+                .setOnCancelListener(dialogInterface -> alertDialog = null)
                 .setCancelable(isCancelable)
-                .create()
-                .show();
+                .create();
+
+        alertDialog.show();
     }
 
     @Override
