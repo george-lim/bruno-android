@@ -20,9 +20,8 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
 import com.cs446.group7.bruno.R;
+import com.cs446.group7.bruno.colourizedroute.ColourizedRoute;
 import com.cs446.group7.bruno.models.RouteModel;
-import com.cs446.group7.bruno.routing.RouteSegment;
-import com.cs446.group7.bruno.routing.RouteTrackMapping;
 import com.cs446.group7.bruno.utils.BitmapUtils;
 import com.cs446.group7.bruno.utils.MapDrawingUtils;
 import com.cs446.group7.bruno.viewmodels.RoutePlanningViewModel;
@@ -37,7 +36,6 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class RoutePlanningFragment extends Fragment implements RoutePlanningViewModelDelegate {
@@ -90,7 +88,10 @@ public class RoutePlanningFragment extends Fragment implements RoutePlanningView
             map = googleMap;
 
             RouteModel model = new ViewModelProvider(requireActivity()).get(RouteModel.class);
-            viewModel = new RoutePlanningViewModel(getActivity().getApplicationContext(), model, this);
+            viewModel = new RoutePlanningViewModel(
+                    getActivity().getApplicationContext(),
+                    model,
+                    this);
         });
     }
 
@@ -182,19 +183,10 @@ public class RoutePlanningFragment extends Fragment implements RoutePlanningView
         userMarker = null;
     }
 
-    public void drawRoute(final List<RouteTrackMapping> routeTrackMappings, final int[] colours) {
-        if (routeTrackMappings.size() == 0) return;
+    public void drawRoute(@NonNull final ColourizedRoute colourizedRoute) {
+        MapDrawingUtils.drawColourizedRoute(colourizedRoute, map);
 
-        MapDrawingUtils.drawColourizedRoute(routeTrackMappings, colours, map);
-
-        final List<LatLng> decodedPath = new ArrayList<>();
-        for (RouteTrackMapping rtm : routeTrackMappings) {
-            for (RouteSegment rs : rtm.routeSegments) {
-                decodedPath.add(rs.getStartLocation());
-            }
-            decodedPath.add(rtm.routeSegments.get(rtm.routeSegments.size() - 1).getEndLocation());
-        }
-
+        List<LatLng> checkpoints = colourizedRoute.getCheckpoints();
         DisplayMetrics displayMetrics = getContext().getResources().getDisplayMetrics();
         final float cardViewHeightDp = cardView.getHeight() / displayMetrics.density;
         final float mapFragmentHeightDp = mapFragmentView.getHeight() / displayMetrics.density;
@@ -202,7 +194,7 @@ public class RoutePlanningFragment extends Fragment implements RoutePlanningView
         final double blockedScreenFraction = (cardViewHeightDp + 40) / mapFragmentHeightDp;
 
         LatLngBounds.Builder boundsBuilder = new LatLngBounds.Builder();
-        for (final LatLng p : decodedPath) {
+        for (final LatLng p : checkpoints) {
             boundsBuilder.include(p);
         }
 

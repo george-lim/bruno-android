@@ -17,10 +17,6 @@ public class Route {
         this.routeSegments = calculateSegments(decodedPath);
     }
 
-    public List<LatLng> getDecodedPath() {
-        return decodedPath;
-    }
-
     public List<RouteSegment> getRouteSegments() {
         return routeSegments;
     }

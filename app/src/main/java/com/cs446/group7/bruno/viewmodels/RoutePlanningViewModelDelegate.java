@@ -1,9 +1,9 @@
 package com.cs446.group7.bruno.viewmodels;
 
-import com.cs446.group7.bruno.routing.RouteTrackMapping;
-import com.google.android.gms.maps.model.LatLng;
+import androidx.annotation.NonNull;
 
-import java.util.List;
+import com.cs446.group7.bruno.colourizedroute.ColourizedRoute;
+import com.google.android.gms.maps.model.LatLng;
 
 public interface RoutePlanningViewModelDelegate {
     void setupUI(final String startBtnText,
@@ -17,8 +17,7 @@ public interface RoutePlanningViewModelDelegate {
     void updateStartBtnText(final String text);
     void updateSelectedModeBtn(boolean isWalkingModeBtnSelected);
     void clearMap();
-    void drawRoute(final List<RouteTrackMapping> routeTrackMappings,
-                   final int[] colours);
+    void drawRoute(@NonNull final ColourizedRoute colourizedRoute);
     void moveUserMarker(final LatLng location);
     void showRouteProcessingError(final String errorMessage);
     void navigateToNextScreen();

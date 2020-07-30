@@ -18,15 +18,12 @@ import com.cs446.group7.bruno.music.player.MusicPlayer;
 import com.cs446.group7.bruno.music.player.MusicPlayerException;
 import com.cs446.group7.bruno.music.player.MusicPlayerSubscriber;
 import com.cs446.group7.bruno.preferencesstorage.PreferencesStorage;
-import com.cs446.group7.bruno.routing.RouteTrackMapping;
 import com.cs446.group7.bruno.sensor.PedometerSubscriber;
 import com.cs446.group7.bruno.settings.SettingsService;
 import com.cs446.group7.bruno.utils.Callback;
 import com.cs446.group7.bruno.utils.LatLngUtils;
 import com.cs446.group7.bruno.utils.NoFailCallback;
 import com.google.android.gms.maps.model.LatLng;
-
-import java.util.List;
 
 public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerSubscriber, PedometerSubscriber {
 
@@ -98,7 +95,7 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
             delegate.updateCurrentSongUI(currentTrack.name, currentTrack.album);
         }
 
-        delegate.drawRoute(model.getRouteTrackMappings(), resources.getIntArray(R.array.colorRouteList));
+        delegate.drawRoute(model.getColourizedRoute());
 
         checkCheckpointUpdates();
         checkRouteProgress();
@@ -153,9 +150,9 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
     }
 
     private void checkCheckpointUpdates() {
-        final List<RouteTrackMapping> routeTrackMapping = model.getRouteTrackMappings();
-        if (routeTrackMapping.isEmpty()) {
-            Log.w(getClass().getSimpleName(), "RouteTrackMapping is empty! No checkpoints generated");
+        // Fail-safe
+        if (model.getColourizedRoute().getSegments().isEmpty()) {
+            Log.e(getClass().getSimpleName(), "Checkpoints not found when checking checkpoint updates");
             return;
         }
 
@@ -211,17 +208,10 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
      * ahead or behind the song the user is based on their current speed.
      */
     private void checkRouteProgress() {
-        // fail-safe check, this method is never called if route has been completed
+        // Fail-safe
         if (isRouteCompleted) return;
 
-        final List<RouteTrackMapping> routeTrackMappings = model.getRouteTrackMappings();
-        if (routeTrackMappings.isEmpty()) {
-            Log.w(getClass().getSimpleName(), "RouteTrackMappings is empty! Route progress is not applicable!");
-            return;
-        }
-
-        LatLng currentLatLng = LatLngUtils.locationToLatLng(model.getCurrentLocation());
-        double distanceToTrackEndpoint = calculateDistanceToTrackEndpoint(currentLatLng);
+        double distanceToTrackEndpoint = model.distanceToTrackEndpoint();
         delegate.updateDistanceToTrackEndpoint((int)distanceToTrackEndpoint + " m");
 
         // placeholder display until current track is ready
@@ -261,23 +251,6 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
                                 : error.getLocalizedMessage());
             }
         });
-    }
-
-    private double calculateDistanceToTrackEndpoint(final LatLng currentLatLng) {
-        double distanceToTrackEndpoint =
-                LatLngUtils.getLatLngDistanceInMetres(currentLatLng, model.getCurrentCheckpoint());
-
-        int currentCheckpointIndex = model.getCurrentCheckpointIndex();
-        while (!model.getRouteCheckpoints().get(currentCheckpointIndex)
-                .equals(model.getCurrentTrackEndpoint())) {
-            /* ++currentCheckpointIndex is always within bounds because the next checkpoint is
-               either before or exactly at the currentTrackEndpoint, which is within bounds */
-            distanceToTrackEndpoint += LatLngUtils.getLatLngDistanceInMetres(
-                    model.getRouteCheckpoints().get(currentCheckpointIndex),
-                    model.getRouteCheckpoints().get(++currentCheckpointIndex));
-        }
-
-        return distanceToTrackEndpoint;
     }
 
     /**
