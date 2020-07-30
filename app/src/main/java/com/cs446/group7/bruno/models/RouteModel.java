@@ -148,7 +148,7 @@ public class RouteModel extends ViewModel {
         ++currentTrackEndpointIndex;
     }
 
-    public double distanceToTrackEndpoint() {
+    public double getDistanceToTrackEndpoint() {
         LatLng currentCheckpoint = getCurrentCheckpoint();
         LatLng currentTrackEndpoint = getCurrentTrackEndpoint();
 

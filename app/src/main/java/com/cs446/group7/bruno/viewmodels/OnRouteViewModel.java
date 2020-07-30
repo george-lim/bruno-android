@@ -211,7 +211,7 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
         // Fail-safe
         if (isRouteCompleted) return;
 
-        double distanceToTrackEndpoint = model.distanceToTrackEndpoint();
+        double distanceToTrackEndpoint = model.getDistanceToTrackEndpoint();
         delegate.updateDistanceToTrackEndpoint((int)distanceToTrackEndpoint + " m");
 
         // placeholder display until current track is ready
