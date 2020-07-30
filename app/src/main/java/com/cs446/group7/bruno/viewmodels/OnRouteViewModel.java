@@ -15,7 +15,7 @@ import com.cs446.group7.bruno.music.player.MockMusicPlayerImpl;
 import com.cs446.group7.bruno.music.player.MusicPlayer;
 import com.cs446.group7.bruno.music.player.MusicPlayerException;
 import com.cs446.group7.bruno.music.player.MusicPlayerSubscriber;
-import com.cs446.group7.bruno.preferencesstorage.PreferencesStorage;
+import com.cs446.group7.bruno.storage.PreferencesStorage;
 import com.cs446.group7.bruno.sensor.PedometerSubscriber;
 import com.cs446.group7.bruno.settings.SettingsService;
 import com.cs446.group7.bruno.utils.Callback;

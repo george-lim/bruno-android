@@ -1,4 +1,4 @@
-package com.cs446.group7.bruno.preferencesstorage;
+package com.cs446.group7.bruno.storage;
 
 import android.content.Context;
 import android.content.SharedPreferences;
