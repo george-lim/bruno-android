@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
+import androidx.annotation.IdRes;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
@@ -26,29 +27,31 @@ public class SettingsFragment extends Fragment {
                 R.id.appbar_settings,
                 getResources().getString(R.string.title_settings),
                 false);
-
-        LinearLayout termsAndConditionsItem = view.findViewById(R.id.settings_terms_and_conditions);
-        termsAndConditionsItem.setOnClickListener(this::handleNavigateToTermsAndConditions);
-        LinearLayout privacyPolicyItem = view.findViewById(R.id.settings_privacy_policy);
-        privacyPolicyItem.setOnClickListener(this::handleNavigateToPrivacyPolicy);
-        LinearLayout creditsItem = view.findViewById(R.id.settings_credits);
-        creditsItem.setOnClickListener(this::handleNavigateToCredits);
+        setupUserPreferences(view);
+        setupAboutBruno(view);
         return view;
     }
 
-    private void handleNavigateToTermsAndConditions(final View view) {
-        NavController navController = Navigation.findNavController(getActivity(), R.id.nav_host_fragment);
-        navController.navigate(R.id.action_fragmenttoplvl_to_fragmenttermsandconditions);
+    private void setupUserPreferences(final View rootView) {
+        LinearLayout avatarItem = rootView.findViewById(R.id.settings_avatar);
+        avatarItem.setOnClickListener(view ->
+                navigateUsingAction(R.id.action_fragmenttoplevel_to_fragmentsettingavatar));
     }
 
-
-    private void handleNavigateToPrivacyPolicy(final View view) {
-        NavController navController = Navigation.findNavController(getActivity(), R.id.nav_host_fragment);
-        navController.navigate(R.id.action_fragmenttoplvl_to_fragmentprivacypolicy);
+    private void setupAboutBruno(final View rootView) {
+        LinearLayout termsAndConditionsItem = rootView.findViewById(R.id.settings_terms_and_conditions);
+        termsAndConditionsItem.setOnClickListener(view ->
+                navigateUsingAction(R.id.action_fragmenttoplvl_to_fragmenttermsandconditions));
+        LinearLayout privacyPolicyItem = rootView.findViewById(R.id.settings_privacy_policy);
+        privacyPolicyItem.setOnClickListener(view ->
+                navigateUsingAction(R.id.action_fragmenttoplvl_to_fragmentprivacypolicy));
+        LinearLayout creditsItem = rootView.findViewById(R.id.settings_credits);
+        creditsItem.setOnClickListener(view ->
+                navigateUsingAction(R.id.action_fragmenttoplvl_to_fragmentcredits));
     }
 
-    private void handleNavigateToCredits(final View view) {
+    private void navigateUsingAction(@IdRes final int action) {
         NavController navController = Navigation.findNavController(getActivity(), R.id.nav_host_fragment);
-        navController.navigate(R.id.action_fragmenttoplvl_to_fragmentcredits);
+        navController.navigate(action);
     }
 }
