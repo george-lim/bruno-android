@@ -4,6 +4,7 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -250,7 +251,12 @@ public class RoutePlanningFragment extends Fragment implements RoutePlanningView
     }
 
     public void navigateToNextScreen() {
-        NavController navController = Navigation.findNavController(getActivity(), R.id.nav_host_fragment);
-        navController.navigate(R.id.action_fragmenttoplevel_to_fragmentonroute);
+        if (getActivity() != null) {
+            NavController navController = Navigation.findNavController(getActivity(), R.id.nav_host_fragment);
+            navController.navigate(R.id.action_fragmenttoplevel_to_fragmentonroute);
+        }
+        else {
+            Log.w(getClass().getSimpleName(), "Detected race condition where navigateToNextScreen was called after already navigating to next screen.");
+        }
     }
 }
