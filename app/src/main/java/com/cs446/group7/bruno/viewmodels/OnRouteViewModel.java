@@ -297,7 +297,7 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
                 resources.getString(R.string.run_completion_message),
                 resources.getString(R.string.ok_button),
                 (dialogInterface, i) -> {
-                    model.reset();
+                    model.hardReset();
                     delegate.navigateToPreviousScreen();
                 },
                 false
@@ -312,6 +312,7 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
                 resources.getString(R.string.run_exit_message),
                 resources.getString(R.string.yes_button),
                 (dialogInterface, i) -> {
+                    model.softReset();
                     musicPlayer.stopAndDisconnect();
                     delegate.navigateToPreviousScreen();
                 },

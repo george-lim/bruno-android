@@ -149,17 +149,27 @@ public class RouteModel extends ViewModel {
         return DURATIONS_IN_MINUTES[durationIndex];
     }
 
-    public void reset() {
-        setMode(Mode.WALK);
+    /**
+     * Resets the progress of the current route, and stats, but keeps the route and checkpoints.
+     */
+    public void softReset() {
         setDurationIndex(0);
+        resetCheckpointIndex();
+        resetTrackEndpointIndex();
+        resetSteps();
+    }
+
+    /**
+     * Resets everything to the state it was first constructed.
+     */
+    public void hardReset() {
+        softReset();
+        setMode(Mode.WALK);
         setRoute(null);
         setCurrentLocation(null);
         setCurrentTrack(null);
         setPlaylist(null);
         setRouteTrackMappings(null);
         setRouteCheckpoints(null);
-        resetCheckpointIndex();
-        resetTrackEndpointIndex();
-        resetSteps();
     }
 }
