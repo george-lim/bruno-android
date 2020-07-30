@@ -55,8 +55,15 @@ public class AvatarFragment extends Fragment {
             pos++;
         }
         // set avatar 1 as default, note that avatars array may not be in order because of hashmap
-        curSelectedAvatar = R.drawable.ic_avatar_1;
-        ImageView avatar1 = view.findViewById(R.id.pick_avatar_1);
+        curSelectedAvatar = MainActivity.getPreferencesStorage()
+                .getInt(PreferencesStorage.USER_AVATAR, PreferencesStorage.DEFAULT_AVATAR);;
+        int imageViewId = R.id.pick_avatar_1;
+        for (Map.Entry<Integer, Integer> mapping : imageViewToAvatarMapping.entrySet()) {
+            if (curSelectedAvatar == mapping.getValue()) {
+                imageViewId = mapping.getKey();
+            }
+        }
+        ImageView avatar1 = view.findViewById(imageViewId);
         avatar1.setSelected(true);
         saveUserAvatarSetting(curSelectedAvatar);
     }
