@@ -219,6 +219,7 @@ public class OnRouteFragment extends Fragment implements OnRouteViewModelDelegat
                                 boolean isCancelable) {
 
         // We don't want multiple, overlapping dialogues
+        // it's okay if the dialogue is already dismissed and we re-dismiss it, no need to set to null once dismissed
         if (alertDialog != null) {
             alertDialog.dismiss();
         }
@@ -227,7 +228,6 @@ public class OnRouteFragment extends Fragment implements OnRouteViewModelDelegat
                 .setTitle(title)
                 .setMessage(message)
                 .setPositiveButton(positiveButtonText, positiveButtonClickListener)
-                .setOnCancelListener(dialogInterface -> alertDialog = null)
                 .setCancelable(isCancelable)
                 .create();
 
@@ -252,7 +252,6 @@ public class OnRouteFragment extends Fragment implements OnRouteViewModelDelegat
                 .setMessage(message)
                 .setPositiveButton(positiveButtonText, positiveButtonClickListener)
                 .setNegativeButton(negativeButtonText, negativeButtonClickListener)
-                .setOnCancelListener(dialogInterface -> alertDialog = null)
                 .setCancelable(isCancelable)
                 .create();
 
