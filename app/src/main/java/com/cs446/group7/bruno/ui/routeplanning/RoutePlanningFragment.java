@@ -21,9 +21,9 @@ import androidx.navigation.Navigation;
 
 import com.cs446.group7.bruno.R;
 import com.cs446.group7.bruno.colourizedroute.ColourizedRoute;
+import com.cs446.group7.bruno.colourizedroute.ColourizedRouteSegment;
 import com.cs446.group7.bruno.models.RouteModel;
 import com.cs446.group7.bruno.utils.BitmapUtils;
-import com.cs446.group7.bruno.utils.MapDrawingUtils;
 import com.cs446.group7.bruno.viewmodels.RoutePlanningViewModel;
 import com.cs446.group7.bruno.viewmodels.RoutePlanningViewModelDelegate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -35,6 +35,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.util.List;
 
@@ -184,19 +185,26 @@ public class RoutePlanningFragment extends Fragment implements RoutePlanningView
     }
 
     public void drawRoute(@NonNull final ColourizedRoute colourizedRoute) {
-        MapDrawingUtils.drawColourizedRoute(colourizedRoute, map);
+        final float routeWidth = 14;
+        LatLngBounds.Builder boundsBuilder = new LatLngBounds.Builder();
 
-        List<LatLng> checkpoints = colourizedRoute.getCheckpoints();
+        for (ColourizedRouteSegment colourizedRouteSegment : colourizedRoute.getSegments()) {
+            List<LatLng> routeSegmentLocations = colourizedRouteSegment.getRouteSegmentLocations();
+            map.addPolyline(new PolylineOptions()
+                    .addAll(routeSegmentLocations)
+                    .color(colourizedRouteSegment.getRouteColour())
+                    .width(routeWidth));
+
+            for (LatLng location : routeSegmentLocations) {
+                boundsBuilder.include(location);
+            }
+        }
+
         DisplayMetrics displayMetrics = getContext().getResources().getDisplayMetrics();
         final float cardViewHeightDp = cardView.getHeight() / displayMetrics.density;
         final float mapFragmentHeightDp = mapFragmentView.getHeight() / displayMetrics.density;
         // from tests it seems like we need to add some height to cardView to get a good blockedScreenFraction
         final double blockedScreenFraction = (cardViewHeightDp + 40) / mapFragmentHeightDp;
-
-        LatLngBounds.Builder boundsBuilder = new LatLngBounds.Builder();
-        for (final LatLng p : checkpoints) {
-            boundsBuilder.include(p);
-        }
 
         LatLngBounds bounds = boundsBuilder.build();
         final LatLng minLat = bounds.southwest, maxLat = bounds.northeast;
