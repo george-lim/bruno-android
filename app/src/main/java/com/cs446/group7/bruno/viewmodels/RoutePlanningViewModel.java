@@ -19,14 +19,16 @@ import com.cs446.group7.bruno.music.playlist.PlaylistGenerator;
 import com.cs446.group7.bruno.preferencesstorage.PreferencesStorage;
 import com.cs446.group7.bruno.routing.MockRouteGeneratorImpl;
 import com.cs446.group7.bruno.routing.OnRouteResponseCallback;
-import com.cs446.group7.bruno.routing.Route;
 import com.cs446.group7.bruno.routing.RouteGenerator;
 import com.cs446.group7.bruno.routing.RouteGeneratorError;
 import com.cs446.group7.bruno.routing.RouteGeneratorImpl;
+import com.cs446.group7.bruno.routing.RouteSegment;
 import com.cs446.group7.bruno.settings.SettingsService;
 import com.cs446.group7.bruno.utils.Callback;
 import com.cs446.group7.bruno.utils.LatLngUtils;
 import com.cs446.group7.bruno.utils.NoFailCallback;
+
+import java.util.List;
 
 public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRouteResponseCallback {
 
@@ -298,8 +300,8 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
     // MARK: - OnRouteResponseCallback methods
 
     @Override
-    public void onRouteReady(final Route route) {
-        model.setRoute(route);
+    public void onRouteReady(final List<RouteSegment> routeSegments) {
+        model.setRouteSegments(routeSegments);
 
         if (model.getColourizedRoute() != null) {
             onProcessColourizedRouteSuccess();
@@ -309,7 +311,7 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
     @Override
     public void onRouteError(final RouteGeneratorError error,
                              final Exception underlyingException) {
-        model.setRoute(null);
+        model.setRouteSegments(null);
         onProcessColourizedRouteFailure();
         delegate.showRouteProcessingError(error.getDescription());
 

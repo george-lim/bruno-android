@@ -52,7 +52,7 @@ public class RouteGeneratorImpl extends RouteGenerator {
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, (String) null, response -> {
             try {
-                callback.onRouteReady(parseRouteFromJson(response));
+                callback.onRouteReady(parseRouteSegmentsFromJson(response));
             } catch (JSONException e) {
                 callback.onRouteError(RouteGeneratorError.PARSE_ERROR, e);
             }

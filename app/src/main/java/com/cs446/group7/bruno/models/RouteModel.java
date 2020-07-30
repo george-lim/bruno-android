@@ -6,7 +6,7 @@ import com.cs446.group7.bruno.colourizedroute.ColourizedRoute;
 import com.cs446.group7.bruno.colourizedroute.ColourizedRouteSegment;
 import com.cs446.group7.bruno.music.BrunoPlaylist;
 import com.cs446.group7.bruno.music.BrunoTrack;
-import com.cs446.group7.bruno.routing.Route;
+import com.cs446.group7.bruno.routing.RouteSegment;
 import com.cs446.group7.bruno.utils.LatLngUtils;
 import com.google.android.gms.maps.model.LatLng;
 
@@ -29,7 +29,7 @@ public class RouteModel extends ViewModel {
     private Mode mode = Mode.WALK;
     private int durationIndex = 0;
 
-    private Route route = null;
+    private List<RouteSegment> routeSegments = null;
     private int[] routeColours = null;
     private BrunoPlaylist playlist = null;
     private ColourizedRoute colourizedRoute = null;
@@ -43,8 +43,8 @@ public class RouteModel extends ViewModel {
     // MARK: - Private methods
 
     private void updateColourizedRoute() {
-        if (route != null && routeColours != null && playlist != null) {
-            colourizedRoute = new ColourizedRoute(route.getRouteSegments(), routeColours, playlist);
+        if (routeSegments != null && routeColours != null && playlist != null) {
+            colourizedRoute = new ColourizedRoute(routeSegments, routeColours, playlist);
         }
         else {
             colourizedRoute = null;
@@ -73,8 +73,8 @@ public class RouteModel extends ViewModel {
         return DURATIONS_IN_MINUTES[durationIndex];
     }
 
-    public void setRoute(final Route route) {
-        this.route = route;
+    public void setRouteSegments(final List<RouteSegment> routeSegments) {
+        this.routeSegments = routeSegments;
         updateColourizedRoute();
     }
 
@@ -187,7 +187,7 @@ public class RouteModel extends ViewModel {
         mode = Mode.WALK;
         durationIndex = 0;
 
-        route = null;
+        routeSegments = null;
         routeColours = null;
         playlist = null;
         colourizedRoute = null;
