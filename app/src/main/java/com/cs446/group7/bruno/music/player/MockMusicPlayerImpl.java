@@ -84,6 +84,11 @@ public class MockMusicPlayerImpl implements MusicPlayer {
             return;
         }
 
+        // Recreate thread if stopped before
+        if (playSongsThread.isInterrupted()) {
+            playSongsThread = new Thread(() -> playSongs());
+        }
+
         playSongsThread.start();
     }
 

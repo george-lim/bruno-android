@@ -1,5 +1,6 @@
 package com.cs446.group7.bruno.music;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MergedBrunoPlaylistImpl implements BrunoPlaylist {
@@ -25,11 +26,30 @@ public class MergedBrunoPlaylistImpl implements BrunoPlaylist {
 
     @Override
     public String getName() {
-        return primaryPlaylist.getName();
+        return primaryPlaylist.getName() + " [Merged]";
     }
 
     @Override
     public List<BrunoTrack> getTracks() {
-        return primaryPlaylist.getTracks();
+        List<BrunoTrack> mergedTracks = new ArrayList<>();
+
+        for (BrunoTrack track : primaryPlaylist.getTracks()) {
+            if (track == mergeTrack) {
+                break;
+            }
+
+            mergedTracks.add(track);
+        }
+
+        BrunoTrack splitMergeTrack = new BrunoTrack(
+                mergeTrack.getName(),
+                mergeTrack.getAlbum(),
+                mergeTrackPlaylistPosition
+        );
+
+        mergedTracks.add(splitMergeTrack);
+        mergedTracks.addAll(fallbackPlaylist.getTracks());
+
+        return mergedTracks;
     }
 }
