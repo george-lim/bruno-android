@@ -20,7 +20,7 @@ import com.cs446.group7.bruno.preferencesstorage.PreferencesStorage;
 import com.cs446.group7.bruno.routing.MockRouteGeneratorImpl;
 import com.cs446.group7.bruno.routing.OnRouteResponseCallback;
 import com.cs446.group7.bruno.routing.RouteGenerator;
-import com.cs446.group7.bruno.routing.RouteGeneratorError;
+import com.cs446.group7.bruno.routing.RouteGeneratorException;
 import com.cs446.group7.bruno.routing.RouteGeneratorImpl;
 import com.cs446.group7.bruno.routing.RouteSegment;
 import com.cs446.group7.bruno.settings.SettingsService;
@@ -309,13 +309,12 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
     }
 
     @Override
-    public void onRouteError(final RouteGeneratorError error,
-                             final Exception underlyingException) {
+    public void onRouteError(final RouteGeneratorException exception) {
         model.setRouteSegments(null);
         onProcessColourizedRouteFailure();
-        delegate.showRouteProcessingError(error.getDescription());
+        delegate.showRouteProcessingError(exception.getMessage());
 
-        final String errorMsg = underlyingException.getLocalizedMessage();
+        final String errorMsg = exception.getCause().getLocalizedMessage();
         Log.e(TAG, errorMsg == null ? resources.getString(R.string.unknown_error) : errorMsg);
     }
 }

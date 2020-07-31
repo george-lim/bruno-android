@@ -3,9 +3,7 @@ package com.cs446.group7.bruno.routing;
 import android.content.Context;
 import android.util.Log;
 
-import com.android.volley.NoConnectionError;
 import com.android.volley.Request;
-import com.android.volley.ServerError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.cs446.group7.bruno.MainActivity;
 import com.google.android.gms.maps.model.LatLng;
@@ -54,18 +52,9 @@ public class RouteGeneratorImpl extends RouteGenerator {
             try {
                 callback.onRouteReady(parseRouteSegmentsFromJson(response));
             } catch (JSONException e) {
-                callback.onRouteError(RouteGeneratorError.PARSE_ERROR, e);
+                callback.onRouteError(new RouteGeneratorException(e));
             }
-        }, error -> {
-            Log.e(TAG, error.toString());
-            if (error instanceof NoConnectionError) {
-                callback.onRouteError(RouteGeneratorError.NO_CONNECTION_ERROR, error);
-            } else if (error instanceof ServerError) {
-                callback.onRouteError(RouteGeneratorError.SERVER_ERROR, error);
-            } else {
-                callback.onRouteError(RouteGeneratorError.OTHER_ERROR, error);
-            }
-        });
+        }, error -> callback.onRouteError(new RouteGeneratorException(error)));
 
         MainActivity.getVolleyRequestQueue().add(jsonObjectRequest);
     }
