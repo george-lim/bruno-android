@@ -22,6 +22,9 @@
             android:id="@+id/action_fragmenttoplevel_to_fragmentfitnessdetails"
             app:destination="@id/fragment_fitness_details" />
         <action
+            android:id="@+id/action_fragmenttoplevel_to_fragmentsettingavatar"
+            app:destination="@id/fragment_settings_avatar_wrapper" />
+        <action
             android:id="@+id/action_fragmenttoplvl_to_fragmenttermsandconditions"
             app:destination="@id/fragment_terms_and_conditions" />
         <action
@@ -73,5 +76,11 @@
         android:name="com.cs446.group7.bruno.ui.settings.CreditsFragment"
         android:label="fragment_credits"
         tools:layout="@layout/fragment_credits" />
+
+    <fragment
+        android:id="@+id/fragment_settings_avatar_wrapper"
+        android:name="com.cs446.group7.bruno.ui.settings.SettingsAvatarWrapperFragment"
+        android:label="fragment_settings_avatar_wrapper"
+        tools:layout="@layout/fragment_settings_avatar_wrapper" />
 
 </navigation>
