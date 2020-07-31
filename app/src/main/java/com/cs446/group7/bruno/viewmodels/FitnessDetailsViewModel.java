@@ -4,9 +4,6 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.util.Log;
 
-import androidx.lifecycle.ViewModel;
-
-import com.cs446.group7.bruno.R;
 import com.cs446.group7.bruno.models.FitnessModel;
 import com.cs446.group7.bruno.music.BrunoPlaylist;
 import com.cs446.group7.bruno.music.playlist.MockPlaylistGeneratorImpl;
@@ -16,7 +13,6 @@ public class FitnessDetailsViewModel {
     // MARK: - Private methods
 
     private Resources resources;
-    // TODO: Replace ViewModel with an implementation when FitnessDetailsModel is available
     private FitnessModel model;
     private FitnessDetailsViewModelDelegate delegate;
 
@@ -39,7 +35,7 @@ public class FitnessDetailsViewModel {
             @Override
             public void onSuccess(BrunoPlaylist playlist) {
                 delegate.setupUI( 4000, 3900, 500, 300);
-                delegate.setupTracklistListView(playlist.tracks);
+                delegate.setupTracklist(playlist.tracks);
                 delegate.displayCrown(4000, 3900);
             }
 

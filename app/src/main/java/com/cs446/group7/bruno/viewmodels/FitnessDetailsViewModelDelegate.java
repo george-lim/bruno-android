@@ -9,6 +9,6 @@ public interface FitnessDetailsViewModelDelegate {
                  int brunoRunDuration,
                  int stepCount,
                  int timeFromGoal);
-    void setupTracklistListView(List<BrunoTrack> tracklistList);
+    void setupTracklist(List<BrunoTrack> tracklist);
     void displayCrown(int youRunDuration, int brunoRunDuration);
 }

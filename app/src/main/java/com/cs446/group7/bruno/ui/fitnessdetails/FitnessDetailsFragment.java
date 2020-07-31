@@ -12,20 +12,15 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.cs446.group7.bruno.R;
 import com.cs446.group7.bruno.models.FitnessModel;
-import com.cs446.group7.bruno.models.RouteModel;
 import com.cs446.group7.bruno.music.BrunoTrack;
 import com.cs446.group7.bruno.ui.AppbarFormatter;
 import com.cs446.group7.bruno.utils.TimeUtils;
 import com.cs446.group7.bruno.viewmodels.FitnessDetailsViewModel;
 import com.cs446.group7.bruno.viewmodels.FitnessDetailsViewModelDelegate;
-import com.cs446.group7.bruno.viewmodels.OnRouteViewModel;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 
@@ -44,7 +39,7 @@ public class FitnessDetailsFragment extends Fragment implements FitnessDetailsVi
     private ImageView imgStatsClock;
     private TextView txtStatsSteps;
     private TextView txtStatsClock;
-    private RecyclerView runTracklistList;
+    private LinearLayout runTracklist;
 
     // MARK: - Private members
 
@@ -70,7 +65,7 @@ public class FitnessDetailsFragment extends Fragment implements FitnessDetailsVi
         imgStatsClock = view.findViewById(R.id.image_view_stats_clock);
         txtStatsSteps = view.findViewById(R.id.text_view_stats_steps);
         txtStatsClock = view.findViewById(R.id.text_view_stats_clock);
-        runTracklistList = view.findViewById(R.id.tracklist_view_fitness_details);
+        runTracklist = view.findViewById(R.id.linear_layout_fitness_detail_tracklist);
         return view;
     }
 
@@ -103,23 +98,49 @@ public class FitnessDetailsFragment extends Fragment implements FitnessDetailsVi
     }
 
     // MARK: - Private methods
+
     @Override
-    public void setupTracklistListView(List<BrunoTrack> tracklistList) {
-        FitnessDetailsAdapter adapter = new FitnessDetailsAdapter(tracklistList);
-        runTracklistList.setAdapter(adapter);
-        runTracklistList.setLayoutManager(new LinearLayoutManager(getContext()));
+    public void setupTracklist(List<BrunoTrack> tracklist) {
+        int[] colors = getResources().getIntArray(R.array.colorRouteList);
+        for (int i = 0; i < tracklist.size(); i++) {
+            BrunoTrack track = tracklist.get(i);
+            View vi = getLayoutInflater().inflate(R.layout.view_holder_fitness_details, null);
+            ImageView musicNote = vi.findViewById(R.id.image_view_fitness_details_holder_music);
+            musicNote.setColorFilter(colors[i % colors.length]);
+            TextView songName = vi.findViewById(R.id.text_view_fitness_details_holder_song);
+            songName.setText(track.name);
+
+            TextView artist = vi.findViewById(R.id.text_view_fitness_details_holder_artist);
+            artist.setText(getArtistDescription(track.artists));
+            runTracklist.addView(vi);
+        }
     }
 
     @Override
     public void displayCrown(int youRunDuration, int brunoRunDuration) {
         if (youRunDuration < brunoRunDuration) {
             // You win
-            imgLeaderboardYouCrown.setColorFilter(getResources().getColor(R.color.colorCrown));
+            imgLeaderboardYouCrown.setColorFilter(getResources().getColor(R.color.colorCrown, null));
             imgLeaderboardBrunoCrown.setVisibility(View.INVISIBLE);
         } else {
             // You lose
             imgLeaderboardYouCrown.setVisibility(View.INVISIBLE);
-            imgLeaderboardBrunoCrown.setColorFilter(getResources().getColor(R.color.colorCrown));
+            imgLeaderboardBrunoCrown.setColorFilter(getResources().getColor(R.color.colorCrown, null));
         }
+    }
+
+    private String getArtistDescription(List<String> artists) {
+        StringBuilder sb = new StringBuilder();
+        if (artists.size() == 0) {
+            sb.append("Unknown");
+            return sb.toString();
+        }
+        sb.append(artists.get(0));
+        sb.append(" ft.");
+        for (int i = 1; i < artists.size(); i++) {
+            sb.append(" ");
+            sb.append(artists.get(i));
+        }
+        return sb.toString();
     }
 }

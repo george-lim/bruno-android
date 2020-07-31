@@ -34,10 +34,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingLeft="20dp"
-                android:paddingTop="17px"
+                android:paddingTop="20dp"
                 android:paddingRight="20dp"
-                android:paddingBottom="16px"
+                android:paddingBottom="16dp"
                 android:text="@string/fitness_details_leaderboard"
+                android:textColor="@color/colorOnBackground"
                 android:textSize="24sp"
                 android:textStyle="bold" />
 
@@ -52,8 +53,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="horizontal"
-                    android:paddingTop="20px"
-                    android:paddingBottom="20px">
+                    android:paddingTop="16dp"
+                    android:paddingBottom="16dp">
 
                     <ImageView
                         android:id="@+id/image_view_leaderboard_you_crown"
@@ -68,7 +69,8 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="7"
-                        android:text="@string/fitness_details_you" />
+                        android:text="@string/fitness_details_you"
+                        android:textColor="@color/colorOnBackground" />
 
                     <TextView
                         android:id="@+id/text_view_leaderboard_you_time"
@@ -87,8 +89,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="horizontal"
-                    android:paddingTop="20px"
-                    android:paddingBottom="20px">
+                    android:paddingTop="16dp"
+                    android:paddingBottom="16dp">
 
                     <ImageView
                         android:id="@+id/image_view_leaderboard_bruno_crown"
@@ -103,7 +105,8 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="7"
-                        android:text="@string/fitness_details_bruno" />
+                        android:text="@string/fitness_details_bruno"
+                        android:textColor="@color/colorOnBackground" />
 
                     <TextView
                         android:id="@+id/text_view_leaderboard_bruno_time"
@@ -125,10 +128,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingLeft="20dp"
-                android:paddingTop="17px"
+                android:paddingTop="28dp"
                 android:paddingRight="20dp"
-                android:paddingBottom="16px"
+                android:paddingBottom="16dp"
                 android:text="@string/fitness_details_stats"
+                android:textColor="@color/colorOnBackground"
                 android:textSize="24sp"
                 android:textStyle="bold" />
 
@@ -137,6 +141,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:paddingLeft="20dp"
+                android:paddingTop="10dp"
                 android:paddingRight="20dp">
 
                 <LinearLayout
@@ -160,7 +165,8 @@
                         android:layout_height="44dp"
                         android:layout_gravity="top"
                         android:gravity="center_horizontal"
-                        android:paddingTop="5dp" />
+                        android:paddingTop="5dp"
+                        android:textColor="@color/colorOnBackground" />
 
                 </LinearLayout>
 
@@ -186,7 +192,8 @@
                         android:layout_height="44dp"
                         android:layout_gravity="top"
                         android:gravity="center_horizontal"
-                        android:paddingTop="5dp" />
+                        android:paddingTop="5dp"
+                        android:textColor="@color/colorOnBackground" />
 
                 </LinearLayout>
             </LinearLayout>
@@ -196,19 +203,19 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingLeft="20dp"
-                android:paddingTop="17px"
+                android:paddingTop="28dp"
                 android:paddingRight="20dp"
-                android:paddingBottom="16px"
+                android:paddingBottom="16dp"
                 android:text="@string/fitness_details_playlist"
+                android:textColor="@color/colorOnBackground"
                 android:textSize="24sp"
                 android:textStyle="bold" />
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/tracklist_view_fitness_details"
+            <LinearLayout
+                android:id="@+id/linear_layout_fitness_detail_tracklist"
                 android:layout_width="match_parent"
-                android:layout_height="300dp"
-                android:paddingLeft="20dp"
-                android:paddingRight="20dp" />
+                android:layout_height="wrap_content"
+                android:orientation="vertical"></LinearLayout>
 
         </LinearLayout>
     </ScrollView>
