@@ -26,7 +26,7 @@ public class MergedBrunoPlaylistImpl implements BrunoPlaylist {
 
     @Override
     public String getName() {
-        return primaryPlaylist.getName() + " [Merged]";
+        return primaryPlaylist.getName();
     }
 
     @Override

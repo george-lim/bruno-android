@@ -6,9 +6,7 @@ public class BrunoTrack {
     private String album;
     private long duration; // Milliseconds
 
-    public BrunoTrack(final String name,
-                      final String album,
-                      long duration) {
+    public BrunoTrack(final String name, final String album, long duration) {
         this.name = name;
         this.album = album;
         this.duration = duration;
