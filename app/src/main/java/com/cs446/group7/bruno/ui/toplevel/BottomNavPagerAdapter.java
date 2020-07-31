@@ -11,8 +11,8 @@ import java.util.List;
 public class BottomNavPagerAdapter extends FragmentStateAdapter {
     private final List<Fragment> fragmentList = new ArrayList<>();
 
-    public BottomNavPagerAdapter(@NonNull FragmentActivity activity) {
-        super(activity);
+    public BottomNavPagerAdapter(@NonNull Fragment fragment) {
+        super(fragment);
     }
 
     public void addFragment(final Fragment fragment) {

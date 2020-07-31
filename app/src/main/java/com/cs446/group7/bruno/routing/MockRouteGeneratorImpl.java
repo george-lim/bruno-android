@@ -26,10 +26,10 @@ public class MockRouteGeneratorImpl extends RouteGenerator {
     @Override
     public void generateRoute(OnRouteResponseCallback callback, LatLng start, double totalDistance, double rotation) {
         try {
-            callback.onRouteReady(parseRouteFromJson(new JSONObject(mockResponses[currentIndex])));
+            callback.onRouteReady(parseRouteSegmentsFromJson(new JSONObject(mockResponses[currentIndex])));
             currentIndex = (currentIndex + 1) % mockResponses.length;
         } catch (JSONException e) {
-            callback.onRouteError(RouteGeneratorError.PARSE_ERROR, e);
+            callback.onRouteError(new RouteGeneratorException(e));
         }
     }
 }

@@ -16,16 +16,14 @@ import com.cs446.group7.bruno.music.BrunoTrack;
 import com.cs446.group7.bruno.music.player.MockMusicPlayerImpl;
 import com.cs446.group7.bruno.music.player.MusicPlayer;
 import com.cs446.group7.bruno.music.player.MusicPlayerException;
-import com.cs446.group7.bruno.routing.RouteTrackMapping;
+import com.cs446.group7.bruno.music.player.MusicPlayerSubscriber;
+import com.cs446.group7.bruno.preferencesstorage.PreferencesStorage;
 import com.cs446.group7.bruno.sensor.PedometerSubscriber;
 import com.cs446.group7.bruno.settings.SettingsService;
-import com.cs446.group7.bruno.music.player.MusicPlayerSubscriber;
 import com.cs446.group7.bruno.utils.Callback;
-import com.cs446.group7.bruno.utils.NoFailCallback;
 import com.cs446.group7.bruno.utils.LatLngUtils;
+import com.cs446.group7.bruno.utils.NoFailCallback;
 import com.google.android.gms.maps.model.LatLng;
-
-import java.util.List;
 
 public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerSubscriber, PedometerSubscriber {
 
@@ -86,7 +84,8 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
     }
 
     private void setupUI() {
-        int userAvatarDrawableResourceId = R.drawable.ic_avatar_1;
+        int userAvatarDrawableResourceId = MainActivity.getPreferencesStorage()
+                .getInt(PreferencesStorage.USER_AVATAR, PreferencesStorage.DEFAULT_AVATAR);
 
         delegate.setupUI(userAvatarDrawableResourceId);
 
@@ -96,9 +95,10 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
             delegate.updateCurrentSongUI(currentTrack.name, currentTrack.album);
         }
 
-        delegate.drawRoute(model.getRouteTrackMappings(), resources.getIntArray(R.array.colorRouteList));
+        delegate.drawRoute(model.getColourizedRoute());
 
         checkCheckpointUpdates();
+        checkRouteProgress();
 
         final Location currentLocation = model.getCurrentLocation();
         final float bearing = currentLocation.getBearing();
@@ -150,9 +150,9 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
     }
 
     private void checkCheckpointUpdates() {
-        final List<RouteTrackMapping> routeTrackMapping = model.getRouteTrackMappings();
-        if (routeTrackMapping.isEmpty()) {
-            Log.w(getClass().getSimpleName(), "RouteTrackMapping is empty! No checkpoints generated");
+        // Fail-safe
+        if (model.getColourizedRoute().getSegments().isEmpty()) {
+            Log.e(getClass().getSimpleName(), "Checkpoints not found when checking checkpoint updates");
             return;
         }
 
@@ -187,6 +187,10 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
         // Checkpoint is counted if and only if  user is within the tolerance radius;
         // this is calculated dynamically as the location updates, which may be larger than what is drawn
         if (distanceFromCheckpoint <= toleranceRadius) {
+            // trackEndpoints are a subset of checkpoints
+            if (model.getCurrentCheckpoint().equals(model.getCurrentTrackEndpoint())) {
+                model.advanceTrackEndpoint();
+            }
             final LatLng nextCheckpoint = model.advanceCheckpoint();
 
             // End of route, no more checkpoints
@@ -200,10 +204,65 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
     }
 
     /**
+     * Route progress refers to the distance to the next trackEndpoint, as well as how far
+     * ahead or behind the song the user is based on their current speed.
+     */
+    private void checkRouteProgress() {
+        // Fail-safe
+        if (isRouteCompleted) return;
+
+        double distanceToTrackEndpoint = model.getDistanceToTrackEndpoint();
+        delegate.updateDistanceToTrackEndpoint((int)distanceToTrackEndpoint + " m");
+
+        // placeholder display until current track is ready
+        if (model.getCurrentTrack() == null) {
+            delegate.updateProgressToTrackEndpoint("0 m",
+                    resources.getDrawable(R.drawable.ic_angle_double_up, null),
+                    resources.getColor(R.color.colorSecondaryVariant, null));
+            return;
+        }
+
+        musicPlayer.getPlaybackPosition(new Callback<Long, Throwable>() {
+            @Override
+            public void onSuccess(Long playbackPosition) {
+                long songDurationToEndpoint = model.getCurrentTrack().duration - playbackPosition;
+                // expectedDistance is the predicted distance the user will travel before the current song ends
+                double expectedDistance = model.getCurrentLocation().getSpeed() * (songDurationToEndpoint / 1000d);
+                int diff = (int)(expectedDistance - distanceToTrackEndpoint);
+
+                if (diff < 0) {
+                    delegate.updateProgressToTrackEndpoint(
+                            -diff + " m",
+                            resources.getDrawable(R.drawable.ic_angle_double_down, null),
+                            resources.getColor(R.color.colorPrimary, null));
+                } else {
+                    delegate.updateProgressToTrackEndpoint(
+                            diff + " m",
+                            resources.getDrawable(R.drawable.ic_angle_double_up, null),
+                            resources.getColor(R.color.colorSecondaryVariant, null));
+                }
+            }
+
+            @Override
+            public void onFailed(Throwable error) {
+                Log.e(getClass().getSimpleName(),
+                        error.getLocalizedMessage() == null
+                                ? "Error occurred when getting playback position"
+                                : error.getLocalizedMessage());
+            }
+        });
+    }
+
+    /**
      * Logic when the route is completed goes here.
      */
     public void onRouteCompleted() {
         musicPlayer.stopAndDisconnect();
+
+        delegate.updateDistanceToTrackEndpoint("0 m");
+        delegate.updateProgressToTrackEndpoint("0 m",
+                resources.getDrawable(R.drawable.ic_angle_double_up, null),
+                resources.getColor(R.color.colorSecondaryVariant, null));
 
         // TODO: Currently temporary; in the future we will probably take the user to the fitness details of this run
         delegate.showAlertDialog(
@@ -243,6 +302,7 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
         model.setCurrentLocation(location);
         delegate.animateCamera(LatLngUtils.locationToLatLng(location), location.getBearing(), CAMERA_TILT, CAMERA_ZOOM);
         checkCheckpointUpdates();
+        checkRouteProgress();
     }
 
     // MARK: - MusicPlayerSubscriber methods
@@ -251,6 +311,7 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
     public void onTrackChanged(BrunoTrack track) {
         model.setCurrentTrack(track);
         delegate.updateCurrentSongUI(track.name, track.album);
+        delegate.showRouteInfoCard();
     }
 
     // MARK: - PedometerSubscriber methods

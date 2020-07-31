@@ -7,7 +7,29 @@
     <string name="ok_button">OK</string>
     <string name="yes_button">YES</string>
     <string name="no_button">NO</string>
+    <string name="unknown_error">Unknown error</string>
 
+    <!--  Onboarding  -->
+    <string name="get_started_button">Get Started</string>
+    <string name="next_button">Next</string>
+    <string name="allow_access_button">Allow Access</string>
+    <string name="onboarding_welcome">Welcome to Bruno!</string>
+    <string name="onboarding_welcome_text">Bruno is a fitness app that augments your walk or run routines with randomly generated routes and music discovery.</string>
+    <string name="onboarding_record">Learn More About Yourself</string>
+    <string name="onboarding_record_text">Bruno automatically archives your past routines, so you can monitor your progress.</string>
+    <string name="onboarding_pick_your_avatar">Pick Your Avatar</string>
+    <string name="onboarding_request_location_permission_title">Location Permission</string>
+    <string name="onboarding_request_location_permission_hint">Generate routes and track route progress</string>
+    <string name="onboarding_request_location_service_title">Location Service</string>
+    <string name="onboarding_request_location_service_hint">Generate routes and track route progress</string>
+    <string name="onboarding_request_active_internet_title">Active Internet</string>
+    <string name="onboarding_request_active_internet_hint">Load map data, generate routes, and stream music</string>
+    <string name="onboarding_request_spotify_title">Spotify</string>
+    <string name="onboarding_request_spotify_hint">Requires Spotify Premium</string>
+    <string name="onboarding_missing_spotify_installation_title">Spotify Not Installed</string>
+    <string name="onboarding_missing_access_title">Missing Access</string>
+    <string name="onboarding_missing_access_text">Bruno requires the following capabilities to function properly. Permissions can always be granted from system settings.</string>
+    <string name="onboarding_all_done">All Done!</string>
     <!--  Settings  -->
     <string name="about_bruno_title">About Bruno</string>
     <string name="version">Version</string>
@@ -25,8 +47,6 @@
     <string name="route_planning_create_route">Create Route</string>
     <string name="route_planning_duration">Duration (Minutes)</string>
     <string name="route_planning_playlist_error">Error generating playlist, please try again!</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <!-- TODO: Should the greeting be dynamic? E.g. good morning, afternoon, etc. -->
     <string name="route_planning_greeting">Good day,</string>
     <string name="run_player_connect_title">Hold on tight</string>
@@ -34,7 +54,7 @@
     <string name="run_completion_title">Route Completed</string>
     <string name="run_completion_message">Hooray! You have completed your exercise. You can find details in the Fitness Records tab.</string>
     <string name="player_error">Player Error</string>
-    <string name="run_exit_title">Are you sure?</string>
-    <string name="run_exit_message">Bruno doesn\'t like it when you quit in the middle, your current progress will be lost.</string>
+    <string name="run_exit_title">Are you exhausted?</string>
+    <string name="run_exit_message">Bruno doesn\'t like it when you quit in the middle. He will stop playing your music.</string>
     <string name="on_route_stop">EXIT</string>
 </resources>

@@ -2,12 +2,16 @@ package com.cs446.group7.bruno.routing;
 
 import android.content.Context;
 
+import com.cs446.group7.bruno.settings.SettingsService;
+import com.cs446.group7.bruno.utils.LatLngUtils;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.maps.android.PolyUtil;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -62,18 +66,29 @@ public abstract class RouteGenerator {
     }
 
     /**
-     * Parse the route generate response into the {@link Route} object
+     * Parse the route generate response into a list of route segments.
      *
      * @param routeJson json containing the raw response
      * @throws JSONException
      */
-    static Route parseRouteFromJson(final JSONObject routeJson) throws JSONException {
-        final String encodedPath = routeJson.getJSONArray("routes")
+    static List<RouteSegment> parseRouteSegmentsFromJson(final JSONObject routeJson) throws JSONException {
+        String encodedPath = routeJson.getJSONArray("routes")
                 .getJSONObject(0)
                 .getJSONObject("overview_polyline")
                 .getString("points");
 
-        return new Route(encodedPath);
+        List<LatLng> decodedPath = PolyUtil.decode(encodedPath);
+
+        List<RouteSegment> routeSegments = new LinkedList<>();
+        for (int i = 0; i < decodedPath.size() - 1; ++i) {
+            double distanceMetres = LatLngUtils.getLatLngDistanceInMetres(decodedPath.get(i), decodedPath.get(i + 1));
+            // should not overflow since (distanceMetres / WALKING_SPEED) is small enough
+            double durationMs = (distanceMetres / (SettingsService.PREFERRED_WALKING_SPEED / 60)) * 1000;
+            RouteSegment routeSegment = new RouteSegment(decodedPath.get(i), decodedPath.get(i + 1), (long) durationMs);
+            routeSegments.add(routeSegment);
+        }
+
+        return routeSegments;
     }
 
     /**
