@@ -5,16 +5,16 @@ import java.util.List;
 
 public class MergedBrunoPlaylistImpl implements BrunoPlaylist {
     private BrunoPlaylist primaryPlaylist;
-    private BrunoPlaylist fallbackPlaylist;
+    private BrunoPlaylist secondaryPlaylist;
     private BrunoTrack mergeTrack;
     private long mergeTrackPlaylistPosition;
 
     public MergedBrunoPlaylistImpl(final BrunoPlaylist primaryPlaylist,
-                                   final BrunoPlaylist fallbackPlaylist,
+                                   final BrunoPlaylist secondaryPlaylist,
                                    final BrunoTrack mergeTrack,
                                    long mergeTrackPlaybackPosition) {
         this.primaryPlaylist = primaryPlaylist;
-        this.fallbackPlaylist = fallbackPlaylist;
+        this.secondaryPlaylist = secondaryPlaylist;
         this.mergeTrack = mergeTrack;
         this.mergeTrackPlaylistPosition = mergeTrackPlaybackPosition;
     }
@@ -48,7 +48,7 @@ public class MergedBrunoPlaylistImpl implements BrunoPlaylist {
         );
 
         mergedTracks.add(splitMergeTrack);
-        mergedTracks.addAll(fallbackPlaylist.getTracks());
+        mergedTracks.addAll(secondaryPlaylist.getTracks());
 
         return mergedTracks;
     }
