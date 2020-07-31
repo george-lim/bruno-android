@@ -21,10 +21,10 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 
 import com.cs446.group7.bruno.R;
+import com.cs446.group7.bruno.colourizedroute.ColourizedRoute;
+import com.cs446.group7.bruno.colourizedroute.ColourizedRouteSegment;
 import com.cs446.group7.bruno.models.RouteModel;
-import com.cs446.group7.bruno.routing.RouteTrackMapping;
 import com.cs446.group7.bruno.utils.BitmapUtils;
-import com.cs446.group7.bruno.utils.MapDrawingUtils;
 import com.cs446.group7.bruno.viewmodels.OnRouteViewModel;
 import com.cs446.group7.bruno.viewmodels.OnRouteViewModelDelegate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -38,8 +38,7 @@ import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-
-import java.util.List;
+import com.google.android.gms.maps.model.PolylineOptions;
 
 public class OnRouteFragment extends Fragment implements OnRouteViewModelDelegate {
 
@@ -140,9 +139,15 @@ public class OnRouteFragment extends Fragment implements OnRouteViewModelDelegat
     }
 
     @Override
-    public void drawRoute(final List<RouteTrackMapping> routeTrackMappings, final int[] colours) {
-        if (routeTrackMappings.size() == 0) return;
-        MapDrawingUtils.drawColourizedRoute(routeTrackMappings, colours, map);
+    public void drawRoute(@NonNull final ColourizedRoute colourizedRoute) {
+        final float routeWidth = 14;
+
+        for (ColourizedRouteSegment colourizedRouteSegment : colourizedRoute.getSegments()) {
+            map.addPolyline(new PolylineOptions()
+                    .addAll(colourizedRouteSegment.getLocations())
+                    .color(colourizedRouteSegment.getRouteColour())
+                    .width(routeWidth));
+        }
     }
 
     @Override
