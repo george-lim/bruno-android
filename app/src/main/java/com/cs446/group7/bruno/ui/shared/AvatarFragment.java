@@ -61,6 +61,7 @@ public class AvatarFragment extends Fragment {
         for (Map.Entry<Integer, Integer> mapping : imageViewToAvatarMapping.entrySet()) {
             if (curSelectedAvatar == mapping.getValue()) {
                 imageViewId = mapping.getKey();
+                break;
             }
         }
         ImageView avatar1 = view.findViewById(imageViewId);

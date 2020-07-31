@@ -21,7 +21,7 @@ public class SettingsAvatarWrapperFragment extends Fragment {
                 (AppCompatActivity) getActivity(),
                 view,
                 R.id.appbar_settings_avatar,
-                null,
+                getResources().getString(R.string.settings_avatar_title),
                 true);
         return view;
     }
