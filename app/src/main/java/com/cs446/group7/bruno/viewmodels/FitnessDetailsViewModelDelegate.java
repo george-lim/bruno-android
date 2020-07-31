@@ -1,5 +1,6 @@
 package com.cs446.group7.bruno.viewmodels;
 
+import com.cs446.group7.bruno.colourizedroute.ColourizedRoute;
 import com.cs446.group7.bruno.music.BrunoTrack;
 
 import java.util.List;
@@ -10,5 +11,6 @@ public interface FitnessDetailsViewModelDelegate {
                  int stepCount,
                  int timeFromGoal);
     void setupTracklist(List<BrunoTrack> tracklist);
+    void drawRoute(ColourizedRoute colourizedRoute);
     void displayCrown(int youRunDuration, int brunoRunDuration);
 }

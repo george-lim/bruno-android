@@ -15,14 +15,20 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.cs446.group7.bruno.R;
+import com.cs446.group7.bruno.colourizedroute.ColourizedRoute;
+import com.cs446.group7.bruno.colourizedroute.ColourizedRouteSegment;
 import com.cs446.group7.bruno.models.FitnessModel;
 import com.cs446.group7.bruno.music.BrunoTrack;
 import com.cs446.group7.bruno.ui.AppbarFormatter;
 import com.cs446.group7.bruno.utils.TimeUtils;
 import com.cs446.group7.bruno.viewmodels.FitnessDetailsViewModel;
 import com.cs446.group7.bruno.viewmodels.FitnessDetailsViewModelDelegate;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.util.List;
 
@@ -127,6 +133,27 @@ public class FitnessDetailsFragment extends Fragment implements FitnessDetailsVi
             imgLeaderboardYouCrown.setVisibility(View.INVISIBLE);
             imgLeaderboardBrunoCrown.setColorFilter(getResources().getColor(R.color.colorCrown, null));
         }
+    }
+
+    @Override
+    public void drawRoute(ColourizedRoute colourizedRoute) {
+        final float routeWidth = 14;
+        LatLngBounds.Builder boundsBuilder = new LatLngBounds.Builder();
+
+        for (ColourizedRouteSegment colourizedRouteSegment : colourizedRoute.getSegments()) {
+            List<LatLng> colourizedRouteSegmentLocations = colourizedRouteSegment.getLocations();
+            map.addPolyline(new PolylineOptions()
+                    .addAll(colourizedRouteSegmentLocations)
+                    .color(colourizedRouteSegment.getRouteColour())
+                    .width(routeWidth));
+
+            for (LatLng location : colourizedRouteSegmentLocations) {
+                boundsBuilder.include(location);
+            }
+        }
+
+        LatLngBounds bounds = boundsBuilder.build();
+        map.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 200));
     }
 
     private String getArtistDescription(List<String> artists) {
