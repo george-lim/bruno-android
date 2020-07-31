@@ -144,7 +144,7 @@ public class OnRouteFragment extends Fragment implements OnRouteViewModelDelegat
 
         for (ColourizedRouteSegment colourizedRouteSegment : colourizedRoute.getSegments()) {
             map.addPolyline(new PolylineOptions()
-                    .addAll(colourizedRouteSegment.getRouteSegmentLocations())
+                    .addAll(colourizedRouteSegment.getLocations())
                     .color(colourizedRouteSegment.getRouteColour())
                     .width(routeWidth));
         }

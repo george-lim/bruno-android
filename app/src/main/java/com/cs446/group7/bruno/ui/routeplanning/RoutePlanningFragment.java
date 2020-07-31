@@ -189,13 +189,13 @@ public class RoutePlanningFragment extends Fragment implements RoutePlanningView
         LatLngBounds.Builder boundsBuilder = new LatLngBounds.Builder();
 
         for (ColourizedRouteSegment colourizedRouteSegment : colourizedRoute.getSegments()) {
-            List<LatLng> routeSegmentLocations = colourizedRouteSegment.getRouteSegmentLocations();
+            List<LatLng> colourizedRouteSegmentLocations = colourizedRouteSegment.getLocations();
             map.addPolyline(new PolylineOptions()
-                    .addAll(routeSegmentLocations)
+                    .addAll(colourizedRouteSegmentLocations)
                     .color(colourizedRouteSegment.getRouteColour())
                     .width(routeWidth));
 
-            for (LatLng location : routeSegmentLocations) {
+            for (LatLng location : colourizedRouteSegmentLocations) {
                 boundsBuilder.include(location);
             }
         }

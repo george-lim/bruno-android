@@ -20,7 +20,7 @@ public class ColourizedRouteSegment {
         return routeSegments;
     }
 
-    public List<LatLng> getRouteSegmentLocations() {
+    public List<LatLng> getLocations() {
         List<LatLng> locations = new LinkedList<>();
 
         for (RouteSegment routeSegment : routeSegments) {
