@@ -1,6 +1,7 @@
 package com.cs446.group7.bruno.ui.shared;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,5 +32,9 @@ public class FallbackPlaylistFragment extends Fragment {
         PlaylistInfo[] playlists = new PlaylistInfo[10];
         FallbackPlaylistsAdapter adapter = new FallbackPlaylistsAdapter(playlists);
         fallbackPlaylistsList.setAdapter(adapter);
+    }
+
+    public void saveSelectedPlaylist() {
+        Log.d("borisg", "saving playlist");
     }
 }

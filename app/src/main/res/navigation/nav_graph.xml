@@ -88,7 +88,7 @@
 
     <fragment
         android:id="@+id/fragment_fallback_playlist_wrapper"
-        android:name="com.cs446.group7.bruno.ui.settings.FallbackPlaylistWrapperFragment"
+        android:name="com.cs446.group7.bruno.ui.settings.SettingsFallbackPlaylistWrapperFragment"
         android:label="fragment_fallback_playlist_wrapper"
-        tools:layout="@layout/fragment_fallback_playlist_wrapper" />
+        tools:layout="@layout/fragment_settings_fallback_playlist_wrapper" />
 </navigation>

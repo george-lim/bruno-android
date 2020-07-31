@@ -25,7 +25,7 @@ public class OnboardingPagerAdapter extends FragmentStateAdapter {
             case OnboardingTab.PERMISSION:
                 return new OnboardingPermissionFragment();
             case OnboardingTab.FALLBACK_PLAYLIST:
-                return new FallbackPlaylistFragment();
+                return new OnboardingFallbackPlaylistWrapperFragment();
             case OnboardingTab.DONE:
                 return new OnboardingDoneFragment();
             default:

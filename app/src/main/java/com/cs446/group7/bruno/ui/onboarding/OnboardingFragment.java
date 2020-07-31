@@ -26,6 +26,7 @@ public class OnboardingFragment extends Fragment {
     private void setupOnboardingTabs(final View view) {
         viewPager = view.findViewById(R.id.onboarding_pager);
         OnboardingPagerAdapter adapter = new OnboardingPagerAdapter(this);
+        viewPager.setUserInputEnabled(false);
         viewPager.setAdapter(adapter);
 
         tabIndicators = new View[]{
