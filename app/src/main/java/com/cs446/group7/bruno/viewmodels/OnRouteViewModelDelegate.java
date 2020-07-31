@@ -3,15 +3,15 @@ package com.cs446.group7.bruno.viewmodels;
 import android.content.DialogInterface;
 import android.graphics.drawable.Drawable;
 
-import com.cs446.group7.bruno.routing.RouteTrackMapping;
-import com.google.android.gms.maps.model.LatLng;
+import androidx.annotation.NonNull;
 
-import java.util.List;
+import com.cs446.group7.bruno.colourizedroute.ColourizedRoute;
+import com.google.android.gms.maps.model.LatLng;
 
 public interface OnRouteViewModelDelegate {
     void setupUI(int userAvatarDrawableResourceId);
     void updateCurrentSongUI(final String name, final String album);
-    void drawRoute(final List<RouteTrackMapping> routeTrackMappings, final int[] colours);
+    void drawRoute(@NonNull final ColourizedRoute colourizedRoute);
     void updateCheckpointMarker(final LatLng location, final double radius);
     void animateCamera(final LatLng location, float bearing, int cameraTilt, int cameraZoom);
     void showProgressDialog(final String title,
