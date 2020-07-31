@@ -12,6 +12,7 @@ import com.cs446.group7.bruno.MainActivity;
 import com.cs446.group7.bruno.R;
 import com.cs446.group7.bruno.location.LocationServiceSubscriber;
 import com.cs446.group7.bruno.models.RouteModel;
+import com.cs446.group7.bruno.music.BrunoPlaylist;
 import com.cs446.group7.bruno.music.BrunoTrack;
 import com.cs446.group7.bruno.music.player.MockMusicPlayerImpl;
 import com.cs446.group7.bruno.music.player.MusicPlayer;
@@ -92,17 +93,21 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
         BrunoTrack currentTrack = model.getCurrentTrack();
 
         if (currentTrack != null) {
-            delegate.updateCurrentSongUI(currentTrack.name, currentTrack.album);
+            delegate.updateCurrentSongUI(currentTrack.getName(), currentTrack.getAlbum());
         }
 
         delegate.drawRoute(model.getColourizedRoute());
 
-        checkCheckpointUpdates();
-        checkRouteProgress();
+        refreshUI();
+    }
 
+    // Contains common UI refresh logic
+    private void refreshUI() {
         final Location currentLocation = model.getCurrentLocation();
         final float bearing = currentLocation.getBearing();
         delegate.animateCamera(LatLngUtils.locationToLatLng(currentLocation), bearing, CAMERA_TILT, CAMERA_ZOOM);
+        checkCheckpointUpdates();
+        checkRouteProgress();
     }
 
     private void showPlayerConnectProgressDialog() {
@@ -225,7 +230,7 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
         musicPlayer.getPlaybackPosition(new Callback<Long, Throwable>() {
             @Override
             public void onSuccess(Long playbackPosition) {
-                long songDurationToEndpoint = model.getCurrentTrack().duration - playbackPosition;
+                long songDurationToEndpoint = model.getCurrentTrack().getDuration() - playbackPosition;
                 // expectedDistance is the predicted distance the user will travel before the current song ends
                 double expectedDistance = model.getCurrentLocation().getSpeed() * (songDurationToEndpoint / 1000d);
                 int diff = (int)(expectedDistance - distanceToTrackEndpoint);
@@ -256,7 +261,7 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
     /**
      * Logic when the route is completed goes here.
      */
-    public void onRouteCompleted() {
+    private void onRouteCompleted() {
         musicPlayer.stopAndDisconnect();
 
         delegate.updateDistanceToTrackEndpoint("0 m");
@@ -275,6 +280,13 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
                 },
                 false
         );
+    }
+
+    private void handlePlaylistChange(final BrunoPlaylist playlist, long playbackPosition) {
+        model.mergePlaylist(playlist, playbackPosition);
+        delegate.clearMap();
+        delegate.drawRoute(model.getColourizedRoute());
+        refreshUI();
     }
 
     // MARK: - User action handlers
@@ -300,9 +312,7 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
     public void onLocationUpdate(@NonNull Location location) {
         if (isRouteCompleted) return;
         model.setCurrentLocation(location);
-        delegate.animateCamera(LatLngUtils.locationToLatLng(location), location.getBearing(), CAMERA_TILT, CAMERA_ZOOM);
-        checkCheckpointUpdates();
-        checkRouteProgress();
+        refreshUI();
     }
 
     // MARK: - MusicPlayerSubscriber methods
@@ -310,7 +320,7 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
     @Override
     public void onTrackChanged(BrunoTrack track) {
         model.setCurrentTrack(track);
-        delegate.updateCurrentSongUI(track.name, track.album);
+        delegate.updateCurrentSongUI(track.getName(), track.getAlbum());
         delegate.showRouteInfoCard();
     }
 

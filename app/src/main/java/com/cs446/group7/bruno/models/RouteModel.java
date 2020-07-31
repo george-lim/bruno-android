@@ -6,6 +6,7 @@ import com.cs446.group7.bruno.colourizedroute.ColourizedRoute;
 import com.cs446.group7.bruno.colourizedroute.ColourizedRouteSegment;
 import com.cs446.group7.bruno.music.BrunoPlaylist;
 import com.cs446.group7.bruno.music.BrunoTrack;
+import com.cs446.group7.bruno.music.MergedBrunoPlaylistImpl;
 import com.cs446.group7.bruno.routing.RouteSegment;
 import com.cs446.group7.bruno.utils.LatLngUtils;
 import com.google.android.gms.maps.model.LatLng;
@@ -36,7 +37,7 @@ public class RouteModel extends ViewModel {
 
     private Location currentLocation = null;
     private int currentCheckpointIndex = 0;
-    private int currentTrackEndpointIndex = 0;
+    private int currentColourizedSegmentIndex = 0;
     private BrunoTrack currentTrack = null;
     private int steps = 0;
 
@@ -91,6 +92,11 @@ public class RouteModel extends ViewModel {
         updateColourizedRoute();
     }
 
+    public void mergePlaylist(final BrunoPlaylist playlist, long playbackPosition) {
+        this.playlist = new MergedBrunoPlaylistImpl(this.playlist, playlist, currentTrack, playbackPosition);
+        updateColourizedRoute();
+    }
+
     public ColourizedRoute getColourizedRoute() {
         return colourizedRoute;
     }
@@ -129,13 +135,13 @@ public class RouteModel extends ViewModel {
         int colourizedRouteSegmentCount = colourizedRoute.getSegments().size();
 
         // index should always be valid because we would have finished the route otherwise
-        if (currentTrackEndpointIndex >= colourizedRouteSegmentCount) {
+        if (currentColourizedSegmentIndex >= colourizedRouteSegmentCount) {
             return null;
         }
 
         ColourizedRouteSegment currentColourizedSegment = colourizedRoute
                 .getSegments()
-                .get(currentTrackEndpointIndex);
+                .get(currentColourizedSegmentIndex);
 
         int routeSegmentCount = currentColourizedSegment.getRouteSegments().size();
         return currentColourizedSegment
@@ -145,7 +151,7 @@ public class RouteModel extends ViewModel {
     }
 
     public void advanceTrackEndpoint() {
-        ++currentTrackEndpointIndex;
+        ++currentColourizedSegmentIndex;
     }
 
     public double getDistanceToTrackEndpoint() {
@@ -194,7 +200,7 @@ public class RouteModel extends ViewModel {
 
         currentLocation = null;
         currentCheckpointIndex = 0;
-        currentTrackEndpointIndex = 0;
+        currentColourizedSegmentIndex = 0;
         currentTrack = null;
         steps = 0;
     }

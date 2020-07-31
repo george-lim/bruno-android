@@ -21,5 +21,5 @@ public interface MusicPlayer {
     // Stops the current playlist and disconnects
     void stopAndDisconnect();
     // Gets the playback position of the current song
-    void  getPlaybackPosition(final Callback<Long, Throwable> callback);
+    void getPlaybackPosition(final Callback<Long, Throwable> callback);
 }

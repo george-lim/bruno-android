@@ -48,7 +48,7 @@ public class OnRouteFragment extends Fragment implements OnRouteViewModelDelegat
     private CardView trackInfoCardView;
     private CardView routeInfoCardView;
     private TextView txtSongTitle;
-    private TextView txtSongArtistInfo;
+    private TextView txtSongAlbumInfo;
     private ImageView progressIndicator;
     private TextView txtProgressToTrackEndpoint;
     private TextView txtDistanceToTrackEndpoint;
@@ -77,7 +77,7 @@ public class OnRouteFragment extends Fragment implements OnRouteViewModelDelegat
         trackInfoCardView = view.findViewById(R.id.card_view_track_info);
         routeInfoCardView = view.findViewById(R.id.card_view_route_info);
         txtSongTitle = view.findViewById(R.id.text_view_song_title);
-        txtSongArtistInfo = view.findViewById(R.id.text_view_song_artist_info);
+        txtSongAlbumInfo = view.findViewById(R.id.text_view_song_album_info);
         progressIndicator = view.findViewById(R.id.image_view_progress_to_track_endpoint_icon);
         txtProgressToTrackEndpoint = view.findViewById(R.id.text_view_progress_to_track_endpoint);
         txtDistanceToTrackEndpoint = view.findViewById(R.id.text_view_distance_to_track_endpoint);
@@ -135,7 +135,14 @@ public class OnRouteFragment extends Fragment implements OnRouteViewModelDelegat
     public void updateCurrentSongUI(final String name, final String album) {
         trackInfoCardView.setVisibility(View.VISIBLE);
         txtSongTitle.setText(name);
-        txtSongArtistInfo.setText(album);
+        txtSongAlbumInfo.setText(album);
+    }
+
+    @Override
+    public void clearMap() {
+        map.clear();
+        userMarker = null;
+        checkpointMarker = null;
     }
 
     @Override

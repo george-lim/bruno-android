@@ -17,14 +17,11 @@ import com.spotify.android.appremote.api.PlayerApi;
 import com.spotify.android.appremote.api.SpotifyAppRemote;
 import com.spotify.android.appremote.api.error.CouldNotFindSpotifyApp;
 import com.spotify.android.appremote.api.error.SpotifyDisconnectedException;
-import com.spotify.protocol.types.Artist;
 import com.spotify.protocol.types.PlayerState;
 import com.spotify.protocol.types.Track;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import androidx.annotation.NonNull;
 
 /**
  * Service responsible for connecting to Spotify, play music and notifying subscribers about state changes.
@@ -126,7 +123,7 @@ class SpotifyPlayerService implements MusicPlayer {
                         }
 
                         for (MusicPlayerSubscriber subscriber : spotifyServiceSubscribers) {
-                            subscriber.onTrackChanged(makeBrunoTrack(track));
+                            subscriber.onTrackChanged(new BrunoTrack(track.name, track.album.name, track.duration));
                         }
 
                         Log.d(TAG, String.format("Curr Track: %s", track.toString()));
@@ -182,7 +179,7 @@ class SpotifyPlayerService implements MusicPlayer {
 
         // Now start playing playlist
         queue.add((result, nextCallback) -> {
-            String playlistUrl = "spotify:playlist:" + playlist.id;
+            String playlistUrl = "spotify:playlist:" + playlist.getId();
 
             api.play(playlistUrl)
                     .setResultCallback(empty -> nextCallback.onSuccess(null))
@@ -236,15 +233,5 @@ class SpotifyPlayerService implements MusicPlayer {
                 .getPlayerState()
                 .setResultCallback(playerState -> callback.onSuccess(playerState.playbackPosition))
                 .setErrorCallback(callback::onFailed);
-    }
-
-    // Converts Spotify's Track object to a BrunoTrack object
-    private static BrunoTrack makeBrunoTrack(@NonNull final Track track) {
-        final List<Artist> trackArtists = track.artists;
-        final ArrayList<String> artistNames = new ArrayList<>();
-        for (final Artist artist : trackArtists) {
-            artistNames.add(artist.name);
-        }
-        return new BrunoTrack(track.name, track.album.name, track.duration, artistNames);
     }
 }
