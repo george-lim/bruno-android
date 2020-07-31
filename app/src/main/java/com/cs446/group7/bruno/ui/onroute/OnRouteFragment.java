@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -59,6 +60,7 @@ public class OnRouteFragment extends Fragment implements OnRouteViewModelDelegat
     private OnRouteViewModel viewModel;
 
     private ProgressDialog progressDialog;
+    private AlertDialog alertDialog;
     private Marker userMarker;
     private Marker checkpointMarker;
     private Circle checkpointCircle;
@@ -220,13 +222,21 @@ public class OnRouteFragment extends Fragment implements OnRouteViewModelDelegat
                                 final String positiveButtonText,
                                 final DialogInterface.OnClickListener positiveButtonClickListener,
                                 boolean isCancelable) {
-        new AlertDialog.Builder(getContext())
+
+        // We don't want multiple, overlapping dialogues
+        // it's okay if the dialogue is already dismissed and we re-dismiss it, no need to set to null once dismissed
+        if (alertDialog != null) {
+            alertDialog.dismiss();
+        }
+
+        alertDialog = new AlertDialog.Builder(getContext())
                 .setTitle(title)
                 .setMessage(message)
                 .setPositiveButton(positiveButtonText, positiveButtonClickListener)
                 .setCancelable(isCancelable)
-                .create()
-                .show();
+                .create();
+
+        alertDialog.show();
     }
 
     @Override
@@ -237,19 +247,30 @@ public class OnRouteFragment extends Fragment implements OnRouteViewModelDelegat
                                 final String negativeButtonText,
                                 final DialogInterface.OnClickListener negativeButtonClickListener,
                                 boolean isCancelable) {
-        new AlertDialog.Builder(getContext())
+
+        if (alertDialog != null) {
+            alertDialog.dismiss();
+        }
+
+        alertDialog = new AlertDialog.Builder(getContext())
                 .setTitle(title)
                 .setMessage(message)
                 .setPositiveButton(positiveButtonText, positiveButtonClickListener)
                 .setNegativeButton(negativeButtonText, negativeButtonClickListener)
                 .setCancelable(isCancelable)
-                .create()
-                .show();
+                .create();
+
+        alertDialog.show();
     }
 
     @Override
     public void navigateToPreviousScreen() {
-        Navigation.findNavController(getActivity(), R.id.nav_host_fragment).navigateUp();
+        if (getActivity() != null) {
+            Navigation.findNavController(getActivity(), R.id.nav_host_fragment).navigateUp();
+        }
+        else {
+            Log.w(getClass().getSimpleName(), "Detected race condition where navigateToNextScreen was called after already navigating to next screen.");
+        }
     }
 
     @Override
