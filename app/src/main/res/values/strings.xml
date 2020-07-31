@@ -37,4 +37,15 @@
     <string name="run_exit_title">Are you sure?</string>
     <string name="run_exit_message">Bruno doesn\'t like it when you quit in the middle, your current progress will be lost.</string>
     <string name="on_route_stop">EXIT</string>
+    <string name="fitness_details_leaderboard">Leaderboard</string>
+    <string name="fitness_details_stats">Your Stats</string>
+    <string name="fitness_details_playlist">Route Playlist</string>
+    <string name="fitness_details_you">You</string>
+    <string name="fitness_details_bruno">Bruno</string>
+    <string name="fitness_details_crown_description">Running award</string>
+    <string name="fitness_details_steps_description">On route step indicator</string>
+    <string name="fitness_details_clock_description">Total time elapsed indicator</string>
+    <string name="fitness_details_steps_placeholder">%d steps</string>
+    <string name="fitness_details_clock_placeholder">%d minutes</string>
+    <string name="fitness_details_music_description">Music note</string>
 </resources>

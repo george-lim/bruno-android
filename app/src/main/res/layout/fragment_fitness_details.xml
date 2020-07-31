@@ -12,15 +12,204 @@
         layout="@layout/toolbar_layout"
         app:layout_constraintTop_toTopOf="parent"/>
 
-    <FrameLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        app:layout_constraintTop_toBottomOf="@id/appbar_fitness_details"
-        app:layout_constraintBottom_toBottomOf="parent">
+        android:layout_height="match_parent"
+        tools:layout_editor_absoluteY="56dp">
 
-        <TextView
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="Fitness Details Fragment"/>
-    </FrameLayout>
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <androidx.fragment.app.FragmentContainerView
+                android:id="@+id/fitness_details_map"
+                android:name="com.google.android.gms.maps.SupportMapFragment"
+                android:layout_width="match_parent"
+                android:layout_height="418sp"
+                tools:context=".ui.fitnessdetails.FitnessDetailsFragment" />
+
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="20dp"
+                android:paddingTop="17px"
+                android:paddingRight="20dp"
+                android:paddingBottom="16px"
+                android:text="@string/fitness_details_leaderboard"
+                android:textSize="24sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal"
+                    android:paddingTop="20px"
+                    android:paddingBottom="20px">
+
+                    <ImageView
+                        android:id="@+id/image_view_leaderboard_you_crown"
+                        android:layout_width="25dp"
+                        android:layout_height="20dp"
+                        android:layout_weight="1"
+                        android:contentDescription="@string/fitness_details_crown_description"
+                        android:src="@drawable/ic_crown" />
+
+                    <TextView
+                        android:id="@+id/text_view_leaderboard_you"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="7"
+                        android:text="@string/fitness_details_you" />
+
+                    <TextView
+                        android:id="@+id/text_view_leaderboard_you_time"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="2" />
+                </LinearLayout>
+
+                <View
+                    android:id="@+id/divider4"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="?android:attr/listDivider" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal"
+                    android:paddingTop="20px"
+                    android:paddingBottom="20px">
+
+                    <ImageView
+                        android:id="@+id/image_view_leaderboard_bruno_crown"
+                        android:layout_width="25dp"
+                        android:layout_height="20dp"
+                        android:layout_weight="1"
+                        android:contentDescription="@string/fitness_details_crown_description"
+                        android:src="@drawable/ic_crown" />
+
+                    <TextView
+                        android:id="@+id/text_view_leaderboard_bruno"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="7"
+                        android:text="@string/fitness_details_bruno" />
+
+                    <TextView
+                        android:id="@+id/text_view_leaderboard_bruno_time"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="2" />
+                </LinearLayout>
+
+                <View
+                    android:id="@+id/divider2"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="?android:attr/listDivider" />
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="20dp"
+                android:paddingTop="17px"
+                android:paddingRight="20dp"
+                android:paddingBottom="16px"
+                android:text="@string/fitness_details_stats"
+                android:textSize="24sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:id="@+id/image_view_stats_steps"
+                        android:layout_width="44dp"
+                        android:layout_height="44dp"
+                        android:layout_gravity="center_horizontal"
+                        android:contentDescription="@string/fitness_details_steps_description"
+                        android:src="@drawable/ic_shoe_print_upright"
+                        android:tint="@color/colorPrimary" />
+
+                    <TextView
+                        android:id="@+id/text_view_stats_steps"
+                        android:layout_width="match_parent"
+                        android:layout_height="44dp"
+                        android:layout_gravity="top"
+                        android:gravity="center_horizontal"
+                        android:paddingTop="5dp" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:id="@+id/image_view_stats_clock"
+                        android:layout_width="44dp"
+                        android:layout_height="44dp"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_weight="1"
+                        android:contentDescription="@string/fitness_details_clock_description"
+                        android:src="@drawable/ic_clock"
+                        android:tint="@color/colorPrimary" />
+
+                    <TextView
+                        android:id="@+id/text_view_stats_clock"
+                        android:layout_width="match_parent"
+                        android:layout_height="44dp"
+                        android:layout_gravity="top"
+                        android:gravity="center_horizontal"
+                        android:paddingTop="5dp" />
+
+                </LinearLayout>
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/textView3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="20dp"
+                android:paddingTop="17px"
+                android:paddingRight="20dp"
+                android:paddingBottom="16px"
+                android:text="@string/fitness_details_playlist"
+                android:textSize="24sp"
+                android:textStyle="bold" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/tracklist_view_fitness_details"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp" />
+
+        </LinearLayout>
+    </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>
