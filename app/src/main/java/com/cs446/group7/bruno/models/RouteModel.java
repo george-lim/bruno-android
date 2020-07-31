@@ -183,19 +183,25 @@ public class RouteModel extends ViewModel {
         steps++;
     }
 
-    public void reset() {
+    /**
+     * Resets the progress of the current route, and stats, but keeps the route and checkpoints.
+     */
+    public void softReset() {
+        currentCheckpointIndex = 0;
+        currentTrackEndpointIndex = 0;
+    }
+
+    /**
+     * Resets everything to the state it was first constructed.
+     */
+    public void hardReset() {
+        softReset();
         mode = Mode.WALK;
         durationIndex = 0;
-
         routeSegments = null;
         routeColours = null;
         playlist = null;
         colourizedRoute = null;
-
         currentLocation = null;
-        currentCheckpointIndex = 0;
-        currentTrackEndpointIndex = 0;
-        currentTrack = null;
-        steps = 0;
     }
 }
