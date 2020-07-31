@@ -95,6 +95,8 @@ public class RouteModel extends ViewModel {
     public void mergePlaylist(final BrunoPlaylist playlist, long playbackPosition) {
         this.playlist = new MergedBrunoPlaylistImpl(this.playlist, playlist, currentTrack, playbackPosition);
         updateColourizedRoute();
+        advanceCheckpoint();
+        advanceTrackEndpoint();
     }
 
     public ColourizedRoute getColourizedRoute() {

@@ -284,10 +284,15 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
     }
 
     private void handlePlaylistChange(final BrunoPlaylist playlist, long playbackPosition) {
+        musicPlayer.stop();
+        musicPlayer.setPlayerPlaylist(playlist);
+
         model.mergePlaylist(playlist, playbackPosition);
         delegate.clearMap();
         delegate.drawRoute(model.getColourizedRoute());
         refreshUI();
+
+        musicPlayer.play();
     }
 
     // MARK: - User action handlers
