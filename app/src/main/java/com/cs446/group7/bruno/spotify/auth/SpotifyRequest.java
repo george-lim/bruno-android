@@ -1,12 +1,12 @@
-package com.cs446.group7.bruno.spotify;
+package com.cs446.group7.bruno.spotify.auth;
 
 import com.cs446.group7.bruno.utils.Callback;
 import com.spotify.sdk.android.auth.AuthorizationRequest;
 
 public class SpotifyRequest {
 
-    private AuthorizationRequest request;
-    private Callback<String,Void> callback;
+    private final AuthorizationRequest request;
+    private final Callback<String,Void> callback;
 
     public SpotifyRequest(final AuthorizationRequest request, final Callback<String, Void> callback) {
         this.request = request;

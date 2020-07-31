@@ -1,4 +1,4 @@
-package com.cs446.group7.bruno.spotify;
+package com.cs446.group7.bruno.spotify.auth;
 
 import androidx.annotation.NonNull;
 
