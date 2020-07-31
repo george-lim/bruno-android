@@ -4,22 +4,19 @@ import android.content.Context;
 import android.util.Log;
 
 import com.cs446.group7.bruno.R;
+import com.cs446.group7.bruno.music.BrunoPlaylist;
 import com.cs446.group7.bruno.music.BrunoTrack;
 import com.cs446.group7.bruno.music.player.MusicPlayer;
+import com.cs446.group7.bruno.music.player.MusicPlayerException;
+import com.cs446.group7.bruno.music.player.MusicPlayerSubscriber;
 import com.cs446.group7.bruno.utils.Callback;
+import com.cs446.group7.bruno.utils.ClosureQueue;
 import com.spotify.android.appremote.api.ConnectionParams;
 import com.spotify.android.appremote.api.Connector;
+import com.spotify.android.appremote.api.PlayerApi;
 import com.spotify.android.appremote.api.SpotifyAppRemote;
-import com.spotify.android.appremote.api.error.AuthenticationFailedException;
 import com.spotify.android.appremote.api.error.CouldNotFindSpotifyApp;
-import com.spotify.android.appremote.api.error.LoggedOutException;
-import com.spotify.android.appremote.api.error.NotLoggedInException;
-import com.spotify.android.appremote.api.error.OfflineModeException;
-import com.spotify.android.appremote.api.error.SpotifyConnectionTerminatedException;
 import com.spotify.android.appremote.api.error.SpotifyDisconnectedException;
-import com.spotify.android.appremote.api.error.SpotifyRemoteServiceException;
-import com.spotify.android.appremote.api.error.UnsupportedFeatureVersionException;
-import com.spotify.android.appremote.api.error.UserNotAuthorizedException;
 import com.spotify.protocol.types.Artist;
 import com.spotify.protocol.types.PlayerState;
 import com.spotify.protocol.types.Track;
@@ -36,26 +33,34 @@ class SpotifyPlayerService implements MusicPlayer {
 
     // Main interface to the Spotify app, initialized by connect()
     private SpotifyAppRemote mSpotifyAppRemote;
-    private List<SpotifyServiceSubscriber> spotifyServiceSubscribers;
+    private List<MusicPlayerSubscriber> spotifyServiceSubscribers;
     private final String TAG = getClass().getSimpleName();
 
     private PlayerState currentPlayerState;
-    private String playlistId;
+    private BrunoPlaylist playlist;
 
     public SpotifyPlayerService() {
         spotifyServiceSubscribers = new ArrayList<>();
     }
 
     /**
-     * Attempts to connect to Spotify via the user's Spotify app. If any error occurs, a {@link SpotifyServiceError} is
+     * Attempts to connect to Spotify via the user's Spotify app. If any error occurs, a {@link SpotifyPlayerException} is
      * generated in the callback.
      * @param callback callback for handling the result of the connection
      */
-    public void connect(final Context context, final Callback<Void, SpotifyServiceError> callback) {
+    public void connect(final Context context,
+                        final Callback<Void, MusicPlayerException> callback) {
+
+        // Don't connect if it's already connected
+        if (isConnected()) {
+            callback.onSuccess(null);
+            return;
+        }
 
         // Spotify is not installed on the device
         if (!SpotifyAppRemote.isSpotifyInstalled(context)) {
-            callback.onFailed(SpotifyServiceError.APP_NOT_FOUND);
+            SpotifyPlayerException exception = new SpotifyPlayerException(new CouldNotFindSpotifyApp());
+            callback.onFailed(exception);
             return;
         }
 
@@ -71,7 +76,7 @@ class SpotifyPlayerService implements MusicPlayer {
 
             // Success! Maintain control of the main interface AppRemote
             // and listen for updates to the player. Let the caller know that the
-            // Spotify player is online - can play/pause music, etc
+            // Spotify player is online - can play/stop music, etc
             @Override
             public void onConnected(SpotifyAppRemote spotifyAppRemote) {
                 mSpotifyAppRemote = spotifyAppRemote;
@@ -82,39 +87,24 @@ class SpotifyPlayerService implements MusicPlayer {
             @Override
             public void onFailure(Throwable throwable) {
                 Log.e(TAG, ".connect onFailure method: " + throwable.toString());
-                SpotifyServiceError spotifyServiceError = getErrorFromThrowable(throwable);
-                callback.onFailed(spotifyServiceError);
+                MusicPlayerException exception = new SpotifyPlayerException(throwable);
+                callback.onFailed(exception);
             }
         });
     }
 
     // Check if we are connected to the Spotify app
-    public boolean isConnected() {
+    private boolean isConnected() {
         return mSpotifyAppRemote != null && mSpotifyAppRemote.isConnected();
     }
-
-    public void addSubscriber(final SpotifyServiceSubscriber subscriber) {
+    
+    public void addSubscriber(final MusicPlayerSubscriber subscriber) {
         if (spotifyServiceSubscribers.contains(subscriber)) return;
         spotifyServiceSubscribers.add(subscriber);
     }
 
-    public void removeSubscriber(final SpotifyServiceSubscriber subscriber) {
+    public void removeSubscriber(final MusicPlayerSubscriber subscriber) {
         spotifyServiceSubscribers.remove(subscriber);
-    }
-
-    // Converts Spotify-specific exceptions to a SpotifyServiceError
-    private static SpotifyServiceError getErrorFromThrowable (final Throwable throwable) {
-        if (throwable instanceof AuthenticationFailedException) { return SpotifyServiceError.AUTHENTICATION_FAILED; }
-        if (throwable instanceof UserNotAuthorizedException) { return SpotifyServiceError.AUTHORIZATION_FAILED; }
-        if (throwable instanceof CouldNotFindSpotifyApp) { return SpotifyServiceError.APP_NOT_FOUND; }
-        if (throwable instanceof LoggedOutException) { return SpotifyServiceError.LOGGED_OUT; }
-        if (throwable instanceof NotLoggedInException) { return SpotifyServiceError.NOT_LOGGED_IN; }
-        if (throwable instanceof OfflineModeException) { return SpotifyServiceError.OFFLINE_MODE; }
-        if (throwable instanceof SpotifyConnectionTerminatedException) { return SpotifyServiceError.CONNECTION_TERMINATED; }
-        if (throwable instanceof SpotifyDisconnectedException) { return SpotifyServiceError.DISCONNECTED; }
-        if (throwable instanceof SpotifyRemoteServiceException) { return SpotifyServiceError.REMOTE_SERVICE_ERROR; }
-        if (throwable instanceof UnsupportedFeatureVersionException) { return SpotifyServiceError.UNSUPPORTED_FEATURE_VERSION; }
-        return SpotifyServiceError.OTHER_ERROR;
     }
 
     // Listen for updates from the Spotify player
@@ -135,7 +125,7 @@ class SpotifyPlayerService implements MusicPlayer {
                             Log.w(TAG, "Same track!");
                         }
 
-                        for (SpotifyServiceSubscriber subscriber : spotifyServiceSubscribers) {
+                        for (MusicPlayerSubscriber subscriber : spotifyServiceSubscribers) {
                             subscriber.onTrackChanged(makeBrunoTrack(track));
                         }
 
@@ -152,75 +142,100 @@ class SpotifyPlayerService implements MusicPlayer {
 
     // Should be called when disconnecting from Spotify
     public void disconnect() {
-        SpotifyAppRemote.disconnect(mSpotifyAppRemote);
+        if (isConnected()) {
+            SpotifyAppRemote.disconnect(mSpotifyAppRemote);
+        }
     }
 
     // Plays the playlist which is set by setPlaylist()
     // Note that calling this method multiple times will play the custom playlist from the beginning each time
-    public void play(Callback<Void, Exception> callback) {
-        mSpotifyAppRemote.getPlayerApi().getPlayerState().setResultCallback(playerState -> {
-            if (playerState.playbackRestrictions.canToggleShuffle) { // premium users
-                mSpotifyAppRemote.getPlayerApi()
-                        .setShuffle(false)
-                        .setResultCallback(empty -> {
-                            mSpotifyAppRemote.getPlayerApi().play("spotify:playlist:" + this.playlistId).setResultCallback(empty1 -> {
-                                callback.onSuccess(null);
-                            }).setErrorCallback(throwable -> {
-                                Log.e(TAG, "play after shuffle failed: " + throwable.toString());
-                                callback.onFailed(new Exception(throwable));
-                            });
-                        })
-                        .setErrorCallback(throwable -> {
-                            Log.e(TAG, "shuffle failed: " + throwable.toString());
-                            callback.onFailed(new Exception(throwable));
-                        });
-            } else { // free users
-                mSpotifyAppRemote.getPlayerApi().play("spotify:playlist:" + this.playlistId).setResultCallback(empty1 -> {
-                    callback.onSuccess(null);
-                }).setErrorCallback(throwable -> {
-                    Log.e(TAG, "playing for free users failed: " + throwable.toString());
-                    callback.onFailed(new Exception(throwable));
-                });
+    public void play() {
+        if (playlist == null) {
+            Log.w(TAG, "Missing playlist when calling play()");
+            return;
+        }
+
+        PlayerApi api = mSpotifyAppRemote.getPlayerApi();
+
+        ClosureQueue<Void, Throwable> queue = new ClosureQueue<>();
+
+        /*
+            Set player shuffle to off if possible.
+            NOTE: Free users cannot turn off shuffle. It is also possible for a premium user NOT to
+                  be able to turn off shuffle if they previously had songs queued up.
+         */
+        queue.add((result, nextCallback) -> {
+            api.getPlayerState()
+                    .setResultCallback(playerState -> {
+                        // If player cannot turn off shuffle, just succeed anyway and move on.
+                        if (!playerState.playbackRestrictions.canToggleShuffle) {
+                            nextCallback.onSuccess(null);
+                            return;
+                        }
+
+                        api.setShuffle(false)
+                                .setResultCallback(empty -> nextCallback.onSuccess(null))
+                                .setErrorCallback(throwable -> nextCallback.onFailed(throwable));
+                    })
+                    .setErrorCallback(throwable -> nextCallback.onFailed(throwable));
+        });
+
+        // Now start playing playlist
+        queue.add((result, nextCallback) -> {
+            String playlistUrl = "spotify:playlist:" + playlist.id;
+
+            api.play(playlistUrl)
+                    .setResultCallback(empty -> nextCallback.onSuccess(null))
+                    .setErrorCallback(throwable -> nextCallback.onFailed(throwable));
+        });
+
+        queue.run(new Callback<Void, Throwable>() {
+            @Override
+            public void onSuccess(Void result) {
+                // NOOP
             }
-        }).setErrorCallback(throwable -> {
-            Log.e(TAG, "failed to acquire player state in play: " + throwable.toString());
-            callback.onFailed(new Exception(throwable));
+
+            @Override
+            public void onFailed(Throwable result) {
+                Log.e(TAG, "Play playlist failed with error: " + result.toString());
+            }
         });
     }
 
     // Sets the playlist for the music player
-    public void setPlayerPlaylist(String playlistId) { this.playlistId = playlistId; }
+    public void setPlayerPlaylist(BrunoPlaylist playlist) { this.playlist = playlist; }
 
-    // Pause the player
-    public void pause(Callback<Void, Exception> callback) {
+    // Stop the player by pausing it
+    public void stop() {
         mSpotifyAppRemote.getPlayerApi()
-                .pause().setResultCallback(empty -> {
-                    callback.onSuccess(null);
-                })
+                .pause()
                 .setErrorCallback(throwable -> {
-                    Log.e(TAG, "pause failed: " + throwable.toString());
-                    callback.onFailed(new Exception(throwable));
+                    Log.e(TAG, "Stop playlist failed with error: " + throwable.toString());
                 });
     }
 
-    // Resume the player
-    public void resume(Callback<Void, Exception> callback) {
+    // Stop the player then disconnect
+    public void stopAndDisconnect() {
         mSpotifyAppRemote.getPlayerApi()
-                .resume().setResultCallback(empty -> {
-                    Log.i(TAG, "Resumed!");
-                    callback.onSuccess(null);
-                })
+                .pause()
+                .setResultCallback(empty -> disconnect())
                 .setErrorCallback(throwable -> {
-                    Log.e(TAG, "resume failed: " + throwable.toString());
-                    callback.onFailed(new Exception(throwable));
+                    Log.e(TAG, "Stop playlist failed with error: " + throwable.toString());
+                    disconnect();
                 });
     }
 
-    // Reads the currently playing track from the player
-    // and returns a BrunoTrack containing track metadata
-    public BrunoTrack getCurrentTrack() {
-        if (currentPlayerState == null || currentPlayerState.track == null) return null;
-        return makeBrunoTrack(currentPlayerState.track);
+    public void getPlaybackPosition(final Callback<Long, Throwable> callback) {
+        if (!isConnected()) {
+            callback.onFailed(new SpotifyDisconnectedException());
+            return;
+        }
+
+        mSpotifyAppRemote
+                .getPlayerApi()
+                .getPlayerState()
+                .setResultCallback(playerState -> callback.onSuccess(playerState.playbackPosition))
+                .setErrorCallback(callback::onFailed);
     }
 
     // Converts Spotify's Track object to a BrunoTrack object

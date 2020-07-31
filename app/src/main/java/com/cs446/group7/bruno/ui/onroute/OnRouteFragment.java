@@ -6,10 +6,12 @@ import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -20,10 +22,10 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 
 import com.cs446.group7.bruno.R;
+import com.cs446.group7.bruno.colourizedroute.ColourizedRoute;
+import com.cs446.group7.bruno.colourizedroute.ColourizedRouteSegment;
 import com.cs446.group7.bruno.models.RouteModel;
-import com.cs446.group7.bruno.routing.RouteTrackMapping;
 import com.cs446.group7.bruno.utils.BitmapUtils;
-import com.cs446.group7.bruno.utils.MapDrawingUtils;
 import com.cs446.group7.bruno.viewmodels.OnRouteViewModel;
 import com.cs446.group7.bruno.viewmodels.OnRouteViewModelDelegate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -37,8 +39,7 @@ import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-
-import java.util.List;
+import com.google.android.gms.maps.model.PolylineOptions;
 
 public class OnRouteFragment extends Fragment implements OnRouteViewModelDelegate {
 
@@ -46,15 +47,20 @@ public class OnRouteFragment extends Fragment implements OnRouteViewModelDelegat
 
     private GoogleMap map;
     private CardView trackInfoCardView;
+    private CardView routeInfoCardView;
     private TextView txtSongTitle;
     private TextView txtSongArtistInfo;
-    private Button btnExitRoute;
+    private ImageView progressIndicator;
+    private TextView txtProgressToTrackEndpoint;
+    private TextView txtDistanceToTrackEndpoint;
+    private ImageButton btnExitRoute;
 
     // MARK: - Private members
 
     private OnRouteViewModel viewModel;
 
     private ProgressDialog progressDialog;
+    private AlertDialog alertDialog;
     private Marker userMarker;
     private Marker checkpointMarker;
     private Circle checkpointCircle;
@@ -71,8 +77,12 @@ public class OnRouteFragment extends Fragment implements OnRouteViewModelDelegat
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_on_route, container, false);
         trackInfoCardView = view.findViewById(R.id.card_view_track_info);
+        routeInfoCardView = view.findViewById(R.id.card_view_route_info);
         txtSongTitle = view.findViewById(R.id.text_view_song_title);
         txtSongArtistInfo = view.findViewById(R.id.text_view_song_artist_info);
+        progressIndicator = view.findViewById(R.id.image_view_progress_to_track_endpoint_icon);
+        txtProgressToTrackEndpoint = view.findViewById(R.id.text_view_progress_to_track_endpoint);
+        txtDistanceToTrackEndpoint = view.findViewById(R.id.text_view_distance_to_track_endpoint);
         btnExitRoute = view.findViewById(R.id.btn_exit_route);
         return view;
     }
@@ -131,9 +141,15 @@ public class OnRouteFragment extends Fragment implements OnRouteViewModelDelegat
     }
 
     @Override
-    public void drawRoute(final List<RouteTrackMapping> routeTrackMappings, final int[] colours) {
-        if (routeTrackMappings.size() == 0) return;
-        MapDrawingUtils.drawColourizedRoute(routeTrackMappings, colours, map);
+    public void drawRoute(@NonNull final ColourizedRoute colourizedRoute) {
+        final float routeWidth = 14;
+
+        for (ColourizedRouteSegment colourizedRouteSegment : colourizedRoute.getSegments()) {
+            map.addPolyline(new PolylineOptions()
+                    .addAll(colourizedRouteSegment.getLocations())
+                    .color(colourizedRouteSegment.getRouteColour())
+                    .width(routeWidth));
+        }
     }
 
     @Override
@@ -206,13 +222,21 @@ public class OnRouteFragment extends Fragment implements OnRouteViewModelDelegat
                                 final String positiveButtonText,
                                 final DialogInterface.OnClickListener positiveButtonClickListener,
                                 boolean isCancelable) {
-        new AlertDialog.Builder(getContext())
+
+        // We don't want multiple, overlapping dialogues
+        // it's okay if the dialogue is already dismissed and we re-dismiss it, no need to set to null once dismissed
+        if (alertDialog != null) {
+            alertDialog.dismiss();
+        }
+
+        alertDialog = new AlertDialog.Builder(getContext())
                 .setTitle(title)
                 .setMessage(message)
                 .setPositiveButton(positiveButtonText, positiveButtonClickListener)
                 .setCancelable(isCancelable)
-                .create()
-                .show();
+                .create();
+
+        alertDialog.show();
     }
 
     @Override
@@ -223,18 +247,49 @@ public class OnRouteFragment extends Fragment implements OnRouteViewModelDelegat
                                 final String negativeButtonText,
                                 final DialogInterface.OnClickListener negativeButtonClickListener,
                                 boolean isCancelable) {
-        new AlertDialog.Builder(getContext())
+
+        if (alertDialog != null) {
+            alertDialog.dismiss();
+        }
+
+        alertDialog = new AlertDialog.Builder(getContext())
                 .setTitle(title)
                 .setMessage(message)
                 .setPositiveButton(positiveButtonText, positiveButtonClickListener)
                 .setNegativeButton(negativeButtonText, negativeButtonClickListener)
                 .setCancelable(isCancelable)
-                .create()
-                .show();
+                .create();
+
+        alertDialog.show();
     }
 
     @Override
     public void navigateToPreviousScreen() {
-        Navigation.findNavController(getActivity(), R.id.nav_host_fragment).navigateUp();
+        if (getActivity() != null) {
+            Navigation.findNavController(getActivity(), R.id.nav_host_fragment).navigateUp();
+        }
+        else {
+            Log.w(getClass().getSimpleName(), "Detected race condition where navigateToNextScreen was called after already navigating to next screen.");
+        }
+    }
+
+    @Override
+    public void updateDistanceToTrackEndpoint(final String distanceText) {
+        txtDistanceToTrackEndpoint.setText(distanceText);
+        txtDistanceToTrackEndpoint.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void updateProgressToTrackEndpoint(final String progressText, final Drawable progressIcon, int colour) {
+        txtProgressToTrackEndpoint.setText(progressText);
+        progressIndicator.setImageDrawable(progressIcon);
+        progressIndicator.setColorFilter(colour);
+        progressIndicator.setVisibility(View.VISIBLE);
+        txtProgressToTrackEndpoint.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void showRouteInfoCard() {
+        routeInfoCardView.setVisibility(View.VISIBLE);
     }
 }

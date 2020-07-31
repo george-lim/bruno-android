@@ -1,49 +1,106 @@
 package com.cs446.group7.bruno.music.player;
 
+import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 
+import com.cs446.group7.bruno.music.BrunoPlaylist;
 import com.cs446.group7.bruno.music.BrunoTrack;
 import com.cs446.group7.bruno.utils.Callback;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class MockMusicPlayerImpl implements MusicPlayer {
 
-    String playlistId = "";
-    private final String TAG = getClass().getSimpleName();
+    // MARK: - Private members
 
-    public void setPlayerPlaylist(String playlistId) {
-        this.playlistId = playlistId;
+    private BrunoPlaylist playlist;
+    private List<MusicPlayerSubscriber> subscribers;
+    private Thread playSongsThread;
+    private long songStartTime;
+
+    // MARK: - Lifecycle methods
+
+    public MockMusicPlayerImpl() {
+        playlist = null;
+        subscribers = new ArrayList<>();
+        playSongsThread = new Thread(() -> playSongs());
     }
 
-    public void play(Callback<Void, Exception> callback) {
-        Log.i(TAG, "play(): Playing playlist " + this.playlistId);
-        callback.onSuccess(null);
-    }
+    // MARK: - Private methods
 
-    public void pause(Callback<Void, Exception> callback) {
-        Log.i(TAG, "pause(): Paused playlist " + this.playlistId);
-        callback.onSuccess(null);
-    }
+    // Simulates playing the playlist in the background, with proper track delay.
+    private void playSongs() {
+        try {
+            // Play each song
+            for (BrunoTrack track : playlist.tracks) {
+                // Dispatch to UI thread
+                new Handler(Looper.getMainLooper()).post(() -> {
+                    // Notify all subscribers of new track
+                    for (MusicPlayerSubscriber subscriber : subscribers) {
+                        subscriber.onTrackChanged(track);
+                    }
+                });
 
-    public void resume(Callback<Void, Exception> callback) {
-        Log.i(TAG, "resume(): Resuming playlist " + this.playlistId);
-        callback.onSuccess(null);
-    }
-
-    public BrunoTrack getCurrentTrack() {
-        ArrayList<String> artists = new ArrayList<String>(2);
-        artists.add("Bruno Mars");
-        artists.add("Burno Mars");
-        BrunoTrack track = new BrunoTrack("name", "album", 420, artists);
-        Log.i(TAG, "getCurrentTrack(): Name: " + track.name);
-        Log.i(TAG, "getCurrentTrack(): Album: " + track.album);
-        Log.i(TAG, "getCurrentTrack(): Duration: " + track.duration);
-        for (int i = 0; i < artists.size(); ++i) {
-            Log.i(TAG, "getCurrentTrack(): Artist "
-                    + i + ": " + artists.get(i));
+                songStartTime = System.currentTimeMillis();
+                // Sleep for song duration to simulate song playing
+                Thread.sleep(track.duration);
+            }
         }
-        return track;
+        // Return from the method immediately. Safely terminates thread.
+        catch (InterruptedException e) {
+            return;
+        }
     }
 
+    // MARK: - MusicPlayer methods
+
+    public void connect(final Context context,
+                        final Callback<Void, MusicPlayerException> callback) {
+        callback.onSuccess(null);
+    }
+
+    public void disconnect() {
+        // NOOP
+    }
+
+    public void addSubscriber(final MusicPlayerSubscriber subscriber) {
+        subscribers.add(subscriber);
+    }
+
+    public void removeSubscriber(final MusicPlayerSubscriber subscriber) {
+        subscribers.remove(subscriber);
+    }
+
+    public void setPlayerPlaylist(final BrunoPlaylist playlist) {
+        this.playlist = playlist;
+    }
+
+    public void play() {
+        if (playlist == null) {
+            Log.w(getClass().getSimpleName(), "Missing playlist when calling play()");
+            return;
+        }
+
+        playSongsThread.start();
+    }
+
+    public void stop() {
+        if (!playSongsThread.isAlive()) {
+            return;
+        }
+
+        playSongsThread.interrupt();
+    }
+
+    public void stopAndDisconnect() {
+        stop();
+        disconnect();
+    }
+
+    public void getPlaybackPosition(final Callback<Long, Throwable> callback) {
+        callback.onSuccess(System.currentTimeMillis() - songStartTime);
+    }
 }

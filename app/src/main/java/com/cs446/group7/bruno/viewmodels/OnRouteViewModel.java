@@ -7,23 +7,25 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.cs446.group7.bruno.BuildConfig;
 import com.cs446.group7.bruno.MainActivity;
 import com.cs446.group7.bruno.R;
 import com.cs446.group7.bruno.location.LocationServiceSubscriber;
 import com.cs446.group7.bruno.models.RouteModel;
 import com.cs446.group7.bruno.music.BrunoTrack;
-import com.cs446.group7.bruno.routing.RouteTrackMapping;
+import com.cs446.group7.bruno.music.player.MockMusicPlayerImpl;
+import com.cs446.group7.bruno.music.player.MusicPlayer;
+import com.cs446.group7.bruno.music.player.MusicPlayerException;
+import com.cs446.group7.bruno.music.player.MusicPlayerSubscriber;
+import com.cs446.group7.bruno.preferencesstorage.PreferencesStorage;
 import com.cs446.group7.bruno.sensor.PedometerSubscriber;
 import com.cs446.group7.bruno.settings.SettingsService;
-import com.cs446.group7.bruno.spotify.SpotifyServiceError;
-import com.cs446.group7.bruno.spotify.SpotifyServiceSubscriber;
 import com.cs446.group7.bruno.utils.Callback;
 import com.cs446.group7.bruno.utils.LatLngUtils;
+import com.cs446.group7.bruno.utils.NoFailCallback;
 import com.google.android.gms.maps.model.LatLng;
 
-import java.util.List;
-
-public class OnRouteViewModel implements LocationServiceSubscriber, SpotifyServiceSubscriber, PedometerSubscriber {
+public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerSubscriber, PedometerSubscriber {
 
     // MARK: - Constants
 
@@ -38,6 +40,8 @@ public class OnRouteViewModel implements LocationServiceSubscriber, SpotifyServi
     private RouteModel model;
     private OnRouteViewModelDelegate delegate;
 
+    private MusicPlayer musicPlayer;
+
     // TODO: Remove this when there's a better reset logic
     private boolean isRouteCompleted;
 
@@ -51,24 +55,37 @@ public class OnRouteViewModel implements LocationServiceSubscriber, SpotifyServi
         this.delegate = delegate;
         this.isRouteCompleted = false;
 
+        musicPlayer = getMusicPlayer();
+        musicPlayer.setPlayerPlaylist(model.getPlaylist());
+
         MainActivity.getLocationService().addSubscriber(this);
         MainActivity.getLocationService().startLocationUpdates();
         MainActivity.getSensorService().addPedometerSubscriber(this);
+        musicPlayer.addSubscriber(this);
 
         setupUI();
-        connectToSpotify(context);
+
+        // Connect player, and play playlist after connection succeeds
+        connectPlayer(context, result -> musicPlayer.play());
     }
 
     public void onDestroy() {
         MainActivity.getLocationService().removeSubscriber(this);
-        MainActivity.getSpotifyService().removeSubscriber(this);
         MainActivity.getSensorService().removePedometerSubscriber(this);
+        musicPlayer.removeSubscriber(this);
     }
 
     // MARK: - Private methods
 
+    private MusicPlayer getMusicPlayer() {
+        return BuildConfig.DEBUG
+                ? new MockMusicPlayerImpl()
+                : MainActivity.getSpotifyService().getPlayerService();
+    }
+
     private void setupUI() {
-        int userAvatarDrawableResourceId = R.drawable.ic_avatar_1;
+        int userAvatarDrawableResourceId = MainActivity.getPreferencesStorage()
+                .getInt(PreferencesStorage.USER_AVATAR, PreferencesStorage.DEFAULT_AVATAR);
 
         delegate.setupUI(userAvatarDrawableResourceId);
 
@@ -78,88 +95,64 @@ public class OnRouteViewModel implements LocationServiceSubscriber, SpotifyServi
             delegate.updateCurrentSongUI(currentTrack.name, currentTrack.album);
         }
 
-        delegate.drawRoute(model.getRouteTrackMappings(), resources.getIntArray(R.array.colorRouteList));
+        delegate.drawRoute(model.getColourizedRoute());
 
         checkCheckpointUpdates();
+        checkRouteProgress();
 
         final Location currentLocation = model.getCurrentLocation();
         final float bearing = currentLocation.getBearing();
         delegate.animateCamera(LatLngUtils.locationToLatLng(currentLocation), bearing, CAMERA_TILT, CAMERA_ZOOM);
     }
 
-    private void connectToSpotify(final Context context) {
-        if (MainActivity.getSpotifyService().isConnected()) {
-            playSpotifyPlaylist();
-            return;
-        }
-
+    private void showPlayerConnectProgressDialog() {
         delegate.showProgressDialog(
-                resources.getString(R.string.run_preparation_title),
-                resources.getString(R.string.run_preparation_message),
+                resources.getString(R.string.run_player_connect_title),
+                resources.getString(R.string.run_player_connect_message),
                 false,
                 false
         );
-
-        MainActivity.getSpotifyService().connect(context, new Callback<Void, SpotifyServiceError>() {
-            @Override
-            public void onSuccess(Void result) {
-                delegate.dismissProgressDialog();
-                playSpotifyPlaylist();
-            }
-
-            @Override
-            public void onFailed(SpotifyServiceError result) {
-                delegate.dismissProgressDialog();
-                Log.e(getClass().getSimpleName(), "onFailed connect: " + result.getErrorMessage());
-
-                delegate.showAlertDialog(
-                        resources.getString(R.string.spotify_error),
-                        result.getErrorMessage(),
-                        resources.getString(R.string.ok_button),
-                        (dialogInterface, i) -> delegate.navigateToPreviousScreen(),
-                        false
-                );
-            }
-        });
     }
 
-    private void playSpotifyPlaylist() {
-        MainActivity.getSpotifyService().setPlayerPlaylist(RouteModel.DEFAULT_PLAYLIST_ID);
-        MainActivity.getSpotifyService().play(new Callback<Void, Exception>() {
-            @Override
-            public void onSuccess(Void result) {
-                MainActivity.getSpotifyService().addSubscriber(OnRouteViewModel.this);
-            }
-
-            @Override
-            public void onFailed(Exception result) {
-                Log.e(getClass().getSimpleName(), "onFailed play: " + result.getLocalizedMessage());
-            }
-        });
+    private void dismissPlayerConnectProgressDialog() {
+        delegate.dismissProgressDialog();
     }
 
-    private void disconnectFromSpotify() {
-        if (!MainActivity.getSpotifyService().isConnected()) {
-            return;
-        }
+    private void showPlayerConnectFailureDialog(final String errorMessage) {
+        delegate.showAlertDialog(
+                resources.getString(R.string.player_error),
+                errorMessage,
+                resources.getString(R.string.ok_button),
+                (dialogInterface, i) -> delegate.navigateToPreviousScreen(),
+                false
+        );
+    }
 
-        MainActivity.getSpotifyService().pause(new Callback<Void, Exception>() {
+    private void connectPlayer(final Context context, final NoFailCallback<Void> callback) {
+        showPlayerConnectProgressDialog();
+
+        musicPlayer.connect(context, new Callback<Void, MusicPlayerException>() {
             @Override
             public void onSuccess(Void result) {
-                MainActivity.getSpotifyService().disconnect();
+                dismissPlayerConnectProgressDialog();
+                callback.onSuccess(null);
             }
 
             @Override
-            public void onFailed(Exception result) {
-                MainActivity.getSpotifyService().disconnect();
+            public void onFailed(MusicPlayerException result) {
+                String errorMessage = result.getLocalizedMessage();
+                Log.e(getClass().getSimpleName(), "onFailed connect: " + errorMessage);
+
+                dismissPlayerConnectProgressDialog();
+                showPlayerConnectFailureDialog(errorMessage);
             }
         });
     }
 
     private void checkCheckpointUpdates() {
-        final List<RouteTrackMapping> routeTrackMapping = model.getRouteTrackMappings();
-        if (routeTrackMapping.isEmpty()) {
-            Log.w(getClass().getSimpleName(), "RouteTrackMapping is empty! No checkpoints generated");
+        // Fail-safe
+        if (model.getColourizedRoute().getSegments().isEmpty()) {
+            Log.e(getClass().getSimpleName(), "Checkpoints not found when checking checkpoint updates");
             return;
         }
 
@@ -194,6 +187,10 @@ public class OnRouteViewModel implements LocationServiceSubscriber, SpotifyServi
         // Checkpoint is counted if and only if  user is within the tolerance radius;
         // this is calculated dynamically as the location updates, which may be larger than what is drawn
         if (distanceFromCheckpoint <= toleranceRadius) {
+            // trackEndpoints are a subset of checkpoints
+            if (model.getCurrentCheckpoint().equals(model.getCurrentTrackEndpoint())) {
+                model.advanceTrackEndpoint();
+            }
             final LatLng nextCheckpoint = model.advanceCheckpoint();
 
             // End of route, no more checkpoints
@@ -207,10 +204,67 @@ public class OnRouteViewModel implements LocationServiceSubscriber, SpotifyServi
     }
 
     /**
+     * Route progress refers to the distance to the next trackEndpoint, as well as how far
+     * ahead or behind the song the user is based on their current speed.
+     */
+    private void checkRouteProgress() {
+        // Fail-safe
+        if (isRouteCompleted) return;
+
+        double distanceToTrackEndpoint = model.getDistanceToTrackEndpoint();
+        delegate.updateDistanceToTrackEndpoint((int)distanceToTrackEndpoint + " m");
+
+        // placeholder display until current track is ready
+        if (model.getCurrentTrack() == null) {
+            delegate.updateProgressToTrackEndpoint("0 m",
+                    resources.getDrawable(R.drawable.ic_angle_double_up, null),
+                    resources.getColor(R.color.colorSecondaryVariant, null));
+            return;
+        }
+
+        musicPlayer.getPlaybackPosition(new Callback<Long, Throwable>() {
+            @Override
+            public void onSuccess(Long playbackPosition) {
+                long songDurationToEndpoint = model.getCurrentTrack().duration - playbackPosition;
+                // expectedDistance is the predicted distance the user will travel before the current song ends
+                double expectedDistance = model.getCurrentLocation().getSpeed() * (songDurationToEndpoint / 1000d);
+                int diff = (int)(expectedDistance - distanceToTrackEndpoint);
+
+                if (diff < 0) {
+                    delegate.updateProgressToTrackEndpoint(
+                            -diff + " m",
+                            resources.getDrawable(R.drawable.ic_angle_double_down, null),
+                            resources.getColor(R.color.colorPrimary, null));
+                } else {
+                    delegate.updateProgressToTrackEndpoint(
+                            diff + " m",
+                            resources.getDrawable(R.drawable.ic_angle_double_up, null),
+                            resources.getColor(R.color.colorSecondaryVariant, null));
+                }
+            }
+
+            @Override
+            public void onFailed(Throwable error) {
+                Log.e(getClass().getSimpleName(),
+                        error.getLocalizedMessage() == null
+                                ? "Error occurred when getting playback position"
+                                : error.getLocalizedMessage());
+            }
+        });
+    }
+
+    /**
      * Logic when the route is completed goes here.
      */
     public void onRouteCompleted() {
-        disconnectFromSpotify();
+        musicPlayer.stopAndDisconnect();
+
+        model.hardReset();
+
+        delegate.updateDistanceToTrackEndpoint("0 m");
+        delegate.updateProgressToTrackEndpoint("0 m",
+                resources.getDrawable(R.drawable.ic_angle_double_up, null),
+                resources.getColor(R.color.colorSecondaryVariant, null));
 
         // TODO: Currently temporary; in the future we will probably take the user to the fitness details of this run
         delegate.showAlertDialog(
@@ -218,7 +272,6 @@ public class OnRouteViewModel implements LocationServiceSubscriber, SpotifyServi
                 resources.getString(R.string.run_completion_message),
                 resources.getString(R.string.ok_button),
                 (dialogInterface, i) -> {
-                    model.reset();
                     delegate.navigateToPreviousScreen();
                 },
                 false
@@ -233,7 +286,8 @@ public class OnRouteViewModel implements LocationServiceSubscriber, SpotifyServi
                 resources.getString(R.string.run_exit_message),
                 resources.getString(R.string.yes_button),
                 (dialogInterface, i) -> {
-                    disconnectFromSpotify();
+                    model.softReset();
+                    musicPlayer.stopAndDisconnect();
                     delegate.navigateToPreviousScreen();
                 },
                 resources.getString(R.string.no_button),
@@ -250,14 +304,16 @@ public class OnRouteViewModel implements LocationServiceSubscriber, SpotifyServi
         model.setCurrentLocation(location);
         delegate.animateCamera(LatLngUtils.locationToLatLng(location), location.getBearing(), CAMERA_TILT, CAMERA_ZOOM);
         checkCheckpointUpdates();
+        checkRouteProgress();
     }
 
-    // MARK: - SpotifyServiceSubscriber methods
+    // MARK: - MusicPlayerSubscriber methods
 
     @Override
     public void onTrackChanged(BrunoTrack track) {
         model.setCurrentTrack(track);
         delegate.updateCurrentSongUI(track.name, track.album);
+        delegate.showRouteInfoCard();
     }
 
     // MARK: - PedometerSubscriber methods

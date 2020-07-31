@@ -7,10 +7,15 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.cs446.group7.bruno.MainActivity;
 import com.cs446.group7.bruno.R;
+import com.cs446.group7.bruno.preferencesstorage.PreferencesStorage;
 import com.cs446.group7.bruno.ui.fitnessrecords.FitnessRecordsFragment;
 import com.cs446.group7.bruno.ui.routeplanning.RoutePlanningFragment;
 import com.cs446.group7.bruno.ui.settings.SettingsFragment;
@@ -28,6 +33,18 @@ public class TopLevelFragment extends Fragment implements BottomNavigationView.O
         return root;
     }
 
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        PreferencesStorage storage = MainActivity.getPreferencesStorage();
+        boolean completedOnboarding = storage.getBoolean(PreferencesStorage.COMPLETED_ONBOARDING, false);
+        if (!completedOnboarding) {
+            NavController navController = Navigation.findNavController(view);
+            navController.navigate(R.id.action_fragmenttoplevel_to_fragmentonboarding);
+        }
+    }
+
     /**
      * This function sets up bottom navigation by using a non-swipable ViewPager to host tab fragments.
      * This functions also sets up listener such that ViewPager are sync with the bottom navigation bar.
@@ -36,7 +53,7 @@ public class TopLevelFragment extends Fragment implements BottomNavigationView.O
     private void setupBottomNavigation(final View view) {
         viewPager = view.findViewById(R.id.main_screen_pager);
         btmNav = view.findViewById(R.id.bttm_nav);
-        BottomNavPagerAdapter adaptor = new BottomNavPagerAdapter(getActivity());
+        BottomNavPagerAdapter adaptor = new BottomNavPagerAdapter(this);
         adaptor.addFragment(new RoutePlanningFragment());
         adaptor.addFragment(new FitnessRecordsFragment());
         adaptor.addFragment(new SettingsFragment());

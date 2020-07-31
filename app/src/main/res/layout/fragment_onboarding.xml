@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".ui.onboarding.OnboardingFragment">
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/onboarding_pager"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/nav_onboarding" />
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/nav_onboarding"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        tools:layout_editor_absoluteX="0dp">
+
+        <View
+            android:id="@+id/tab0_indicator"
+            android:layout_width="40dp"
+            android:layout_height="3dp"
+            android:layout_margin="5dp"
+            android:background="@drawable/tab_circle_state"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/tab1_indicator"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <View
+            android:id="@+id/tab1_indicator"
+            android:layout_width="40dp"
+            android:layout_height="3dp"
+            android:layout_margin="5dp"
+            android:background="@drawable/tab_circle_state"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/tab2_indicator"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/tab0_indicator"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <View
+            android:id="@+id/tab2_indicator"
+            android:layout_width="40dp"
+            android:layout_height="3dp"
+            android:layout_margin="5dp"
+            android:background="@drawable/tab_circle_state"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/tab3_indicator"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/tab1_indicator"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <View
+            android:id="@+id/tab3_indicator"
+            android:layout_width="40dp"
+            android:layout_height="3dp"
+            android:layout_margin="5dp"
+            android:background="@drawable/tab_circle_state"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/tab4_indicator"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/tab2_indicator"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <View
+            android:id="@+id/tab4_indicator"
+            android:layout_width="40dp"
+            android:layout_height="3dp"
+            android:layout_margin="5dp"
+            android:background="@drawable/tab_circle_state"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/tab3_indicator"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.505" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

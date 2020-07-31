@@ -1,35 +1,42 @@
-package com.cs446.group7.bruno.routing;
+package com.cs446.group7.bruno.colourizedroute;
 
 import com.cs446.group7.bruno.music.BrunoPlaylist;
 import com.cs446.group7.bruno.music.BrunoTrack;
+import com.cs446.group7.bruno.routing.RouteSegment;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-public class RouteProcessor {
+// Data structure that contains colourized song route segments
+public class ColourizedRoute {
 
-    /**
-     * Custom exception thrown when the number of tracks in a playlist is less than the required
-     * number to map to a series of route segments
-     */
-    public static class TrackIndexOutOfBoundsException extends ArrayIndexOutOfBoundsException {
-        public TrackIndexOutOfBoundsException() {
-            super("Expected total playlist duration length to be longer than the total route segment duration");
-        }
+    // MARK: - Private members
+
+    private List<ColourizedRouteSegment> colourizedRouteSegments;
+    private List<LatLng> checkpoints;
+
+    // MARK: - Lifecycle methods
+
+    public ColourizedRoute(final List<RouteSegment> routeSegments,
+                           final int[] routeColours,
+                           final BrunoPlaylist playlist) {
+        colourizedRouteSegments = processSegments(routeSegments, routeColours, playlist);
+        checkpoints = processCheckpoints(colourizedRouteSegments);
     }
 
+    // MARK: - Private methods
+
     /**
-     * Given a series of route segments and spotify tracks, return a mapping of route segments
-     * to each track.
-     * @param routeSegments
-     * @param playlist
-     * @return
+     * Re-segment route segments into colourized song segments
+     * NOTE: Total playlist duration is expected to be longer than the total route segment duration.
      */
-    public static List<RouteTrackMapping> execute(final List<RouteSegment> routeSegments, final BrunoPlaylist playlist)
-            throws TrackIndexOutOfBoundsException {
-        List<RouteTrackMapping> result = new ArrayList<>();
+    private List<ColourizedRouteSegment> processSegments(final List<RouteSegment> routeSegments,
+                                                         final int[] routeColours,
+                                                         final BrunoPlaylist playlist) {
+        List<ColourizedRouteSegment> result = new ArrayList<>();
+        int routeColourIndex = 0;
         int currTrackInd = 0;
         // Duration is measured in milliseconds
         long accumulatedRouteSegmentDuration = 0;
@@ -37,10 +44,6 @@ public class RouteProcessor {
         LinkedList<RouteSegment> routeSegmentsCopy = new LinkedList<>(routeSegments);
         List<BrunoTrack> tracks = playlist.tracks;
         while (routeSegmentsCopy.size() > 0) {
-            if (currTrackInd >= tracks.size()) {
-                throw new TrackIndexOutOfBoundsException();
-            }
-
             BrunoTrack currTrack = tracks.get(currTrackInd);
 
             RouteSegment currentRouteSegment = routeSegmentsCopy.poll();
@@ -71,8 +74,14 @@ public class RouteProcessor {
 
                 // Create mapping of accumulated segments and first half segment with current track
                 accumulatedRouteSegments.add(segmentFirstHalf);
-                RouteTrackMapping rtm = new RouteTrackMapping(accumulatedRouteSegments, currTrack);
-                result.add(rtm);
+
+                ColourizedRouteSegment colourizedRouteSegment = new ColourizedRouteSegment(
+                        accumulatedRouteSegments,
+                        routeColours[routeColourIndex]
+                );
+
+                routeColourIndex = (routeColourIndex + 1) % routeColours.length;
+                result.add(colourizedRouteSegment);
                 accumulatedRouteSegments = new LinkedList<>();
 
                 // Accommodate the second half of route segment for the next track
@@ -81,8 +90,14 @@ public class RouteProcessor {
                 currTrackInd++;
             } else if (lastSongSegment == currTrack.duration) {
                 accumulatedRouteSegments.add(currentRouteSegment);
-                RouteTrackMapping rtm = new RouteTrackMapping(accumulatedRouteSegments, currTrack);
-                result.add(rtm);
+
+                ColourizedRouteSegment colourizedRouteSegment = new ColourizedRouteSegment(
+                        accumulatedRouteSegments,
+                        routeColours[routeColourIndex]
+                );
+
+                routeColourIndex = (routeColourIndex + 1) % routeColours.length;
+                result.add(colourizedRouteSegment);
                 accumulatedRouteSegments = new LinkedList<>();
                 accumulatedRouteSegmentDuration = 0;
                 currTrackInd++;
@@ -91,33 +106,44 @@ public class RouteProcessor {
                 accumulatedRouteSegmentDuration += routeSegmentDuration;
             }
         }
+
         if (accumulatedRouteSegments.size() > 0) {
-            RouteTrackMapping rtm = new RouteTrackMapping(accumulatedRouteSegments, tracks.get(currTrackInd));
-            result.add(rtm);
+            ColourizedRouteSegment colourizedRouteSegment = new ColourizedRouteSegment(
+                    accumulatedRouteSegments,
+                    routeColours[routeColourIndex]
+            );
+
+            result.add(colourizedRouteSegment);
         }
+
         return result;
     }
 
-    /**
-     * Checkpoints are defined as the starting location of each route segment of each route track mapping.
-     * The first checkpoint is also added at the end to complete the loop.
-     *
-     * @param routeTrackMappings route track mappings of a route
-     * @return list of checkpoints
-     */
-    public static List<LatLng> getCheckpoints(final List<RouteTrackMapping> routeTrackMappings) {
-        List<LatLng> result = new ArrayList<>();
-        for (final RouteTrackMapping mapping : routeTrackMappings) {
-            for (final RouteSegment segment : mapping.routeSegments) {
-                result.add(segment.getStartLocation());
+    // Checkpoints are defined as the starting location of each route segment of each route track mapping.
+    public List<LatLng> processCheckpoints(final List<ColourizedRouteSegment> colourizedRouteSegments) {
+        List<LatLng> checkpoints = new ArrayList<>();
+
+        for (ColourizedRouteSegment colourizedRouteSegment : colourizedRouteSegments) {
+            for (RouteSegment routeSegment : colourizedRouteSegment.getRouteSegments()) {
+                checkpoints.add(routeSegment.getStartLocation());
             }
         }
 
-        // Last checkpoint should be same as first point
-        if (!result.isEmpty()) {
-            result.add(result.get(0));
+        // Add the first checkpoint to make route circular
+        if (!checkpoints.isEmpty()) {
+            checkpoints.add(checkpoints.get(0));
         }
 
-        return result;
+        return checkpoints;
+    }
+
+    // MARK: - Public methods
+
+    public List<ColourizedRouteSegment> getSegments() {
+        return colourizedRouteSegments;
+    }
+
+    public List<LatLng> getCheckpoints() {
+        return checkpoints;
     }
 }

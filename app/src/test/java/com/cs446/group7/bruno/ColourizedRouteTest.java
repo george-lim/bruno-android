@@ -1,10 +1,10 @@
 package com.cs446.group7.bruno;
 
+import com.cs446.group7.bruno.colourizedroute.ColourizedRoute;
+import com.cs446.group7.bruno.colourizedroute.ColourizedRouteSegment;
 import com.cs446.group7.bruno.music.BrunoPlaylist;
 import com.cs446.group7.bruno.music.BrunoTrack;
-import com.cs446.group7.bruno.routing.RouteProcessor;
 import com.cs446.group7.bruno.routing.RouteSegment;
-import com.cs446.group7.bruno.routing.RouteTrackMapping;
 import com.google.android.gms.maps.model.LatLng;
 
 import org.junit.After;
@@ -18,7 +18,7 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-public class RouteProcessorTest {
+public class ColourizedRouteTest {
     // These mock segments create a box around the university of waterloo
     RouteSegment mockSegment1 = new RouteSegment(
             new LatLng(43.476861, -80.539940),
@@ -42,6 +42,8 @@ public class RouteProcessorTest {
     );
     LinkedList<RouteSegment> mockSegments = new LinkedList<>();
 
+    private static int[] DEFAULT_ROUTE_COLOURS = new int[] { 0 };
+
     @Before
     public void setup() {
         mockSegments.add(mockSegment1);
@@ -55,182 +57,154 @@ public class RouteProcessorTest {
         mockSegments.clear();
     }
 
-    // Equality functions for tested objects
-    private boolean trackEquals(BrunoTrack a, BrunoTrack b) {
-        return a.album == b.album &&
-                a.artists.equals(b.artists) &&
-                a.duration == b.duration &&
-                a.name == b.name;
-    }
-
     private boolean segmentEquals(RouteSegment a, RouteSegment b) {
         return a.getStartLocation().equals(b.getStartLocation()) &&
                 a.getEndLocation().equals(b.getEndLocation()) &&
                 a.getDuration() == b.getDuration();
     }
 
-    private void assertEqualRouteTrackMapping(List<RouteTrackMapping> result, List<RouteTrackMapping> answer) {
-        assertEquals(result.size(), answer.size());
-        for (int i = 0; i < result.size(); i++) {
-            assertEquals(result.get(i).routeSegments.size(), answer.get(i).routeSegments.size());
-            assertTrue(trackEquals(result.get(i).track, answer.get(i).track));
-            for (int j = 0; j < result.get(i).routeSegments.size(); j++) {
-                assertTrue(segmentEquals(result.get(i).routeSegments.get(j), answer.get(i).routeSegments.get(j)));
+    private void assertSameColourizedSegments(ColourizedRoute route, List<ColourizedRouteSegment> segments) {
+        List<ColourizedRouteSegment> colourizedRouteSegments = route.getSegments();
+        assertEquals(colourizedRouteSegments.size(), segments.size());
+
+        for (int i = 0; i < colourizedRouteSegments.size(); ++i) {
+            List<RouteSegment> routeSegments1 = colourizedRouteSegments.get(i).getRouteSegments();
+            List<RouteSegment> routeSegments2 = segments.get(i).getRouteSegments();
+            assertEquals(routeSegments1.size(), routeSegments2.size());
+
+            for (int j = 0; j < routeSegments1.size(); ++j) {
+                assertTrue(segmentEquals(routeSegments1.get(j), routeSegments2.get(j)));
             }
         }
     }
 
     @Test
     public void routeDurationEqualToSingleTrackDuration() {
-        RouteProcessor rp = new RouteProcessor();
         List<String> mockArtists = new LinkedList<>();
         mockArtists.add("test");
         List<BrunoTrack> tracks = new LinkedList<>();
         tracks.add(new BrunoTrack("testName", "testAlbum", 280000, mockArtists));
-        long totalTrackDuration = 0;
-        for (BrunoTrack track : tracks) {
-            totalTrackDuration += track.duration;
-        }
 
         BrunoPlaylist playlist = new BrunoPlaylist(
+                "id",
                 "playlistName",
                 "playlistDescription",
-                tracks.size(),
-                totalTrackDuration,
                 tracks
         );
 
-        List<RouteTrackMapping> result = rp.execute(mockSegments, playlist);
-        List<RouteTrackMapping> answer = new ArrayList<>();
-        answer.add(new RouteTrackMapping(mockSegments, tracks.get(0)));
+        List<ColourizedRouteSegment> answer = new ArrayList<>();
+        answer.add(new ColourizedRouteSegment(mockSegments, DEFAULT_ROUTE_COLOURS[0]));
 
-        assertEqualRouteTrackMapping(result, answer);
+        assertSameColourizedSegments(
+                new ColourizedRoute(mockSegments, DEFAULT_ROUTE_COLOURS, playlist),
+                answer
+        );
     }
 
     @Test
     public void routeDurationEqualsToMultipleTrackDuration() {
-        RouteProcessor rp = new RouteProcessor();
         List<String> mockArtists = new LinkedList<>();
         mockArtists.add("test");
         List<BrunoTrack> tracks = new LinkedList<>();
         tracks.add(new BrunoTrack("testName1", "testAlbum1", 140000, mockArtists));
         tracks.add(new BrunoTrack("testName2", "testAlbum2", 140000, mockArtists));
-        long totalTrackDuration = 0;
-        for (BrunoTrack track : tracks) {
-            totalTrackDuration += track.duration;
-        }
 
         BrunoPlaylist playlist = new BrunoPlaylist(
+                "id",
                 "playlistName",
                 "playlistDescription",
-                tracks.size(),
-                totalTrackDuration,
                 tracks
         );
 
-        List<RouteTrackMapping> result = rp.execute(mockSegments, playlist);
         List<RouteSegment> route1 = new LinkedList<>();
-
         route1.add(mockSegment1);
         route1.add(mockSegment2);
         List<RouteSegment> route2 = new LinkedList<>();
         route2.add(mockSegment3);
         route2.add(mockSegment4);
-        List<RouteTrackMapping> answer = new ArrayList<>();
-        answer.add(new RouteTrackMapping(route1, tracks.get(0)));
-        answer.add(new RouteTrackMapping(route2, tracks.get(1)));
+        List<ColourizedRouteSegment> answer = new ArrayList<>();
+        answer.add(new ColourizedRouteSegment(route1, DEFAULT_ROUTE_COLOURS[0]));
+        answer.add(new ColourizedRouteSegment(route2, DEFAULT_ROUTE_COLOURS[0]));
 
-        assertEqualRouteTrackMapping(result, answer);
+        assertSameColourizedSegments(
+                new ColourizedRoute(mockSegments, DEFAULT_ROUTE_COLOURS, playlist),
+                answer
+        );
     }
 
     @Test
     public void routeDurationShorterThanSingleTrackDuration() {
-        RouteProcessor rp = new RouteProcessor();
         List<String> mockArtists = new LinkedList<>();
         mockArtists.add("test");
         List<BrunoTrack> tracks = new LinkedList<>();
         tracks.add(new BrunoTrack("testName1", "testAlbum1", 300000, mockArtists));
-        long totalTrackDuration = 0;
-        for (BrunoTrack track : tracks) {
-            totalTrackDuration += track.duration;
-        }
 
         BrunoPlaylist playlist = new BrunoPlaylist(
+                "id",
                 "playlistName",
                 "playlistDescription",
-                tracks.size(),
-                totalTrackDuration,
                 tracks
         );
 
-        List<RouteTrackMapping> result = rp.execute(mockSegments, playlist);
-        List<RouteTrackMapping> answer = new ArrayList<>();
-        answer.add(new RouteTrackMapping(mockSegments, tracks.get(0)));
+        List<ColourizedRouteSegment> answer = new ArrayList<>();
+        answer.add(new ColourizedRouteSegment(mockSegments, DEFAULT_ROUTE_COLOURS[0]));
 
-        assertEqualRouteTrackMapping(result, answer);
+        assertSameColourizedSegments(
+                new ColourizedRoute(mockSegments, DEFAULT_ROUTE_COLOURS, playlist),
+                answer
+        );
     }
 
     @Test
     public void routeDurationShorterThanMultipleTrackDuration() {
-        RouteProcessor rp = new RouteProcessor();
         List<String> mockArtists = new LinkedList<>();
         mockArtists.add("test");
         List<BrunoTrack> tracks = new LinkedList<>();
         tracks.add(new BrunoTrack("testName1", "testAlbum1", 200000, mockArtists));
         tracks.add(new BrunoTrack("testName2", "testAlbum2", 300000, mockArtists));
-        long totalTrackDuration = 0;
-        for (BrunoTrack track : tracks) {
-            totalTrackDuration += track.duration;
-        }
 
         BrunoPlaylist playlist = new BrunoPlaylist(
+                "id",
                 "playlistName",
                 "playlistDescription",
-                tracks.size(),
-                totalTrackDuration,
                 tracks
         );
 
-        List<RouteTrackMapping> result = rp.execute(mockSegments, playlist);
         List<RouteSegment> route1 = new LinkedList<>();
         route1.add(mockSegment1);
         route1.add(mockSegment2);
         route1.add(mockSegment3);
         List<RouteSegment> route2 = new LinkedList<>();
         route2.add(mockSegment4);
-        List<RouteTrackMapping> answer = new ArrayList<>();
-        answer.add(new RouteTrackMapping(route1, tracks.get(0)));
-        answer.add(new RouteTrackMapping(route2, tracks.get(1)));
+        List<ColourizedRouteSegment> answer = new ArrayList<>();
+        answer.add(new ColourizedRouteSegment(route1, DEFAULT_ROUTE_COLOURS[0]));
+        answer.add(new ColourizedRouteSegment(route2, DEFAULT_ROUTE_COLOURS[0]));
 
-        assertEqualRouteTrackMapping(result, answer);
+        assertSameColourizedSegments(
+                new ColourizedRoute(mockSegments, DEFAULT_ROUTE_COLOURS, playlist),
+                answer
+        );
     }
 
-    @Test(expected=RouteProcessor.TrackIndexOutOfBoundsException.class)
+    @Test(expected=IndexOutOfBoundsException.class)
     public void routeDurationLongerThanPlaylistDuration() {
-        RouteProcessor rp = new RouteProcessor();
         List<String> mockArtists = new LinkedList<>();
         mockArtists.add("test");
         List<BrunoTrack> tracks = new LinkedList<>();
         tracks.add(new BrunoTrack("testName1", "testAlbum1", 140000, mockArtists));
-        long totalTrackDuration = 0;
-        for (BrunoTrack track : tracks) {
-            totalTrackDuration += track.duration;
-        }
 
         BrunoPlaylist playlist = new BrunoPlaylist(
+                "id",
                 "playlistName",
                 "playlistDescription",
-                tracks.size(),
-                totalTrackDuration,
                 tracks
         );
 
-        rp.execute(mockSegments, playlist);
+        ColourizedRoute _ = new ColourizedRoute(mockSegments, DEFAULT_ROUTE_COLOURS, playlist);
     }
 
     @Test
     public void routeSegmentDurationLongerThanTrackDuration() {
-        RouteProcessor rp = new RouteProcessor();
         List<String> mockArtists = new LinkedList<>();
         mockArtists.add("test");
         List<BrunoTrack> tracks = new LinkedList<>();
@@ -238,29 +212,27 @@ public class RouteProcessorTest {
         tracks.add(new BrunoTrack("testName2", "testAlbum2", 60000, mockArtists));
         tracks.add(new BrunoTrack("testName3", "testAlbum3", 200000, mockArtists));
 
-        long totalTrackDuration = 0;
-        for (BrunoTrack track : tracks) {
-            totalTrackDuration += track.duration;
-        }
-
         BrunoPlaylist playlist = new BrunoPlaylist(
+                "id",
                 "playlistName",
                 "playlistDescription",
-                tracks.size(),
-                totalTrackDuration,
                 tracks
         );
 
-        List<RouteTrackMapping> result = rp.execute(mockSegments, playlist);
+        ColourizedRoute result = new ColourizedRoute(mockSegments, DEFAULT_ROUTE_COLOURS, playlist);
+        List<RouteSegment> routeSegments = result.getSegments().get(0).getRouteSegments();
+        assertEquals(routeSegments.size(), 2);
+        assertEquals(routeSegments.get(0).getDuration(), 60000);
+        assertEquals(routeSegments.get(1).getDuration(), 10000);
 
-        assertEquals(result.get(0).routeSegments.size(), 2);
-        assertEquals(result.get(0).routeSegments.get(0).getDuration(), 60000);
-        assertEquals(result.get(0).routeSegments.get(1).getDuration(), 10000);
-        assertEquals(result.get(1).routeSegments.size(), 1);
-        assertEquals(result.get(1).routeSegments.get(0).getDuration(), 60000);
-        assertEquals(result.get(2).routeSegments.size(), 3);
-        assertEquals(result.get(2).routeSegments.get(0).getDuration(), 10000);
-        assertEquals(result.get(2).routeSegments.get(1).getDuration(), 60000);
-        assertEquals(result.get(2).routeSegments.get(2).getDuration(), 80000);
+        routeSegments = result.getSegments().get(1).getRouteSegments();
+        assertEquals(routeSegments.size(), 1);
+        assertEquals(routeSegments.get(0).getDuration(), 60000);
+
+        routeSegments = result.getSegments().get(2).getRouteSegments();
+        assertEquals(routeSegments.size(), 3);
+        assertEquals(routeSegments.get(0).getDuration(), 10000);
+        assertEquals(routeSegments.get(1).getDuration(), 60000);
+        assertEquals(routeSegments.get(2).getDuration(), 80000);
     }
 }
