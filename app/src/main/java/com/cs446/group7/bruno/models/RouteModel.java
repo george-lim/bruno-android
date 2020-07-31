@@ -2,10 +2,12 @@ package com.cs446.group7.bruno.models;
 
 import android.location.Location;
 
+import com.cs446.group7.bruno.colourizedroute.ColourizedRoute;
+import com.cs446.group7.bruno.colourizedroute.ColourizedRouteSegment;
 import com.cs446.group7.bruno.music.BrunoPlaylist;
 import com.cs446.group7.bruno.music.BrunoTrack;
-import com.cs446.group7.bruno.routing.Route;
-import com.cs446.group7.bruno.routing.RouteTrackMapping;
+import com.cs446.group7.bruno.routing.RouteSegment;
+import com.cs446.group7.bruno.utils.LatLngUtils;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.List;
@@ -26,17 +28,30 @@ public class RouteModel extends ViewModel {
 
     private Mode mode = Mode.WALK;
     private int durationIndex = 0;
-    private Route route = null;
-    private Location currentLocation = null;
-    private BrunoTrack currentTrack = null;
+
+    private List<RouteSegment> routeSegments = null;
+    private int[] routeColours = null;
     private BrunoPlaylist playlist = null;
-    private List<RouteTrackMapping> routeTrackMappings = null;
-    private List<LatLng> routeCheckpoints = null;
-    private int steps = 0;
+    private ColourizedRoute colourizedRoute = null;
+
+    private Location currentLocation = null;
     private int currentCheckpointIndex = 0;
     private int currentTrackEndpointIndex = 0;
+    private BrunoTrack currentTrack = null;
+    private int steps = 0;
 
-    // MARK: - Getters and setters
+    // MARK: - Private methods
+
+    private void updateColourizedRoute() {
+        if (routeSegments != null && routeColours != null && playlist != null) {
+            colourizedRoute = new ColourizedRoute(routeSegments, routeColours, playlist);
+        }
+        else {
+            colourizedRoute = null;
+        }
+    }
+
+    // MARK: - Public methods
 
     public Mode getMode() {
         return mode;
@@ -54,12 +69,30 @@ public class RouteModel extends ViewModel {
         this.durationIndex = durationIndex;
     }
 
-    public Route getRoute() {
-        return route;
+    public int getDurationInMinutes() {
+        return DURATIONS_IN_MINUTES[durationIndex];
     }
 
-    public void setRoute(final Route route) {
-        this.route = route;
+    public void setRouteSegments(final List<RouteSegment> routeSegments) {
+        this.routeSegments = routeSegments;
+        updateColourizedRoute();
+    }
+
+    public void setRouteColours(final int[] routeColours) {
+        this.routeColours = routeColours;
+    }
+
+    public BrunoPlaylist getPlaylist() {
+        return playlist;
+    }
+
+    public void setPlaylist(final BrunoPlaylist playlist) {
+        this.playlist = playlist;
+        updateColourizedRoute();
+    }
+
+    public ColourizedRoute getColourizedRoute() {
+        return colourizedRoute;
     }
 
     public Location getCurrentLocation() {
@@ -71,28 +104,71 @@ public class RouteModel extends ViewModel {
     }
 
     public LatLng getCurrentCheckpoint() {
-        return routeCheckpoints.get(currentCheckpointIndex);
+        if (colourizedRoute == null) {
+            return null;
+        }
+
+        return colourizedRoute.getCheckpoints().get(currentCheckpointIndex);
     }
 
     public LatLng advanceCheckpoint() {
-        if (currentCheckpointIndex >= routeCheckpoints.size() - 1) return null;
-        return routeCheckpoints.get(++currentCheckpointIndex);
-    }
+        if (colourizedRoute == null) {
+            return null;
+        }
 
-    public int getCurrentCheckpointIndex() {
-        return currentCheckpointIndex;
+        List<LatLng> checkpoints = colourizedRoute.getCheckpoints();
+        if (currentCheckpointIndex >= checkpoints.size() - 1) return null;
+        return checkpoints.get(++currentCheckpointIndex);
     }
 
     public LatLng getCurrentTrackEndpoint() {
+        if (colourizedRoute == null) {
+            return null;
+        }
+
+        int colourizedRouteSegmentCount = colourizedRoute.getSegments().size();
+
         // index should always be valid because we would have finished the route otherwise
-        if (currentTrackEndpointIndex >= routeTrackMappings.size()) return null;
-        RouteTrackMapping currentRtm = routeTrackMappings.get(currentTrackEndpointIndex);
-        int numSegments = currentRtm.routeSegments.size();
-        return currentRtm.routeSegments.get(numSegments - 1).getEndLocation();
+        if (currentTrackEndpointIndex >= colourizedRouteSegmentCount) {
+            return null;
+        }
+
+        ColourizedRouteSegment currentColourizedSegment = colourizedRoute
+                .getSegments()
+                .get(currentTrackEndpointIndex);
+
+        int routeSegmentCount = currentColourizedSegment.getRouteSegments().size();
+        return currentColourizedSegment
+                .getRouteSegments()
+                .get(routeSegmentCount - 1)
+                .getEndLocation();
     }
 
     public void advanceTrackEndpoint() {
         ++currentTrackEndpointIndex;
+    }
+
+    public double getDistanceToTrackEndpoint() {
+        LatLng currentCheckpoint = getCurrentCheckpoint();
+        LatLng currentTrackEndpoint = getCurrentTrackEndpoint();
+
+        // Fail-safe
+        if (currentLocation == null || currentCheckpoint == null || currentTrackEndpoint == null) {
+            return 0;
+        }
+
+        LatLng currentLatLng = LatLngUtils.locationToLatLng(currentLocation);
+        double result = LatLngUtils.getLatLngDistanceInMetres(currentLatLng, currentCheckpoint);
+        List<LatLng> checkpoints = colourizedRoute.getCheckpoints();
+
+        for (int i = currentCheckpointIndex; !checkpoints.get(i).equals(currentTrackEndpoint); ++i) {
+            result += LatLngUtils.getLatLngDistanceInMetres(
+                    checkpoints.get(i),
+                    checkpoints.get(i+1)
+            );
+        }
+
+        return result;
     }
 
     public BrunoTrack getCurrentTrack() {
@@ -103,63 +179,29 @@ public class RouteModel extends ViewModel {
         this.currentTrack = currentTrack;
     }
 
-    public BrunoPlaylist getPlaylist() {
-        return playlist;
-    }
-
-    public void setPlaylist(final BrunoPlaylist playlist) {
-        this.playlist = playlist;
-    }
-
-    public List<RouteTrackMapping> getRouteTrackMappings() {
-        return routeTrackMappings;
-    }
-
-    public void setRouteTrackMappings(final List<RouteTrackMapping> routeTrackMappings) {
-        this.routeTrackMappings = routeTrackMappings;
-    }
-
-    public List<LatLng> getRouteCheckpoints() {
-        return routeCheckpoints;
-    }
-
-    public void setRouteCheckpoints(final List<LatLng> routeCheckpoints) {
-        this.routeCheckpoints = routeCheckpoints;
-    }
-
     public void incrementStep() {
         steps++;
     }
 
-    private void resetSteps() {
-        steps = 0;
-    }
-
-    private void resetCheckpointIndex() {
+    /**
+     * Resets the progress of the current route, and stats, but keeps the route and checkpoints.
+     */
+    public void softReset() {
         currentCheckpointIndex = 0;
-    }
-
-    private void resetTrackEndpointIndex() {
         currentTrackEndpointIndex = 0;
     }
 
-    // MARK: - Public methods
-
-    public int getDurationInMinutes() {
-        return DURATIONS_IN_MINUTES[durationIndex];
-    }
-
-    public void reset() {
-        setMode(Mode.WALK);
-        setDurationIndex(0);
-        setRoute(null);
-        setCurrentLocation(null);
-        setCurrentTrack(null);
-        setPlaylist(null);
-        setRouteTrackMappings(null);
-        setRouteCheckpoints(null);
-        resetCheckpointIndex();
-        resetTrackEndpointIndex();
-        resetSteps();
+    /**
+     * Resets everything to the state it was first constructed.
+     */
+    public void hardReset() {
+        softReset();
+        mode = Mode.WALK;
+        durationIndex = 0;
+        routeSegments = null;
+        routeColours = null;
+        playlist = null;
+        colourizedRoute = null;
+        currentLocation = null;
     }
 }
