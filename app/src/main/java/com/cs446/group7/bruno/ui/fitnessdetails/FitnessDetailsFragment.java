@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.cs446.group7.bruno.R;
@@ -106,6 +107,7 @@ public class FitnessDetailsFragment extends Fragment implements FitnessDetailsVi
     public void setupTracklistListView(List<BrunoTrack> tracklistList) {
         FitnessDetailsAdapter adapter = new FitnessDetailsAdapter(tracklistList);
         runTracklistList.setAdapter(adapter);
+        runTracklistList.setLayoutManager(new LinearLayoutManager(getContext()));
     }
 
     @Override
