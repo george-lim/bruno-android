@@ -9,7 +9,8 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -46,9 +47,13 @@ public class OnRouteFragment extends Fragment implements OnRouteViewModelDelegat
 
     private GoogleMap map;
     private CardView trackInfoCardView;
+    private CardView routeInfoCardView;
     private TextView txtSongTitle;
     private TextView txtSongArtistInfo;
-    private Button btnExitRoute;
+    private ImageView progressIndicator;
+    private TextView txtProgressToTrackEndpoint;
+    private TextView txtDistanceToTrackEndpoint;
+    private ImageButton btnExitRoute;
 
     // MARK: - Private members
 
@@ -71,8 +76,12 @@ public class OnRouteFragment extends Fragment implements OnRouteViewModelDelegat
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_on_route, container, false);
         trackInfoCardView = view.findViewById(R.id.card_view_track_info);
+        routeInfoCardView = view.findViewById(R.id.card_view_route_info);
         txtSongTitle = view.findViewById(R.id.text_view_song_title);
         txtSongArtistInfo = view.findViewById(R.id.text_view_song_artist_info);
+        progressIndicator = view.findViewById(R.id.image_view_progress_to_track_endpoint_icon);
+        txtProgressToTrackEndpoint = view.findViewById(R.id.text_view_progress_to_track_endpoint);
+        txtDistanceToTrackEndpoint = view.findViewById(R.id.text_view_distance_to_track_endpoint);
         btnExitRoute = view.findViewById(R.id.btn_exit_route);
         return view;
     }
@@ -236,5 +245,25 @@ public class OnRouteFragment extends Fragment implements OnRouteViewModelDelegat
     @Override
     public void navigateToPreviousScreen() {
         Navigation.findNavController(getActivity(), R.id.nav_host_fragment).navigateUp();
+    }
+
+    @Override
+    public void updateDistanceToTrackEndpoint(final String distanceText) {
+        txtDistanceToTrackEndpoint.setText(distanceText);
+        txtDistanceToTrackEndpoint.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void updateProgressToTrackEndpoint(final String progressText, final Drawable progressIcon, int colour) {
+        txtProgressToTrackEndpoint.setText(progressText);
+        progressIndicator.setImageDrawable(progressIcon);
+        progressIndicator.setColorFilter(colour);
+        progressIndicator.setVisibility(View.VISIBLE);
+        txtProgressToTrackEndpoint.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void showRouteInfoCard() {
+        routeInfoCardView.setVisibility(View.VISIBLE);
     }
 }
