@@ -4,6 +4,8 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
+import com.cs446.group7.bruno.ui.shared.AvatarFragment;
+
 public class OnboardingPagerAdapter extends FragmentStateAdapter {
 
     public OnboardingPagerAdapter(@NonNull Fragment fragment) {
@@ -19,7 +21,7 @@ public class OnboardingPagerAdapter extends FragmentStateAdapter {
             case OnboardingTab.RECORD:
                 return new OnboardingRecordFragment();
             case OnboardingTab.AVATAR:
-                return new OnboardingAvatarFragment();
+                return new OnboardingAvatarWrapperFragment();
             case OnboardingTab.PERMISSION:
                 return new OnboardingPermissionFragment();
             case OnboardingTab.DONE:

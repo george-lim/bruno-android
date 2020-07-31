@@ -5,24 +5,21 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorBackground"
-    tools:context=".ui.settings.SettingsFragment">
+    tools:context=".ui.settings.SettingsAvatarWrapperFragment">
 
     <include
-        android:id="@+id/appbar_settings"
+        android:id="@+id/appbar_settings_avatar"
         layout="@layout/toolbar_layout"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <LinearLayout
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/avatars_view"
+        android:name="com.cs446.group7.bruno.ui.shared.AvatarFragment"
+        tools:context=".ui.onboarding.OnboardingAvatarWrapperFragment"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:orientation="vertical"
+        app:layout_constraintTop_toBottomOf="@id/appbar_settings_avatar"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/appbar_settings">
-
-        <include layout="@layout/settings_user_preferences" />
-
-        <include layout="@layout/settings_about_bruno" />
-
-    </LinearLayout>
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>
