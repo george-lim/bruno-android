@@ -113,7 +113,6 @@ public class ColourizedRoute {
                     routeColours[routeColourIndex]
             );
 
-            routeColourIndex = (routeColourIndex + 1) % routeColours.length;
             result.add(colourizedRouteSegment);
         }
 
