@@ -31,6 +31,9 @@
     <string name="onboarding_missing_access_text">Bruno requires the following capabilities to function properly. Permissions can always be granted from system settings.</string>
     <string name="onboarding_all_done">All Done!</string>
     <!--  Settings  -->
+    <string name="settings_user_preferences_title">Your Preferences</string>
+    <string name="settings_avatar_title">Avatar</string>
+    <string name="settings_avatar_hint">Pick a new avatar.</string>
     <string name="about_bruno_title">About Bruno</string>
     <string name="version">Version</string>
     <string name="terms_and_conditions">Terms and Conditions</string>

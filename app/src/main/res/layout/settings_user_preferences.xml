@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+    <LinearLayout style="@style/SettingItemContainer">
+        <TextView
+            style="@style/TextTitle"
+            android:text="@string/settings_user_preferences_title" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/settings_avatar"
+        style="@style/SettingClickableItemContainer">
+        <TextView
+            style="@style/NormalText"
+            android:text="@string/settings_avatar_title" />
+        <TextView
+            style="@style/HintText"
+            android:text="@string/settings_avatar_hint" />
+    </LinearLayout>
+</merge> 
