@@ -264,6 +264,8 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
     private void onRouteCompleted() {
         musicPlayer.stopAndDisconnect();
 
+        model.hardReset();
+
         delegate.updateDistanceToTrackEndpoint("0 m");
         delegate.updateProgressToTrackEndpoint("0 m",
                 resources.getDrawable(R.drawable.ic_angle_double_up, null),
@@ -275,7 +277,6 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
                 resources.getString(R.string.run_completion_message),
                 resources.getString(R.string.ok_button),
                 (dialogInterface, i) -> {
-                    model.reset();
                     delegate.navigateToPreviousScreen();
                 },
                 false
@@ -297,6 +298,7 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
                 resources.getString(R.string.run_exit_message),
                 resources.getString(R.string.yes_button),
                 (dialogInterface, i) -> {
+                    model.softReset();
                     musicPlayer.stopAndDisconnect();
                     delegate.navigateToPreviousScreen();
                 },
