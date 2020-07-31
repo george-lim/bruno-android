@@ -154,6 +154,8 @@ public class FitnessDetailsFragment extends Fragment implements FitnessDetailsVi
 
         LatLngBounds bounds = boundsBuilder.build();
         map.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 200));
+        // disallow movement
+        map.getUiSettings().setAllGesturesEnabled(false);
     }
 
     private String getArtistDescription(List<String> artists) {
