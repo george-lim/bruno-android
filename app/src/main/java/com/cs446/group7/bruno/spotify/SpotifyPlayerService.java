@@ -19,7 +19,6 @@ import com.spotify.android.appremote.api.PlayerApi;
 import com.spotify.android.appremote.api.SpotifyAppRemote;
 import com.spotify.android.appremote.api.error.CouldNotFindSpotifyApp;
 import com.spotify.android.appremote.api.error.SpotifyDisconnectedException;
-import com.spotify.protocol.types.Artist;
 import com.spotify.protocol.types.PlayerState;
 import com.spotify.protocol.types.Track;
 
@@ -126,7 +125,7 @@ class SpotifyPlayerService implements MusicPlayer {
                         }
 
                         for (MusicPlayerSubscriber subscriber : spotifyServiceSubscribers) {
-                            subscriber.onTrackChanged(makeBrunoTrack(track));
+                            subscriber.onTrackChanged(convertToBrunoTrack(track));
                         }
 
                         Log.d(TAG, String.format("Curr Track: %s", track.toString()));
@@ -182,7 +181,7 @@ class SpotifyPlayerService implements MusicPlayer {
 
         // Now start playing playlist
         queue.add((result, nextCallback) -> {
-            String playlistUrl = "spotify:playlist:" + playlist.id;
+            String playlistUrl = "spotify:playlist:" + playlist.getId();
 
             api.play(playlistUrl)
                     .setResultCallback(empty -> nextCallback.onSuccess(null))
@@ -239,12 +238,16 @@ class SpotifyPlayerService implements MusicPlayer {
     }
 
     // Converts Spotify's Track object to a BrunoTrack object
-    private static BrunoTrack makeBrunoTrack(@NonNull final Track track) {
-        final List<Artist> trackArtists = track.artists;
-        final ArrayList<String> artistNames = new ArrayList<>();
-        for (final Artist artist : trackArtists) {
-            artistNames.add(artist.name);
+    private static BrunoTrack convertToBrunoTrack(@NonNull final Track track) {
+        String artists = "";
+
+        for (int i = 0; i < track.artists.size(); ++i) {
+            artists += track.artists.get(i).name;
+            if (i + 1 < track.artists.size()) {
+                artists += ", ";
+            }
         }
-        return new BrunoTrack(track.name, track.album.name, track.duration, artistNames);
+
+        return new BrunoTrack(track.name, artists, track.duration);
     }
 }

@@ -42,7 +42,7 @@ public class ColourizedRoute {
         long accumulatedRouteSegmentDuration = 0;
         List<RouteSegment> accumulatedRouteSegments = new LinkedList<>();
         LinkedList<RouteSegment> routeSegmentsCopy = new LinkedList<>(routeSegments);
-        List<BrunoTrack> tracks = playlist.tracks;
+        List<BrunoTrack> tracks = playlist.getTracks();
         while (routeSegmentsCopy.size() > 0) {
             BrunoTrack currTrack = tracks.get(currTrackInd);
 
@@ -52,9 +52,9 @@ public class ColourizedRoute {
             long routeSegmentDuration = currentRouteSegment.getDuration();
             long lastSongSegment = accumulatedRouteSegmentDuration + routeSegmentDuration;
 
-            if (lastSongSegment > currTrack.duration) {
+            if (lastSongSegment > currTrack.getDuration()) {
                 // Represents the duration of each half of a segment since it needs to be split
-                long segmentDurationFirstHalf = currTrack.duration - accumulatedRouteSegmentDuration;
+                long segmentDurationFirstHalf = currTrack.getDuration() - accumulatedRouteSegmentDuration;
                 long segmentDurationSecondHalf = routeSegmentDuration - segmentDurationFirstHalf;
                 double segmentDurationRatio = (double) segmentDurationFirstHalf / routeSegmentDuration;
 
@@ -88,7 +88,7 @@ public class ColourizedRoute {
                 routeSegmentsCopy.push(segmentSecondHalf);
                 accumulatedRouteSegmentDuration = 0;
                 currTrackInd++;
-            } else if (lastSongSegment == currTrack.duration) {
+            } else if (lastSongSegment == currTrack.getDuration()) {
                 accumulatedRouteSegments.add(currentRouteSegment);
 
                 ColourizedRouteSegment colourizedRouteSegment = new ColourizedRouteSegment(

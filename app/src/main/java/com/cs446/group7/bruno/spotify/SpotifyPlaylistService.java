@@ -10,6 +10,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.cs446.group7.bruno.MainActivity;
 import com.cs446.group7.bruno.R;
 import com.cs446.group7.bruno.music.BrunoPlaylist;
+import com.cs446.group7.bruno.music.BrunoPlaylistImpl;
 import com.cs446.group7.bruno.music.BrunoTrack;
 import com.cs446.group7.bruno.music.playlist.PlaylistGenerator;
 import com.cs446.group7.bruno.utils.Callback;
@@ -161,37 +162,35 @@ class SpotifyPlaylistService implements PlaylistGenerator {
     private BrunoPlaylist getPlaylistFromJSON(final JSONObject responseJson,
                                               final String playlistId) throws JSONException {
         final String outputPlaylistName = responseJson.getString("name");
-        final String outputDescription = responseJson.getString("description");
         final JSONObject pagingObject = responseJson.getJSONObject("tracks");
 
         final int outputTotalTracks = pagingObject.getInt("total");
         final JSONArray responseTracks = pagingObject.getJSONArray("items");
-        final List<BrunoTrack> outputTracks = new ArrayList<BrunoTrack>();
+        final List<BrunoTrack> outputTracks = new ArrayList<>();
 
         // Iterate through the tracks
         for (int i = 0; i < outputTotalTracks; ++i) {
             final JSONObject responseTrack = responseTracks.getJSONObject(i).getJSONObject("track");
-            final String outputAlbum = responseTrack.getJSONObject("album").getString("name");
-
-            final ArrayList<String> outputArtists = new ArrayList<String>();
             final JSONArray responseArtists = responseTrack.getJSONArray("artists");
+
+            String outputArtists = "";
 
             // Iterate through the artists of each track
             for (int j = 0; j < responseArtists.length(); ++j) {
-                outputArtists.add(responseArtists.getJSONObject(j).getString("name"));
+                outputArtists += responseArtists.getJSONObject(j).getString("name");
+                if (j + 1 < responseArtists.length()) {
+                    outputArtists += ", ";
+                }
             }
 
-            // implicit int to long conversion - harmless
+            // Implicit int to long conversion - harmless
             final long outputDuration = responseTrack.getInt("duration_ms");
             String outputTrackName = responseTrack.getString("name");
 
-            BrunoTrack currentTrack = new BrunoTrack(outputTrackName, outputAlbum,
-                    outputDuration, outputArtists);
+            BrunoTrack currentTrack = new BrunoTrack(outputTrackName, outputArtists, outputDuration);
             outputTracks.add(currentTrack);
         }
 
-        final BrunoPlaylist outputPlaylist = new BrunoPlaylist(playlistId, outputPlaylistName,
-                outputDescription, outputTracks);
-        return outputPlaylist;
+        return new BrunoPlaylistImpl(playlistId, outputPlaylistName, outputTracks);
     }
 }
