@@ -49,6 +49,10 @@ public class CheckpointsModel {
         checkpointIndex++;
     }
 
+    public void resetCheckpoint() {
+        checkpointIndex = 0;
+    }
+
     public double getDistanceToCurrentCheckpoint(final Location origin) {
         LatLng originLatLng = LatLngUtils.locationToLatLng(origin);
         return LatLngUtils.getLatLngDistanceInMetres(originLatLng, getCurrentCheckpoint());

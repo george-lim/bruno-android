@@ -217,7 +217,7 @@ public class RouteModel extends ViewModel {
         userStartTime = null;
         userStopTime = null;
 
-        checkpointsModel = null;
+        checkpointsModel.resetCheckpoint();
     }
 
     /**
@@ -232,5 +232,6 @@ public class RouteModel extends ViewModel {
         playlist = null;
         colourizedRoute = null;
         currentLocation = null;
+        checkpointsModel = null;
     }
 }
