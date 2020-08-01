@@ -88,21 +88,21 @@ public class FitnessDetailsFragment extends Fragment implements FitnessDetailsVi
     // MARK: - FitnessDetailsViewModelDelegate methods
 
     @Override
-    public void setupUI(int userDuration, int brunoDuration, int stepCount) {
-        txtLeaderboardYouTime.setText(TimeUtils.getDurationString(userDuration));
+    public void setupUI(final String dateTimeString, int yourRunDuration, int brunoDuration, int stepCount) {
+        txtLeaderboardYouTime.setText(TimeUtils.getDurationString(yourRunDuration));
         txtLeaderboardBrunoTime.setText(TimeUtils.getDurationString(brunoDuration));
         txtStatsSteps.setText(String.format(getResources().getString(R.string.fitness_details_steps_placeholder), stepCount));
-        txtStatsClock.setText(String.format(getResources().getString(R.string.fitness_details_clock_placeholder), userDuration));
+        txtStatsClock.setText(String.format(getResources().getString(R.string.fitness_details_clock_placeholder), yourRunDuration));
 
         AppbarFormatter.format(
                 (AppCompatActivity) getActivity(),
                 getView(),
                 R.id.appbar_fitness_details,
-                "June 15 · 11:30 AM ",
+                dateTimeString,
                 true);
 
         // Crown
-        if (userDuration < brunoDuration) {
+        if (yourRunDuration < brunoDuration) {
             // You win
             imgLeaderboardYouCrown.setColorFilter(getResources().getColor(R.color.colorCrown, null));
             imgLeaderboardBrunoCrown.setVisibility(View.INVISIBLE);
@@ -117,7 +117,7 @@ public class FitnessDetailsFragment extends Fragment implements FitnessDetailsVi
     // MARK: - Private methods
 
     @Override
-    public void setupTracklist(List<BrunoTrack> trackList) {
+    public void setupTracklist(final List<BrunoTrack> trackList) {
         int[] colors = getResources().getIntArray(R.array.colorRouteList);
         for (int i = 0; i < trackList.size(); i++) {
             BrunoTrack track = trackList.get(i);
@@ -134,7 +134,7 @@ public class FitnessDetailsFragment extends Fragment implements FitnessDetailsVi
     }
 
     @Override
-    public void drawRoute(ColourizedRoute colourizedRoute) {
+    public void drawRoute(final ColourizedRoute colourizedRoute) {
         final float routeWidth = 14;
         LatLngBounds.Builder boundsBuilder = new LatLngBounds.Builder();
 
@@ -155,5 +155,4 @@ public class FitnessDetailsFragment extends Fragment implements FitnessDetailsVi
         // disallow movement
         map.getUiSettings().setAllGesturesEnabled(false);
     }
-
 }

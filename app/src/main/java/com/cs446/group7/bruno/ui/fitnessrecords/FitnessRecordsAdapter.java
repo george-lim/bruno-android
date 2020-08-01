@@ -10,9 +10,9 @@ import android.widget.TextView;
 
 import com.cs446.group7.bruno.R;
 import com.cs446.group7.bruno.dao.FitnessDetailsDAO;
+import com.cs446.group7.bruno.settings.SettingsService;
+import com.cs446.group7.bruno.utils.TimeUtils;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -63,11 +63,7 @@ public class FitnessRecordsAdapter extends RecyclerView.Adapter<FitnessRecordsAd
         final long userDurationMinutes = Math.round(fitnessData.getUserDuration() / 1000d / 60);
         final double distanceKilometer = fitnessData.getRouteDistance() / 1000d;
 
-        final String pattern = "MMM d • h:mm aa";
-        final SimpleDateFormat dateFormat = new SimpleDateFormat(pattern, locale);
-        final Date startTime = fitnessData.getStartTime();
-
-        holder.datetime.setText(dateFormat.format(startTime));
+        holder.datetime.setText(TimeUtils.formatDateTime(fitnessData.getStartTime(), SettingsService.DATE_TIME_FORMAT, locale));
         holder.distance.setText(String.format(locale,"%.1f km", distanceKilometer));
 
         if (userDurationMinutes < 60) {

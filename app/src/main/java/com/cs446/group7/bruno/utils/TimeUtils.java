@@ -1,5 +1,9 @@
 package com.cs446.group7.bruno.utils;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 public class TimeUtils {
     public static String getDurationString(int seconds) {
         int hours = seconds / 3600;
@@ -11,6 +15,11 @@ public class TimeUtils {
         } else {
             return twoDigitString(minutes) + ":" + twoDigitString(seconds);
         }
+    }
+
+    public static String formatDateTime(final Date dateTime, final String format, final Locale locale) {
+        final SimpleDateFormat dateFormat = new SimpleDateFormat(format, locale);
+        return dateFormat.format(dateTime);
     }
 
     private static String twoDigitString(int number) {
