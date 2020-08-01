@@ -10,7 +10,7 @@ import com.google.android.gms.maps.model.LatLng;
 
 public interface OnRouteViewModelDelegate {
     void setupUI(int userAvatarDrawableResourceId);
-    void updateCurrentSongUI(final String name, final String album);
+    void updateCurrentSongUI(final String name, final String artists);
     void drawRoute(@NonNull final ColourizedRoute colourizedRoute);
     void updateCheckpointMarker(final LatLng location, final double radius);
     void animateCamera(final LatLng location, float bearing, int cameraTilt, int cameraZoom);

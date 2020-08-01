@@ -78,7 +78,7 @@ public class FitnessDetailsViewModel {
     private void setupUI() {
         // TODO: Change these testing values with actual data implementations
         delegate.setupUI( 4000, 3900, 500);
-        delegate.setupTracklist(mockPlaylist.tracks);
+        delegate.setupTracklist(mockPlaylist.getTracks());
         int[] colors = resources.getIntArray(R.array.colorRouteList);
         ColourizedRoute mockColourizedRoute = new ColourizedRoute(mockRouteSegments, colors, mockPlaylist);
         delegate.drawRoute(mockColourizedRoute);

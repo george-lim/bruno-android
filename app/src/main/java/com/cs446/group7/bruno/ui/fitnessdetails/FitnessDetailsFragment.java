@@ -125,10 +125,10 @@ public class FitnessDetailsFragment extends Fragment implements FitnessDetailsVi
             ImageView musicNote = vi.findViewById(R.id.image_view_fitness_details_holder_music);
             musicNote.setColorFilter(colors[i % colors.length]);
             TextView songName = vi.findViewById(R.id.text_view_fitness_details_holder_song);
-            songName.setText(track.name);
+            songName.setText(track.getName());
 
             TextView artist = vi.findViewById(R.id.text_view_fitness_details_holder_artist);
-            artist.setText(getArtistDescription(track.artists));
+            artist.setText(track.getArtists());
             runTracklist.addView(vi);
         }
     }
@@ -156,18 +156,4 @@ public class FitnessDetailsFragment extends Fragment implements FitnessDetailsVi
         map.getUiSettings().setAllGesturesEnabled(false);
     }
 
-    private String getArtistDescription(final List<String> artists) {
-        StringBuilder sb = new StringBuilder();
-        if (artists.size() == 0) {
-            sb.append("Unknown");
-            return sb.toString();
-        }
-        sb.append(artists.get(0));
-        sb.append(" ft.");
-        for (int i = 1; i < artists.size(); i++) {
-            sb.append(" ");
-            sb.append(artists.get(i));
-        }
-        return sb.toString();
-    }
 }
