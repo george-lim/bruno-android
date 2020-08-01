@@ -1,10 +1,9 @@
-package com.cs446.group7.bruno.ui.onboarding;
+package com.cs446.group7.bruno.ui.shared;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 
 import androidx.annotation.DrawableRes;
@@ -18,11 +17,10 @@ import com.cs446.group7.bruno.preferencesstorage.PreferencesStorage;
 import java.util.HashMap;
 import java.util.Map;
 
-public class OnboardingAvatarFragment extends Fragment {
+public class AvatarFragment extends Fragment {
 
     private static int NUM_AVATARS = 8;
 
-    private OnboardingFragment onboardingFragment;
     private Map<Integer, Integer> imageViewToAvatarMapping;
     private ImageView[] avatars;
     private int curSelectedAvatar;
@@ -30,8 +28,6 @@ public class OnboardingAvatarFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        onboardingFragment = (OnboardingFragment) this.getParentFragment();
-
         imageViewToAvatarMapping = new HashMap<>();
         imageViewToAvatarMapping.put(R.id.pick_avatar_1, R.drawable.ic_avatar_1);
         imageViewToAvatarMapping.put(R.id.pick_avatar_2, R.drawable.ic_avatar_2);
@@ -45,10 +41,8 @@ public class OnboardingAvatarFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_onboarding_avatar, container, false);
+        View view = inflater.inflate(R.layout.fragment_avatar, container, false);
         setupAvatarPicker(view);
-        Button btnNext = view.findViewById(R.id.btn_tab2_next);
-        btnNext.setOnClickListener(this::handleNext);
         return view;
     }
 
@@ -61,8 +55,16 @@ public class OnboardingAvatarFragment extends Fragment {
             pos++;
         }
         // set avatar 1 as default, note that avatars array may not be in order because of hashmap
-        curSelectedAvatar = R.drawable.ic_avatar_1;
-        ImageView avatar1 = view.findViewById(R.id.pick_avatar_1);
+        curSelectedAvatar = MainActivity.getPreferencesStorage()
+                .getInt(PreferencesStorage.USER_AVATAR, PreferencesStorage.DEFAULT_AVATAR);;
+        int imageViewId = R.id.pick_avatar_1;
+        for (Map.Entry<Integer, Integer> mapping : imageViewToAvatarMapping.entrySet()) {
+            if (curSelectedAvatar == mapping.getValue()) {
+                imageViewId = mapping.getKey();
+                break;
+            }
+        }
+        ImageView avatar1 = view.findViewById(imageViewId);
         avatar1.setSelected(true);
         saveUserAvatarSetting(curSelectedAvatar);
     }
@@ -75,10 +77,6 @@ public class OnboardingAvatarFragment extends Fragment {
         }
         view.setSelected(true);
         saveUserAvatarSetting(curSelectedAvatar);
-    }
-
-    private void handleNext(final View view) {
-        onboardingFragment.moveToNextTab();
     }
 
     private void saveUserAvatarSetting(@DrawableRes int drawable) {

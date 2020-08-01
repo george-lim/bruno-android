@@ -24,15 +24,20 @@ import com.cs446.group7.bruno.capability.permission.PermissionRequestDelegate;
 import com.cs446.group7.bruno.location.LocationService;
 import com.cs446.group7.bruno.preferencesstorage.PreferencesStorage;
 import com.cs446.group7.bruno.sensor.SensorService;
+import com.cs446.group7.bruno.spotify.auth.SpotifyRequest;
+import com.cs446.group7.bruno.spotify.auth.SpotifyRequestDelegate;
 import com.cs446.group7.bruno.spotify.SpotifyService;
 import com.cs446.group7.bruno.ui.onboarding.OnboardingFragment;
 import com.cs446.group7.bruno.ui.onroute.OnRouteFragment;
 import com.cs446.group7.bruno.ui.toplevel.TopLevelFragment;
 import com.cs446.group7.bruno.utils.NoFailCallback;
+import com.spotify.sdk.android.auth.AuthorizationClient;
+import com.spotify.sdk.android.auth.AuthorizationResponse;
 
 import java.util.HashMap;
 
-public class MainActivity extends AppCompatActivity implements PermissionRequestDelegate, HardwareRequestDelegate {
+public class MainActivity extends AppCompatActivity
+        implements PermissionRequestDelegate, HardwareRequestDelegate, SpotifyRequestDelegate {
 
     // MARK: - Services
 
@@ -46,11 +51,13 @@ public class MainActivity extends AppCompatActivity implements PermissionRequest
 
     // MARK: - PermissionRequestDelegate members
 
-    // Counter for permission request codes
+    // Counter for request codes
     private int currentRequestCode = 0;
+
     // Map request codes to active permission requests
     private HashMap<Integer, PermissionRequest> activePermissionRequests;
     private HashMap<Integer, HardwareRequest> activeHardwareRequests;
+    private HashMap<Integer, SpotifyRequest> activeSpotifyRequests;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,9 +67,10 @@ public class MainActivity extends AppCompatActivity implements PermissionRequest
         capabilityService = new CapabilityService(getApplicationContext(), this, this);
         activePermissionRequests = new HashMap<>();
         activeHardwareRequests = new HashMap<>();
+        activeSpotifyRequests = new HashMap<>();
 
         locationService = new LocationService(getApplicationContext());
-        spotifyService = new SpotifyService(getApplicationContext());
+        spotifyService = new SpotifyService(getApplicationContext(), this);
         sensorService = new SensorService(getApplicationContext());
         preferencesStorage = new PreferencesStorage(getApplicationContext());
         volleyRequestQueue = Volley.newRequestQueue(getApplicationContext());
@@ -129,12 +137,26 @@ public class MainActivity extends AppCompatActivity implements PermissionRequest
         super.onActivityResult(requestCode, resultCode, data);
 
         // Find matching hardware request (if exists)
-        HardwareRequest request = activeHardwareRequests.get(requestCode);
+        HardwareRequest hardwareRequest = activeHardwareRequests.get(requestCode);
+        SpotifyRequest spotifyRequest = activeSpotifyRequests.get(requestCode);
 
         // Complete initial hardware request if the activity result is from hardware request
-        if (request != null) {
-            activePermissionRequests.remove(requestCode);
-            request.getCallback().onSuccess(null);
+        if (hardwareRequest != null) {
+            activeHardwareRequests.remove(requestCode);
+            hardwareRequest.getCallback().onSuccess(null);
+        }
+
+        if (spotifyRequest != null) {
+            activeSpotifyRequests.remove(requestCode);
+            AuthorizationResponse response = AuthorizationClient.getResponse(resultCode, data);
+            switch (response.getType()) {
+                case TOKEN:
+                    spotifyRequest.getCallback().onSuccess(response.getAccessToken());
+                    break;
+                default:
+                    // Handles other cases like error and cancellation
+                    spotifyRequest.getCallback().onFailed(null);
+            }
         }
     }
 
@@ -253,5 +275,14 @@ public class MainActivity extends AppCompatActivity implements PermissionRequest
                 request.getRejectionMessage(),
                 request.getCallback()
         );
+    }
+
+    @Override
+    public void handleSpotifyRequest(@NonNull final SpotifyRequest request) {
+
+        activeSpotifyRequests.put(currentRequestCode, request);
+        AuthorizationClient.openLoginActivity(this, currentRequestCode, request.getAuthorizationRequest());
+        currentRequestCode++;
+
     }
 }
