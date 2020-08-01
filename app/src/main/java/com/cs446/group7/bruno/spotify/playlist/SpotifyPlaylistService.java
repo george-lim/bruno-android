@@ -141,20 +141,8 @@ public class SpotifyPlaylistService implements PlaylistGenerator {
                 "https://api.spotify.com/v1/me/playlists",
                 response -> {
                     try {
-                        //List<PlaylistInfo> userPlaylists = new ArrayList<>();
                         final JSONObject pagingObject = new JSONObject(response);
-                        parsePagingObject(accessToken, new ArrayList<>(), pagingObject, new PlaylistParser(),
-                                new Callback<List<PlaylistInfo>, Exception>() {
-                                    @Override
-                                    public void onSuccess(List<PlaylistInfo> result) {
-                                        callback.onSuccess(result);
-                                    }
-
-                                    @Override
-                                    public void onFailed(Exception result) {
-                                        callback.onFailed(result);
-                                    }
-                                });
+                        parsePagingObject(accessToken, new ArrayList<>(), pagingObject, new PlaylistParser(), callback);
                     } catch (JSONException e) {
                         Log.e(TAG, "getUserPlaylists: JSON parsing failure: " + e.getMessage());
                         callback.onFailed(e);
