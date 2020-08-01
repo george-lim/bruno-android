@@ -166,7 +166,7 @@ class SpotifyPlaylistService implements PlaylistGenerator {
 
         final int outputTotalTracks = pagingObject.getInt("total");
         final JSONArray responseTracks = pagingObject.getJSONArray("items");
-        final List<BrunoTrack> outputTracks = new ArrayList<BrunoTrack>();
+        final List<BrunoTrack> outputTracks = new ArrayList<>();
 
         // Iterate through the tracks
         for (int i = 0; i < outputTotalTracks; ++i) {

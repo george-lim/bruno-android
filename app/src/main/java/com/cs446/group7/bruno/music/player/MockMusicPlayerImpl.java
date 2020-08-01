@@ -26,7 +26,7 @@ public class MockMusicPlayerImpl implements MusicPlayer {
     public MockMusicPlayerImpl() {
         playlist = null;
         subscribers = new ArrayList<>();
-        playSongsThread = new Thread(() -> playSongs());
+        playSongsThread = null;
     }
 
     // MARK: - Private methods
@@ -84,15 +84,22 @@ public class MockMusicPlayerImpl implements MusicPlayer {
             return;
         }
 
+        playSongsThread = new Thread(() -> playSongs());
         playSongsThread.start();
     }
 
     public void stop() {
-        if (!playSongsThread.isAlive()) {
+        if (playSongsThread == null || !playSongsThread.isAlive()) {
             return;
         }
 
-        playSongsThread.interrupt();
+        try {
+            playSongsThread.interrupt();
+            playSongsThread.join();
+        } catch (InterruptedException e) {
+            // NOTE: .join requires a try-catch, even though control will never get here.
+            e.printStackTrace();
+        }
     }
 
     public void stopAndDisconnect() {
