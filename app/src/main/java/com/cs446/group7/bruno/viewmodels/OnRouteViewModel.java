@@ -25,6 +25,8 @@ import com.cs446.group7.bruno.utils.LatLngUtils;
 import com.cs446.group7.bruno.utils.NoFailCallback;
 import com.google.android.gms.maps.model.LatLng;
 
+import java.util.Date;
+
 public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerSubscriber, PedometerSubscriber {
 
     // MARK: - Constants
@@ -135,7 +137,7 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
             @Override
             public void onSuccess(Void result) {
                 dismissPlayerConnectProgressDialog();
-                model.startUserTime();
+                model.setUserStartTime();
                 callback.onSuccess(null);
             }
 
@@ -197,7 +199,7 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
             // End of route, no more checkpoints
             if (nextCheckpoint == null) {
                 isRouteCompleted = true;
-                model.stopUserTime();
+                model.setUserStopTime();
                 onRouteCompleted();
             } else {
                 delegate.updateCheckpointMarker(nextCheckpoint, toleranceRadius);
@@ -263,6 +265,12 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
 
         // TODO: save to fitness records
         final long userDuration = model.getUserDuration();
+
+        Date startTime = new Date(model.getUserStarTime());
+        Date stopTime = new Date(model.getUserStopTime());
+
+        Log.i(getClass().getSimpleName(), String.format("Exercise duration: %s seconds", userDuration / 1000d));
+        Log.i(getClass().getSimpleName(), String.format("Exercise duration: %s seconds", userDuration / 1000d));
         Log.i(getClass().getSimpleName(), String.format("Exercise duration: %s seconds", userDuration / 1000d));
 
         model.hardReset();
