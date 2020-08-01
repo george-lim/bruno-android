@@ -5,8 +5,6 @@ import android.content.res.Resources;
 import android.location.Location;
 import android.util.Log;
 
-import androidx.annotation.NonNull;
-
 import com.cs446.group7.bruno.BuildConfig;
 import com.cs446.group7.bruno.MainActivity;
 import com.cs446.group7.bruno.R;
@@ -25,7 +23,11 @@ import com.cs446.group7.bruno.utils.LatLngUtils;
 import com.cs446.group7.bruno.utils.NoFailCallback;
 import com.google.android.gms.maps.model.LatLng;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
+
+import androidx.annotation.NonNull;
 
 public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerSubscriber, PedometerSubscriber {
 
@@ -265,12 +267,17 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
 
         // TODO: save to fitness records
         final long userDuration = model.getUserDuration();
+        final Locale locale = resources.getConfiguration().locale;
 
-        Date startTime = new Date(model.getUserStarTime());
-        Date stopTime = new Date(model.getUserStopTime());
+        final String pattern = "MMM d • h:mm aa";
 
-        Log.i(getClass().getSimpleName(), String.format("Exercise duration: %s seconds", userDuration / 1000d));
-        Log.i(getClass().getSimpleName(), String.format("Exercise duration: %s seconds", userDuration / 1000d));
+        SimpleDateFormat dateFormat = new SimpleDateFormat(pattern, locale);
+
+        Date startTime = model.getUserStartTime();
+        Date stopTime = model.getUserStopTime();
+
+        Log.i(getClass().getSimpleName(), String.format("Exercise Start: %s", dateFormat.format(startTime)));
+        Log.i(getClass().getSimpleName(), String.format("Exercise End: %s", dateFormat.format(stopTime)));
         Log.i(getClass().getSimpleName(), String.format("Exercise duration: %s seconds", userDuration / 1000d));
 
         model.hardReset();

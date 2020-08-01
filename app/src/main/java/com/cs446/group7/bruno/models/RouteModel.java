@@ -191,21 +191,21 @@ public class RouteModel extends ViewModel {
         userStartTime = new Date();
     }
 
-    public long getUserStarTime() {
-        return userStartTime.getTime();
+    public Date getUserStartTime() {
+        return userStartTime;
     }
 
     public void setUserStopTime() {
         userStopTime = new Date();
     }
 
-    public long getUserStopTime() {
-        return userStopTime.getTime();
+    public Date getUserStopTime() {
+        return userStopTime;
     }
 
     public long getUserDuration() {
         if (userStartTime == null || userStopTime == null) {
-            Log.w(getClass().getSimpleName(), "getUserDuration called but start/end time was set first");
+            Log.w(getClass().getSimpleName(), "getUserDuration called but start/end time was not set first");
             return -1;
         }
 
