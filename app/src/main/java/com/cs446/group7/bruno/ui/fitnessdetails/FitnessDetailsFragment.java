@@ -158,7 +158,7 @@ public class FitnessDetailsFragment extends Fragment implements FitnessDetailsVi
         map.getUiSettings().setAllGesturesEnabled(false);
     }
 
-    private String getArtistDescription(List<String> artists) {
+    private String getArtistDescription(final List<String> artists) {
         StringBuilder sb = new StringBuilder();
         if (artists.size() == 0) {
             sb.append("Unknown");

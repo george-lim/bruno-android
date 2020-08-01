@@ -33,7 +33,7 @@ public class FitnessRecordsFragment extends Fragment {
         return view;
     }
 
-    private void setupListView(View view) {
+    private void setupListView(final View view) {
         // Fitness records list
         fitnessRecordsList = view.findViewById(R.id.recycler_view_fitness_record);
         fitnessRecordsList.setHasFixedSize(true);

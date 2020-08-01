@@ -276,10 +276,8 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
         SimpleDateFormat dateFormat = new SimpleDateFormat(pattern, locale);
 
         Date startTime = model.getUserStartTime();
-        Date stopTime = model.getUserStopTime();
 
         Log.i(getClass().getSimpleName(), String.format("Exercise Start: %s", dateFormat.format(startTime)));
-        Log.i(getClass().getSimpleName(), String.format("Exercise End: %s", dateFormat.format(stopTime)));
         Log.i(getClass().getSimpleName(), String.format("Exercise duration: %s seconds", userDuration / 1000d));
 
         model.hardReset();

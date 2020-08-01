@@ -199,10 +199,6 @@ public class RouteModel extends ViewModel {
         userStopTime = new Date();
     }
 
-    public Date getUserStopTime() {
-        return userStopTime;
-    }
-
     public long getUserDuration() {
         if (userStartTime == null || userStopTime == null) {
             Log.w(getClass().getSimpleName(), "getUserDuration called but start/end time was not set first");
