@@ -156,7 +156,7 @@
                         android:layout_height="44dp"
                         android:layout_gravity="center_horizontal"
                         android:contentDescription="@string/fitness_details_steps_description"
-                        android:src="@drawable/ic_shoe_print_upright"
+                        android:src="@drawable/ic_shoe_print"
                         android:tint="@color/colorPrimary" />
 
                     <TextView
