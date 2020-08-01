@@ -1,6 +1,7 @@
 package com.cs446.group7.bruno.models;
 
 import android.location.Location;
+import android.util.Log;
 
 import com.cs446.group7.bruno.colourizedroute.ColourizedRoute;
 import com.cs446.group7.bruno.colourizedroute.ColourizedRouteSegment;
@@ -10,6 +11,7 @@ import com.cs446.group7.bruno.routing.RouteSegment;
 import com.cs446.group7.bruno.utils.LatLngUtils;
 import com.google.android.gms.maps.model.LatLng;
 
+import java.util.Date;
 import java.util.List;
 
 import androidx.lifecycle.ViewModel;
@@ -39,6 +41,8 @@ public class RouteModel extends ViewModel {
     private int currentTrackEndpointIndex = 0;
     private BrunoTrack currentTrack = null;
     private int steps = 0;
+    private Date userStartTime = null;
+    private Date userStopTime = null;
 
     // MARK: - Private methods
 
@@ -183,12 +187,39 @@ public class RouteModel extends ViewModel {
         steps++;
     }
 
+    public void setUserStartTime() {
+        userStartTime = new Date();
+    }
+
+    public Date getUserStartTime() {
+        return userStartTime;
+    }
+
+    public void setUserStopTime() {
+        userStopTime = new Date();
+    }
+
+    public Date getUserStopTime() {
+        return userStopTime;
+    }
+
+    public long getUserDuration() {
+        if (userStartTime == null || userStopTime == null) {
+            Log.w(getClass().getSimpleName(), "getUserDuration called but start/end time was not set first");
+            return -1;
+        }
+
+        return userStopTime.getTime() - userStartTime.getTime(); // In Milliseconds
+    }
+
     /**
      * Resets the progress of the current route, and stats, but keeps the route and checkpoints.
      */
     public void softReset() {
         currentCheckpointIndex = 0;
         currentTrackEndpointIndex = 0;
+        userStartTime = null;
+        userStopTime = null;
     }
 
     /**
