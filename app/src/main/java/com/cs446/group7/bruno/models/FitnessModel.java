@@ -36,12 +36,12 @@ public class FitnessModel extends ViewModel {
         // TODO: Replace with persistence service query
         fitnessDetailsDAOList = new ArrayList<>(); // PersistenceService.get(...)
 
-        // I would expect that at this point, the playlist and colorized route can be fetched from model\
+        // I would expect that at this point, the playlist and colorized route can be fetched from model
         RouteGenerator routeGenerator = new MockRouteGeneratorImpl(null, null);
         PlaylistGenerator playlistGenerator = new MockPlaylistGeneratorImpl();
 
         // TODO: get rid of this disgusting mock
-        final int[] colors =  {-537719, -6234730, -7879170,  -6188606, -1003060, -938359, -5719896, -5977857};
+        final int[] colors =  { -537719, -6234730, -7879170,  -6188606, -1003060, -938359, -5719896, -5977857 };
 
         routeGenerator.generateRoute(
                 new OnRouteResponseCallback() {

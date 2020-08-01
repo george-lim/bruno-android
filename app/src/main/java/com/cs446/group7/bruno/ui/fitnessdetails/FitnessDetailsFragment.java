@@ -106,12 +106,14 @@ public class FitnessDetailsFragment extends Fragment implements FitnessDetailsVi
             // You win
             imgLeaderboardYouCrown.setColorFilter(getResources().getColor(R.color.colorCrown, null));
             imgLeaderboardBrunoCrown.setVisibility(View.INVISIBLE);
-        } else {
+        } else if (yourRunDuration > brunoDuration) {
             // You lose
             imgLeaderboardYouCrown.setVisibility(View.INVISIBLE);
             imgLeaderboardBrunoCrown.setColorFilter(getResources().getColor(R.color.colorCrown, null));
+        } else { // Draw: rare, but possible case -> give both player crowns
+            imgLeaderboardBrunoCrown.setColorFilter(getResources().getColor(R.color.colorCrown, null));
+            imgLeaderboardYouCrown.setColorFilter(getResources().getColor(R.color.colorCrown, null));
         }
-
     }
 
     // MARK: - Private methods
