@@ -6,5 +6,5 @@ import java.util.List;
 import java.util.Locale;
 
 public interface FitnessRecordsViewModelDelegate {
-    void setupUI(final List<FitnessDetailsDAO> detailsDAOList, final Locale locale);
+    void setupUI(final List<FitnessDetailsDAO> fitnessDetailsDAOList, final Locale locale);
 }

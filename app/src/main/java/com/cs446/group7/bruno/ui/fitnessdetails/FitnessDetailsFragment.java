@@ -8,12 +8,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
-
 import com.cs446.group7.bruno.R;
 import com.cs446.group7.bruno.colourizedroute.ColourizedRoute;
 import com.cs446.group7.bruno.colourizedroute.ColourizedRouteSegment;
@@ -31,6 +25,12 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.util.List;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
 public class FitnessDetailsFragment extends Fragment implements FitnessDetailsViewModelDelegate {
 
@@ -54,15 +54,9 @@ public class FitnessDetailsFragment extends Fragment implements FitnessDetailsVi
     // MARK: - Lifecycle Methods
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_fitness_details, container, false);
-        AppbarFormatter.format(
-                (AppCompatActivity) getActivity(),
-                view,
-                R.id.appbar_fitness_details,
-                "June 15 · 11:30 AM ",
-                true);
+
         imgLeaderboardYouCrown = view.findViewById(R.id.image_view_leaderboard_you_crown);
         imgLeaderboardBrunoCrown = view.findViewById(R.id.image_view_leaderboard_bruno_crown);
         txtLeaderboardYouTime = view.findViewById(R.id.text_view_leaderboard_you_time);
@@ -86,6 +80,7 @@ public class FitnessDetailsFragment extends Fragment implements FitnessDetailsVi
             map = googleMap;
 
             FitnessModel model = new ViewModelProvider(requireActivity()).get(FitnessModel.class);
+            model.setSelectedIndex(getArguments().getInt("recordIndex"));
             viewModel = new FitnessDetailsViewModel(getActivity().getApplicationContext(), model, this);
         });
     }
@@ -93,23 +88,39 @@ public class FitnessDetailsFragment extends Fragment implements FitnessDetailsVi
     // MARK: - FitnessDetailsViewModelDelegate methods
 
     @Override
-    public void setupUI(int youRunDuration,
-                        int brunoRunDuration,
-                        int stepCount,
-                        int timeFromGoal) {
-        txtLeaderboardYouTime.setText(TimeUtils.getDurationString(youRunDuration));
-        txtLeaderboardBrunoTime.setText(TimeUtils.getDurationString(brunoRunDuration));
+    public void setupUI(int userDuration, int brunoDuration, int stepCount) {
+        txtLeaderboardYouTime.setText(TimeUtils.getDurationString(userDuration));
+        txtLeaderboardBrunoTime.setText(TimeUtils.getDurationString(brunoDuration));
         txtStatsSteps.setText(String.format(getResources().getString(R.string.fitness_details_steps_placeholder), stepCount));
-        txtStatsClock.setText(String.format(getResources().getString(R.string.fitness_details_clock_placeholder), timeFromGoal));
+        txtStatsClock.setText(String.format(getResources().getString(R.string.fitness_details_clock_placeholder), userDuration));
+
+        AppbarFormatter.format(
+                (AppCompatActivity) getActivity(),
+                getView(),
+                R.id.appbar_fitness_details,
+                "June 15 · 11:30 AM ",
+                true);
+
+        // Crown
+        if (userDuration < brunoDuration) {
+            // You win
+            imgLeaderboardYouCrown.setColorFilter(getResources().getColor(R.color.colorCrown, null));
+            imgLeaderboardBrunoCrown.setVisibility(View.INVISIBLE);
+        } else {
+            // You lose
+            imgLeaderboardYouCrown.setVisibility(View.INVISIBLE);
+            imgLeaderboardBrunoCrown.setColorFilter(getResources().getColor(R.color.colorCrown, null));
+        }
+
     }
 
     // MARK: - Private methods
 
     @Override
-    public void setupTracklist(List<BrunoTrack> tracklist) {
+    public void setupTracklist(List<BrunoTrack> trackList) {
         int[] colors = getResources().getIntArray(R.array.colorRouteList);
-        for (int i = 0; i < tracklist.size(); i++) {
-            BrunoTrack track = tracklist.get(i);
+        for (int i = 0; i < trackList.size(); i++) {
+            BrunoTrack track = trackList.get(i);
             View vi = getLayoutInflater().inflate(R.layout.view_holder_fitness_details, null);
             ImageView musicNote = vi.findViewById(R.id.image_view_fitness_details_holder_music);
             musicNote.setColorFilter(colors[i % colors.length]);
@@ -119,19 +130,6 @@ public class FitnessDetailsFragment extends Fragment implements FitnessDetailsVi
             TextView artist = vi.findViewById(R.id.text_view_fitness_details_holder_artist);
             artist.setText(getArtistDescription(track.artists));
             runTracklist.addView(vi);
-        }
-    }
-
-    @Override
-    public void displayCrown(int youRunDuration, int brunoRunDuration) {
-        if (youRunDuration < brunoRunDuration) {
-            // You win
-            imgLeaderboardYouCrown.setColorFilter(getResources().getColor(R.color.colorCrown, null));
-            imgLeaderboardBrunoCrown.setVisibility(View.INVISIBLE);
-        } else {
-            // You lose
-            imgLeaderboardYouCrown.setVisibility(View.INVISIBLE);
-            imgLeaderboardBrunoCrown.setColorFilter(getResources().getColor(R.color.colorCrown, null));
         }
     }
 

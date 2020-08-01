@@ -26,7 +26,6 @@ public class FitnessDetailsViewModel {
     private FitnessModel model;
     private FitnessDetailsViewModelDelegate delegate;
 
-
     // Mock data
     private List<RouteSegment> mockRouteSegments;
     private BrunoPlaylist mockPlaylist;
@@ -39,6 +38,7 @@ public class FitnessDetailsViewModel {
         this.resources = context.getResources();
         this.model = model;
         this.delegate = delegate;
+
 
         // I would expect that at this point, the playlist and colorized route can be fetched from model
         String googleMapsKey = resources.getString(R.string.google_maps_key);
@@ -77,9 +77,8 @@ public class FitnessDetailsViewModel {
 
     private void setupUI() {
         // TODO: Change these testing values with actual data implementations
-        delegate.setupUI( 4000, 3900, 500, 300);
+        delegate.setupUI( 4000, 3900, 500);
         delegate.setupTracklist(mockPlaylist.tracks);
-        delegate.displayCrown(4000, 3900);
         int[] colors = resources.getIntArray(R.array.colorRouteList);
         ColourizedRoute mockColourizedRoute = new ColourizedRoute(mockRouteSegments, colors, mockPlaylist);
         delegate.drawRoute(mockColourizedRoute);

@@ -11,6 +11,7 @@ import androidx.lifecycle.ViewModel;
 public class FitnessModel extends ViewModel {
 
     private List<FitnessDetailsDAO> fitnessDetailsDAOList;
+    private int selectedIndex;
 
     public FitnessModel() {
         loadWalkRunSessions();
@@ -64,6 +65,14 @@ public class FitnessModel extends ViewModel {
                 null,
                 null
         ));
+    }
+
+    public void setSelectedIndex(int index) {
+        this.selectedIndex = index;
+    }
+
+    public int getSelectedIndex() {
+        return selectedIndex;
     }
 
     public List<FitnessDetailsDAO> getFitnessRecords() {

@@ -1,6 +1,7 @@
 package com.cs446.group7.bruno.ui.fitnessrecords;
 
 import android.graphics.drawable.Drawable;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,8 +40,10 @@ public class FitnessRecordsAdapter extends RecyclerView.Adapter<FitnessRecordsAd
     @Override
     public void onBindViewHolder(@NonNull FitnessRecordViewHolder holder, int position) {
         holder.itemView.setOnClickListener(view -> {
+            Bundle bundle = new Bundle();
+            bundle.putInt("recordIndex", position);
             NavController navController = Navigation.findNavController(view);
-            navController.navigate(R.id.action_fragmenttoplevel_to_fragmentfitnessdetails);
+            navController.navigate(R.id.action_fragmenttoplevel_to_fragmentfitnessdetails, bundle);
         });
 
         final FitnessDetailsDAO fitnessData = data.get(position);
