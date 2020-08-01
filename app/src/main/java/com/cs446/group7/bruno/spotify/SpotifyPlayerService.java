@@ -182,7 +182,7 @@ class SpotifyPlayerService implements MusicPlayer {
 
         // Now start playing playlist
         queue.add((result, nextCallback) -> {
-            String playlistUrl = "spotify:playlist:" + playlist.id;
+            String playlistUrl = "spotify:playlist:" + playlist.getId();
 
             api.play(playlistUrl)
                     .setResultCallback(empty -> nextCallback.onSuccess(null))

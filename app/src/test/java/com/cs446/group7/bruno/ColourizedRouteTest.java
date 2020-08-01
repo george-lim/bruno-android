@@ -3,6 +3,7 @@ package com.cs446.group7.bruno;
 import com.cs446.group7.bruno.colourizedroute.ColourizedRoute;
 import com.cs446.group7.bruno.colourizedroute.ColourizedRouteSegment;
 import com.cs446.group7.bruno.music.BrunoPlaylist;
+import com.cs446.group7.bruno.music.BrunoPlaylistImpl;
 import com.cs446.group7.bruno.music.BrunoTrack;
 import com.cs446.group7.bruno.routing.RouteSegment;
 import com.google.android.gms.maps.model.LatLng;
@@ -84,13 +85,7 @@ public class ColourizedRouteTest {
         mockArtists.add("test");
         List<BrunoTrack> tracks = new LinkedList<>();
         tracks.add(new BrunoTrack("testName", "testAlbum", 280000, mockArtists));
-
-        BrunoPlaylist playlist = new BrunoPlaylist(
-                "id",
-                "playlistName",
-                "playlistDescription",
-                tracks
-        );
+        BrunoPlaylist playlist = new BrunoPlaylistImpl("id", "playlistName", tracks);
 
         List<ColourizedRouteSegment> answer = new ArrayList<>();
         answer.add(new ColourizedRouteSegment(mockSegments, DEFAULT_ROUTE_COLOURS[0]));
@@ -108,13 +103,7 @@ public class ColourizedRouteTest {
         List<BrunoTrack> tracks = new LinkedList<>();
         tracks.add(new BrunoTrack("testName1", "testAlbum1", 140000, mockArtists));
         tracks.add(new BrunoTrack("testName2", "testAlbum2", 140000, mockArtists));
-
-        BrunoPlaylist playlist = new BrunoPlaylist(
-                "id",
-                "playlistName",
-                "playlistDescription",
-                tracks
-        );
+        BrunoPlaylist playlist = new BrunoPlaylistImpl("id", "playlistName", tracks);
 
         List<RouteSegment> route1 = new LinkedList<>();
         route1.add(mockSegment1);
@@ -138,13 +127,7 @@ public class ColourizedRouteTest {
         mockArtists.add("test");
         List<BrunoTrack> tracks = new LinkedList<>();
         tracks.add(new BrunoTrack("testName1", "testAlbum1", 300000, mockArtists));
-
-        BrunoPlaylist playlist = new BrunoPlaylist(
-                "id",
-                "playlistName",
-                "playlistDescription",
-                tracks
-        );
+        BrunoPlaylist playlist = new BrunoPlaylistImpl("id", "playlistName", tracks);
 
         List<ColourizedRouteSegment> answer = new ArrayList<>();
         answer.add(new ColourizedRouteSegment(mockSegments, DEFAULT_ROUTE_COLOURS[0]));
@@ -162,13 +145,7 @@ public class ColourizedRouteTest {
         List<BrunoTrack> tracks = new LinkedList<>();
         tracks.add(new BrunoTrack("testName1", "testAlbum1", 200000, mockArtists));
         tracks.add(new BrunoTrack("testName2", "testAlbum2", 300000, mockArtists));
-
-        BrunoPlaylist playlist = new BrunoPlaylist(
-                "id",
-                "playlistName",
-                "playlistDescription",
-                tracks
-        );
+        BrunoPlaylist playlist = new BrunoPlaylistImpl("id", "playlistName", tracks);
 
         List<RouteSegment> route1 = new LinkedList<>();
         route1.add(mockSegment1);
@@ -192,13 +169,7 @@ public class ColourizedRouteTest {
         mockArtists.add("test");
         List<BrunoTrack> tracks = new LinkedList<>();
         tracks.add(new BrunoTrack("testName1", "testAlbum1", 140000, mockArtists));
-
-        BrunoPlaylist playlist = new BrunoPlaylist(
-                "id",
-                "playlistName",
-                "playlistDescription",
-                tracks
-        );
+        BrunoPlaylist playlist = new BrunoPlaylistImpl("id", "playlistName", tracks);
 
         ColourizedRoute _ = new ColourizedRoute(mockSegments, DEFAULT_ROUTE_COLOURS, playlist);
     }
@@ -211,13 +182,7 @@ public class ColourizedRouteTest {
         tracks.add(new BrunoTrack("testName1", "testAlbum1", 70000, mockArtists));
         tracks.add(new BrunoTrack("testName2", "testAlbum2", 60000, mockArtists));
         tracks.add(new BrunoTrack("testName3", "testAlbum3", 200000, mockArtists));
-
-        BrunoPlaylist playlist = new BrunoPlaylist(
-                "id",
-                "playlistName",
-                "playlistDescription",
-                tracks
-        );
+        BrunoPlaylist playlist = new BrunoPlaylistImpl("id", "playlistName", tracks);
 
         ColourizedRoute result = new ColourizedRoute(mockSegments, DEFAULT_ROUTE_COLOURS, playlist);
         List<RouteSegment> routeSegments = result.getSegments().get(0).getRouteSegments();

@@ -10,6 +10,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.cs446.group7.bruno.MainActivity;
 import com.cs446.group7.bruno.R;
 import com.cs446.group7.bruno.music.BrunoPlaylist;
+import com.cs446.group7.bruno.music.BrunoPlaylistImpl;
 import com.cs446.group7.bruno.music.BrunoTrack;
 import com.cs446.group7.bruno.music.playlist.PlaylistGenerator;
 import com.cs446.group7.bruno.utils.Callback;
@@ -161,7 +162,6 @@ class SpotifyPlaylistService implements PlaylistGenerator {
     private BrunoPlaylist getPlaylistFromJSON(final JSONObject responseJson,
                                               final String playlistId) throws JSONException {
         final String outputPlaylistName = responseJson.getString("name");
-        final String outputDescription = responseJson.getString("description");
         final JSONObject pagingObject = responseJson.getJSONObject("tracks");
 
         final int outputTotalTracks = pagingObject.getInt("total");
@@ -190,8 +190,6 @@ class SpotifyPlaylistService implements PlaylistGenerator {
             outputTracks.add(currentTrack);
         }
 
-        final BrunoPlaylist outputPlaylist = new BrunoPlaylist(playlistId, outputPlaylistName,
-                outputDescription, outputTracks);
-        return outputPlaylist;
+        return new BrunoPlaylistImpl(playlistId, outputPlaylistName, outputTracks);
     }
 }

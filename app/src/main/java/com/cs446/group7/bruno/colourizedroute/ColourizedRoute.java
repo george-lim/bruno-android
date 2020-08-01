@@ -42,7 +42,7 @@ public class ColourizedRoute {
         long accumulatedRouteSegmentDuration = 0;
         List<RouteSegment> accumulatedRouteSegments = new LinkedList<>();
         LinkedList<RouteSegment> routeSegmentsCopy = new LinkedList<>(routeSegments);
-        List<BrunoTrack> tracks = playlist.tracks;
+        List<BrunoTrack> tracks = playlist.getTracks();
         while (routeSegmentsCopy.size() > 0) {
             BrunoTrack currTrack = tracks.get(currTrackInd);
 

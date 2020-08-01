@@ -35,7 +35,7 @@ public class MockMusicPlayerImpl implements MusicPlayer {
     private void playSongs() {
         try {
             // Play each song
-            for (BrunoTrack track : playlist.tracks) {
+            for (BrunoTrack track : playlist.getTracks()) {
                 // Dispatch to UI thread
                 new Handler(Looper.getMainLooper()).post(() -> {
                     // Notify all subscribers of new track
