@@ -70,7 +70,10 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
         setupUI();
 
         // Connect player, and play playlist after connection succeeds
-        connectPlayer(context, result -> musicPlayer.play());
+        connectPlayer(context, result -> {
+            model.setUserStartTime();
+            musicPlayer.play();
+        });
     }
 
     public void onDestroy() {
@@ -139,7 +142,6 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
             @Override
             public void onSuccess(Void result) {
                 dismissPlayerConnectProgressDialog();
-                model.setUserStartTime();
                 callback.onSuccess(null);
             }
 
@@ -201,7 +203,6 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
             // End of route, no more checkpoints
             if (nextCheckpoint == null) {
                 isRouteCompleted = true;
-                model.setUserStopTime();
                 onRouteCompleted();
             } else {
                 delegate.updateCheckpointMarker(nextCheckpoint, toleranceRadius);
@@ -263,6 +264,7 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
      * Logic when the route is completed goes here.
      */
     private void onRouteCompleted() {
+        model.setUserStopTime();
         musicPlayer.stopAndDisconnect();
 
         // TODO: save to fitness records
