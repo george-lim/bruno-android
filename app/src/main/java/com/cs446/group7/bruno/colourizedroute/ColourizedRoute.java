@@ -15,7 +15,6 @@ public class ColourizedRoute {
     // MARK: - Private members
 
     private List<ColourizedRouteSegment> colourizedRouteSegments;
-    private List<LatLng> checkpoints;
 
     // MARK: - Lifecycle methods
 
@@ -23,7 +22,6 @@ public class ColourizedRoute {
                            final int[] routeColours,
                            final BrunoPlaylist playlist) {
         colourizedRouteSegments = processSegments(routeSegments, routeColours, playlist);
-        checkpoints = processCheckpoints(colourizedRouteSegments);
     }
 
     // MARK: - Private methods
@@ -119,31 +117,9 @@ public class ColourizedRoute {
         return result;
     }
 
-    // Checkpoints are defined as the starting location of each route segment of each route track mapping.
-    public List<LatLng> processCheckpoints(final List<ColourizedRouteSegment> colourizedRouteSegments) {
-        List<LatLng> checkpoints = new ArrayList<>();
-
-        for (ColourizedRouteSegment colourizedRouteSegment : colourizedRouteSegments) {
-            for (RouteSegment routeSegment : colourizedRouteSegment.getRouteSegments()) {
-                checkpoints.add(routeSegment.getStartLocation());
-            }
-        }
-
-        // Add the first checkpoint to make route circular
-        if (!checkpoints.isEmpty()) {
-            checkpoints.add(checkpoints.get(0));
-        }
-
-        return checkpoints;
-    }
-
     // MARK: - Public methods
 
     public List<ColourizedRouteSegment> getSegments() {
         return colourizedRouteSegments;
-    }
-
-    public List<LatLng> getCheckpoints() {
-        return checkpoints;
     }
 }
