@@ -99,6 +99,17 @@ public class FitnessModel extends ViewModel {
                                         mockPlaylist.getTracks(),
                                         mockColourizedRoute
                                 ));
+
+                                fitnessDetailsDAOList.add(new FitnessDetailsDAO(
+                                        FitnessDetailsDAO.Mode.RUN,
+                                        new Date(1581674932000L),
+                                        34 * 1000,
+                                        45 * 1000,
+                                        100,
+                                        57,
+                                        mockPlaylist.getTracks(),
+                                        mockColourizedRoute
+                                ));
                             }
 
                             @Override

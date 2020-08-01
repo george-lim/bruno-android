@@ -88,14 +88,13 @@ public class FitnessDetailsFragment extends Fragment implements FitnessDetailsVi
     // MARK: - FitnessDetailsViewModelDelegate methods
 
     @Override
-    public void setupUI(final String dateTimeString, int yourRunDuration, int brunoDuration, int stepCount) {
+    public void setupUI(final String dateTimeString, long yourRunDuration, long brunoDuration, int stepCount) {
         txtLeaderboardYouTime.setText(TimeUtils.getDurationString(yourRunDuration));
         txtLeaderboardBrunoTime.setText(TimeUtils.getDurationString(brunoDuration));
         txtStatsSteps.setText(String.format(getResources().getString(R.string.fitness_details_steps_placeholder), stepCount));
-        txtStatsClock.setText(String.format(getResources().getString(R.string.fitness_details_clock_placeholder), yourRunDuration));
+        txtStatsClock.setText(TimeUtils.formatDuration(yourRunDuration));
 
-        AppbarFormatter.format(
-                (AppCompatActivity) getActivity(),
+        AppbarFormatter.format((AppCompatActivity) getActivity(),
                 getView(),
                 R.id.appbar_fitness_details,
                 dateTimeString,

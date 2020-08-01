@@ -26,8 +26,10 @@ public class FitnessDetailsViewModel {
 
     private void setupUI() {
         final FitnessDetailsDAO currentFitnessRecord = model.getCurrentFitnessRecord();
+        final String dateTimeString = TimeUtils.formatDateTime(currentFitnessRecord.getStartTime(), SettingsService.DATE_TIME_FORMAT, resources.getConfiguration().locale);
+
         delegate.setupUI(
-                TimeUtils.formatDateTime(currentFitnessRecord.getStartTime(), SettingsService.DATE_TIME_FORMAT, resources.getConfiguration().locale),
+               dateTimeString,
                 (int)(currentFitnessRecord.getUserDuration() / 1000d),
                 (int)(currentFitnessRecord.getExpectedDuration() / 1000d),
                 currentFitnessRecord.getSteps()

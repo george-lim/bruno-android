@@ -5,9 +5,9 @@ import java.util.Date;
 import java.util.Locale;
 
 public class TimeUtils {
-    public static String getDurationString(int seconds) {
-        int hours = seconds / 3600;
-        int minutes = (seconds % 3600) / 60;
+    public static String getDurationString(long seconds) {
+        long hours = seconds / 3600;
+        long minutes = (seconds % 3600) / 60;
         seconds = seconds % 60;
 
         if (hours > 0) {
@@ -17,12 +17,26 @@ public class TimeUtils {
         }
     }
 
+    public static String formatDuration(final long seconds) {
+        if (seconds < 60) {
+            return String.format(Locale.getDefault(), "%s sec", seconds);
+        }
+
+        final long minutes = seconds / 60;
+
+        if (minutes < 60) {
+            return String.format(Locale.getDefault(), "%s min", minutes);
+        }
+
+        return String.format(Locale.getDefault(), "%.1f hr", (float)minutes / 60);
+    }
+
     public static String formatDateTime(final Date dateTime, final String format, final Locale locale) {
         final SimpleDateFormat dateFormat = new SimpleDateFormat(format, locale);
         return dateFormat.format(dateTime);
     }
 
-    private static String twoDigitString(int number) {
+    private static String twoDigitString(long number) {
         if (number == 0) {
             return "00";
         }

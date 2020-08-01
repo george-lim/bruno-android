@@ -60,17 +60,12 @@ public class FitnessRecordsAdapter extends RecyclerView.Adapter<FitnessRecordsAd
             holder.icon.setColorFilter(color);
         }
 
-        final long userDurationMinutes = Math.round(fitnessData.getUserDuration() / 1000d / 60);
         final double distanceKilometer = fitnessData.getRouteDistance() / 1000d;
+        final long durationSeconds = Math.round(fitnessData.getUserDuration() / 1000d);
 
         holder.datetime.setText(TimeUtils.formatDateTime(fitnessData.getStartTime(), SettingsService.DATE_TIME_FORMAT, locale));
         holder.distance.setText(String.format(locale,"%.1f km", distanceKilometer));
-
-        if (userDurationMinutes < 60) {
-            holder.duration.setText(String.format(locale, "%s min", userDurationMinutes));
-        } else {
-            holder.duration.setText(String.format(locale, "%.1f hours", (double)userDurationMinutes / 60));
-        }
+        holder.duration.setText(TimeUtils.formatDuration(durationSeconds));
     }
 
     @Override
