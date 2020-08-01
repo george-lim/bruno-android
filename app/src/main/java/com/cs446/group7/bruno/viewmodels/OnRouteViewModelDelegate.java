@@ -32,9 +32,9 @@ public interface OnRouteViewModelDelegate {
                          final DialogInterface.OnClickListener negativeButtonClickListener,
                          boolean isCancelable);
     void navigateToPreviousScreen();
-    void updateDistanceToTrackEndpoint(final String distanceText);
-    void updateProgressToTrackEndpoint(final String progressText,
-                                       final Drawable progressIcon,
-                                       int colour);
+    void updateUserPlaylistDistance(final String progressText,
+                                    final Drawable progressIcon,
+                                    int colour);
+    void updateCheckpointDistance(final String distanceText);
     void showRouteInfoCard();
 }

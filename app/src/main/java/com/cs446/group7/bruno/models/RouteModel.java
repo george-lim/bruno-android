@@ -35,7 +35,6 @@ public class RouteModel extends ViewModel {
     private BrunoPlaylist playlist = null;
     private ColourizedRoute colourizedRoute = null;
     private Location currentLocation = null;
-    private int currentTrackEndpointIndex = 0;
     private BrunoTrack currentTrack = null;
     private int steps = 0;
     private Date userStartTime = null;
@@ -107,33 +106,6 @@ public class RouteModel extends ViewModel {
         this.currentLocation = currentLocation;
     }
 
-    public LatLng getCurrentTrackEndpoint() {
-        if (colourizedRoute == null) {
-            return null;
-        }
-
-        int colourizedRouteSegmentCount = colourizedRoute.getSegments().size();
-
-        // index should always be valid because we would have finished the route otherwise
-        if (currentTrackEndpointIndex >= colourizedRouteSegmentCount) {
-            return null;
-        }
-
-        ColourizedRouteSegment currentColourizedSegment = colourizedRoute
-                .getSegments()
-                .get(currentTrackEndpointIndex);
-
-        int routeSegmentCount = currentColourizedSegment.getRouteSegments().size();
-        return currentColourizedSegment
-                .getRouteSegments()
-                .get(routeSegmentCount - 1)
-                .getEndLocation();
-    }
-
-    public void advanceTrackEndpoint() {
-        ++currentTrackEndpointIndex;
-    }
-
     public BrunoTrack getCurrentTrack() {
         return currentTrack;
     }
@@ -169,6 +141,37 @@ public class RouteModel extends ViewModel {
         }
 
         return userStopTime.getTime() - userStartTime.getTime(); // In Milliseconds
+    }
+
+    // MARK: - User distance calculations
+
+    // Returns distance travelled by the user on the route
+    private double getUserRouteDistance() {
+        return checkpointsModel.getRouteDistanceToCurrentCheckpoint()
+                - checkpointsModel.getDistanceToCurrentCheckpoint(currentLocation);
+    }
+
+    // Returns distance travelled by the playlist on the route
+    private double getPlaylistRouteDistance(long playbackPosition) {
+        List<BrunoTrack> tracks = playlist.getTracks();
+        List<ColourizedRouteSegment> colourizedRouteSegments = colourizedRoute.getSegments();
+        int i = 0;
+        double distance = 0;
+
+        while (tracks.get(i) != currentTrack) {
+            distance += colourizedRouteSegments.get(i).getDistance();
+            i++;
+        }
+
+        double currentTrackPlaybackRatio = (double)playbackPosition / currentTrack.getDuration();
+        distance += currentTrackPlaybackRatio * colourizedRouteSegments.get(i).getDistance();
+
+        return distance;
+    }
+
+    // Returns difference in distance between the user and the playlist on the route
+    public double getUserPlaylistDistance(long playbackPosition) {
+        return getUserRouteDistance() - getPlaylistRouteDistance(playbackPosition);
     }
 
     // MARK: - CheckpointsModel methods
@@ -213,7 +216,6 @@ public class RouteModel extends ViewModel {
      * Resets the progress of the current route, and stats, but keeps the route and checkpoints.
      */
     public void softReset() {
-        currentTrackEndpointIndex = 0;
         userStartTime = null;
         userStopTime = null;
 

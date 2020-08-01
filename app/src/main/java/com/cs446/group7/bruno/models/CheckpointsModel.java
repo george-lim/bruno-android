@@ -53,6 +53,21 @@ public class CheckpointsModel {
         checkpointIndex = 0;
     }
 
+    // Returns distance from the start of the route to the current checkpoint
+    public double getRouteDistanceToCurrentCheckpoint() {
+        double distance = 0;
+
+        for (int i = 0; i < checkpointIndex; ++i) {
+            distance += LatLngUtils.getLatLngDistanceInMetres(
+                    checkpoints.get(i),
+                    checkpoints.get(i+1)
+            );
+        }
+
+        return distance;
+    }
+
+    // Returns distance from origin to current checkpoint
     public double getDistanceToCurrentCheckpoint(final Location origin) {
         LatLng originLatLng = LatLngUtils.locationToLatLng(origin);
         return LatLngUtils.getLatLngDistanceInMetres(originLatLng, getCurrentCheckpoint());
