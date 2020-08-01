@@ -198,14 +198,15 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
             if (model.getCurrentCheckpoint().equals(model.getCurrentTrackEndpoint())) {
                 model.advanceTrackEndpoint();
             }
-            final LatLng nextCheckpoint = model.advanceCheckpoint();
 
-            // End of route, no more checkpoints
-            if (nextCheckpoint == null) {
+            model.advanceCheckpoint();
+
+            if (model.hasCompletedAllCheckpoints()) {
                 isRouteCompleted = true;
                 onRouteCompleted();
-            } else {
-                delegate.updateCheckpointMarker(nextCheckpoint, toleranceRadius);
+            }
+            else {
+                delegate.updateCheckpointMarker(model.getCurrentCheckpoint(), toleranceRadius);
             }
         }
     }
@@ -218,7 +219,8 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
         // Fail-safe
         if (isRouteCompleted) return;
 
-        double distanceToTrackEndpoint = model.getDistanceToTrackEndpoint();
+        // TODO: Fix this logic.
+        double distanceToTrackEndpoint = model.getDistanceToCurrentCheckpoint();
         delegate.updateDistanceToTrackEndpoint((int)distanceToTrackEndpoint + " m");
 
         // placeholder display until current track is ready

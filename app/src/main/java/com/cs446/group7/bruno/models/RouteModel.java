@@ -8,7 +8,6 @@ import com.cs446.group7.bruno.colourizedroute.ColourizedRouteSegment;
 import com.cs446.group7.bruno.music.BrunoPlaylist;
 import com.cs446.group7.bruno.music.BrunoTrack;
 import com.cs446.group7.bruno.routing.RouteSegment;
-import com.cs446.group7.bruno.utils.LatLngUtils;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.Date;
@@ -35,14 +34,14 @@ public class RouteModel extends ViewModel {
     private int[] routeColours = null;
     private BrunoPlaylist playlist = null;
     private ColourizedRoute colourizedRoute = null;
-
     private Location currentLocation = null;
-    private int currentCheckpointIndex = 0;
     private int currentTrackEndpointIndex = 0;
     private BrunoTrack currentTrack = null;
     private int steps = 0;
     private Date userStartTime = null;
     private Date userStopTime = null;
+
+    private CheckpointsModel checkpointsModel = null;
 
     // MARK: - Private methods
 
@@ -79,6 +78,7 @@ public class RouteModel extends ViewModel {
 
     public void setRouteSegments(final List<RouteSegment> routeSegments) {
         this.routeSegments = routeSegments;
+        this.checkpointsModel = new CheckpointsModel(routeSegments);
         updateColourizedRoute();
     }
 
@@ -107,24 +107,6 @@ public class RouteModel extends ViewModel {
         this.currentLocation = currentLocation;
     }
 
-    public LatLng getCurrentCheckpoint() {
-        if (colourizedRoute == null) {
-            return null;
-        }
-
-        return colourizedRoute.getCheckpoints().get(currentCheckpointIndex);
-    }
-
-    public LatLng advanceCheckpoint() {
-        if (colourizedRoute == null) {
-            return null;
-        }
-
-        List<LatLng> checkpoints = colourizedRoute.getCheckpoints();
-        if (currentCheckpointIndex >= checkpoints.size() - 1) return null;
-        return checkpoints.get(++currentCheckpointIndex);
-    }
-
     public LatLng getCurrentTrackEndpoint() {
         if (colourizedRoute == null) {
             return null;
@@ -150,29 +132,6 @@ public class RouteModel extends ViewModel {
 
     public void advanceTrackEndpoint() {
         ++currentTrackEndpointIndex;
-    }
-
-    public double getDistanceToTrackEndpoint() {
-        LatLng currentCheckpoint = getCurrentCheckpoint();
-        LatLng currentTrackEndpoint = getCurrentTrackEndpoint();
-
-        // Fail-safe
-        if (currentLocation == null || currentCheckpoint == null || currentTrackEndpoint == null) {
-            return 0;
-        }
-
-        LatLng currentLatLng = LatLngUtils.locationToLatLng(currentLocation);
-        double result = LatLngUtils.getLatLngDistanceInMetres(currentLatLng, currentCheckpoint);
-        List<LatLng> checkpoints = colourizedRoute.getCheckpoints();
-
-        for (int i = currentCheckpointIndex; !checkpoints.get(i).equals(currentTrackEndpoint); ++i) {
-            result += LatLngUtils.getLatLngDistanceInMetres(
-                    checkpoints.get(i),
-                    checkpoints.get(i+1)
-            );
-        }
-
-        return result;
     }
 
     public BrunoTrack getCurrentTrack() {
@@ -212,14 +171,53 @@ public class RouteModel extends ViewModel {
         return userStopTime.getTime() - userStartTime.getTime(); // In Milliseconds
     }
 
+    // MARK: - CheckpointsModel methods
+
+    public LatLng getCurrentCheckpoint() {
+        // Fail-safe
+        if (hasCompletedAllCheckpoints()) {
+            return null;
+        }
+
+        return checkpointsModel.getCurrentCheckpoint();
+    }
+
+    public void advanceCheckpoint() {
+        // Fail-safe
+        if (hasCompletedAllCheckpoints()) {
+            return;
+        }
+
+        checkpointsModel.advanceCheckpoint();
+    }
+
+    public double getDistanceToCurrentCheckpoint() {
+        // Fail-safe
+        if (hasCompletedAllCheckpoints()) {
+            return 0;
+        }
+
+        return checkpointsModel.getDistanceToCurrentCheckpoint(currentLocation);
+    }
+
+    public boolean hasCompletedAllCheckpoints() {
+        // Fail-safe
+        if (checkpointsModel == null) {
+            return true;
+        }
+
+        return checkpointsModel.hasCompletedAllCheckpoints();
+    }
+
     /**
      * Resets the progress of the current route, and stats, but keeps the route and checkpoints.
      */
     public void softReset() {
-        currentCheckpointIndex = 0;
         currentTrackEndpointIndex = 0;
         userStartTime = null;
         userStopTime = null;
+
+        checkpointsModel.resetCheckpoint();
     }
 
     /**
@@ -234,5 +232,6 @@ public class RouteModel extends ViewModel {
         playlist = null;
         colourizedRoute = null;
         currentLocation = null;
+        checkpointsModel = null;
     }
 }
