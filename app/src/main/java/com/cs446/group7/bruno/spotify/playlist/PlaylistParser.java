@@ -1,6 +1,5 @@
 package com.cs446.group7.bruno.spotify.playlist;
 
-import com.cs446.group7.bruno.music.BrunoTrack;
 import com.cs446.group7.bruno.music.playlist.PlaylistInfo;
 
 import org.json.JSONArray;
@@ -10,6 +9,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+// This class is capable of parsing the paging items from the Spotify API into a list of PlaylistInfo
 public class PlaylistParser implements SpotifyParser {
     public List<PlaylistInfo> parsePagingItems(JSONArray pagingItems) throws JSONException {
         List<PlaylistInfo> playlists = new ArrayList<>();

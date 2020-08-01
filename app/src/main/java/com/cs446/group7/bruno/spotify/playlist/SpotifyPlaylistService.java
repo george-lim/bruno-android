@@ -3,7 +3,6 @@ package com.cs446.group7.bruno.spotify.playlist;
 import android.content.Context;
 import android.util.Log;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.toolbox.StringRequest;
@@ -15,12 +14,10 @@ import com.cs446.group7.bruno.music.playlist.PlaylistGenerator;
 import com.cs446.group7.bruno.music.playlist.PlaylistInfo;
 import com.cs446.group7.bruno.utils.Callback;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -28,7 +25,6 @@ import java.util.Map;
 
 // Communicates with the Spotify Web API through HTTP
 // Uses Volley, an HTTP library: https://developer.android.com/training/volley
-// Could share the request queue between this and RouteGenerator - can turn it into a singleton
 public class SpotifyPlaylistService implements PlaylistGenerator {
 
     private final String playlistEndpoint = "https://api.spotify.com/v1/playlists/";
@@ -43,7 +39,7 @@ public class SpotifyPlaylistService implements PlaylistGenerator {
     // Default is 1f (i.e. first request waits 2500MS, the next request waits 5000MS, etc...)
     private static final float REQUEST_BACKOFF_MULT = DefaultRetryPolicy.DEFAULT_BACKOFF_MULT;
     // Could be expanded to use different playlists
-    private static final String DEFAULT_PLAYLIST_ID = "6QAKnenuZoowNqxRzZbeRg";
+    private static final String DEFAULT_PLAYLIST_ID = "27q9PVUOHGeSJlz6jSgt2f";
 
     // Needs context for secret variables
     public SpotifyPlaylistService(final Context context) {
@@ -218,6 +214,7 @@ public class SpotifyPlaylistService implements PlaylistGenerator {
                 callback.onSuccess(output);
             }
         } catch (JSONException e) {
+            Log.e(TAG, "parsePagingObject: JSONException: " + e.getMessage());
             callback.onFailed(e);
         }
     }

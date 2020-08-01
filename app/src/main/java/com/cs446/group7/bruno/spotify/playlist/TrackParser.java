@@ -9,6 +9,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+// This class is capable of parsing the paging items from the Spotify API into a list of BrunoTrack
 public class TrackParser implements SpotifyParser {
     public List<BrunoTrack> parsePagingItems(JSONArray pagingItems) throws JSONException {
         List<BrunoTrack> tracks = new ArrayList<>();

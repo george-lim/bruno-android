@@ -1,8 +1,9 @@
 package com.cs446.group7.bruno.music.playlist;
 
-import com.cs446.group7.bruno.MainActivity;
+import android.util.Log;
+
 import com.cs446.group7.bruno.music.BrunoPlaylist;
-import com.cs446.group7.bruno.spotify.playlist.SpotifyPlaylistService;
+import com.cs446.group7.bruno.music.BrunoTrack;
 import com.cs446.group7.bruno.utils.Callback;
 
 import java.util.ArrayList;
@@ -24,9 +25,6 @@ public class MockPlaylistGeneratorImpl implements PlaylistGenerator {
     }
 
     public void getPlaylist(final Callback<BrunoPlaylist, Exception> callback) {
-        SpotifyPlaylistService generator = MainActivity.getSpotifyService().getPlaylistService();
-        generator.getPlaylist(callback);
-        /*
         ArrayList<BrunoTrack> tracks = new ArrayList<BrunoTrack>(5);
         ArrayList<String> artists = new ArrayList<String>(2);
         artists.add("Jimin");
@@ -43,7 +41,6 @@ public class MockPlaylistGeneratorImpl implements PlaylistGenerator {
         Log.i(TAG, "getPlaylist(): Returning playlist: "
                 + playlist.name);
         callback.onSuccess(playlist);
-        */
     }
 
     public void getUserPlaylists(String accessToken, final Callback<List<PlaylistInfo>, Exception> callback) {
