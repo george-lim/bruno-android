@@ -3,6 +3,8 @@ package com.cs446.group7.bruno.spotify;
 import android.content.Context;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+
 import com.cs446.group7.bruno.R;
 import com.cs446.group7.bruno.music.BrunoPlaylist;
 import com.cs446.group7.bruno.music.BrunoTrack;
@@ -55,7 +57,7 @@ class SpotifyPlayerService implements MusicPlayer {
         }
 
         // Spotify is not installed on the device
-        if (!SpotifyAppRemote.isSpotifyInstalled(context)) {
+        if (!SpotifyService.isSpotifyInstalled(context)) {
             SpotifyPlayerException exception = new SpotifyPlayerException(new CouldNotFindSpotifyApp());
             callback.onFailed(exception);
             return;
