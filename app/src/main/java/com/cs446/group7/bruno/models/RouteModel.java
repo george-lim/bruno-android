@@ -1,6 +1,7 @@
 package com.cs446.group7.bruno.models;
 
 import android.location.Location;
+import android.util.Log;
 
 import com.cs446.group7.bruno.colourizedroute.ColourizedRoute;
 import com.cs446.group7.bruno.colourizedroute.ColourizedRouteSegment;
@@ -39,6 +40,8 @@ public class RouteModel extends ViewModel {
     private int currentTrackEndpointIndex = 0;
     private BrunoTrack currentTrack = null;
     private int steps = 0;
+    private long userStartTime = -1;
+    private long userStopTime = -1;
 
     // MARK: - Private methods
 
@@ -183,12 +186,31 @@ public class RouteModel extends ViewModel {
         steps++;
     }
 
+    public void startUserTime() {
+        userStartTime = System.currentTimeMillis();
+    }
+
+    public void stopUserTime() {
+        userStopTime = System.currentTimeMillis();
+    }
+
+    public long getUserDuration() {
+        if (userStartTime < 0 || userStopTime < 0) {
+            Log.w(getClass().getSimpleName(), "getUserDuration called but start/end time was set first");
+            return -1;
+        }
+
+        return userStopTime - userStartTime; // In Milliseconds
+    }
+
     /**
      * Resets the progress of the current route, and stats, but keeps the route and checkpoints.
      */
     public void softReset() {
         currentCheckpointIndex = 0;
         currentTrackEndpointIndex = 0;
+        userStartTime = -1;
+        userStopTime = -1;
     }
 
     /**
