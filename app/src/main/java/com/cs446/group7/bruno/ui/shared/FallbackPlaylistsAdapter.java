@@ -12,12 +12,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.cs446.group7.bruno.R;
 import com.cs446.group7.bruno.music.playlist.PlaylistInfo;
 
+import java.util.List;
+
 public class FallbackPlaylistsAdapter extends RecyclerView.Adapter<FallbackPlaylistsAdapter.FallbackPlaylistViewHolder> {
 
-    private PlaylistInfo[] playlists;
+    private List<PlaylistInfo> playlists;
     private int positionSelected = 0;
 
-    public FallbackPlaylistsAdapter(final PlaylistInfo[] playlists) {
+    public FallbackPlaylistsAdapter(final List<PlaylistInfo> playlists) {
         this.playlists = playlists;
     }
 
@@ -31,11 +33,16 @@ public class FallbackPlaylistsAdapter extends RecyclerView.Adapter<FallbackPlayl
     @Override
     public void onBindViewHolder(@NonNull FallbackPlaylistViewHolder holder, int position) {
         holder.radioButton.setChecked(position == positionSelected);
+        holder.updateUI(playlists.get(position));
     }
 
     @Override
     public int getItemCount() {
-        return playlists.length;
+        return playlists.size();
+    }
+
+    public void setPlaylistInfo(List<PlaylistInfo> playlistInfos) {
+        playlists = playlistInfos;
     }
 
     public class FallbackPlaylistViewHolder extends RecyclerView.ViewHolder {
@@ -51,6 +58,11 @@ public class FallbackPlaylistsAdapter extends RecyclerView.Adapter<FallbackPlayl
             // handle clicks
             itemView.setOnClickListener(this::handleItemSelected);
             radioButton.setOnClickListener(this::handleItemSelected);
+        }
+
+        public void updateUI(PlaylistInfo playlistInfo) {
+            playlistName.setText(playlistInfo.name);
+            playlistNumTracks.setText(playlistInfo.numTracks + " tracks");
         }
 
         private void handleItemSelected(final View view) {

@@ -1,9 +1,9 @@
 package com.cs446.group7.bruno.spotify;
 
 import android.content.Context;
-import android.os.Build;
 
 import com.cs446.group7.bruno.BuildConfig;
+import com.cs446.group7.bruno.spotify.auth.MockSpotifyAuthServiceImpl;
 import com.cs446.group7.bruno.spotify.auth.SpotifyAuthService;
 import com.cs446.group7.bruno.spotify.auth.SpotifyAuthServiceImpl;
 import com.cs446.group7.bruno.spotify.auth.SpotifyRequestDelegate;
@@ -19,12 +19,16 @@ public class SpotifyService {
 
 
     public SpotifyService(Context context, SpotifyRequestDelegate delegate) {
-        authService = new SpotifyAuthServiceImpl(context, delegate);
+        authService = BuildConfig.DEBUG
+                ? new MockSpotifyAuthServiceImpl()
+                : new SpotifyAuthServiceImpl(context, delegate);
         playerService = new SpotifyPlayerService();
         playlistService = new SpotifyPlaylistService(context);
     }
 
-    public SpotifyAuthService getAuthService() { return authService; }
+    public SpotifyAuthService getAuthService() {
+        return authService;
+    }
 
     public SpotifyPlayerService getPlayerService() {
         return playerService;

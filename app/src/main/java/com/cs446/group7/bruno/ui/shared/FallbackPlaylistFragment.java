@@ -6,14 +6,30 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.cs446.group7.bruno.R;
 import com.cs446.group7.bruno.music.playlist.PlaylistInfo;
+import com.cs446.group7.bruno.viewmodels.FallbackPlaylistViewModel;
+import com.cs446.group7.bruno.viewmodels.FallbackPlaylistViewModelDelegate;
 
-public class FallbackPlaylistFragment extends Fragment {
+import java.util.ArrayList;
+import java.util.List;
+
+public class FallbackPlaylistFragment extends Fragment implements FallbackPlaylistViewModelDelegate {
+
+    private FallbackPlaylistViewModel viewModel;
+    private FallbackPlaylistsAdapter adapter;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        viewModel = new FallbackPlaylistViewModel(this);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -23,18 +39,28 @@ public class FallbackPlaylistFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        viewModel.getUserPrivatePlaylist();
+    }
+
     private void setup(final View view) {
         // Fallback playlist list
         RecyclerView fallbackPlaylistsList = view.findViewById(R.id.recycler_view_fallback_playlist);
         fallbackPlaylistsList.setHasFixedSize(true);
         fallbackPlaylistsList.setLayoutManager(new LinearLayoutManager(getActivity()));
         // Data
-        PlaylistInfo[] playlists = new PlaylistInfo[10];
-        FallbackPlaylistsAdapter adapter = new FallbackPlaylistsAdapter(playlists);
+        adapter = new FallbackPlaylistsAdapter(new ArrayList());
         fallbackPlaylistsList.setAdapter(adapter);
     }
 
     public void saveSelectedPlaylist() {
         Log.d("borisg", "saving playlist");
+    }
+
+    public void updatePlaylistData(final List<PlaylistInfo> playlistInfos) {
+        adapter.setPlaylistInfo(playlistInfos);
+        adapter.notifyDataSetChanged();
     }
 }
