@@ -174,7 +174,7 @@ public class SpotifyPlaylistService implements PlaylistGenerator {
             callback.onFailed(new Exception(error));
         }) {
             @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
+            public Map<String, String> getHeaders() {
                 final Map<String, String> headers = new HashMap<String, String>();
                 headers.put("Content-Type", "application/json; charset=utf-8");
                 headers.put("Authorization", "Bearer " + token);
@@ -230,11 +230,11 @@ public class SpotifyPlaylistService implements PlaylistGenerator {
                         final JSONObject pagingJson = new JSONObject(response);
                         callback.onSuccess(pagingJson);
                     } catch (JSONException e) {
-                        Log.e(TAG, "getUserPlaylists: JSON parsing failure: " + e.getMessage());
+                        Log.e(TAG, "getPagingObject: JSON parsing failure: " + e.getMessage());
                         callback.onFailed(e);
                     }
                 }, error -> {
-            Log.e(TAG, "getUserPlaylists: Error with sending the request: " + error.getMessage());
+            Log.e(TAG, "getPagingObject: Error with sending the request: " + error.getMessage());
             callback.onFailed(new Exception(error));
         }) {
             @Override
