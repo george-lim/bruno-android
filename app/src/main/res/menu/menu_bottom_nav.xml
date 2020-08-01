@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/navigate_route_planning"
+        android:icon="@drawable/ic_bttm_nav_map"
+        android:title="@string/title_route_planning"/>
+
+    <item
+        android:id="@+id/navigate_fitness_records"
+        android:icon="@drawable/ic_bttm_nav_records"
+        android:title="@string/title_fitness_records"/>
+
+    <item
+        android:id="@+id/navigate_settings"
+        android:icon="@drawable/ic_bttm_nav_cog"
+        android:title="@string/title_settings" />
+</menu>

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/fragment_top_lvl">
+
+    <fragment
+        android:id="@+id/fragment_top_lvl"
+        android:name="com.cs446.group7.bruno.ui.toplevel.TopLevelFragment"
+        android:label="fragment_top_level"
+        tools:layout="@layout/fragment_top_level">
+        <action
+            android:id="@+id/action_fragmenttoplevel_to_fragmentonboarding"
+            app:destination="@id/fragment_onboarding"
+            app:popUpTo="@id/fragment_top_lvl"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_fragmenttoplevel_to_fragmentonroute"
+            app:destination="@id/fragment_on_route" />
+        <action
+            android:id="@+id/action_fragmenttoplevel_to_fragmentfitnessdetails"
+            app:destination="@id/fragment_fitness_details" />
+        <action
+            android:id="@+id/action_fragmenttoplevel_to_fragmentsettingavatar"
+            app:destination="@id/fragment_settings_avatar_wrapper" />
+        <action
+            android:id="@+id/action_fragmenttoplvl_to_fragmenttermsandconditions"
+            app:destination="@id/fragment_terms_and_conditions" />
+        <action
+            android:id="@+id/action_fragmenttoplvl_to_fragmentprivacypolicy"
+            app:destination="@id/fragment_privacy_policy" />
+        <action
+            android:id="@+id/action_fragmenttoplvl_to_fragmentcredits"
+            app:destination="@id/fragment_credits" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/fragment_onboarding"
+        android:name="com.cs446.group7.bruno.ui.onboarding.OnboardingFragment"
+        android:label="fragment_onboarding"
+        tools:layout="@layout/fragment_onboarding">
+        <action
+            android:id="@+id/action_fragmentonboarding_to_fragmenttoplevel"
+            app:destination="@id/fragment_top_lvl"
+            app:popUpTo="@id/fragment_onboarding"
+            app:popUpToInclusive="true" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/fragment_on_route"
+        android:name="com.cs446.group7.bruno.ui.onroute.OnRouteFragment"
+        android:label="fragment_on_route"
+        tools:layout="@layout/fragment_on_route" />
+
+    <fragment
+        android:id="@+id/fragment_fitness_details"
+        android:name="com.cs446.group7.bruno.ui.fitnessdetails.FitnessDetailsFragment"
+        android:label="fragment_fitness_details"
+        tools:layout="@layout/fragment_fitness_details" />
+
+    <fragment
+        android:id="@+id/fragment_terms_and_conditions"
+        android:name="com.cs446.group7.bruno.ui.settings.TermsAndConditionsFragment"
+        android:label="fragment_terms_and_conditions"
+        tools:layout="@layout/fragment_terms_and_conditions" />
+
+    <fragment
+        android:id="@+id/fragment_privacy_policy"
+        android:name="com.cs446.group7.bruno.ui.settings.PrivacyPolicyFragment"
+        android:label="fragment_privacy_policy"
+        tools:layout="@layout/fragment_privacy_policy" />
+
+    <fragment
+        android:id="@+id/fragment_credits"
+        android:name="com.cs446.group7.bruno.ui.settings.CreditsFragment"
+        android:label="fragment_credits"
+        tools:layout="@layout/fragment_credits" />
+
+    <fragment
+        android:id="@+id/fragment_settings_avatar_wrapper"
+        android:name="com.cs446.group7.bruno.ui.settings.SettingsAvatarWrapperFragment"
+        android:label="fragment_settings_avatar_wrapper"
+        tools:layout="@layout/fragment_settings_avatar_wrapper" />
+
+</navigation>

@@ -7,11 +7,15 @@
          Google Maps Android API v2, but you must specify either coarse or fine
          location permissions for the "MyLocation" functionality.
     -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
+        android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
@@ -23,22 +27,36 @@
              sign the APK for publishing.
              You can define the keys for the debug and release targets in src/debug/ and src/release/.
         -->
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="@string/google_maps_key" />
+
+        <!-- Spotify variables which correspond to INSTALL.sh - see README.md as well -->
+        <meta-data
+            android:name="spotify_client_id"
+            android:value="@string/spotify_client_id" />
+
+        <meta-data
+            android:name="spotify_client_secret"
+            android:value="@string/spotify_client_secret" />
+
+        <meta-data
+            android:name="spotify_redirect_uri"
+            android:value="@string/spotify_redirect_uri" />
+
         <activity
-            android:name=".MapsActivity"
-            android:screenOrientation="portrait"
-            android:label="@string/title_activity_maps">
+            android:name=".MainActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-        <meta-data
-            android:name="com.google.android.geo.API_KEY"
-            android:value="@string/google_maps_key" />
+        <activity
+            android:name="com.spotify.sdk.android.auth.LoginActivity"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar">
+        </activity>
+
     </application>
-
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-
 </manifest>

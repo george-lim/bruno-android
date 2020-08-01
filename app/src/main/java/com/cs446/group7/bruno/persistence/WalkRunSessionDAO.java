@@ -11,17 +11,17 @@ import java.util.List;
 @Dao
 public interface WalkRunSessionDAO {
     @Insert
-    public void insert(WalkRunSession... sessions);
+    void insert(WalkRunSession... sessions);
 
     @Update
-    public void update(WalkRunSession... sessions);
+    void update(WalkRunSession... sessions);
 
     @Delete
-    public void delete(WalkRunSession... sessions);
+    void delete(WalkRunSession... sessions);
 
     @Query("SELECT * FROM " + WalkRunSession.TABLE_NAME)
-    public List<WalkRunSession> getSessions();
+    List<WalkRunSession> getSessions();
 
     @Query("SELECT * FROM " + WalkRunSession.TABLE_NAME + " WHERE uid = :uid")
-    public WalkRunSession getSessionWithUID(int uid);
+    WalkRunSession getSessionWithUID(int uid);
 }
