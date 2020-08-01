@@ -1,4 +1,4 @@
-package com.cs446.group7.bruno.spotify;
+package com.cs446.group7.bruno.spotify.playlist;
 
 import android.content.Context;
 import android.util.Log;
@@ -20,6 +20,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -28,7 +29,7 @@ import java.util.Map;
 // Communicates with the Spotify Web API through HTTP
 // Uses Volley, an HTTP library: https://developer.android.com/training/volley
 // Could share the request queue between this and RouteGenerator - can turn it into a singleton
-class SpotifyPlaylistService implements PlaylistGenerator {
+public class SpotifyPlaylistService implements PlaylistGenerator {
 
     private final String playlistEndpoint = "https://api.spotify.com/v1/playlists/";
     private final String authorizationEndpoint = "https://accounts.spotify.com/api/token";
@@ -42,7 +43,7 @@ class SpotifyPlaylistService implements PlaylistGenerator {
     // Default is 1f (i.e. first request waits 2500MS, the next request waits 5000MS, etc...)
     private static final float REQUEST_BACKOFF_MULT = DefaultRetryPolicy.DEFAULT_BACKOFF_MULT;
     // Could be expanded to use different playlists
-    private static final String DEFAULT_PLAYLIST_ID = "27q9PVUOHGeSJlz6jSgt2f";
+    private static final String DEFAULT_PLAYLIST_ID = "6QAKnenuZoowNqxRzZbeRg";
 
     // Needs context for secret variables
     public SpotifyPlaylistService(final Context context) {
@@ -68,31 +69,40 @@ class SpotifyPlaylistService implements PlaylistGenerator {
         });
     }
 
-    // Retrieves a list of the user's playlists which they can select from for their fallback playlist
-    // NOTE: The tracks within the playlists will not be retrieved, since it is not used during playlist selection
-    public void getUserPlaylists(final String accessToken, final Callback<List<PlaylistInfo>, Exception> callback) {
+    private <T> void parsePagingObject(String token, List<T> output, JSONObject pagingObj, SpotifyParser parser,
+                                      final Callback<List<T>, Exception> callback) {
+        try {
+            List<T> pagingResult = parser.parsePagingItems(pagingObj.getJSONArray("items"));
+            output.addAll(pagingResult);
+
+            String nextUrl = pagingObj.getString("next");
+            if (nextUrl != "null") {
+                getPagingObject(token, nextUrl, new Callback<JSONObject, Exception>() {
+                            @Override
+                            public void onSuccess(JSONObject result) {
+                                parsePagingObject(token, output, result, parser, callback);
+                            }
+
+                            @Override
+                            public void onFailed(Exception result) {
+                                callback.onFailed(result);
+                            }
+                        });
+            } else {
+                callback.onSuccess(output);
+            }
+        } catch (JSONException e) {
+            callback.onFailed(e);
+        }
+    }
+
+    private void getPagingObject(final String token, final String url, final Callback<JSONObject, Exception> callback) {
         final StringRequest stringRequest = new StringRequest(Request.Method.GET,
-                "https://api.spotify.com/v1/me/playlists",
+                url,
                 response -> {
                     try {
-                        List<PlaylistInfo> userPlaylists = new ArrayList<>();
                         final JSONObject pagingJson = new JSONObject(response);
-                        final JSONArray playlists = pagingJson.getJSONArray("items");
-
-                        for ( int i = 0; i < playlists.length(); ++i) {
-                            final JSONObject currentPlaylist = playlists.getJSONObject(i);
-
-                            final String playlistId = currentPlaylist.getString("id");
-                            final String playlistName = currentPlaylist.getString("name");
-                            final String playlistDescription = currentPlaylist.getString("description");
-                            final JSONObject playlistTracks = currentPlaylist.getJSONObject("tracks");
-                            final int tracksLength = playlistTracks.getInt("total");
-
-                            userPlaylists.add(new PlaylistInfo(playlistId, playlistName,
-                                    playlistDescription, tracksLength));
-                        }
-
-                        callback.onSuccess(userPlaylists);
+                        callback.onSuccess(pagingJson);
                     } catch (JSONException e) {
                         Log.e(TAG, "getUserPlaylists: JSON parsing failure: " + e.getMessage());
                         callback.onFailed(e);
@@ -103,8 +113,60 @@ class SpotifyPlaylistService implements PlaylistGenerator {
         })
         {
             @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                final Map<String, String> headers = new HashMap<String, String>();
+            public Map<String, String> getHeaders() {
+                final Map<String, String> headers = new HashMap<>();
+                headers.put("Content-Type", "application/json; charset=utf-8");
+                headers.put("Authorization", "Bearer " + token);
+                return headers;
+            }
+        };
+
+        stringRequest.setTag(TAG);
+        stringRequest.setRetryPolicy(new DefaultRetryPolicy(
+                this.REQUEST_TIMEOUT_MS,
+                this.REQUEST_MAX_RETRIES,
+                this.REQUEST_BACKOFF_MULT
+        ));
+
+        MainActivity.getVolleyRequestQueue().add(stringRequest);
+    }
+
+
+
+    // Retrieves a list of the user's playlists which they can select from for their fallback playlist
+    // NOTE: The tracks within the playlists will not be retrieved, since it is not used during playlist selection
+    public void getUserPlaylists(final String accessToken, final Callback<List<PlaylistInfo>, Exception> callback) {
+
+        final StringRequest stringRequest = new StringRequest(Request.Method.GET,
+                "https://api.spotify.com/v1/me/playlists",
+                response -> {
+                    try {
+                        //List<PlaylistInfo> userPlaylists = new ArrayList<>();
+                        final JSONObject pagingObject = new JSONObject(response);
+                        parsePagingObject(accessToken, new ArrayList<>(), pagingObject, new PlaylistParser(),
+                                new Callback<List<PlaylistInfo>, Exception>() {
+                                    @Override
+                                    public void onSuccess(List<PlaylistInfo> result) {
+                                        callback.onSuccess(result);
+                                    }
+
+                                    @Override
+                                    public void onFailed(Exception result) {
+                                        callback.onFailed(result);
+                                    }
+                                });
+                    } catch (JSONException e) {
+                        Log.e(TAG, "getUserPlaylists: JSON parsing failure: " + e.getMessage());
+                        callback.onFailed(e);
+                    }
+                }, error -> {
+            Log.e(TAG, "getUserPlaylists: Error with sending the request: " + error.getMessage());
+            callback.onFailed(new Exception(error));
+        })
+        {
+            @Override
+            public Map<String, String> getHeaders() {
+                final Map<String, String> headers = new HashMap<>();
                 headers.put("Content-Type", "application/json; charset=utf-8");
                 headers.put("Authorization", "Bearer " + accessToken);
                 return headers;
@@ -144,12 +206,12 @@ class SpotifyPlaylistService implements PlaylistGenerator {
             }
 
             @Override
-            public byte[] getBody() throws AuthFailureError {
+            public byte[] getBody() {
                 String body = "";
                 body += "grant_type=client_credentials";
                 body += "&client_id=" + clientId;
                 body += "&client_secret=" + clientSecret;
-                final String requestBody = body.toString();
+                final String requestBody = body;
                 try {
                     return requestBody == null ? null : requestBody.getBytes("utf-8");
                 } catch (UnsupportedEncodingException e) {
@@ -173,7 +235,7 @@ class SpotifyPlaylistService implements PlaylistGenerator {
     // With the authorization token, we can use the playlist API to retrieve a JSON representation
     // of the playlist. This gets parsed in BrunoPlaylist.getPlaylistFromJSON(), and returned to
     // the callback.
-    private void getPlaylistResponse(final String authToken,
+    private void getPlaylistResponse(final String token,
                                      final String playlistId,
                                      final Callback<BrunoPlaylist, Exception> callback) {
         final StringRequest stringRequest = new StringRequest(Request.Method.GET,
@@ -181,8 +243,23 @@ class SpotifyPlaylistService implements PlaylistGenerator {
                 response -> {
                     try {
                         final JSONObject responseJson = new JSONObject(response);
-                        final BrunoPlaylist playlist = getPlaylistFromJSON(responseJson, playlistId);
-                        callback.onSuccess(playlist);
+                        final String outputPlaylistName = responseJson.getString("name");
+                        final String outputDescription = responseJson.getString("description");
+                        final JSONObject pagingObject = responseJson.getJSONObject("tracks");
+                        parsePagingObject(token, new ArrayList<>(), pagingObject, new TrackParser(),
+                                new Callback<List<BrunoTrack>, Exception>() {
+                            @Override
+                            public void onSuccess(List<BrunoTrack> result) {
+                                final BrunoPlaylist outputPlaylist = new BrunoPlaylist(playlistId, outputPlaylistName,
+                                        outputDescription, result);
+                                callback.onSuccess(outputPlaylist);
+                            }
+
+                            @Override
+                            public void onFailed(Exception result) {
+                                callback.onFailed(result);
+                            }
+                        });
                     } catch (JSONException e) {
                         Log.e(TAG, "getPlaylistResponse: JSON parsing failure: " + e.getMessage());
                         callback.onFailed(e);
@@ -196,7 +273,7 @@ class SpotifyPlaylistService implements PlaylistGenerator {
             public Map<String, String> getHeaders() throws AuthFailureError {
                 final Map<String, String> headers = new HashMap<String, String>();
                 headers.put("Content-Type", "application/json; charset=utf-8");
-                headers.put("Authorization", "Bearer " + authToken);
+                headers.put("Authorization", "Bearer " + token);
                 return headers;
             }
         };
@@ -209,43 +286,5 @@ class SpotifyPlaylistService implements PlaylistGenerator {
         ));
 
         MainActivity.getVolleyRequestQueue().add(stringRequest);
-    }
-
-    // Parses a BrunoPlaylist by reading a response JSON from Spotify's Playlist endpoint
-    private BrunoPlaylist getPlaylistFromJSON(final JSONObject responseJson,
-                                              final String playlistId) throws JSONException {
-        final String outputPlaylistName = responseJson.getString("name");
-        final String outputDescription = responseJson.getString("description");
-        final JSONObject pagingObject = responseJson.getJSONObject("tracks");
-
-        final int outputTotalTracks = pagingObject.getInt("total");
-        final JSONArray responseTracks = pagingObject.getJSONArray("items");
-        final List<BrunoTrack> outputTracks = new ArrayList<BrunoTrack>();
-
-        // Iterate through the tracks
-        for (int i = 0; i < outputTotalTracks; ++i) {
-            final JSONObject responseTrack = responseTracks.getJSONObject(i).getJSONObject("track");
-            final String outputAlbum = responseTrack.getJSONObject("album").getString("name");
-
-            final ArrayList<String> outputArtists = new ArrayList<String>();
-            final JSONArray responseArtists = responseTrack.getJSONArray("artists");
-
-            // Iterate through the artists of each track
-            for (int j = 0; j < responseArtists.length(); ++j) {
-                outputArtists.add(responseArtists.getJSONObject(j).getString("name"));
-            }
-
-            // implicit int to long conversion - harmless
-            final long outputDuration = responseTrack.getInt("duration_ms");
-            String outputTrackName = responseTrack.getString("name");
-
-            BrunoTrack currentTrack = new BrunoTrack(outputTrackName, outputAlbum,
-                    outputDuration, outputArtists);
-            outputTracks.add(currentTrack);
-        }
-
-        final BrunoPlaylist outputPlaylist = new BrunoPlaylist(playlistId, outputPlaylistName,
-                outputDescription, outputTracks);
-        return outputPlaylist;
     }
 }
