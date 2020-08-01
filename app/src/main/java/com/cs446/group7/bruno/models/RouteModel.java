@@ -175,6 +175,10 @@ public class RouteModel extends ViewModel {
         return result;
     }
 
+    public List<BrunoTrack> getAllTracks() {
+        return playlist.getTracks();
+    }
+
     public BrunoTrack getCurrentTrack() {
         return currentTrack;
     }
@@ -185,6 +189,10 @@ public class RouteModel extends ViewModel {
 
     public void incrementStep() {
         steps++;
+    }
+
+    public int getSteps() {
+        return steps;
     }
 
     public void setUserStartTime() {

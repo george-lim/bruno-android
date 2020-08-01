@@ -8,6 +8,7 @@ import android.util.Log;
 import com.cs446.group7.bruno.BuildConfig;
 import com.cs446.group7.bruno.MainActivity;
 import com.cs446.group7.bruno.R;
+import com.cs446.group7.bruno.dao.FitnessDetailsDAO;
 import com.cs446.group7.bruno.location.LocationServiceSubscriber;
 import com.cs446.group7.bruno.models.RouteModel;
 import com.cs446.group7.bruno.music.BrunoTrack;
@@ -271,14 +272,27 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
         final long userDuration = model.getUserDuration();
         final Locale locale = resources.getConfiguration().locale;
 
-        final String pattern = "MMM d • h:mm aa";
+        final FitnessDetailsDAO fitnessDetailsData = new FitnessDetailsDAO(
+                model.getMode() == RouteModel.Mode.RUN ? FitnessDetailsDAO.Mode.RUN : FitnessDetailsDAO.Mode.WALK,
+                model.getUserStartTime(),
+                model.getUserDuration(),
+                1000, // TODO: add
+                1000, // TODO: add
+                model.getSteps(),
+                model.getAllTracks(),
+                model.getColourizedRoute()
+        );
 
-        SimpleDateFormat dateFormat = new SimpleDateFormat(pattern, locale);
+        // PersistenceService.store(...)
+
+        // TODO: Remove this after persistence is done
+        SimpleDateFormat dateFormat = new SimpleDateFormat("MMM d • h:mm aa", locale);
 
         Date startTime = model.getUserStartTime();
 
         Log.i(getClass().getSimpleName(), String.format("Exercise Start: %s", dateFormat.format(startTime)));
         Log.i(getClass().getSimpleName(), String.format("Exercise duration: %s seconds", userDuration / 1000d));
+
 
         model.hardReset();
 
@@ -292,9 +306,7 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
                 resources.getString(R.string.run_completion_title),
                 resources.getString(R.string.run_completion_message),
                 resources.getString(R.string.ok_button),
-                (dialogInterface, i) -> {
-                    delegate.navigateToPreviousScreen();
-                },
+                (dialogInterface, i) -> delegate.navigateToPreviousScreen(),
                 false
         );
     }
