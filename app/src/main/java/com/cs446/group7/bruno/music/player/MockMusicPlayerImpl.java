@@ -26,7 +26,7 @@ public class MockMusicPlayerImpl implements MusicPlayer {
     public MockMusicPlayerImpl() {
         playlist = null;
         subscribers = new ArrayList<>();
-        playSongsThread = new Thread(() -> playSongs());
+        playSongsThread = null;
     }
 
     // MARK: - Private methods
@@ -35,7 +35,7 @@ public class MockMusicPlayerImpl implements MusicPlayer {
     private void playSongs() {
         try {
             // Play each song
-            for (BrunoTrack track : playlist.tracks) {
+            for (BrunoTrack track : playlist.getTracks()) {
                 // Dispatch to UI thread
                 new Handler(Looper.getMainLooper()).post(() -> {
                     // Notify all subscribers of new track
@@ -46,7 +46,7 @@ public class MockMusicPlayerImpl implements MusicPlayer {
 
                 songStartTime = System.currentTimeMillis();
                 // Sleep for song duration to simulate song playing
-                Thread.sleep(track.duration);
+                Thread.sleep(track.getDuration());
             }
         }
         // Return from the method immediately. Safely terminates thread.
@@ -84,15 +84,22 @@ public class MockMusicPlayerImpl implements MusicPlayer {
             return;
         }
 
+        playSongsThread = new Thread(() -> playSongs());
         playSongsThread.start();
     }
 
     public void stop() {
-        if (!playSongsThread.isAlive()) {
+        if (playSongsThread == null || !playSongsThread.isAlive()) {
             return;
         }
 
-        playSongsThread.interrupt();
+        try {
+            playSongsThread.interrupt();
+            playSongsThread.join();
+        } catch (InterruptedException e) {
+            // NOTE: .join requires a try-catch, even though control will never get here.
+            e.printStackTrace();
+        }
     }
 
     public void stopAndDisconnect() {

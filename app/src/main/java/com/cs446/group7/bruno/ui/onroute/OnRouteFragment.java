@@ -134,10 +134,10 @@ public class OnRouteFragment extends Fragment implements OnRouteViewModelDelegat
     }
 
     @Override
-    public void updateCurrentSongUI(final String name, final String album) {
+    public void updateCurrentSongUI(final String name, final String artists) {
         trackInfoCardView.setVisibility(View.VISIBLE);
         txtSongTitle.setText(name);
-        txtSongArtistInfo.setText(album);
+        txtSongArtistInfo.setText(artists);
     }
 
     @Override

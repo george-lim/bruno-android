@@ -99,7 +99,7 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
         BrunoTrack currentTrack = model.getCurrentTrack();
 
         if (currentTrack != null) {
-            delegate.updateCurrentSongUI(currentTrack.name, currentTrack.album);
+            delegate.updateCurrentSongUI(currentTrack.getName(), currentTrack.getArtists());
         }
 
         delegate.drawRoute(model.getColourizedRoute());
@@ -232,7 +232,7 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
         musicPlayer.getPlaybackPosition(new Callback<Long, Throwable>() {
             @Override
             public void onSuccess(Long playbackPosition) {
-                long songDurationToEndpoint = model.getCurrentTrack().duration - playbackPosition;
+                long songDurationToEndpoint = model.getCurrentTrack().getDuration() - playbackPosition;
                 // expectedDistance is the predicted distance the user will travel before the current song ends
                 double expectedDistance = model.getCurrentLocation().getSpeed() * (songDurationToEndpoint / 1000d);
                 int diff = (int)(expectedDistance - distanceToTrackEndpoint);
@@ -335,7 +335,7 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
     @Override
     public void onTrackChanged(BrunoTrack track) {
         model.setCurrentTrack(track);
-        delegate.updateCurrentSongUI(track.name, track.album);
+        delegate.updateCurrentSongUI(track.getName(), track.getArtists());
         delegate.showRouteInfoCard();
     }
 
