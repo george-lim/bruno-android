@@ -1,7 +1,9 @@
 package com.cs446.group7.bruno.spotify;
 
 import android.content.Context;
+import android.os.Build;
 
+import com.cs446.group7.bruno.BuildConfig;
 import com.cs446.group7.bruno.spotify.auth.SpotifyAuthService;
 import com.cs446.group7.bruno.spotify.auth.SpotifyAuthServiceImpl;
 import com.cs446.group7.bruno.spotify.auth.SpotifyRequestDelegate;
@@ -32,5 +34,7 @@ public class SpotifyService {
         return playlistService;
     }
 
-    public static boolean isSpotifyInstalled(Context context) { return SpotifyAppRemote.isSpotifyInstalled(context); }
+    public static boolean isSpotifyInstalled(Context context) {
+        return BuildConfig.DEBUG || SpotifyAppRemote.isSpotifyInstalled(context);
+    }
 }
