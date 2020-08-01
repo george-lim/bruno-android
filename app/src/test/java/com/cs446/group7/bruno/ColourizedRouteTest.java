@@ -81,10 +81,8 @@ public class ColourizedRouteTest {
 
     @Test
     public void routeDurationEqualToSingleTrackDuration() {
-        List<String> mockArtists = new LinkedList<>();
-        mockArtists.add("test");
         List<BrunoTrack> tracks = new LinkedList<>();
-        tracks.add(new BrunoTrack("testName", "testAlbum", 280000, mockArtists));
+        tracks.add(new BrunoTrack("testName", "testArtist", 280000));
         BrunoPlaylist playlist = new BrunoPlaylistImpl("id", "playlistName", tracks);
 
         List<ColourizedRouteSegment> answer = new ArrayList<>();
@@ -98,11 +96,9 @@ public class ColourizedRouteTest {
 
     @Test
     public void routeDurationEqualsToMultipleTrackDuration() {
-        List<String> mockArtists = new LinkedList<>();
-        mockArtists.add("test");
         List<BrunoTrack> tracks = new LinkedList<>();
-        tracks.add(new BrunoTrack("testName1", "testAlbum1", 140000, mockArtists));
-        tracks.add(new BrunoTrack("testName2", "testAlbum2", 140000, mockArtists));
+        tracks.add(new BrunoTrack("testName1", "testArtist1", 140000));
+        tracks.add(new BrunoTrack("testName2", "testArtist2", 140000));
         BrunoPlaylist playlist = new BrunoPlaylistImpl("id", "playlistName", tracks);
 
         List<RouteSegment> route1 = new LinkedList<>();
@@ -123,10 +119,8 @@ public class ColourizedRouteTest {
 
     @Test
     public void routeDurationShorterThanSingleTrackDuration() {
-        List<String> mockArtists = new LinkedList<>();
-        mockArtists.add("test");
         List<BrunoTrack> tracks = new LinkedList<>();
-        tracks.add(new BrunoTrack("testName1", "testAlbum1", 300000, mockArtists));
+        tracks.add(new BrunoTrack("testName1", "testArtist1", 300000));
         BrunoPlaylist playlist = new BrunoPlaylistImpl("id", "playlistName", tracks);
 
         List<ColourizedRouteSegment> answer = new ArrayList<>();
@@ -140,11 +134,9 @@ public class ColourizedRouteTest {
 
     @Test
     public void routeDurationShorterThanMultipleTrackDuration() {
-        List<String> mockArtists = new LinkedList<>();
-        mockArtists.add("test");
         List<BrunoTrack> tracks = new LinkedList<>();
-        tracks.add(new BrunoTrack("testName1", "testAlbum1", 200000, mockArtists));
-        tracks.add(new BrunoTrack("testName2", "testAlbum2", 300000, mockArtists));
+        tracks.add(new BrunoTrack("testName1", "testArtist1", 200000));
+        tracks.add(new BrunoTrack("testName2", "testArtist2", 300000));
         BrunoPlaylist playlist = new BrunoPlaylistImpl("id", "playlistName", tracks);
 
         List<RouteSegment> route1 = new LinkedList<>();
@@ -165,10 +157,8 @@ public class ColourizedRouteTest {
 
     @Test(expected=IndexOutOfBoundsException.class)
     public void routeDurationLongerThanPlaylistDuration() {
-        List<String> mockArtists = new LinkedList<>();
-        mockArtists.add("test");
         List<BrunoTrack> tracks = new LinkedList<>();
-        tracks.add(new BrunoTrack("testName1", "testAlbum1", 140000, mockArtists));
+        tracks.add(new BrunoTrack("testName1", "testArtist1", 140000));
         BrunoPlaylist playlist = new BrunoPlaylistImpl("id", "playlistName", tracks);
 
         ColourizedRoute _ = new ColourizedRoute(mockSegments, DEFAULT_ROUTE_COLOURS, playlist);
@@ -176,12 +166,10 @@ public class ColourizedRouteTest {
 
     @Test
     public void routeSegmentDurationLongerThanTrackDuration() {
-        List<String> mockArtists = new LinkedList<>();
-        mockArtists.add("test");
         List<BrunoTrack> tracks = new LinkedList<>();
-        tracks.add(new BrunoTrack("testName1", "testAlbum1", 70000, mockArtists));
-        tracks.add(new BrunoTrack("testName2", "testAlbum2", 60000, mockArtists));
-        tracks.add(new BrunoTrack("testName3", "testAlbum3", 200000, mockArtists));
+        tracks.add(new BrunoTrack("testName1", "testArtist1", 70000));
+        tracks.add(new BrunoTrack("testName2", "testArtist2", 60000));
+        tracks.add(new BrunoTrack("testName3", "testArtist3", 200000));
         BrunoPlaylist playlist = new BrunoPlaylistImpl("id", "playlistName", tracks);
 
         ColourizedRoute result = new ColourizedRoute(mockSegments, DEFAULT_ROUTE_COLOURS, playlist);

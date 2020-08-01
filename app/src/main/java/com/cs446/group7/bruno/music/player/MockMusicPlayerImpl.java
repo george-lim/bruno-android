@@ -46,7 +46,7 @@ public class MockMusicPlayerImpl implements MusicPlayer {
 
                 songStartTime = System.currentTimeMillis();
                 // Sleep for song duration to simulate song playing
-                Thread.sleep(track.duration);
+                Thread.sleep(track.getDuration());
             }
         }
         // Return from the method immediately. Safely terminates thread.
