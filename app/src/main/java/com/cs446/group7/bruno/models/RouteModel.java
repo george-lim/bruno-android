@@ -74,6 +74,10 @@ public class RouteModel extends ViewModel {
         playlistModel.setPlaylist(playlist);
     }
 
+    public void mergePlaylist(final BrunoPlaylist playlist, long playbackPosition) {
+        playlistModel.mergePlaylist(playlist, playbackPosition);
+    }
+
     public List<TrackSegment> getTrackSegments() {
         return playlistModel.getTrackSegments();
     }

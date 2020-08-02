@@ -142,6 +142,13 @@ public class OnRouteFragment extends Fragment implements OnRouteViewModelDelegat
     }
 
     @Override
+    public void clearMap() {
+        map.clear();
+        userMarker = null;
+        checkpointMarker = null;
+    }
+
+    @Override
     public void drawRoute(@NonNull final List<TrackSegment> trackSegments) {
         final float routeWidth = 14;
 

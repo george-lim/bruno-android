@@ -13,6 +13,7 @@ import java.util.List;
 public interface OnRouteViewModelDelegate {
     void setupUI(int userAvatarDrawableResourceId);
     void updateCurrentSongUI(final String name, final String artists);
+    void clearMap();
     void drawRoute(@NonNull final List<TrackSegment> trackSegments);
     void updateCheckpointMarker(final LatLng location, final double radius);
     void animateCamera(final LatLng location, float bearing, int cameraTilt, int cameraZoom);
