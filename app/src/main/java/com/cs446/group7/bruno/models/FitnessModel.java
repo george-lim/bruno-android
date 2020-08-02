@@ -3,7 +3,6 @@ package com.cs446.group7.bruno.models;
 import android.util.Log;
 
 import com.cs446.group7.bruno.MainActivity;
-import com.cs446.group7.bruno.colourizedroute.ColourizedRoute;
 import com.cs446.group7.bruno.dao.FitnessRecordData;
 import com.cs446.group7.bruno.music.BrunoPlaylist;
 import com.cs446.group7.bruno.music.playlist.MockPlaylistGeneratorImpl;
@@ -69,8 +68,10 @@ public class FitnessModel extends ViewModel {
                             public void onSuccess(BrunoPlaylist result) {
                                 mockPlaylist = result;
 
-                                final ColourizedRoute mockColourizedRoute = new ColourizedRoute(mockRouteSegments, colors, mockPlaylist);
-
+                                PlaylistModel model = new PlaylistModel();
+                                model.setRouteSegments(mockRouteSegments);
+                                model.setRouteColours(colors);
+                                model.setPlaylist(mockPlaylist);
 
                                 final FitnessRecordData data = new FitnessRecordData(
                                         FitnessRecordData.Mode.WALK,
@@ -80,7 +81,7 @@ public class FitnessModel extends ViewModel {
                                         2000,
                                         420,
                                         mockPlaylist.getTracks(),
-                                        mockColourizedRoute
+                                        model.getTrackSegments()
                                 );
 
                                 // dummy data
@@ -102,7 +103,7 @@ public class FitnessModel extends ViewModel {
                                         2470,
                                         690,
                                         mockPlaylist.getTracks(),
-                                        mockColourizedRoute
+                                        model.getTrackSegments()
                                 ));
 
                                 fitnessRecordDataList.add(new FitnessRecordData(
@@ -113,7 +114,7 @@ public class FitnessModel extends ViewModel {
                                         6789,
                                         1234,
                                         mockPlaylist.getTracks(),
-                                        mockColourizedRoute
+                                        model.getTrackSegments()
                                 ));
 
                                 fitnessRecordDataList.add(new FitnessRecordData(
@@ -124,7 +125,7 @@ public class FitnessModel extends ViewModel {
                                         1560,
                                         5433,
                                         mockPlaylist.getTracks(),
-                                        mockColourizedRoute
+                                        model.getTrackSegments()
                                 ));
 
                                 fitnessRecordDataList.add(new FitnessRecordData(
@@ -135,7 +136,7 @@ public class FitnessModel extends ViewModel {
                                         100,
                                         57,
                                         mockPlaylist.getTracks(),
-                                        mockColourizedRoute
+                                        model.getTrackSegments()
                                 ));
                             }
 

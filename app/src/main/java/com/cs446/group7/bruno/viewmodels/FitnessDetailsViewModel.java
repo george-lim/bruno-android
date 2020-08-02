@@ -36,6 +36,6 @@ public class FitnessDetailsViewModel {
         );
 
         delegate.setupTracklist(currentFitnessRecord.getTracks());
-        delegate.drawRoute(currentFitnessRecord.getColourizedRoute());
+        delegate.drawRoute(currentFitnessRecord.getTrackSegments());
     }
 }

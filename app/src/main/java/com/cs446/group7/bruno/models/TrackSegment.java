@@ -4,18 +4,11 @@ import com.cs446.group7.bruno.routing.RouteSegment;
 import com.cs446.group7.bruno.utils.LatLngUtils;
 import com.google.android.gms.maps.model.LatLng;
 
-<<<<<<< HEAD:app/src/main/java/com/cs446/group7/bruno/colourizedroute/ColourizedRouteSegment.java
 import java.io.Serializable;
-import java.util.LinkedList;
-import java.util.List;
-
-public class ColourizedRouteSegment implements Serializable {
-=======
 import java.util.ArrayList;
 import java.util.List;
 
-public class TrackSegment {
->>>>>>> master:app/src/main/java/com/cs446/group7/bruno/models/TrackSegment.java
+public class TrackSegment implements Serializable {
     private List<RouteSegment> routeSegments;
     private int routeColour;
 

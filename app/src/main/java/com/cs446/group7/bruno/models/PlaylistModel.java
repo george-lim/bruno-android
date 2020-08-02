@@ -10,16 +10,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-<<<<<<< HEAD:app/src/main/java/com/cs446/group7/bruno/colourizedroute/ColourizedRoute.java
-// Data structure that contains colourized song route segments
-public class ColourizedRoute implements Serializable {
-
-    // MARK: - Private members
-
-    private List<ColourizedRouteSegment> colourizedRouteSegments;
-    private transient List<LatLng> checkpoints;
-=======
-public class PlaylistModel {
+public class PlaylistModel implements Serializable {
 
     // MARK: - Private members
 
@@ -28,7 +19,6 @@ public class PlaylistModel {
     private BrunoPlaylist playlist;
     private List<TrackSegment> trackSegments;
     private BrunoTrack currentTrack;
->>>>>>> master:app/src/main/java/com/cs446/group7/bruno/models/PlaylistModel.java
 
     // MARK: - Lifecycle methods
 

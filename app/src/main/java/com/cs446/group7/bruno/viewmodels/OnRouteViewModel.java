@@ -266,8 +266,8 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
                 1000, // TODO: add
                 1000, // TODO: add
                 model.getSteps(),
-                model.getAllTracks(),
-                model.getColourizedRoute()
+                model.getPlaylist().getTracks(),
+                model.getTrackSegments()
         );
 
         try {

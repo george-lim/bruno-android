@@ -9,9 +9,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.cs446.group7.bruno.R;
-import com.cs446.group7.bruno.colourizedroute.ColourizedRoute;
-import com.cs446.group7.bruno.colourizedroute.ColourizedRouteSegment;
 import com.cs446.group7.bruno.models.FitnessModel;
+import com.cs446.group7.bruno.models.TrackSegment;
 import com.cs446.group7.bruno.music.BrunoTrack;
 import com.cs446.group7.bruno.ui.AppbarFormatter;
 import com.cs446.group7.bruno.utils.TimeUtils;
@@ -135,18 +134,18 @@ public class FitnessDetailsFragment extends Fragment implements FitnessDetailsVi
     }
 
     @Override
-    public void drawRoute(final ColourizedRoute colourizedRoute) {
+    public void drawRoute(final List<TrackSegment> trackSegments) {
         final float routeWidth = 14;
         LatLngBounds.Builder boundsBuilder = new LatLngBounds.Builder();
 
-        for (ColourizedRouteSegment colourizedRouteSegment : colourizedRoute.getSegments()) {
-            List<LatLng> colourizedRouteSegmentLocations = colourizedRouteSegment.getLocations();
+        for (TrackSegment trackSegment : trackSegments) {
+            List<LatLng> trackSegmentLocations = trackSegment.getLocations();
             map.addPolyline(new PolylineOptions()
-                    .addAll(colourizedRouteSegmentLocations)
-                    .color(colourizedRouteSegment.getRouteColour())
+                    .addAll(trackSegmentLocations)
+                    .color(trackSegment.getRouteColour())
                     .width(routeWidth));
 
-            for (LatLng location : colourizedRouteSegmentLocations) {
+            for (LatLng location : trackSegmentLocations) {
                 boundsBuilder.include(location);
             }
         }

@@ -2,7 +2,7 @@ package com.cs446.group7.bruno.dao;
 
 import android.util.Base64;
 
-import com.cs446.group7.bruno.colourizedroute.ColourizedRoute;
+import com.cs446.group7.bruno.models.TrackSegment;
 import com.cs446.group7.bruno.music.BrunoTrack;
 
 import java.io.ByteArrayInputStream;
@@ -29,7 +29,7 @@ public class FitnessRecordData implements Serializable {
             double routeDistance,
             int steps,
             final List<BrunoTrack> tracks,
-            final ColourizedRoute colourizedRoute) {
+            final List<TrackSegment> trackSegments) {
         this.mode = mode;
         this.startTime = startTime;
         this.userDuration = userDuration;
@@ -37,7 +37,7 @@ public class FitnessRecordData implements Serializable {
         this.routeDistance = routeDistance;
         this.steps = steps;
         this.tracks = tracks;
-        this.colourizedRoute = colourizedRoute;
+        this.trackSegments = trackSegments;
     }
 
     private final Mode mode;
@@ -47,7 +47,7 @@ public class FitnessRecordData implements Serializable {
     private final double routeDistance;
     private final int steps;
     private final List<BrunoTrack> tracks;
-    private final ColourizedRoute colourizedRoute;
+    private final List<TrackSegment> trackSegments;
 
     public static FitnessRecordData deserialize(final String serializedString) throws IOException, ClassNotFoundException {
         byte [] data = Base64.decode(serializedString, Base64.DEFAULT);
@@ -85,8 +85,8 @@ public class FitnessRecordData implements Serializable {
         return tracks;
     }
 
-    public ColourizedRoute getColourizedRoute() {
-        return colourizedRoute;
+    public List<TrackSegment> getTrackSegments() {
+        return trackSegments;
     }
 
     public String serialize() throws IOException {
