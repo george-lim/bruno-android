@@ -253,8 +253,6 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
         musicPlayer.setPlayerPlaylist(playlist);
 
         model.mergePlaylist(playlist, playbackPosition);
-        model.setCurrentTrack(playlist.getTracks().get(0));
-
         delegate.clearMap();
         delegate.drawRoute(model.getTrackSegments());
         refreshUI();
