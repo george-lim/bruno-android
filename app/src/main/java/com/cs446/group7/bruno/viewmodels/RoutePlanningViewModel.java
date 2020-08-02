@@ -70,8 +70,8 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
         setupUI();
 
         startLocationUpdates(result -> {
-            if (model.getColourizedRoute() == null) {
-                processColourizedRoute();
+            if (!model.hasTrackSegments()) {
+                processTrackSegments();
             }
         });
     }
@@ -101,7 +101,7 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
                 .getCapabilityService()
                 .isEveryCapabilityEnabled(REQUIRED_CAPABILITIES);
 
-        String startBtnText = model.getColourizedRoute() != null || isEveryCapabilityEnabled
+        String startBtnText = model.hasTrackSegments() || isEveryCapabilityEnabled
                 ? resources.getString(R.string.route_planning_start)
                 : resources.getString(R.string.route_planning_create_route);
 
@@ -124,8 +124,8 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
                 userAvatarDrawableResourceId
         );
 
-        if (model.getColourizedRoute() != null) {
-            onProcessColourizedRouteSuccess();
+        if (model.hasTrackSegments()) {
+            onProcessTrackSegmentsSuccess();
         }
 
         final Location currentLocation = model.getCurrentLocation();
@@ -156,8 +156,8 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
 
     private void generatePlaylist() {
         if (model.getPlaylist() != null) {
-            if (model.getColourizedRoute() != null) {
-                onProcessColourizedRouteSuccess();
+            if (model.hasTrackSegments()) {
+                onProcessTrackSegmentsSuccess();
             }
 
             return;
@@ -168,15 +168,15 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
             public void onSuccess(BrunoPlaylist playlist) {
                 model.setPlaylist(playlist);
 
-                if (model.getColourizedRoute() != null) {
-                    onProcessColourizedRouteSuccess();
+                if (model.hasTrackSegments()) {
+                    onProcessTrackSegmentsSuccess();
                 }
             }
 
             @Override
             public void onFailed(Exception e) {
                 model.setPlaylist(null);
-                onProcessColourizedRouteFailure();
+                onProcessTrackSegmentsFailure();
                 delegate.showRouteProcessingError(resources.getString(R.string.route_planning_playlist_error));
                 Log.e(TAG, e.getLocalizedMessage());
             }
@@ -202,22 +202,22 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
         );
     }
 
-    private void processColourizedRoute() {
+    private void processTrackSegments() {
         delegate.updateStartBtnEnabled(false);
 
         generatePlaylist();
         generateRoute();
     }
 
-    private void onProcessColourizedRouteSuccess() {
+    private void onProcessTrackSegmentsSuccess() {
         delegate.updateStartBtnText(resources.getString(R.string.route_planning_start));
         delegate.clearMap();
-        delegate.drawRoute(model.getColourizedRoute());
+        delegate.drawRoute(model.getTrackSegments());
         delegate.moveUserMarker(LatLngUtils.locationToLatLng(model.getCurrentLocation()));
         delegate.updateStartBtnEnabled(true);
     }
 
-    private void onProcessColourizedRouteFailure() {
+    private void onProcessTrackSegmentsFailure() {
         delegate.updateStartBtnText(resources.getString(R.string.route_planning_create_route));
         delegate.clearMap();
         delegate.moveUserMarker(LatLngUtils.locationToLatLng(model.getCurrentLocation()));
@@ -233,18 +233,18 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
         MainActivity.getCapabilityService().request(REQUIRED_CAPABILITIES, new Callback<Void, Void>() {
             @Override
             public void onSuccess(Void result) {
-                if (model.getColourizedRoute() != null) {
+                if (model.hasTrackSegments()) {
                     delegate.navigateToNextScreen();
                 }
                 else if (!hasStartedLocationUpdates) {
                     startLocationUpdates(nextResult -> {
-                        if (model.getColourizedRoute() == null) {
-                            processColourizedRoute();
+                        if (!model.hasTrackSegments()) {
+                            processTrackSegments();
                         }
                     });
                 }
                 else {
-                    processColourizedRoute();
+                    processTrackSegments();
                 }
 
                 isRequestingCapabilities = false;
@@ -265,7 +265,7 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
         model.setMode(RouteModel.Mode.WALK);
         delegate.updateSelectedModeBtn(model.getMode() == RouteModel.Mode.WALK);
 
-        processColourizedRoute();
+        processTrackSegments();
     }
 
     public void handleRunningModeClick() {
@@ -276,7 +276,7 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
         model.setMode(RouteModel.Mode.RUN);
         delegate.updateSelectedModeBtn(model.getMode() == RouteModel.Mode.WALK);
 
-        processColourizedRoute();
+        processTrackSegments();
     }
 
     public void handleDurationSelected(int durationIndex) {
@@ -286,7 +286,7 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
 
         model.setDurationIndex(durationIndex);
 
-        processColourizedRoute();
+        processTrackSegments();
     }
 
     // MARK: - LocationServiceSubscriber methods
@@ -303,15 +303,15 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
     public void onRouteReady(final List<RouteSegment> routeSegments) {
         model.setRouteSegments(routeSegments);
 
-        if (model.getColourizedRoute() != null) {
-            onProcessColourizedRouteSuccess();
+        if (model.hasTrackSegments()) {
+            onProcessTrackSegmentsSuccess();
         }
     }
 
     @Override
     public void onRouteError(final RouteGeneratorException exception) {
         model.setRouteSegments(null);
-        onProcessColourizedRouteFailure();
+        onProcessTrackSegmentsFailure();
         delegate.showRouteProcessingError(exception.getMessage());
 
         final String errorMsg = exception.getCause().getLocalizedMessage();
