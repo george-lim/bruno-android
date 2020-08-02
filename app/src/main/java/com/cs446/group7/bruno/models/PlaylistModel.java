@@ -172,6 +172,16 @@ public class PlaylistModel implements Serializable {
         return distance;
     }
 
+    public double getTotalRouteDistance() {
+        double distance = 0;
+
+        for (TrackSegment trackSegment : trackSegments) {
+            distance += trackSegment.getDistance();
+        }
+
+        return distance;
+    }
+
     public void resetCurrentTrack() {
         setCurrentTrack(null);
     }

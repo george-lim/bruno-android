@@ -9,20 +9,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TrackSegment implements Serializable {
-    private List<RouteSegment> routeSegments;
+
+    // MARK: - Private members
+
+    private List<LatLng> locations;
     private int routeColour;
 
-    public TrackSegment(final List<RouteSegment> routeSegments,
-                        int routeColour) {
-        this.routeSegments = routeSegments;
+    // MARK: - Lifecycle methods
+
+    public TrackSegment(final List<RouteSegment> routeSegments, int routeColour) {
+        locations = processLocations(routeSegments);
         this.routeColour = routeColour;
     }
 
-    public int getRouteColour() {
-        return routeColour;
-    }
+    // MARK: - Private methods
 
-    public List<LatLng> getLocations() {
+    public List<LatLng> processLocations(final List<RouteSegment> routeSegments) {
         List<LatLng> locations = new ArrayList<>(routeSegments.size());
 
         for (RouteSegment routeSegment : routeSegments) {
@@ -33,6 +35,16 @@ public class TrackSegment implements Serializable {
         locations.add(lastRouteSegment.getEndLocation());
 
         return locations;
+    }
+
+    // MARK: - Public methods
+
+    public List<LatLng> getLocations() {
+        return locations;
+    }
+
+    public int getRouteColour() {
+        return routeColour;
     }
 
     // Returns distance of the track segment
