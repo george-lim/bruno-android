@@ -4,7 +4,7 @@ import com.cs446.group7.bruno.music.playlist.PlaylistMetadata;
 
 import java.util.List;
 
-public class BrunoPlaylistImpl implements BrunoPlaylist {
+public class BrunoPlaylistImpl extends BrunoPlaylist {
     private PlaylistMetadata metadata;
     private List<BrunoTrack> tracks;
 
