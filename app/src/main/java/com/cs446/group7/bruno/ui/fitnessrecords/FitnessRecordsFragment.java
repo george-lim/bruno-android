@@ -7,7 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.cs446.group7.bruno.R;
-import com.cs446.group7.bruno.dao.FitnessSessionData;
+import com.cs446.group7.bruno.dao.FitnessRecordData;
 import com.cs446.group7.bruno.models.FitnessModel;
 import com.cs446.group7.bruno.ui.AppbarFormatter;
 import com.cs446.group7.bruno.viewmodels.FitnessRecordsViewModel;
@@ -65,7 +65,7 @@ public class FitnessRecordsFragment extends Fragment implements FitnessRecordsVi
     }
 
     @Override
-    public void setupUI(final List<FitnessSessionData> detailsDAOList, final Locale locale) {
+    public void setupUI(final List<FitnessRecordData> detailsDAOList, final Locale locale) {
         final FitnessRecordsAdapter adapter = new FitnessRecordsAdapter(detailsDAOList, locale);
         fitnessRecordsList.setAdapter(adapter);
     }

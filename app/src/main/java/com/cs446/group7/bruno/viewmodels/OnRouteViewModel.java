@@ -8,7 +8,7 @@ import android.util.Log;
 import com.cs446.group7.bruno.BuildConfig;
 import com.cs446.group7.bruno.MainActivity;
 import com.cs446.group7.bruno.R;
-import com.cs446.group7.bruno.dao.FitnessSessionData;
+import com.cs446.group7.bruno.dao.FitnessRecordData;
 import com.cs446.group7.bruno.location.LocationServiceSubscriber;
 import com.cs446.group7.bruno.models.RouteModel;
 import com.cs446.group7.bruno.music.BrunoTrack;
@@ -16,8 +16,8 @@ import com.cs446.group7.bruno.music.player.MockMusicPlayerImpl;
 import com.cs446.group7.bruno.music.player.MusicPlayer;
 import com.cs446.group7.bruno.music.player.MusicPlayerException;
 import com.cs446.group7.bruno.music.player.MusicPlayerSubscriber;
-import com.cs446.group7.bruno.persistence.WalkRunSession;
-import com.cs446.group7.bruno.persistence.WalkRunSessionDAO;
+import com.cs446.group7.bruno.persistence.FitnessRecordDAO;
+import com.cs446.group7.bruno.persistence.FitnessRecordEntry;
 import com.cs446.group7.bruno.preferencesstorage.PreferencesStorage;
 import com.cs446.group7.bruno.sensor.PedometerSubscriber;
 import com.cs446.group7.bruno.settings.SettingsService;
@@ -276,8 +276,8 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
         final long userDuration = model.getUserDuration();
         final Locale locale = resources.getConfiguration().locale;
 
-        final FitnessSessionData fitnessSessionData = new FitnessSessionData(
-                model.getMode() == RouteModel.Mode.RUN ? FitnessSessionData.Mode.RUN : FitnessSessionData.Mode.WALK,
+        final FitnessRecordData fitnessRecordData = new FitnessRecordData(
+                model.getMode() == RouteModel.Mode.RUN ? FitnessRecordData.Mode.RUN : FitnessRecordData.Mode.WALK,
                 model.getUserStartTime(),
                 model.getUserDuration(),
                 1000, // TODO: add
@@ -288,18 +288,16 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
         );
 
         try {
-            final String serializedString = fitnessSessionData.serialize();
+            final String serializedString = fitnessRecordData.serialize();
+            final FitnessRecordDAO fitnessRecordDAO = MainActivity.getPersistenceService().getFitnessRecordDAO();
+            final FitnessRecordEntry newRecord = new FitnessRecordEntry();
+            newRecord.setRecordDataString(serializedString);
+            fitnessRecordDAO.insert(newRecord);
 
-            WalkRunSessionDAO sessionDAO = MainActivity.getPersistenceService().getWalkRunSessionDAO();
+            List<FitnessRecordEntry> records = fitnessRecordDAO.getRecords();
 
-            WalkRunSession session = new WalkRunSession();
-            session.setSessionDataString(serializedString);
-            sessionDAO.insert(session);
-
-            List<WalkRunSession> sessions = sessionDAO.getSessions();
-
-            for (WalkRunSession s : sessions) {
-                Log.e(this.getClass().getSimpleName(), "Data: " + s.getSessionDataString());
+            for (FitnessRecordEntry record : records) {
+                Log.e(this.getClass().getSimpleName(), "Data: " + record.getRecordDataString());
             }
 
 

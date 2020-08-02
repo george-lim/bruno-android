@@ -4,12 +4,12 @@ import android.util.Log;
 
 import com.cs446.group7.bruno.MainActivity;
 import com.cs446.group7.bruno.colourizedroute.ColourizedRoute;
-import com.cs446.group7.bruno.dao.FitnessSessionData;
+import com.cs446.group7.bruno.dao.FitnessRecordData;
 import com.cs446.group7.bruno.music.BrunoPlaylist;
 import com.cs446.group7.bruno.music.playlist.MockPlaylistGeneratorImpl;
 import com.cs446.group7.bruno.music.playlist.PlaylistGenerator;
-import com.cs446.group7.bruno.persistence.WalkRunSession;
-import com.cs446.group7.bruno.persistence.WalkRunSessionDAO;
+import com.cs446.group7.bruno.persistence.FitnessRecordDAO;
+import com.cs446.group7.bruno.persistence.FitnessRecordEntry;
 import com.cs446.group7.bruno.routing.MockRouteGeneratorImpl;
 import com.cs446.group7.bruno.routing.OnRouteResponseCallback;
 import com.cs446.group7.bruno.routing.RouteGenerator;
@@ -27,7 +27,7 @@ import androidx.lifecycle.ViewModel;
 
 public class FitnessModel extends ViewModel {
 
-    private List<FitnessSessionData> fitnessSessionDataList;
+    private List<FitnessRecordData> fitnessRecordDataList;
     private int selectedIndex;
 
     // TODO: Remove all after when real data is given (this is Mock data)
@@ -35,20 +35,20 @@ public class FitnessModel extends ViewModel {
     private BrunoPlaylist mockPlaylist;
 
     public FitnessModel() {
-        loadWalkRunSessions();
+        loadFitnessRecords();
     }
 
-    private void loadWalkRunSessions() {
-        fitnessSessionDataList = new ArrayList<>();
+    private void loadFitnessRecords() {
+        fitnessRecordDataList = new ArrayList<>();
 
-        final WalkRunSessionDAO sessionDAO = MainActivity.getPersistenceService().getWalkRunSessionDAO();
-        final List<WalkRunSession> sessions = sessionDAO.getSessions();
+        final FitnessRecordDAO fitnessRecordDAO = MainActivity.getPersistenceService().getFitnessRecordDAO();
+        final List<FitnessRecordEntry> entries = fitnessRecordDAO.getRecords();
 
-        for (final WalkRunSession session : sessions) {
+        for (final FitnessRecordEntry entry : entries) {
             try {
-                fitnessSessionDataList.add(FitnessSessionData.deserialize(session.getSessionDataString()));
+                fitnessRecordDataList.add(FitnessRecordData.deserialize(entry.getRecordDataString()));
             } catch (IOException | ClassNotFoundException e) {
-                Log.e(getClass().getSimpleName(), "Failed to load session: " + e.toString());
+                Log.e(getClass().getSimpleName(), "Failed to load record: " + e.toString());
             }
         }
 
@@ -72,8 +72,8 @@ public class FitnessModel extends ViewModel {
                                 final ColourizedRoute mockColourizedRoute = new ColourizedRoute(mockRouteSegments, colors, mockPlaylist);
 
 
-                                final FitnessSessionData data = new FitnessSessionData(
-                                        FitnessSessionData.Mode.WALK,
+                                final FitnessRecordData data = new FitnessRecordData(
+                                        FitnessRecordData.Mode.WALK,
                                         new Date(),
                                         17 * 60 * 1000,
                                         15 * 60 * 1000,
@@ -84,18 +84,18 @@ public class FitnessModel extends ViewModel {
                                 );
 
                                 // dummy data
-                                fitnessSessionDataList.add(data);
+                                fitnessRecordDataList.add(data);
 
                                 try {
-                                    fitnessSessionDataList.add(
-                                            FitnessSessionData.deserialize(
+                                    fitnessRecordDataList.add(
+                                            FitnessRecordData.deserialize(
                                                     data.serialize()
                                             )
                                     );
                                 } catch (IOException | ClassNotFoundException ignored) {}
 
-                                fitnessSessionDataList.add(new FitnessSessionData(
-                                        FitnessSessionData.Mode.RUN,
+                                fitnessRecordDataList.add(new FitnessRecordData(
+                                        FitnessRecordData.Mode.RUN,
                                         new Date(1595790532000L),
                                         21 * 60 * 1000,
                                         25 * 60 * 1000,
@@ -105,8 +105,8 @@ public class FitnessModel extends ViewModel {
                                         mockColourizedRoute
                                 ));
 
-                                fitnessSessionDataList.add(new FitnessSessionData(
-                                        FitnessSessionData.Mode.RUN,
+                                fitnessRecordDataList.add(new FitnessRecordData(
+                                        FitnessRecordData.Mode.RUN,
                                         new Date(1592237332000L),
                                         123 * 60 * 1000,
                                         140 * 60 * 1000,
@@ -116,8 +116,8 @@ public class FitnessModel extends ViewModel {
                                         mockColourizedRoute
                                 ));
 
-                                fitnessSessionDataList.add(new FitnessSessionData(
-                                        FitnessSessionData.Mode.WALK,
+                                fitnessRecordDataList.add(new FitnessRecordData(
+                                        FitnessRecordData.Mode.WALK,
                                         new Date(1584166132000L),
                                         60 * 60 * 1000,
                                         60 * 60 * 1000,
@@ -127,8 +127,8 @@ public class FitnessModel extends ViewModel {
                                         mockColourizedRoute
                                 ));
 
-                                fitnessSessionDataList.add(new FitnessSessionData(
-                                        FitnessSessionData.Mode.RUN,
+                                fitnessRecordDataList.add(new FitnessRecordData(
+                                        FitnessRecordData.Mode.RUN,
                                         new Date(1581674932000L),
                                         34 * 1000,
                                         45 * 1000,
@@ -158,11 +158,11 @@ public class FitnessModel extends ViewModel {
         this.selectedIndex = index;
     }
 
-    public FitnessSessionData getCurrentFitnessRecord() {
-        return fitnessSessionDataList.get(selectedIndex);
+    public FitnessRecordData getCurrentFitnessRecord() {
+        return fitnessRecordDataList.get(selectedIndex);
     }
 
-    public List<FitnessSessionData> getFitnessRecords() {
-        return fitnessSessionDataList == null ? new ArrayList<>() : fitnessSessionDataList;
+    public List<FitnessRecordData> getFitnessRecords() {
+        return fitnessRecordDataList == null ? new ArrayList<>() : fitnessRecordDataList;
     }
 }

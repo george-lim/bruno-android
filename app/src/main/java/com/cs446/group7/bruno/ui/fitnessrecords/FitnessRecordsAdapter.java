@@ -9,7 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.cs446.group7.bruno.R;
-import com.cs446.group7.bruno.dao.FitnessSessionData;
+import com.cs446.group7.bruno.dao.FitnessRecordData;
 import com.cs446.group7.bruno.settings.SettingsService;
 import com.cs446.group7.bruno.utils.TimeUtils;
 
@@ -22,10 +22,10 @@ import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class FitnessRecordsAdapter extends RecyclerView.Adapter<FitnessRecordsAdapter.FitnessRecordViewHolder> {
-    private List<FitnessSessionData> data;
+    private List<FitnessRecordData> data;
     private Locale locale;
 
-    public FitnessRecordsAdapter(final List<FitnessSessionData> data, final Locale locale) {
+    public FitnessRecordsAdapter(final List<FitnessRecordData> data, final Locale locale) {
         this.data = data;
         this.locale = locale;
     }
@@ -46,7 +46,7 @@ public class FitnessRecordsAdapter extends RecyclerView.Adapter<FitnessRecordsAd
             navController.navigate(R.id.action_fragmenttoplevel_to_fragmentfitnessdetails, bundle);
         });
 
-        final FitnessSessionData fitnessData = data.get(position);
+        final FitnessRecordData fitnessData = data.get(position);
 
         if (fitnessData.isRun()) {
             Drawable runningIcon = holder.itemView.getResources().getDrawable(R.drawable.ic_running, null);

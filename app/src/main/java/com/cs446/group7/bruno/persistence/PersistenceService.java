@@ -6,16 +6,16 @@ import androidx.room.Room;
 
 public class PersistenceService {
     private AppDatabase database;
-    private WalkRunSessionDAO sessionDAO;
+    private FitnessRecordDAO recordDAO;
 
     public PersistenceService(final Context context) {
-        database = Room.databaseBuilder(context, AppDatabase.class, WalkRunSession.TABLE_NAME)
+        database = Room.databaseBuilder(context, AppDatabase.class, FitnessRecordEntry.TABLE_NAME)
                 .allowMainThreadQueries()
                 .build();
-        sessionDAO = database.getSessionDAO();
+        recordDAO = database.getRecordDAO();
     }
 
-    public WalkRunSessionDAO getWalkRunSessionDAO() {
-        return sessionDAO;
+    public FitnessRecordDAO getFitnessRecordDAO() {
+        return recordDAO;
     }
 }

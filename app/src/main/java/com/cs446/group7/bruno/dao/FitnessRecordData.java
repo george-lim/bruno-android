@@ -17,11 +17,11 @@ import java.util.List;
 /**
  * The class that holds the data for a run.
  */
-public class FitnessSessionData implements Serializable {
+public class FitnessRecordData implements Serializable {
 
     public enum Mode { WALK, RUN }
 
-    public FitnessSessionData(
+    public FitnessRecordData(
             final Mode mode,
             final Date startTime,
             long userDuration,
@@ -49,12 +49,12 @@ public class FitnessSessionData implements Serializable {
     private final List<BrunoTrack> tracks;
     private final ColourizedRoute colourizedRoute;
 
-    public static FitnessSessionData deserialize(final String serializedString) throws IOException, ClassNotFoundException {
+    public static FitnessRecordData deserialize(final String serializedString) throws IOException, ClassNotFoundException {
         byte [] data = Base64.decode(serializedString, Base64.DEFAULT);
         ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(data));
         Object result = ois.readObject();
         ois.close();
-        return (FitnessSessionData) result;
+        return (FitnessRecordData) result;
     }
 
     public boolean isWalk() { return mode == Mode.WALK; }
