@@ -22,6 +22,7 @@ import com.cs446.group7.bruno.capability.hardware.HardwareRequestDelegate;
 import com.cs446.group7.bruno.capability.permission.PermissionRequest;
 import com.cs446.group7.bruno.capability.permission.PermissionRequestDelegate;
 import com.cs446.group7.bruno.location.LocationService;
+import com.cs446.group7.bruno.persistence.PersistenceService;
 import com.cs446.group7.bruno.preferencesstorage.PreferencesStorage;
 import com.cs446.group7.bruno.sensor.SensorService;
 import com.cs446.group7.bruno.spotify.auth.SpotifyRequest;
@@ -46,6 +47,7 @@ public class MainActivity extends AppCompatActivity
     private static SpotifyService spotifyService;
     private static SensorService sensorService;
     private static PreferencesStorage preferencesStorage;
+    private static PersistenceService persistenceService;
 
     private static RequestQueue volleyRequestQueue;
 
@@ -73,6 +75,7 @@ public class MainActivity extends AppCompatActivity
         spotifyService = new SpotifyService(getApplicationContext(), this);
         sensorService = new SensorService(getApplicationContext());
         preferencesStorage = new PreferencesStorage(getApplicationContext());
+        persistenceService = new PersistenceService(getApplicationContext());
         volleyRequestQueue = Volley.newRequestQueue(getApplicationContext());
     }
 
@@ -127,6 +130,10 @@ public class MainActivity extends AppCompatActivity
     }
 
     public static PreferencesStorage getPreferencesStorage() { return preferencesStorage; }
+
+    public static PersistenceService getPersistenceService() {
+        return persistenceService;
+    }
 
     public static RequestQueue getVolleyRequestQueue() {
         return volleyRequestQueue;
