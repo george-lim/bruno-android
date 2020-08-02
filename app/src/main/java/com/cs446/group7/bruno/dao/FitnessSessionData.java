@@ -49,7 +49,7 @@ public class FitnessSessionData implements Serializable {
     private final List<BrunoTrack> tracks;
     private final ColourizedRoute colourizedRoute;
 
-    public FitnessSessionData deserialize(final String serializedString) throws IOException, ClassNotFoundException {
+    public static FitnessSessionData deserialize(final String serializedString) throws IOException, ClassNotFoundException {
         byte [] data = Base64.decode(serializedString, Base64.DEFAULT);
         ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(data));
         Object result = ois.readObject();

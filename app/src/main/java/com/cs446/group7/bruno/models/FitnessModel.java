@@ -1,10 +1,15 @@
 package com.cs446.group7.bruno.models;
 
+import android.util.Log;
+
+import com.cs446.group7.bruno.MainActivity;
 import com.cs446.group7.bruno.colourizedroute.ColourizedRoute;
 import com.cs446.group7.bruno.dao.FitnessSessionData;
 import com.cs446.group7.bruno.music.BrunoPlaylist;
 import com.cs446.group7.bruno.music.playlist.MockPlaylistGeneratorImpl;
 import com.cs446.group7.bruno.music.playlist.PlaylistGenerator;
+import com.cs446.group7.bruno.persistence.WalkRunSession;
+import com.cs446.group7.bruno.persistence.WalkRunSessionDAO;
 import com.cs446.group7.bruno.routing.MockRouteGeneratorImpl;
 import com.cs446.group7.bruno.routing.OnRouteResponseCallback;
 import com.cs446.group7.bruno.routing.RouteGenerator;
@@ -13,6 +18,7 @@ import com.cs446.group7.bruno.routing.RouteSegment;
 import com.cs446.group7.bruno.utils.Callback;
 import com.google.android.gms.maps.model.LatLng;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -33,14 +39,24 @@ public class FitnessModel extends ViewModel {
     }
 
     private void loadWalkRunSessions() {
-        // TODO: Replace with persistence service query
-        fitnessSessionDataList = new ArrayList<>(); // PersistenceService.get(...)
+        fitnessSessionDataList = new ArrayList<>();
 
+        final WalkRunSessionDAO sessionDAO = MainActivity.getPersistenceService().getWalkRunSessionDAO();
+        final List<WalkRunSession> sessions = sessionDAO.getSessions();
+
+        for (final WalkRunSession session : sessions) {
+            try {
+                fitnessSessionDataList.add(FitnessSessionData.deserialize(session.getMyData()));
+            } catch (IOException | ClassNotFoundException e) {
+                Log.e(getClass().getSimpleName(), "Failed to load session: " + e.toString());
+            }
+        }
+
+        // TODO: get rid of this disgusting mock
         // I would expect that at this point, the playlist and colorized route can be fetched from model
         RouteGenerator routeGenerator = new MockRouteGeneratorImpl(null, null);
         PlaylistGenerator playlistGenerator = new MockPlaylistGeneratorImpl();
 
-        // TODO: get rid of this disgusting mock
         final int[] colors =  { -537719, -6234730, -7879170,  -6188606, -1003060, -938359, -5719896, -5977857 };
 
         routeGenerator.generateRoute(
@@ -55,8 +71,8 @@ public class FitnessModel extends ViewModel {
 
                                 final ColourizedRoute mockColourizedRoute = new ColourizedRoute(mockRouteSegments, colors, mockPlaylist);
 
-                                // dummy data
-                                fitnessSessionDataList.add(new FitnessSessionData(
+
+                                final FitnessSessionData data = new FitnessSessionData(
                                         FitnessSessionData.Mode.WALK,
                                         new Date(),
                                         17 * 60 * 1000,
@@ -65,7 +81,18 @@ public class FitnessModel extends ViewModel {
                                         420,
                                         mockPlaylist.getTracks(),
                                         mockColourizedRoute
-                                ));
+                                );
+
+                                // dummy data
+                                fitnessSessionDataList.add(data);
+
+                                try {
+                                    fitnessSessionDataList.add(
+                                            FitnessSessionData.deserialize(
+                                                    data.serialize()
+                                            )
+                                    );
+                                } catch (IOException | ClassNotFoundException ignored) {}
 
                                 fitnessSessionDataList.add(new FitnessSessionData(
                                         FitnessSessionData.Mode.RUN,

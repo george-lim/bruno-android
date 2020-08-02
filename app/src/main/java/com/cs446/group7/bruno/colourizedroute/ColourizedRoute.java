@@ -5,17 +5,18 @@ import com.cs446.group7.bruno.music.BrunoTrack;
 import com.cs446.group7.bruno.routing.RouteSegment;
 import com.google.android.gms.maps.model.LatLng;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
 // Data structure that contains colourized song route segments
-public class ColourizedRoute {
+public class ColourizedRoute implements Serializable {
 
     // MARK: - Private members
 
     private List<ColourizedRouteSegment> colourizedRouteSegments;
-    private List<LatLng> checkpoints;
+    private transient List<LatLng> checkpoints;
 
     // MARK: - Lifecycle methods
 

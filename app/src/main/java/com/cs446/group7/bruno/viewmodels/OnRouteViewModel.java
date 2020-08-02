@@ -16,6 +16,8 @@ import com.cs446.group7.bruno.music.player.MockMusicPlayerImpl;
 import com.cs446.group7.bruno.music.player.MusicPlayer;
 import com.cs446.group7.bruno.music.player.MusicPlayerException;
 import com.cs446.group7.bruno.music.player.MusicPlayerSubscriber;
+import com.cs446.group7.bruno.persistence.WalkRunSession;
+import com.cs446.group7.bruno.persistence.WalkRunSessionDAO;
 import com.cs446.group7.bruno.preferencesstorage.PreferencesStorage;
 import com.cs446.group7.bruno.sensor.PedometerSubscriber;
 import com.cs446.group7.bruno.settings.SettingsService;
@@ -24,8 +26,10 @@ import com.cs446.group7.bruno.utils.LatLngUtils;
 import com.cs446.group7.bruno.utils.NoFailCallback;
 import com.google.android.gms.maps.model.LatLng;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 import androidx.annotation.NonNull;
@@ -282,6 +286,26 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
                 model.getAllTracks(),
                 model.getColourizedRoute()
         );
+
+        try {
+            final String serializedString = fitnessSessionData.serialize();
+
+            WalkRunSessionDAO sessionDAO = MainActivity.getPersistenceService().getWalkRunSessionDAO();
+
+            WalkRunSession session = new WalkRunSession();
+            session.setMyData(serializedString);
+            sessionDAO.insert(session);
+
+            List<WalkRunSession> sessions = sessionDAO.getSessions();
+
+            for (WalkRunSession s : sessions) {
+                Log.e(this.getClass().getSimpleName(), "Data: " + s.getMyData());
+            }
+
+
+        } catch (IOException e) {
+            Log.e(getClass().getSimpleName(), e.toString());
+        }
 
         // PersistenceService.store(...)
 

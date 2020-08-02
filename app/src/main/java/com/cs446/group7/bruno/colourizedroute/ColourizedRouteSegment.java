@@ -3,10 +3,11 @@ package com.cs446.group7.bruno.colourizedroute;
 import com.cs446.group7.bruno.routing.RouteSegment;
 import com.google.android.gms.maps.model.LatLng;
 
+import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 
-public class ColourizedRouteSegment {
+public class ColourizedRouteSegment implements Serializable {
     private List<RouteSegment> routeSegments;
     private int routeColour;
 
