@@ -7,7 +7,7 @@ import com.cs446.group7.bruno.utils.Callback;
 import java.util.List;
 
 public interface SpotifyPlaylistAPI {
-    void getAuthorizationToken(final Callback<String, Exception> callback);
+    void getPublicAuthorizationToken(final Callback<String, Exception> callback);
     void getPlaylist(final String playlistId,
                      final String accessToken,
                      final Callback<BrunoPlaylist, Exception> callback);

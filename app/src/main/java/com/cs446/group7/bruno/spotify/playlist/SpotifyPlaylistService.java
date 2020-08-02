@@ -58,7 +58,7 @@ public class SpotifyPlaylistService implements PlaylistGenerator, SpotifyPlaylis
     // All failures are sent back through callback.onFailed
     // Needs internet access to succeed, since it uses API calls
     public void discoverPlaylist(final Callback<BrunoPlaylist, Exception> callback) {
-        getAuthorizationToken(new Callback<String, Exception>() {
+        getPublicAuthorizationToken(new Callback<String, Exception>() {
             @Override
             public void onSuccess(String authToken) {
                 getPlaylist(authToken, DEFAULT_PLAYLIST_ID, callback);
@@ -101,7 +101,7 @@ public class SpotifyPlaylistService implements PlaylistGenerator, SpotifyPlaylis
 
     // In order to use the Spotify API, an authorization token needs to be retrieved from Spotify
     // Using the client id and client secret, we can retrieve this token first before using the playlist endpoint
-    public void getAuthorizationToken(final Callback<String, Exception> callback) {
+    public void getPublicAuthorizationToken(final Callback<String, Exception> callback) {
         final StringRequest authRequest = new StringRequest(Request.Method.POST, authorizationEndpoint,
                 response -> {
                     try {
