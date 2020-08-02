@@ -1,5 +1,6 @@
 package com.cs446.group7.bruno.spotify.playlist;
 
+import com.android.volley.DefaultRetryPolicy;
 import com.cs446.group7.bruno.music.playlist.PlaylistMetadata;
 
 import org.json.JSONArray;
@@ -9,9 +10,14 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-// This class is capable of parsing the paging items from the Spotify API into a list of PlaylistInfo
-public class PlaylistPagingObjectParser implements SpotifyParser {
-    public List<PlaylistMetadata> parsePagingItems(JSONArray pagingItems) throws JSONException {
+// This class is capable of parsing the paging items from the Spotify API into a list of PlaylistMetadata
+public class PlaylistPagingObjectParser extends SpotifyPagingObjectParser<PlaylistMetadata> {
+
+    public PlaylistPagingObjectParser(final String token, final DefaultRetryPolicy retryPolicy) {
+        super(token, retryPolicy);
+    }
+
+    protected List<PlaylistMetadata> parsePagingItems(JSONArray pagingItems) throws JSONException {
         List<PlaylistMetadata> playlists = new ArrayList<>();
 
         final int itemCount = pagingItems.length();
