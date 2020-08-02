@@ -3,7 +3,7 @@ package com.cs446.group7.bruno.music;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MergedBrunoPlaylistImpl implements BrunoPlaylist {
+public class MergedBrunoPlaylistImpl extends BrunoPlaylist {
     private BrunoPlaylist primaryPlaylist;
     private BrunoPlaylist secondaryPlaylist;
     private BrunoTrack mergeTrack;
