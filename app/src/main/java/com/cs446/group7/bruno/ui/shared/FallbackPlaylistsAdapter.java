@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.cs446.group7.bruno.R;
 import com.cs446.group7.bruno.music.playlist.PlaylistMetadata;
+import com.cs446.group7.bruno.viewmodels.FallbackPlaylistViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,10 +19,12 @@ import java.util.List;
 public class FallbackPlaylistsAdapter extends RecyclerView.Adapter<FallbackPlaylistsAdapter.FallbackPlaylistViewHolder> {
 
     private List<PlaylistMetadata> playlists;
+    private FallbackPlaylistViewModel viewModel;
     private int positionSelected = 0;
 
-    public FallbackPlaylistsAdapter() {
+    public FallbackPlaylistsAdapter(final FallbackPlaylistViewModel viewModel) {
         this.playlists = new ArrayList<>();
+        this.viewModel = viewModel;
     }
 
     @NonNull
@@ -33,6 +36,9 @@ public class FallbackPlaylistsAdapter extends RecyclerView.Adapter<FallbackPlayl
 
     @Override
     public void onBindViewHolder(@NonNull FallbackPlaylistViewHolder holder, int position) {
+        if (position == positionSelected) {
+            viewModel.setCurrentPlaylistAsFallBack(playlists.get(position));
+        }
         holder.radioButton.setChecked(position == positionSelected);
         holder.updateUI(playlists.get(position));
     }

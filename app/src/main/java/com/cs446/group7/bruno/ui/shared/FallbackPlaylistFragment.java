@@ -1,5 +1,8 @@
 package com.cs446.group7.bruno.ui.shared;
 
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -27,12 +30,13 @@ public class FallbackPlaylistFragment extends Fragment implements FallbackPlayli
     private LinearLayout playlistSelectionView;
     private LinearLayout noPlaylistsView;
     private LinearLayout spotifyErrorView;
+    private ProgressDialog progressDialog;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         FallbackPlaylistAction wrapperFragment = (FallbackPlaylistAction) this.getParentFragment();
-        viewModel = new FallbackPlaylistViewModel(getActivity().getApplicationContext(), wrapperFragment,this);
+        viewModel = new FallbackPlaylistViewModel(getActivity().getApplicationContext(), wrapperFragment, this);
     }
 
     @Override
@@ -61,7 +65,7 @@ public class FallbackPlaylistFragment extends Fragment implements FallbackPlayli
         fallbackPlaylistsList.setHasFixedSize(true);
         fallbackPlaylistsList.setLayoutManager(new LinearLayoutManager(getActivity()));
         // Data
-        adapter = new FallbackPlaylistsAdapter();
+        adapter = new FallbackPlaylistsAdapter(viewModel);
         fallbackPlaylistsList.setAdapter(adapter);
     }
 
@@ -99,5 +103,37 @@ public class FallbackPlaylistFragment extends Fragment implements FallbackPlayli
     @Override
     public void quitApp() {
         requireActivity().finish();
+    }
+
+    @Override
+    public void showProgressDialog() {
+        progressDialog = new ProgressDialog(getContext());
+        progressDialog.setMessage(getResources().getString(R.string.loading_diaglog_text));
+        progressDialog.setIndeterminate(false);
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+    }
+
+    @Override
+    public void dismissProgressDialog() {
+        if (progressDialog == null) {
+            return;
+        }
+        progressDialog.dismiss();
+    }
+
+    @Override
+    public void showAlertDialog(final String title,
+                                final String message,
+                                final String positiveButtonText,
+                                final DialogInterface.OnClickListener positiveButtonClickListener,
+                                boolean isCancelable) {
+        new AlertDialog.Builder(getContext())
+                .setTitle(title)
+                .setMessage(message)
+                .setPositiveButton(positiveButtonText, positiveButtonClickListener)
+                .setCancelable(isCancelable)
+                .create()
+                .show();
     }
 }

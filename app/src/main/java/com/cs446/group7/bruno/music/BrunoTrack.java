@@ -1,7 +1,9 @@
 package com.cs446.group7.bruno.music;
 
+import java.io.Serializable;
+
 // Simple container class containing information about a track
-public class BrunoTrack {
+public class BrunoTrack implements Serializable {
     private String name;
     private String artists;
     private long duration; // Milliseconds

@@ -10,6 +10,8 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
 public class FileStorage {
+    public static String FALLBACK_PLAYLIST = "fallback_playlist";
+
     public static void writeSerializableToFile(Context context, String filename, Serializable obj) throws IOException {
         FileOutputStream fos = context.openFileOutput(filename, Context.MODE_PRIVATE);
         ObjectOutputStream oos = new ObjectOutputStream(fos);

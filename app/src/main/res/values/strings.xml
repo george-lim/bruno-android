@@ -16,6 +16,7 @@
     <string name="select_button">Select</string>
     <string name="install_button">Install</string>
     <string name="quit_button">Quit</string>
+    <string name="loading_diaglog_text">Loading... Please wait</string>
     <string name="onboarding_welcome">Welcome to Bruno!</string>
     <string name="onboarding_welcome_text">Bruno is a fitness app that augments your walk or run routines with randomly generated routes and music discovery.</string>
     <string name="onboarding_record">Learn More About Yourself</string>

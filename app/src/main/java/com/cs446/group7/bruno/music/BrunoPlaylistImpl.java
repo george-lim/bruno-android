@@ -2,9 +2,10 @@ package com.cs446.group7.bruno.music;
 
 import com.cs446.group7.bruno.music.playlist.PlaylistMetadata;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class BrunoPlaylistImpl implements BrunoPlaylist {
+public class BrunoPlaylistImpl implements BrunoPlaylist, Serializable {
     private PlaylistMetadata metadata;
     private List<BrunoTrack> tracks;
 

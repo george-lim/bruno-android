@@ -7,10 +7,13 @@ import com.cs446.group7.bruno.BuildConfig;
 import com.cs446.group7.bruno.MainActivity;
 import com.cs446.group7.bruno.R;
 import com.cs446.group7.bruno.capability.Capability;
+import com.cs446.group7.bruno.music.BrunoPlaylist;
+import com.cs446.group7.bruno.music.BrunoPlaylistImpl;
 import com.cs446.group7.bruno.music.playlist.PlaylistMetadata;
 import com.cs446.group7.bruno.spotify.SpotifyService;
 import com.cs446.group7.bruno.spotify.playlist.MockSpotifyPlaylistAPIImpl;
 import com.cs446.group7.bruno.spotify.playlist.SpotifyPlaylistAPI;
+import com.cs446.group7.bruno.storage.FileStorage;
 import com.cs446.group7.bruno.ui.shared.FallbackPlaylistAction;
 import com.cs446.group7.bruno.utils.Callback;
 import com.cs446.group7.bruno.utils.ClosureQueue;
@@ -24,6 +27,7 @@ public class FallbackPlaylistViewModel {
     private FallbackPlaylistViewModelDelegate delegate;
     private String token;
     private boolean ongoingRequest;
+    private PlaylistMetadata fallbackPlaylist;
     public final String TAG = this.getClass().getSimpleName();
 
     public FallbackPlaylistViewModel(final Context context,
@@ -32,6 +36,11 @@ public class FallbackPlaylistViewModel {
         this.context = context;
         this.wrapperDelegate = wrapperDelegate;
         this.delegate = delegate;
+    }
+
+    public void setCurrentPlaylistAsFallBack(PlaylistMetadata playlist) {
+        fallbackPlaylist = playlist;
+        Log.d("borisg", fallbackPlaylist.getName() + " " + fallbackPlaylist.getTrackCount());
     }
 
     public void getUserPlaylistLibrary() {
@@ -63,6 +72,7 @@ public class FallbackPlaylistViewModel {
                 spotifyService.getAuthService().requestUserAuth(new Callback<String, Void>() {
                     @Override
                     public void onSuccess(String resultToken) {
+                        Log.d("borisg", resultToken);
                         token = resultToken;
                         callback.onSuccess(null);
                     }
@@ -77,6 +87,7 @@ public class FallbackPlaylistViewModel {
             });
         }
         queue.add((result, callback) -> {
+
             spotifyService.getAuthService().checkIfUserIsPremium(token, new Callback<Boolean, Exception>() {
                 @Override
                 public void onSuccess(Boolean isPremium) {
@@ -139,7 +150,7 @@ public class FallbackPlaylistViewModel {
     private void showSelectPlaylist(List<PlaylistMetadata> playlists) {
         wrapperDelegate.updatePrimaryAction(
                 FallbackPlaylistAction.ActionType.SELECT_PLAYLIST,
-                view -> wrapperDelegate.onSelectPlaylistPressed());
+                view -> saveFallbackPlaylist());
         delegate.showPlaylistSelectionView(playlists);
     }
 
@@ -165,7 +176,44 @@ public class FallbackPlaylistViewModel {
         delegate.showSpotifyErrorView(errorText);
     }
 
-    private void getPlaylistDetails(PlaylistMetadata playlist) {
+    private void saveFallbackPlaylist() {
+        if (fallbackPlaylist == null) {
+            Log.e(TAG, "fallback playlist should never be null here");
+            return;
+        }
 
+        delegate.showProgressDialog();
+        getSpotifyPlaylistAPI().getPlaylist(token, fallbackPlaylist.getId(), new Callback<BrunoPlaylist, Exception>() {
+            @Override
+            public void onSuccess(BrunoPlaylist result) {
+                BrunoPlaylistImpl playlist = new BrunoPlaylistImpl(result.getId(), result.getName(), result.getTracks());
+                try {
+                    Log.d(TAG, playlist.getName());
+                    FileStorage.writeSerializableToFile(context, FileStorage.FALLBACK_PLAYLIST, playlist);
+                    wrapperDelegate.onSelectPlaylistPressed();
+                } catch (Exception e) {
+                    Log.d(TAG, e.getCause() + ": " + e.getMessage());
+                    showErrorDialog();
+                }
+                delegate.dismissProgressDialog();
+            }
+
+            @Override
+            public void onFailed(Exception e) {
+                Log.d(TAG, e.getCause() + ": " + e.getMessage());
+                delegate.dismissProgressDialog();
+                showErrorDialog();
+            }
+        });
+    }
+
+    private void showErrorDialog() {
+        delegate.showAlertDialog(
+                null,
+                context.getString(R.string.onboarding_fallback_playlist_fail),
+                context.getString(R.string.ok_button),
+                ((dialogInterface, i) -> dialogInterface.dismiss()),
+                false
+        );
     }
 }
