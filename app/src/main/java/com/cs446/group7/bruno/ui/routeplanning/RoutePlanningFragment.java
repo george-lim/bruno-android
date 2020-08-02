@@ -21,9 +21,8 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
 import com.cs446.group7.bruno.R;
-import com.cs446.group7.bruno.colourizedroute.ColourizedRoute;
-import com.cs446.group7.bruno.colourizedroute.ColourizedRouteSegment;
 import com.cs446.group7.bruno.models.RouteModel;
+import com.cs446.group7.bruno.models.TrackSegment;
 import com.cs446.group7.bruno.utils.BitmapUtils;
 import com.cs446.group7.bruno.viewmodels.RoutePlanningViewModel;
 import com.cs446.group7.bruno.viewmodels.RoutePlanningViewModelDelegate;
@@ -185,18 +184,18 @@ public class RoutePlanningFragment extends Fragment implements RoutePlanningView
         userMarker = null;
     }
 
-    public void drawRoute(@NonNull final ColourizedRoute colourizedRoute) {
+    public void drawRoute(@NonNull final List<TrackSegment> trackSegments) {
         final float routeWidth = 14;
         LatLngBounds.Builder boundsBuilder = new LatLngBounds.Builder();
 
-        for (ColourizedRouteSegment colourizedRouteSegment : colourizedRoute.getSegments()) {
-            List<LatLng> colourizedRouteSegmentLocations = colourizedRouteSegment.getLocations();
+        for (TrackSegment trackSegment : trackSegments) {
+            List<LatLng> trackSegmentLocations = trackSegment.getLocations();
             map.addPolyline(new PolylineOptions()
-                    .addAll(colourizedRouteSegmentLocations)
-                    .color(colourizedRouteSegment.getRouteColour())
+                    .addAll(trackSegmentLocations)
+                    .color(trackSegment.getRouteColour())
                     .width(routeWidth));
 
-            for (LatLng location : colourizedRouteSegmentLocations) {
+            for (LatLng location : trackSegmentLocations) {
                 boundsBuilder.include(location);
             }
         }

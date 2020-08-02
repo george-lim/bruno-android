@@ -1,4 +1,4 @@
-package com.cs446.group7.bruno.colourizedroute;
+package com.cs446.group7.bruno.models;
 
 import com.cs446.group7.bruno.music.BrunoPlaylist;
 import com.cs446.group7.bruno.music.BrunoTrack;
@@ -9,33 +9,34 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-// Data structure that contains colourized song route segments
-public class ColourizedRoute {
+public class PlaylistModel {
 
     // MARK: - Private members
 
-    private List<ColourizedRouteSegment> colourizedRouteSegments;
-    private List<LatLng> checkpoints;
+    private List<RouteSegment> routeSegments;
+    private int[] routeColours;
+    private BrunoPlaylist playlist;
+    private List<TrackSegment> trackSegments;
+    private BrunoTrack currentTrack;
 
     // MARK: - Lifecycle methods
 
-    public ColourizedRoute(final List<RouteSegment> routeSegments,
-                           final int[] routeColours,
-                           final BrunoPlaylist playlist) {
-        colourizedRouteSegments = processSegments(routeSegments, routeColours, playlist);
-        checkpoints = processCheckpoints(colourizedRouteSegments);
+    public PlaylistModel() {
+        reset();
     }
 
     // MARK: - Private methods
 
     /**
-     * Re-segment route segments into colourized song segments
+     * Group route segments into track segments
      * NOTE: Total playlist duration is expected to be longer than the total route segment duration.
      */
-    private List<ColourizedRouteSegment> processSegments(final List<RouteSegment> routeSegments,
-                                                         final int[] routeColours,
-                                                         final BrunoPlaylist playlist) {
-        List<ColourizedRouteSegment> result = new ArrayList<>();
+    private List<TrackSegment> processSegments() {
+        if (routeSegments == null || routeColours == null || playlist == null) {
+            return null;
+        }
+
+        List<TrackSegment> result = new ArrayList<>();
         int routeColourIndex = 0;
         int currTrackInd = 0;
         // Duration is measured in milliseconds
@@ -75,13 +76,13 @@ public class ColourizedRoute {
                 // Create mapping of accumulated segments and first half segment with current track
                 accumulatedRouteSegments.add(segmentFirstHalf);
 
-                ColourizedRouteSegment colourizedRouteSegment = new ColourizedRouteSegment(
+                TrackSegment trackSegment = new TrackSegment(
                         accumulatedRouteSegments,
                         routeColours[routeColourIndex]
                 );
 
                 routeColourIndex = (routeColourIndex + 1) % routeColours.length;
-                result.add(colourizedRouteSegment);
+                result.add(trackSegment);
                 accumulatedRouteSegments = new LinkedList<>();
 
                 // Accommodate the second half of route segment for the next track
@@ -91,13 +92,13 @@ public class ColourizedRoute {
             } else if (lastSongSegment == currTrack.getDuration()) {
                 accumulatedRouteSegments.add(currentRouteSegment);
 
-                ColourizedRouteSegment colourizedRouteSegment = new ColourizedRouteSegment(
+                TrackSegment trackSegment = new TrackSegment(
                         accumulatedRouteSegments,
                         routeColours[routeColourIndex]
                 );
 
                 routeColourIndex = (routeColourIndex + 1) % routeColours.length;
-                result.add(colourizedRouteSegment);
+                result.add(trackSegment);
                 accumulatedRouteSegments = new LinkedList<>();
                 accumulatedRouteSegmentDuration = 0;
                 currTrackInd++;
@@ -108,42 +109,77 @@ public class ColourizedRoute {
         }
 
         if (accumulatedRouteSegments.size() > 0) {
-            ColourizedRouteSegment colourizedRouteSegment = new ColourizedRouteSegment(
+            TrackSegment trackSegment = new TrackSegment(
                     accumulatedRouteSegments,
                     routeColours[routeColourIndex]
             );
 
-            result.add(colourizedRouteSegment);
+            result.add(trackSegment);
         }
 
         return result;
     }
 
-    // Checkpoints are defined as the starting location of each route segment of each route track mapping.
-    public List<LatLng> processCheckpoints(final List<ColourizedRouteSegment> colourizedRouteSegments) {
-        List<LatLng> checkpoints = new ArrayList<>();
-
-        for (ColourizedRouteSegment colourizedRouteSegment : colourizedRouteSegments) {
-            for (RouteSegment routeSegment : colourizedRouteSegment.getRouteSegments()) {
-                checkpoints.add(routeSegment.getStartLocation());
-            }
-        }
-
-        // Add the first checkpoint to make route circular
-        if (!checkpoints.isEmpty()) {
-            checkpoints.add(checkpoints.get(0));
-        }
-
-        return checkpoints;
-    }
-
     // MARK: - Public methods
 
-    public List<ColourizedRouteSegment> getSegments() {
-        return colourizedRouteSegments;
+    public void setRouteSegments(final List<RouteSegment> routeSegments) {
+        this.routeSegments = routeSegments;
+        trackSegments = processSegments();
     }
 
-    public List<LatLng> getCheckpoints() {
-        return checkpoints;
+    public void setRouteColours(final int[] routeColours) {
+        this.routeColours = routeColours;
+        trackSegments = processSegments();
+    }
+
+    public BrunoPlaylist getPlaylist() {
+        return playlist;
+    }
+
+    public void setPlaylist(final BrunoPlaylist playlist) {
+        this.playlist = playlist;
+        trackSegments = processSegments();
+    }
+
+    public List<TrackSegment> getTrackSegments() {
+        return trackSegments;
+    }
+
+    public BrunoTrack getCurrentTrack() {
+        return currentTrack;
+    }
+
+    public void setCurrentTrack(final BrunoTrack currentTrack) {
+        this.currentTrack = currentTrack;
+    }
+
+    // Returns distance travelled by the playlist on the route
+    public double getPlaylistRouteDistance(long playbackPosition) {
+        List<BrunoTrack> tracks = playlist.getTracks();
+        List<TrackSegment> trackSegments = getTrackSegments();
+        int i = 0;
+        double distance = 0;
+
+        while (tracks.get(i) != currentTrack) {
+            distance += trackSegments.get(i).getDistance();
+            i++;
+        }
+
+        double currentTrackPlaybackRatio = (double)playbackPosition / currentTrack.getDuration();
+        distance += currentTrackPlaybackRatio * trackSegments.get(i).getDistance();
+
+        return distance;
+    }
+
+    public void resetCurrentTrack() {
+        setCurrentTrack(null);
+    }
+
+    public void reset() {
+        routeSegments = null;
+        routeColours = null;
+        playlist = null;
+        trackSegments = null;
+        resetCurrentTrack();
     }
 }
