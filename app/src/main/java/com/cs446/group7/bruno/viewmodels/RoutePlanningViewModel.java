@@ -163,7 +163,7 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
             return;
         }
 
-        playlistGenerator.getPlaylist(new Callback<BrunoPlaylist, Exception>() {
+        playlistGenerator.discoverPlaylist(new Callback<BrunoPlaylist, Exception>() {
             @Override
             public void onSuccess(BrunoPlaylist playlist) {
                 model.setPlaylist(playlist);
