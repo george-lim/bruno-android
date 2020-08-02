@@ -3,7 +3,7 @@ package com.cs446.group7.bruno.models;
 import android.util.Log;
 
 import com.cs446.group7.bruno.MainActivity;
-import com.cs446.group7.bruno.dao.FitnessRecordData;
+import com.cs446.group7.bruno.persistence.FitnessRecordData;
 import com.cs446.group7.bruno.music.BrunoPlaylist;
 import com.cs446.group7.bruno.music.playlist.MockPlaylistGeneratorImpl;
 import com.cs446.group7.bruno.music.playlist.PlaylistGenerator;

@@ -9,7 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.cs446.group7.bruno.R;
-import com.cs446.group7.bruno.dao.FitnessRecordData;
+import com.cs446.group7.bruno.persistence.FitnessRecordData;
 import com.cs446.group7.bruno.settings.SettingsService;
 import com.cs446.group7.bruno.utils.TimeUtils;
 

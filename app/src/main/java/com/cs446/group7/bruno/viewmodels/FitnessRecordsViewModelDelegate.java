@@ -1,6 +1,6 @@
 package com.cs446.group7.bruno.viewmodels;
 
-import com.cs446.group7.bruno.dao.FitnessRecordData;
+import com.cs446.group7.bruno.persistence.FitnessRecordData;
 
 import java.util.List;
 import java.util.Locale;

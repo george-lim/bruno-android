@@ -1,4 +1,4 @@
-package com.cs446.group7.bruno.dao;
+package com.cs446.group7.bruno.persistence;
 
 import android.util.Base64;
 

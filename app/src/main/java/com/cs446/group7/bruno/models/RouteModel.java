@@ -4,7 +4,7 @@ import android.location.Location;
 import android.util.Log;
 
 import com.cs446.group7.bruno.MainActivity;
-import com.cs446.group7.bruno.dao.FitnessRecordData;
+import com.cs446.group7.bruno.persistence.FitnessRecordData;
 import com.cs446.group7.bruno.location.Coordinate;
 import com.cs446.group7.bruno.music.BrunoPlaylist;
 import com.cs446.group7.bruno.music.BrunoTrack;
