@@ -4,7 +4,7 @@ import com.cs446.group7.bruno.routing.RouteSegment;
 import com.cs446.group7.bruno.utils.LatLngUtils;
 import com.google.android.gms.maps.model.LatLng;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ColourizedRouteSegment {
@@ -22,7 +22,7 @@ public class ColourizedRouteSegment {
     }
 
     public List<LatLng> getLocations() {
-        List<LatLng> locations = new LinkedList<>();
+        List<LatLng> locations = new ArrayList<>();
 
         for (RouteSegment routeSegment : routeSegments) {
             locations.add(routeSegment.getStartLocation());

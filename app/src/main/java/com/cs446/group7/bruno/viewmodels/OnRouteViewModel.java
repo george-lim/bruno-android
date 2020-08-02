@@ -104,8 +104,8 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
 
         delegate.drawRoute(model.getColourizedRoute());
 
-        updateUserPlaylistDistance();
-        updateCheckpointDistance();
+        updateDistanceBetweenUserAndPlaylist();
+        updateDistanceToCheckpoint();
 
         final Location currentLocation = model.getCurrentLocation();
         final float bearing = currentLocation.getBearing();
@@ -156,15 +156,15 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
         });
     }
 
-    private void updateUserPlaylistDistance() {
+    private void updateDistanceBetweenUserAndPlaylist() {
         // Fail-safe
         if (isRouteCompleted) return;
 
         // placeholder display until current track is ready
         if (model.getCurrentTrack() == null) {
-            delegate.updateUserPlaylistDistance("0 m",
+            delegate.updateDistanceBetweenUserAndPlaylist("0 m",
                     resources.getDrawable(R.drawable.ic_angle_double_up, null),
-                    resources.getColor(R.color.colorSecondaryVariant, null));
+                    resources.getColor(R.color.colorSecondary, null));
             return;
         }
 
@@ -174,15 +174,15 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
                 int userPlaylistDistance = (int)model.getUserPlaylistDistance(playbackPosition);
 
                 if (userPlaylistDistance < 0) {
-                    delegate.updateUserPlaylistDistance(
+                    delegate.updateDistanceBetweenUserAndPlaylist(
                             -userPlaylistDistance + " m",
                             resources.getDrawable(R.drawable.ic_angle_double_down, null),
                             resources.getColor(R.color.colorPrimary, null));
                 } else {
-                    delegate.updateUserPlaylistDistance(
+                    delegate.updateDistanceBetweenUserAndPlaylist(
                             userPlaylistDistance + " m",
                             resources.getDrawable(R.drawable.ic_angle_double_up, null),
-                            resources.getColor(R.color.colorSecondaryVariant, null));
+                            resources.getColor(R.color.colorSecondary, null));
                 }
             }
 
@@ -196,7 +196,7 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
         });
     }
 
-    private void updateCheckpointDistance() {
+    private void updateDistanceToCheckpoint() {
         // Fail-safe
         if (model.getColourizedRoute().getSegments().isEmpty()) {
             Log.e(getClass().getSimpleName(), "Checkpoints not found when checking checkpoint updates");
@@ -245,8 +245,8 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
             }
         }
 
-        double distanceToCurrentCheckpoint = model.getDistanceToCurrentCheckpoint();
-        delegate.updateCheckpointDistance((int)distanceToCurrentCheckpoint + " m");
+        double distanceToCheckpoint = model.getDistanceToCurrentCheckpoint();
+        delegate.updateDistanceToCheckpoint((int)distanceToCheckpoint + " m");
     }
 
     /**
@@ -273,10 +273,10 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
 
         model.hardReset();
 
-        delegate.updateUserPlaylistDistance("0 m",
+        delegate.updateDistanceBetweenUserAndPlaylist("0 m",
                 resources.getDrawable(R.drawable.ic_angle_double_up, null),
-                resources.getColor(R.color.colorSecondaryVariant, null));
-        delegate.updateCheckpointDistance("0 m");
+                resources.getColor(R.color.colorSecondary, null));
+        delegate.updateDistanceToCheckpoint("0 m");
 
         // TODO: Currently temporary; in the future we will probably take the user to the fitness details of this run
         delegate.showAlertDialog(
@@ -315,8 +315,8 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
         if (isRouteCompleted) return;
         model.setCurrentLocation(location);
         delegate.animateCamera(LatLngUtils.locationToLatLng(location), location.getBearing(), CAMERA_TILT, CAMERA_ZOOM);
-        updateUserPlaylistDistance();
-        updateCheckpointDistance();
+        updateDistanceBetweenUserAndPlaylist();
+        updateDistanceToCheckpoint();
     }
 
     // MARK: - MusicPlayerSubscriber methods

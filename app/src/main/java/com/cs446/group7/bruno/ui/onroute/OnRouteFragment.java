@@ -274,9 +274,9 @@ public class OnRouteFragment extends Fragment implements OnRouteViewModelDelegat
     }
 
     @Override
-    public void updateUserPlaylistDistance(final String progressText,
-                                           final Drawable progressIcon,
-                                           int colour) {
+    public void updateDistanceBetweenUserAndPlaylist(final String progressText,
+                                                     final Drawable progressIcon,
+                                                     int colour) {
         txtUserPlaylistDistance.setText(progressText);
         progressIndicator.setImageDrawable(progressIcon);
         progressIndicator.setColorFilter(colour);
@@ -285,7 +285,7 @@ public class OnRouteFragment extends Fragment implements OnRouteViewModelDelegat
     }
 
     @Override
-    public void updateCheckpointDistance(final String distanceText) {
+    public void updateDistanceToCheckpoint(final String distanceText) {
         txtCheckpointDistance.setText(distanceText);
         txtCheckpointDistance.setVisibility(View.VISIBLE);
     }
