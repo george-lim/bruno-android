@@ -22,7 +22,7 @@ public class ColourizedRouteSegment {
     }
 
     public List<LatLng> getLocations() {
-        List<LatLng> locations = new ArrayList<>();
+        List<LatLng> locations = new ArrayList<>(routeSegments.size());
 
         for (RouteSegment routeSegment : routeSegments) {
             locations.add(routeSegment.getStartLocation());
