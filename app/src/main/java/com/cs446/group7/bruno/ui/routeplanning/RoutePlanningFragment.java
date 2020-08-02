@@ -189,17 +189,18 @@ public class RoutePlanningFragment extends Fragment implements RoutePlanningView
         LatLngBounds.Builder boundsBuilder = new LatLngBounds.Builder();
 
         for (TrackSegment trackSegment : trackSegments) {
-            List<LatLng> trackSegmentLocations = trackSegment.getLocations();
+            List<LatLng> trackSegmentLocations = trackSegment.getLatLngs();
             map.addPolyline(new PolylineOptions()
                     .addAll(trackSegmentLocations)
                     .color(trackSegment.getRouteColour())
                     .width(routeWidth));
 
-            for (LatLng location : trackSegmentLocations) {
-                boundsBuilder.include(location);
+            for (LatLng latLng : trackSegmentLocations) {
+                boundsBuilder.include(latLng);
             }
         }
 
+        // TODO: Move this logic to view model
         DisplayMetrics displayMetrics = getContext().getResources().getDisplayMetrics();
         final float cardViewHeightDp = cardView.getHeight() / displayMetrics.density;
         final float mapFragmentHeightDp = mapFragmentView.getHeight() / displayMetrics.density;
@@ -231,17 +232,17 @@ public class RoutePlanningFragment extends Fragment implements RoutePlanningView
         }
     }
 
-    public void moveUserMarker(final LatLng location) {
-        if (location == null) {
+    public void moveUserMarker(final LatLng latLng) {
+        if (latLng == null) {
             return;
         }
 
         if (userMarker == null) {
-            userMarker = map.addMarker(new MarkerOptions().position(location));
+            userMarker = map.addMarker(new MarkerOptions().position(latLng));
             userMarker.setIcon(userMarkerIcon);
         }
         else {
-            userMarker.setPosition(location);
+            userMarker.setPosition(latLng);
         }
     }
 

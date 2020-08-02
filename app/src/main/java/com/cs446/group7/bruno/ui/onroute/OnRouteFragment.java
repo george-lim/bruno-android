@@ -154,40 +154,40 @@ public class OnRouteFragment extends Fragment implements OnRouteViewModelDelegat
 
         for (TrackSegment trackSegment : trackSegments) {
             map.addPolyline(new PolylineOptions()
-                    .addAll(trackSegment.getLocations())
+                    .addAll(trackSegment.getLatLngs())
                     .color(trackSegment.getRouteColour())
                     .width(routeWidth));
         }
     }
 
     @Override
-    public void updateCheckpointMarker(final LatLng location, final double radius) {
+    public void updateCheckpointMarker(final LatLng latLng, final double radius) {
         if (checkpointMarker == null) {
             checkpointMarker = map.addMarker(new MarkerOptions()
-                    .position(location)
+                    .position(latLng)
                     .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
             );
 
-            checkpointCircle = map.addCircle(new CircleOptions().center(location).radius(radius).strokeColor(Color.RED));
+            checkpointCircle = map.addCircle(new CircleOptions().center(latLng).radius(radius).strokeColor(Color.RED));
 
-        } else if (!checkpointMarker.getPosition().equals(location)) { // only draw if it's different
-            checkpointMarker.setPosition(location);
-            checkpointCircle.setCenter(location);
+        } else if (!checkpointMarker.getPosition().equals(latLng)) { // only draw if it's different
+            checkpointMarker.setPosition(latLng);
+            checkpointCircle.setCenter(latLng);
         }
     }
 
     @Override
-    public void animateCamera(final LatLng location, float bearing, int cameraTilt, int cameraZoom) {
+    public void animateCamera(final LatLng latLng, float bearing, int cameraTilt, int cameraZoom) {
         if (userMarker == null) {
-            userMarker = map.addMarker(new MarkerOptions().position(location));
+            userMarker = map.addMarker(new MarkerOptions().position(latLng));
             userMarker.setIcon(userMarkerIcon);
         }
         else {
-            userMarker.setPosition(location);
+            userMarker.setPosition(latLng);
         }
 
         CameraPosition cameraPosition = new CameraPosition.Builder()
-                .target(location)
+                .target(latLng)
                 .bearing(bearing)
                 .tilt(cameraTilt)
                 .zoom(cameraZoom)
