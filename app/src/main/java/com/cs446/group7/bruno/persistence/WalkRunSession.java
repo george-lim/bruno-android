@@ -9,12 +9,11 @@ import androidx.room.PrimaryKey;
 public class WalkRunSession {
     static final String TABLE_NAME = "sessions";
 
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
     private int uid;
 
-    @ColumnInfo(name = "my_data")
-    @NonNull
-    private String myData;
+    @ColumnInfo(name = "session_data")
+    private String sessionDataString;
 
     public int getUid() {
         return uid;
@@ -25,11 +24,11 @@ public class WalkRunSession {
     }
 
     @NonNull
-    public String getMyData() {
-        return myData;
+    public String getSessionDataString() {
+        return sessionDataString;
     }
 
-    public void setMyData(@NonNull String myData) {
-        this.myData = myData;
+    public void setSessionDataString(@NonNull String sessionDataString) {
+        this.sessionDataString = sessionDataString;
     }
 }
