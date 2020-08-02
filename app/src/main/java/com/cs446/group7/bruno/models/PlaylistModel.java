@@ -38,14 +38,14 @@ public class PlaylistModel {
 
         List<TrackSegment> result = new ArrayList<>();
         int routeColourIndex = 0;
-        int currTrackInd = 0;
+        int currentTrackIndex = 0;
         // Duration is measured in milliseconds
         long accumulatedRouteSegmentDuration = 0;
         List<RouteSegment> accumulatedRouteSegments = new LinkedList<>();
         LinkedList<RouteSegment> routeSegmentsCopy = new LinkedList<>(routeSegments);
         List<BrunoTrack> tracks = playlist.getTracks();
         while (routeSegmentsCopy.size() > 0) {
-            BrunoTrack currTrack = tracks.get(currTrackInd);
+            BrunoTrack currTrack = tracks.get(currentTrackIndex);
 
             RouteSegment currentRouteSegment = routeSegmentsCopy.poll();
             LatLng routeSegmentStart = currentRouteSegment.getStartLocation();
@@ -88,7 +88,7 @@ public class PlaylistModel {
                 // Accommodate the second half of route segment for the next track
                 routeSegmentsCopy.push(segmentSecondHalf);
                 accumulatedRouteSegmentDuration = 0;
-                currTrackInd++;
+                currentTrackIndex = (currentTrackIndex + 1) % tracks.size();
             } else if (lastSongSegment == currTrack.getDuration()) {
                 accumulatedRouteSegments.add(currentRouteSegment);
 
@@ -101,7 +101,7 @@ public class PlaylistModel {
                 result.add(trackSegment);
                 accumulatedRouteSegments = new LinkedList<>();
                 accumulatedRouteSegmentDuration = 0;
-                currTrackInd++;
+                currentTrackIndex = (currentTrackIndex + 1) % tracks.size();
             } else {
                 accumulatedRouteSegments.add(currentRouteSegment);
                 accumulatedRouteSegmentDuration += routeSegmentDuration;
@@ -160,7 +160,7 @@ public class PlaylistModel {
         int i = 0;
         double distance = 0;
 
-        while (tracks.get(i) != currentTrack) {
+        while (tracks.get(i % tracks.size()) != currentTrack) {
             distance += trackSegments.get(i).getDistance();
             i++;
         }

@@ -6,17 +6,19 @@ import com.cs446.group7.bruno.music.BrunoTrack;
 import com.cs446.group7.bruno.utils.Callback;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Random;
 
 public class MockPlaylistGeneratorImpl implements PlaylistGenerator {
     public void discoverPlaylist(final Callback<BrunoPlaylist, Exception> callback) {
-        ArrayList<BrunoTrack> tracks = new ArrayList<BrunoTrack>(5);
-        String artists = "Jimin, Taylor Swift";
-        long threeMinutes = 180000; // Milliseconds
-        int trackCount = 200;
+        Random random = new Random();
+        int randomTrackCount = 1 + random.nextInt(50);
+        String artists = "Bruno Team";
 
-        for (int i = 0; i < trackCount; ++i) {
-            tracks.add(new BrunoTrack("name" + i, artists, threeMinutes));
+        ArrayList<BrunoTrack> tracks = new ArrayList<>(randomTrackCount);
+
+        for (int i = 1; i <= randomTrackCount; ++i) {
+            long randomTrackDuration = 30000 * (1 + random.nextInt(10)); // Milliseconds
+            tracks.add(new BrunoTrack("Track " + i, artists, randomTrackDuration));
         }
 
         callback.onSuccess(new BrunoPlaylistImpl("id", "name", tracks));
