@@ -18,6 +18,7 @@ public class PlaylistModel {
     private BrunoPlaylist playlist;
     private List<TrackSegment> trackSegments;
     private BrunoTrack currentTrack;
+    private int trackIndex;
 
     // MARK: - Lifecycle methods
 
@@ -27,10 +28,7 @@ public class PlaylistModel {
 
     // MARK: - Private methods
 
-    /**
-     * Group route segments into track segments
-     * NOTE: Total playlist duration is expected to be longer than the total route segment duration.
-     */
+    // Group route segments into track segments
     private List<TrackSegment> processSegments() {
         if (routeSegments == null || routeColours == null || playlist == null) {
             return null;
@@ -38,14 +36,14 @@ public class PlaylistModel {
 
         List<TrackSegment> result = new ArrayList<>();
         int routeColourIndex = 0;
-        int currTrackInd = 0;
+        int currentTrackIndex = 0;
         // Duration is measured in milliseconds
         long accumulatedRouteSegmentDuration = 0;
         List<RouteSegment> accumulatedRouteSegments = new LinkedList<>();
         LinkedList<RouteSegment> routeSegmentsCopy = new LinkedList<>(routeSegments);
         List<BrunoTrack> tracks = playlist.getTracks();
         while (routeSegmentsCopy.size() > 0) {
-            BrunoTrack currTrack = tracks.get(currTrackInd);
+            BrunoTrack currTrack = tracks.get(currentTrackIndex);
 
             RouteSegment currentRouteSegment = routeSegmentsCopy.poll();
             LatLng routeSegmentStart = currentRouteSegment.getStartLocation();
@@ -88,7 +86,7 @@ public class PlaylistModel {
                 // Accommodate the second half of route segment for the next track
                 routeSegmentsCopy.push(segmentSecondHalf);
                 accumulatedRouteSegmentDuration = 0;
-                currTrackInd++;
+                currentTrackIndex = (currentTrackIndex + 1) % tracks.size();
             } else if (lastSongSegment == currTrack.getDuration()) {
                 accumulatedRouteSegments.add(currentRouteSegment);
 
@@ -101,7 +99,7 @@ public class PlaylistModel {
                 result.add(trackSegment);
                 accumulatedRouteSegments = new LinkedList<>();
                 accumulatedRouteSegmentDuration = 0;
-                currTrackInd++;
+                currentTrackIndex = (currentTrackIndex + 1) % tracks.size();
             } else {
                 accumulatedRouteSegments.add(currentRouteSegment);
                 accumulatedRouteSegmentDuration += routeSegmentDuration;
@@ -151,22 +149,21 @@ public class PlaylistModel {
 
     public void setCurrentTrack(final BrunoTrack currentTrack) {
         this.currentTrack = currentTrack;
+        trackIndex++;
     }
 
     // Returns distance travelled by the playlist on the route
     public double getPlaylistRouteDistance(long playbackPosition) {
         List<BrunoTrack> tracks = playlist.getTracks();
         List<TrackSegment> trackSegments = getTrackSegments();
-        int i = 0;
         double distance = 0;
 
-        while (tracks.get(i) != currentTrack) {
-            distance += trackSegments.get(i).getDistance();
-            i++;
+        for (int i = 0; i < trackIndex; ++i) {
+            distance += trackSegments.get(i % tracks.size()).getDistance();
         }
 
         double currentTrackPlaybackRatio = (double)playbackPosition / currentTrack.getDuration();
-        distance += currentTrackPlaybackRatio * trackSegments.get(i).getDistance();
+        distance += currentTrackPlaybackRatio * trackSegments.get(trackIndex).getDistance();
 
         return distance;
     }
@@ -181,8 +178,10 @@ public class PlaylistModel {
         return distance;
     }
 
-    public void resetCurrentTrack() {
+    public void resetPlayback() {
         setCurrentTrack(null);
+        // NOTE: Must be -1 because setting first song also calls onTrackChanged.
+        trackIndex = -1;
     }
 
     public void reset() {
@@ -190,6 +189,6 @@ public class PlaylistModel {
         routeColours = null;
         playlist = null;
         trackSegments = null;
-        resetCurrentTrack();
+        resetPlayback();
     }
 }

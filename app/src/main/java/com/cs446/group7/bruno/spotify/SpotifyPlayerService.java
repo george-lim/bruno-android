@@ -20,6 +20,7 @@ import com.spotify.android.appremote.api.SpotifyAppRemote;
 import com.spotify.android.appremote.api.error.CouldNotFindSpotifyApp;
 import com.spotify.android.appremote.api.error.SpotifyDisconnectedException;
 import com.spotify.protocol.types.PlayerState;
+import com.spotify.protocol.types.Repeat;
 import com.spotify.protocol.types.Track;
 
 import java.util.ArrayList;
@@ -122,6 +123,7 @@ class SpotifyPlayerService implements MusicPlayer {
                         if (currentPlayerState != null && track.equals(currentPlayerState.track)) {
                             // same track, perhaps just paused
                             Log.w(TAG, "Same track!");
+                            return;
                         }
 
                         for (MusicPlayerSubscriber subscriber : spotifyServiceSubscribers) {
@@ -173,6 +175,26 @@ class SpotifyPlayerService implements MusicPlayer {
                         }
 
                         api.setShuffle(false)
+                                .setResultCallback(empty -> nextCallback.onSuccess(null))
+                                .setErrorCallback(throwable -> nextCallback.onFailed(throwable));
+                    })
+                    .setErrorCallback(throwable -> nextCallback.onFailed(throwable));
+        });
+
+        /*
+            Set player repeat to on if possible.
+            NOTE: Free users cannot turn on repeat.
+         */
+        queue.add((result, nextCallback) -> {
+            api.getPlayerState()
+                    .setResultCallback(playerState -> {
+                        // If player cannot turn on repeat, just succeed anyway and move on.
+                        if (!playerState.playbackRestrictions.canRepeatContext) {
+                            nextCallback.onSuccess(null);
+                            return;
+                        }
+
+                        api.setRepeat(Repeat.ALL)
                                 .setResultCallback(empty -> nextCallback.onSuccess(null))
                                 .setErrorCallback(throwable -> nextCallback.onFailed(throwable));
                     })
