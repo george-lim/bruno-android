@@ -2,6 +2,7 @@ package com.cs446.group7.bruno.models;
 
 import com.cs446.group7.bruno.music.BrunoPlaylist;
 import com.cs446.group7.bruno.music.BrunoTrack;
+import com.cs446.group7.bruno.music.MergedBrunoPlaylistImpl;
 import com.cs446.group7.bruno.routing.RouteSegment;
 import com.google.android.gms.maps.model.LatLng;
 
@@ -136,6 +137,11 @@ public class PlaylistModel {
 
     public void setPlaylist(final BrunoPlaylist playlist) {
         this.playlist = playlist;
+        trackSegments = processSegments();
+    }
+
+    public void mergePlaylist(final BrunoPlaylist playlist, long playbackPosition) {
+        this.playlist = new MergedBrunoPlaylistImpl(this.playlist, playlist, currentTrack, playbackPosition);
         trackSegments = processSegments();
     }
 
