@@ -1,17 +1,27 @@
 package com.cs446.group7.bruno.dao;
 
+import android.util.Base64;
+
 import com.cs446.group7.bruno.colourizedroute.ColourizedRoute;
 import com.cs446.group7.bruno.music.BrunoTrack;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
 /**
- * The class that holds the DAO data for a run.
+ * The class that holds the data for a run.
  */
-public class FitnessDetailsDAO {
+public class FitnessSessionData implements Serializable {
 
-    public FitnessDetailsDAO(
+    public enum Mode { WALK, RUN }
+
+    public FitnessSessionData(
             final Mode mode,
             final Date startTime,
             long userDuration,
@@ -30,8 +40,6 @@ public class FitnessDetailsDAO {
         this.colourizedRoute = colourizedRoute;
     }
 
-    public enum Mode { WALK, RUN }
-
     private final Mode mode;
     private final Date startTime;
     private final long userDuration;
@@ -40,6 +48,14 @@ public class FitnessDetailsDAO {
     private final int steps;
     private final List<BrunoTrack> tracks;
     private final ColourizedRoute colourizedRoute;
+
+    public FitnessSessionData deserialize(final String serializedString) throws IOException, ClassNotFoundException {
+        byte [] data = Base64.decode(serializedString, Base64.DEFAULT);
+        ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(data));
+        Object result = ois.readObject();
+        ois.close();
+        return (FitnessSessionData) result;
+    }
 
     public boolean isWalk() { return mode == Mode.WALK; }
 
@@ -71,5 +87,13 @@ public class FitnessDetailsDAO {
 
     public ColourizedRoute getColourizedRoute() {
         return colourizedRoute;
+    }
+
+    public String serialize() throws IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ObjectOutputStream oos = new ObjectOutputStream( baos );
+        oos.writeObject(this);
+        oos.close();
+        return Base64.encodeToString(baos.toByteArray(), Base64.DEFAULT);
     }
 }

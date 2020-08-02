@@ -1,7 +1,7 @@
 package com.cs446.group7.bruno.models;
 
 import com.cs446.group7.bruno.colourizedroute.ColourizedRoute;
-import com.cs446.group7.bruno.dao.FitnessDetailsDAO;
+import com.cs446.group7.bruno.dao.FitnessSessionData;
 import com.cs446.group7.bruno.music.BrunoPlaylist;
 import com.cs446.group7.bruno.music.playlist.MockPlaylistGeneratorImpl;
 import com.cs446.group7.bruno.music.playlist.PlaylistGenerator;
@@ -21,7 +21,7 @@ import androidx.lifecycle.ViewModel;
 
 public class FitnessModel extends ViewModel {
 
-    private List<FitnessDetailsDAO> fitnessDetailsDAOList;
+    private List<FitnessSessionData> fitnessSessionDataList;
     private int selectedIndex;
 
     // TODO: Remove all after when real data is given (this is Mock data)
@@ -34,7 +34,7 @@ public class FitnessModel extends ViewModel {
 
     private void loadWalkRunSessions() {
         // TODO: Replace with persistence service query
-        fitnessDetailsDAOList = new ArrayList<>(); // PersistenceService.get(...)
+        fitnessSessionDataList = new ArrayList<>(); // PersistenceService.get(...)
 
         // I would expect that at this point, the playlist and colorized route can be fetched from model
         RouteGenerator routeGenerator = new MockRouteGeneratorImpl(null, null);
@@ -56,8 +56,8 @@ public class FitnessModel extends ViewModel {
                                 final ColourizedRoute mockColourizedRoute = new ColourizedRoute(mockRouteSegments, colors, mockPlaylist);
 
                                 // dummy data
-                                fitnessDetailsDAOList.add(new FitnessDetailsDAO(
-                                        FitnessDetailsDAO.Mode.WALK,
+                                fitnessSessionDataList.add(new FitnessSessionData(
+                                        FitnessSessionData.Mode.WALK,
                                         new Date(),
                                         17 * 60 * 1000,
                                         15 * 60 * 1000,
@@ -67,8 +67,8 @@ public class FitnessModel extends ViewModel {
                                         mockColourizedRoute
                                 ));
 
-                                fitnessDetailsDAOList.add(new FitnessDetailsDAO(
-                                        FitnessDetailsDAO.Mode.RUN,
+                                fitnessSessionDataList.add(new FitnessSessionData(
+                                        FitnessSessionData.Mode.RUN,
                                         new Date(1595790532000L),
                                         21 * 60 * 1000,
                                         25 * 60 * 1000,
@@ -78,8 +78,8 @@ public class FitnessModel extends ViewModel {
                                         mockColourizedRoute
                                 ));
 
-                                fitnessDetailsDAOList.add(new FitnessDetailsDAO(
-                                        FitnessDetailsDAO.Mode.RUN,
+                                fitnessSessionDataList.add(new FitnessSessionData(
+                                        FitnessSessionData.Mode.RUN,
                                         new Date(1592237332000L),
                                         123 * 60 * 1000,
                                         140 * 60 * 1000,
@@ -89,8 +89,8 @@ public class FitnessModel extends ViewModel {
                                         mockColourizedRoute
                                 ));
 
-                                fitnessDetailsDAOList.add(new FitnessDetailsDAO(
-                                        FitnessDetailsDAO.Mode.WALK,
+                                fitnessSessionDataList.add(new FitnessSessionData(
+                                        FitnessSessionData.Mode.WALK,
                                         new Date(1584166132000L),
                                         60 * 60 * 1000,
                                         60 * 60 * 1000,
@@ -100,8 +100,8 @@ public class FitnessModel extends ViewModel {
                                         mockColourizedRoute
                                 ));
 
-                                fitnessDetailsDAOList.add(new FitnessDetailsDAO(
-                                        FitnessDetailsDAO.Mode.RUN,
+                                fitnessSessionDataList.add(new FitnessSessionData(
+                                        FitnessSessionData.Mode.RUN,
                                         new Date(1581674932000L),
                                         34 * 1000,
                                         45 * 1000,
@@ -131,11 +131,11 @@ public class FitnessModel extends ViewModel {
         this.selectedIndex = index;
     }
 
-    public FitnessDetailsDAO getCurrentFitnessRecord() {
-        return fitnessDetailsDAOList.get(selectedIndex);
+    public FitnessSessionData getCurrentFitnessRecord() {
+        return fitnessSessionDataList.get(selectedIndex);
     }
 
-    public List<FitnessDetailsDAO> getFitnessRecords() {
-        return fitnessDetailsDAOList == null ? new ArrayList<>() : fitnessDetailsDAOList;
+    public List<FitnessSessionData> getFitnessRecords() {
+        return fitnessSessionDataList == null ? new ArrayList<>() : fitnessSessionDataList;
     }
 }

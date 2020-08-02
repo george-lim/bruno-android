@@ -8,7 +8,7 @@ import android.util.Log;
 import com.cs446.group7.bruno.BuildConfig;
 import com.cs446.group7.bruno.MainActivity;
 import com.cs446.group7.bruno.R;
-import com.cs446.group7.bruno.dao.FitnessDetailsDAO;
+import com.cs446.group7.bruno.dao.FitnessSessionData;
 import com.cs446.group7.bruno.location.LocationServiceSubscriber;
 import com.cs446.group7.bruno.models.RouteModel;
 import com.cs446.group7.bruno.music.BrunoTrack;
@@ -272,8 +272,8 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
         final long userDuration = model.getUserDuration();
         final Locale locale = resources.getConfiguration().locale;
 
-        final FitnessDetailsDAO fitnessDetailsData = new FitnessDetailsDAO(
-                model.getMode() == RouteModel.Mode.RUN ? FitnessDetailsDAO.Mode.RUN : FitnessDetailsDAO.Mode.WALK,
+        final FitnessSessionData fitnessSessionData = new FitnessSessionData(
+                model.getMode() == RouteModel.Mode.RUN ? FitnessSessionData.Mode.RUN : FitnessSessionData.Mode.WALK,
                 model.getUserStartTime(),
                 model.getUserDuration(),
                 1000, // TODO: add

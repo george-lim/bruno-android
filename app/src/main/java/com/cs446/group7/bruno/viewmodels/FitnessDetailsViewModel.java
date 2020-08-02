@@ -3,7 +3,7 @@ package com.cs446.group7.bruno.viewmodels;
 import android.content.Context;
 import android.content.res.Resources;
 
-import com.cs446.group7.bruno.dao.FitnessDetailsDAO;
+import com.cs446.group7.bruno.dao.FitnessSessionData;
 import com.cs446.group7.bruno.models.FitnessModel;
 import com.cs446.group7.bruno.settings.SettingsService;
 import com.cs446.group7.bruno.utils.TimeUtils;
@@ -25,7 +25,7 @@ public class FitnessDetailsViewModel {
     }
 
     private void setupUI() {
-        final FitnessDetailsDAO currentFitnessRecord = model.getCurrentFitnessRecord();
+        final FitnessSessionData currentFitnessRecord = model.getCurrentFitnessRecord();
         final String dateTimeString = TimeUtils.formatDateTime(currentFitnessRecord.getStartTime(), SettingsService.DATE_TIME_FORMAT, resources.getConfiguration().locale);
 
         delegate.setupUI(
