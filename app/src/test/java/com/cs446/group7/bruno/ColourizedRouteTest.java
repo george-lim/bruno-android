@@ -1,7 +1,7 @@
 package com.cs446.group7.bruno;
 
 import com.cs446.group7.bruno.colourizedroute.ColourizedRoute;
-import com.cs446.group7.bruno.colourizedroute.ColourizedRouteSegment;
+import com.cs446.group7.bruno.colourizedroute.ColourizedSegment;
 import com.cs446.group7.bruno.music.BrunoPlaylist;
 import com.cs446.group7.bruno.music.BrunoPlaylistImpl;
 import com.cs446.group7.bruno.music.BrunoTrack;
@@ -64,12 +64,12 @@ public class ColourizedRouteTest {
                 a.getDuration() == b.getDuration();
     }
 
-    private void assertSameColourizedSegments(ColourizedRoute route, List<ColourizedRouteSegment> segments) {
-        List<ColourizedRouteSegment> colourizedRouteSegments = route.getSegments();
-        assertEquals(colourizedRouteSegments.size(), segments.size());
+    private void assertSameColourizedSegments(ColourizedRoute route, List<ColourizedSegment> segments) {
+        List<ColourizedSegment> colourizedSegments = route.getSegments();
+        assertEquals(colourizedSegments.size(), segments.size());
 
-        for (int i = 0; i < colourizedRouteSegments.size(); ++i) {
-            List<RouteSegment> routeSegments1 = colourizedRouteSegments.get(i).getRouteSegments();
+        for (int i = 0; i < colourizedSegments.size(); ++i) {
+            List<RouteSegment> routeSegments1 = colourizedSegments.get(i).getRouteSegments();
             List<RouteSegment> routeSegments2 = segments.get(i).getRouteSegments();
             assertEquals(routeSegments1.size(), routeSegments2.size());
 
@@ -85,8 +85,8 @@ public class ColourizedRouteTest {
         tracks.add(new BrunoTrack("testName", "testArtist", 280000));
         BrunoPlaylist playlist = new BrunoPlaylistImpl("id", "playlistName", tracks);
 
-        List<ColourizedRouteSegment> answer = new ArrayList<>();
-        answer.add(new ColourizedRouteSegment(mockSegments, DEFAULT_ROUTE_COLOURS[0]));
+        List<ColourizedSegment> answer = new ArrayList<>();
+        answer.add(new ColourizedSegment(mockSegments, DEFAULT_ROUTE_COLOURS[0]));
 
         assertSameColourizedSegments(
                 new ColourizedRoute(mockSegments, DEFAULT_ROUTE_COLOURS, playlist),
@@ -107,9 +107,9 @@ public class ColourizedRouteTest {
         List<RouteSegment> route2 = new LinkedList<>();
         route2.add(mockSegment3);
         route2.add(mockSegment4);
-        List<ColourizedRouteSegment> answer = new ArrayList<>();
-        answer.add(new ColourizedRouteSegment(route1, DEFAULT_ROUTE_COLOURS[0]));
-        answer.add(new ColourizedRouteSegment(route2, DEFAULT_ROUTE_COLOURS[0]));
+        List<ColourizedSegment> answer = new ArrayList<>();
+        answer.add(new ColourizedSegment(route1, DEFAULT_ROUTE_COLOURS[0]));
+        answer.add(new ColourizedSegment(route2, DEFAULT_ROUTE_COLOURS[0]));
 
         assertSameColourizedSegments(
                 new ColourizedRoute(mockSegments, DEFAULT_ROUTE_COLOURS, playlist),
@@ -123,8 +123,8 @@ public class ColourizedRouteTest {
         tracks.add(new BrunoTrack("testName1", "testArtist1", 300000));
         BrunoPlaylist playlist = new BrunoPlaylistImpl("id", "playlistName", tracks);
 
-        List<ColourizedRouteSegment> answer = new ArrayList<>();
-        answer.add(new ColourizedRouteSegment(mockSegments, DEFAULT_ROUTE_COLOURS[0]));
+        List<ColourizedSegment> answer = new ArrayList<>();
+        answer.add(new ColourizedSegment(mockSegments, DEFAULT_ROUTE_COLOURS[0]));
 
         assertSameColourizedSegments(
                 new ColourizedRoute(mockSegments, DEFAULT_ROUTE_COLOURS, playlist),
@@ -145,9 +145,9 @@ public class ColourizedRouteTest {
         route1.add(mockSegment3);
         List<RouteSegment> route2 = new LinkedList<>();
         route2.add(mockSegment4);
-        List<ColourizedRouteSegment> answer = new ArrayList<>();
-        answer.add(new ColourizedRouteSegment(route1, DEFAULT_ROUTE_COLOURS[0]));
-        answer.add(new ColourizedRouteSegment(route2, DEFAULT_ROUTE_COLOURS[0]));
+        List<ColourizedSegment> answer = new ArrayList<>();
+        answer.add(new ColourizedSegment(route1, DEFAULT_ROUTE_COLOURS[0]));
+        answer.add(new ColourizedSegment(route2, DEFAULT_ROUTE_COLOURS[0]));
 
         assertSameColourizedSegments(
                 new ColourizedRoute(mockSegments, DEFAULT_ROUTE_COLOURS, playlist),

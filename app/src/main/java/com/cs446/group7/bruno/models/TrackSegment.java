@@ -1,4 +1,4 @@
-package com.cs446.group7.bruno.colourizedroute;
+package com.cs446.group7.bruno.models;
 
 import com.cs446.group7.bruno.routing.RouteSegment;
 import com.cs446.group7.bruno.utils.LatLngUtils;
@@ -7,18 +7,18 @@ import com.google.android.gms.maps.model.LatLng;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ColourizedRouteSegment {
+public class TrackSegment {
     private List<RouteSegment> routeSegments;
     private int routeColour;
 
-    public ColourizedRouteSegment(final List<RouteSegment> routeSegments,
-                                  int routeColour) {
+    public TrackSegment(final List<RouteSegment> routeSegments,
+                        int routeColour) {
         this.routeSegments = routeSegments;
         this.routeColour = routeColour;
     }
 
-    public List<RouteSegment> getRouteSegments() {
-        return routeSegments;
+    public int getRouteColour() {
+        return routeColour;
     }
 
     public List<LatLng> getLocations() {
@@ -34,7 +34,7 @@ public class ColourizedRouteSegment {
         return locations;
     }
 
-    // Returns distance of the colourized route segment
+    // Returns distance of the track segment
     public double getDistance() {
         List<LatLng> locations = getLocations();
         double distance = 0;
@@ -44,9 +44,5 @@ public class ColourizedRouteSegment {
         }
 
         return distance;
-    }
-
-    public int getRouteColour() {
-        return routeColour;
     }
 }

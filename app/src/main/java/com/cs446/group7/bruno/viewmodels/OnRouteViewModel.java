@@ -102,7 +102,7 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
             delegate.updateCurrentSongUI(currentTrack.getName(), currentTrack.getArtists());
         }
 
-        delegate.drawRoute(model.getColourizedRoute());
+        delegate.drawRoute(model.getTrackSegments());
 
         updateDistanceBetweenUserAndPlaylist();
         updateDistanceToCheckpoint();
@@ -171,7 +171,7 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
         musicPlayer.getPlaybackPosition(new Callback<Long, Throwable>() {
             @Override
             public void onSuccess(Long playbackPosition) {
-                int userPlaylistDistance = (int)model.getUserPlaylistDistance(playbackPosition);
+                int userPlaylistDistance = (int)model.getDistanceBetweenUserAndPlaylist(playbackPosition);
 
                 if (userPlaylistDistance < 0) {
                     delegate.updateDistanceBetweenUserAndPlaylist(
@@ -197,12 +197,6 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
     }
 
     private void updateDistanceToCheckpoint() {
-        // Fail-safe
-        if (model.getColourizedRoute().getSegments().isEmpty()) {
-            Log.e(getClass().getSimpleName(), "Checkpoints not found when checking checkpoint updates");
-            return;
-        }
-
         /*
             Set a tolerance radius depending on how fast the user is moving. The faster they are, the more
             margin we should give them. It should also depend on how accurate the GPS is, the more variance, the bigger
@@ -221,7 +215,7 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
         // total tolerance radius
         final double toleranceRadius = BASE_TOLERANCE_RADIUS + speedMargin + accuracyDeviation;
 
-        final LatLng currentCheckpoint = model.getCurrentCheckpoint();
+        final LatLng currentCheckpoint = model.getCheckpoint();
 
         // Note: the radius drawn on UI is always constant as we cannot foresee the other location variables, it's just
         // to give an idea where the user should be around
@@ -241,11 +235,11 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
                 onRouteCompleted();
             }
             else {
-                delegate.updateCheckpointMarker(model.getCurrentCheckpoint(), toleranceRadius);
+                delegate.updateCheckpointMarker(model.getCheckpoint(), toleranceRadius);
             }
         }
 
-        double distanceToCheckpoint = model.getDistanceToCurrentCheckpoint();
+        double distanceToCheckpoint = model.getDistanceToCheckpoint();
         delegate.updateDistanceToCheckpoint((int)distanceToCheckpoint + " m");
     }
 
