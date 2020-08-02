@@ -12,7 +12,7 @@ public class MockPlaylistGeneratorImpl implements PlaylistGenerator {
     public void discoverPlaylist(final Callback<BrunoPlaylist, Exception> callback) {
         Random random = new Random();
         int randomTrackCount = 1 + random.nextInt(50);
-        String artists = "Bruno Team";
+        String artists = "Bruno";
 
         ArrayList<BrunoTrack> tracks = new ArrayList<>(randomTrackCount);
 
