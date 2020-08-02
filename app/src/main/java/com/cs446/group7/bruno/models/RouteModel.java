@@ -139,6 +139,10 @@ public class RouteModel extends ViewModel {
                 - playlistModel.getPlaylistRouteDistance(playbackPosition);
     }
 
+    public Coordinate getPlaylistRouteLocation(long playbackPosition) {
+        return playlistModel.getPlaylistRouteLocation(playbackPosition);
+    }
+
     // MARK: - CheckpointsModel methods
 
     public Coordinate getCheckpoint() {

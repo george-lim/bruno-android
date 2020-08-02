@@ -22,6 +22,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 
 import com.cs446.group7.bruno.R;
+import com.cs446.group7.bruno.location.Coordinate;
 import com.cs446.group7.bruno.models.RouteModel;
 import com.cs446.group7.bruno.models.TrackSegment;
 import com.cs446.group7.bruno.utils.BitmapUtils;
@@ -63,9 +64,11 @@ public class OnRouteFragment extends Fragment implements OnRouteViewModelDelegat
     private ProgressDialog progressDialog;
     private AlertDialog alertDialog;
     private Marker userMarker;
+    private Marker brunoMarker;
     private Marker checkpointMarker;
     private Circle checkpointCircle;
     private BitmapDescriptor userMarkerIcon;
+    private BitmapDescriptor brunoMarkerIcon;
 
     private boolean hasDrawnRouteOnce = false;
 
@@ -121,15 +124,16 @@ public class OnRouteFragment extends Fragment implements OnRouteViewModelDelegat
 
     // MARK: - OnRouteViewModelDelegate methods
 
-    private BitmapDescriptor getUserMarkerIcon(int avatarResourceId) {
-        Drawable avatarDrawable = getResources().getDrawable(avatarResourceId, null);
+    private BitmapDescriptor getMarkerIcon(int iconResourceId) {
+        Drawable avatarDrawable = getResources().getDrawable(iconResourceId, null);
         return BitmapDescriptorFactory.fromBitmap(BitmapUtils.getBitmapFromVectorDrawable(avatarDrawable));
     }
 
     @Override
-    public void setupUI(int userAvatarDrawableResourceId) {
+    public void setupUI(int userAvatarDrawableResourceId, int brunoAvatarDrawableResourceId) {
         btnExitRoute.setOnClickListener(this::handleExitRouteClick);
-        userMarkerIcon = getUserMarkerIcon(userAvatarDrawableResourceId);
+        userMarkerIcon = getMarkerIcon(userAvatarDrawableResourceId);
+        brunoMarkerIcon = getMarkerIcon(brunoAvatarDrawableResourceId);
 
         map.getUiSettings().setCompassEnabled(false);
     }
@@ -301,5 +305,15 @@ public class OnRouteFragment extends Fragment implements OnRouteViewModelDelegat
     @Override
     public void showRouteInfoCard() {
         routeInfoCardView.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void updateBrunoMarker(final LatLng location) {
+        if (brunoMarker == null) {
+            brunoMarker = map.addMarker(new MarkerOptions().position(location));
+            brunoMarker.setIcon(brunoMarkerIcon);
+        } else {
+            brunoMarker.setPosition(location);
+        }
     }
 }
