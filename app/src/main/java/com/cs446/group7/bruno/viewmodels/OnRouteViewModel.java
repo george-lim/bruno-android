@@ -194,7 +194,7 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
                             resources.getColor(R.color.colorSecondary, null));
                 }
 
-                updateBrunoLocation(playbackPosition);
+                updateBrunoCoordinate(playbackPosition);
             }
 
             @Override
@@ -207,13 +207,13 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
         });
     }
 
-    private void updateBrunoLocation(long playbackPosition) {
-        final Coordinate brunoLocation = model.getPlaylistRouteLocation(playbackPosition);
+    private void updateBrunoCoordinate(long playbackPosition) {
+        final Coordinate brunoCoordinate = model.getPlaylistRouteCoordinate(playbackPosition);
 
         // Fail-safe
-        if (brunoLocation == null) return;
+        if (brunoCoordinate == null) return;
 
-        delegate.updateBrunoMarker(brunoLocation.getLatLng());
+        delegate.updateBrunoMarker(brunoCoordinate.getLatLng());
     }
 
     private void updateDistanceToCheckpoint() {

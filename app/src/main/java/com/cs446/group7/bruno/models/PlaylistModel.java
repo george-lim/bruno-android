@@ -199,7 +199,7 @@ public class PlaylistModel {
     }
 
     // Returns the location on the route corresponding to the current track's playback position
-    public Coordinate getPlaylistRouteLocation(long playbackPosition) {
+    public Coordinate getPlaylistRouteCoordinate(long playbackPosition) {
         // Bruno has finished and is stationary at the end location of the route
         if (trackIndex >= trackSegments.size()) {
             return routeSegments.get(routeSegments.size() - 1).getEndCoordinate();
@@ -228,12 +228,12 @@ public class PlaylistModel {
 
                 double currentTrackPlaybackRatio = (double)playbackPosition / currentTrack.getDuration();
 
-                double playlistLocationLat =
+                double playlistCoordinateLat =
                         routeSegmentStart.getLatitude() + (diffLat * currentTrackPlaybackRatio);
-                double playlistLocationLng =
+                double playlistCoordinateLng =
                         routeSegmentStart.getLongitude() + (diffLng * currentTrackPlaybackRatio);
 
-                playlistRouteCoordinate = new Coordinate(playlistLocationLat, playlistLocationLng);
+                playlistRouteCoordinate = new Coordinate(playlistCoordinateLat, playlistCoordinateLng);
                 break;
             }
 
