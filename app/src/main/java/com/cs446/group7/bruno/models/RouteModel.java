@@ -144,8 +144,8 @@ public class RouteModel extends ViewModel {
                 mode == RouteModel.Mode.RUN ? FitnessRecordData.Mode.RUN : FitnessRecordData.Mode.WALK,
                 userStartTime,
                 getUserDuration(),
-                1000, // TODO: add
-                1000, // TODO: add
+                playlistModel.getPlaylist().getDuration(),
+                playlistModel.getTotalRouteDistance(),
                 steps,
                 getPlaylist().getTracks(),
                 getTrackSegments()
