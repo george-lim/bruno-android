@@ -1,10 +1,7 @@
 package com.cs446.group7.bruno.models;
 
-import android.location.Location;
-
+import com.cs446.group7.bruno.location.Coordinate;
 import com.cs446.group7.bruno.routing.RouteSegment;
-import com.cs446.group7.bruno.utils.LatLngUtils;
-import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +10,7 @@ public class CheckpointsModel {
 
     // MARK: - Private members
 
-    private List<LatLng> checkpoints;
+    private List<Coordinate> checkpoints;
     private int checkpointIndex;
 
     // MARK: - Lifecycle methods
@@ -24,15 +21,15 @@ public class CheckpointsModel {
 
     // MARK: - Private methods
 
-    private List<LatLng> processCheckpoints(final List<RouteSegment> routeSegments) {
-        List<LatLng> checkpoints = new ArrayList<>();
+    private List<Coordinate> processCheckpoints(final List<RouteSegment> routeSegments) {
+        List<Coordinate> checkpoints = new ArrayList<>();
 
         for (RouteSegment routeSegment : routeSegments) {
-            checkpoints.add(routeSegment.getStartLocation());
+            checkpoints.add(routeSegment.getStartCoordinate());
         }
 
         if (!checkpoints.isEmpty()) {
-            checkpoints.add(routeSegments.get(routeSegments.size() - 1).getEndLocation());
+            checkpoints.add(routeSegments.get(routeSegments.size() - 1).getEndCoordinate());
         }
 
         return checkpoints;
@@ -43,10 +40,7 @@ public class CheckpointsModel {
         double distance = 0;
 
         for (int i = 0; i < checkpointIndex; ++i) {
-            distance += LatLngUtils.getLatLngDistanceInMetres(
-                    checkpoints.get(i),
-                    checkpoints.get(i+1)
-            );
+            distance += checkpoints.get(i).getDistance(checkpoints.get(i+1));
         }
 
         return distance;
@@ -58,7 +52,7 @@ public class CheckpointsModel {
         checkpoints = processCheckpoints(routeSegments);
     }
 
-    public LatLng getCurrentCheckpoint() {
+    public Coordinate getCurrentCheckpoint() {
         return checkpoints.get(checkpointIndex);
     }
 
@@ -67,14 +61,13 @@ public class CheckpointsModel {
     }
 
     // Returns distance travelled by the user on the route
-    public double getUserRouteDistance(final Location userLocation) {
-        return getTotalDistanceToCheckpoint() - getDistanceToCheckpoint(userLocation);
+    public double getUserRouteDistance(final Coordinate coordinate) {
+        return getTotalDistanceToCheckpoint() - getDistanceToCheckpoint(coordinate);
     }
 
     // Returns distance from origin to current checkpoint
-    public double getDistanceToCheckpoint(final Location origin) {
-        LatLng originLatLng = LatLngUtils.locationToLatLng(origin);
-        return LatLngUtils.getLatLngDistanceInMetres(originLatLng, getCurrentCheckpoint());
+    public double getDistanceToCheckpoint(final Coordinate coordinate) {
+        return coordinate.getDistance(getCurrentCheckpoint());
     }
 
     public boolean hasCompletedAllCheckpoints() {

@@ -5,12 +5,12 @@ import android.util.Log;
 
 import com.cs446.group7.bruno.MainActivity;
 import com.cs446.group7.bruno.dao.FitnessRecordData;
+import com.cs446.group7.bruno.location.Coordinate;
 import com.cs446.group7.bruno.music.BrunoPlaylist;
 import com.cs446.group7.bruno.music.BrunoTrack;
 import com.cs446.group7.bruno.persistence.FitnessRecordDAO;
 import com.cs446.group7.bruno.persistence.FitnessRecordEntry;
 import com.cs446.group7.bruno.routing.RouteSegment;
-import com.google.android.gms.maps.model.LatLng;
 
 import java.io.IOException;
 import java.util.Date;
@@ -33,6 +33,7 @@ public class RouteModel extends ViewModel {
     private Mode mode = Mode.WALK;
     private int durationIndex = 0;
     private Location currentLocation = null;
+    private Coordinate currentCoordinate = null;
     private int steps = 0;
     private Date userStartTime = null;
     private Date userStopTime = null;
@@ -91,8 +92,13 @@ public class RouteModel extends ViewModel {
         return currentLocation;
     }
 
+    public Coordinate getCurrentCoordinate() {
+        return currentCoordinate;
+    }
+
     public void setCurrentLocation(final Location currentLocation) {
         this.currentLocation = currentLocation;
+        this.currentCoordinate = new Coordinate(currentLocation);
     }
 
     public BrunoTrack getCurrentTrack() {
@@ -126,7 +132,7 @@ public class RouteModel extends ViewModel {
 
     // Returns difference in distance between the user and the playlist on the route
     public double getDistanceBetweenUserAndPlaylist(long playbackPosition) {
-        return checkpointsModel.getUserRouteDistance(currentLocation)
+        return checkpointsModel.getUserRouteDistance(currentCoordinate)
                 - playlistModel.getPlaylistRouteDistance(playbackPosition);
     }
 
@@ -158,7 +164,7 @@ public class RouteModel extends ViewModel {
 
     // MARK: - CheckpointsModel methods
 
-    public LatLng getCheckpoint() {
+    public Coordinate getCheckpoint() {
         // Fail-safe
         if (hasCompletedAllCheckpoints()) {
             return null;
@@ -182,7 +188,7 @@ public class RouteModel extends ViewModel {
             return 0;
         }
 
-        return checkpointsModel.getDistanceToCheckpoint(currentLocation);
+        return checkpointsModel.getDistanceToCheckpoint(currentCoordinate);
     }
 
     public boolean hasCompletedAllCheckpoints() {
@@ -214,6 +220,7 @@ public class RouteModel extends ViewModel {
         mode = Mode.WALK;
         durationIndex = 0;
         currentLocation = null;
+        currentCoordinate = null;
         playlistModel.reset();
         checkpointsModel.reset();
     }

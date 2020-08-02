@@ -139,7 +139,7 @@ public class FitnessDetailsFragment extends Fragment implements FitnessDetailsVi
         LatLngBounds.Builder boundsBuilder = new LatLngBounds.Builder();
 
         for (TrackSegment trackSegment : trackSegments) {
-            List<LatLng> trackSegmentLocations = trackSegment.getLocations();
+            List<LatLng> trackSegmentLocations = trackSegment.getLatLngs();
             map.addPolyline(new PolylineOptions()
                     .addAll(trackSegmentLocations)
                     .color(trackSegment.getRouteColour())

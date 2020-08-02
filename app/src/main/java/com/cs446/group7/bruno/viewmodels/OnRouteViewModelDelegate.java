@@ -15,8 +15,8 @@ public interface OnRouteViewModelDelegate {
     void updateCurrentSongUI(final String name, final String artists);
     void clearMap();
     void drawRoute(@NonNull final List<TrackSegment> trackSegments);
-    void updateCheckpointMarker(final LatLng location, final double radius);
-    void animateCamera(final LatLng location, float bearing, int cameraTilt, int cameraZoom);
+    void updateCheckpointMarker(final LatLng latLng, final double radius);
+    void animateCamera(final LatLng latLng, float bearing, int cameraTilt, int cameraZoom);
     void showProgressDialog(final String title,
                             final String message,
                             boolean isIndeterminate,

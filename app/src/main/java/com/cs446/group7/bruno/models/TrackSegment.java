@@ -1,7 +1,7 @@
 package com.cs446.group7.bruno.models;
 
+import com.cs446.group7.bruno.location.Coordinate;
 import com.cs446.group7.bruno.routing.RouteSegment;
-import com.cs446.group7.bruno.utils.LatLngUtils;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.io.Serializable;
@@ -12,35 +12,45 @@ public class TrackSegment implements Serializable {
 
     // MARK: - Private members
 
-    private List<LatLng> locations;
+    private List<Coordinate> coordinates;
     private int routeColour;
 
     // MARK: - Lifecycle methods
 
     public TrackSegment(final List<RouteSegment> routeSegments, int routeColour) {
-        locations = processLocations(routeSegments);
+        coordinates = processCoordinates(routeSegments);
         this.routeColour = routeColour;
     }
 
     // MARK: - Private methods
 
-    public List<LatLng> processLocations(final List<RouteSegment> routeSegments) {
-        List<LatLng> locations = new ArrayList<>(routeSegments.size());
+    public List<Coordinate> processCoordinates(final List<RouteSegment> routeSegments) {
+        List<Coordinate> coordinates = new ArrayList<>(routeSegments.size());
 
         for (RouteSegment routeSegment : routeSegments) {
-            locations.add(routeSegment.getStartLocation());
+            coordinates.add(routeSegment.getStartCoordinate());
         }
 
         RouteSegment lastRouteSegment = routeSegments.get(routeSegments.size() - 1);
-        locations.add(lastRouteSegment.getEndLocation());
+        coordinates.add(lastRouteSegment.getEndCoordinate());
 
-        return locations;
+        return coordinates;
     }
 
     // MARK: - Public methods
 
-    public List<LatLng> getLocations() {
-        return locations;
+    public List<Coordinate> getCoordinates() {
+        return coordinates;
+    }
+
+    public List<LatLng> getLatLngs() {
+        List<LatLng> latLngs = new ArrayList<>(coordinates.size());
+
+        for (Coordinate coordinate : coordinates) {
+            latLngs.add(coordinate.getLatLng());
+        }
+
+        return latLngs;
     }
 
     public int getRouteColour() {
@@ -49,11 +59,11 @@ public class TrackSegment implements Serializable {
 
     // Returns distance of the track segment
     public double getDistance() {
-        List<LatLng> locations = getLocations();
+        List<Coordinate> coordinates = getCoordinates();
         double distance = 0;
 
-        for (int i = 0; i+1 < locations.size(); ++i) {
-            distance += LatLngUtils.getLatLngDistanceInMetres(locations.get(i), locations.get(i+1));
+        for (int i = 0; i+1 < coordinates.size(); ++i) {
+            distance += coordinates.get(i).getDistance(coordinates.get(i+1));
         }
 
         return distance;

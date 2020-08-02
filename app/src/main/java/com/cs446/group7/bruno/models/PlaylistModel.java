@@ -1,10 +1,10 @@
 package com.cs446.group7.bruno.models;
 
+import com.cs446.group7.bruno.location.Coordinate;
 import com.cs446.group7.bruno.music.BrunoPlaylist;
 import com.cs446.group7.bruno.music.BrunoTrack;
 import com.cs446.group7.bruno.music.MergedBrunoPlaylistImpl;
 import com.cs446.group7.bruno.routing.RouteSegment;
-import com.google.android.gms.maps.model.LatLng;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -48,8 +48,8 @@ public class PlaylistModel implements Serializable {
             BrunoTrack currTrack = tracks.get(currentTrackIndex);
 
             RouteSegment currentRouteSegment = routeSegmentsCopy.poll();
-            LatLng routeSegmentStart = currentRouteSegment.getStartLocation();
-            LatLng routeSegmentEnd = currentRouteSegment.getEndLocation();
+            Coordinate routeSegmentStart = currentRouteSegment.getStartCoordinate();
+            Coordinate routeSegmentEnd = currentRouteSegment.getEndCoordinate();
             long routeSegmentDuration = currentRouteSegment.getDuration();
             long lastSongSegment = accumulatedRouteSegmentDuration + routeSegmentDuration;
 
@@ -60,14 +60,14 @@ public class PlaylistModel implements Serializable {
                 double segmentDurationRatio = (double) segmentDurationFirstHalf / routeSegmentDuration;
 
                 // Represent the difference in lat and long distances, needed for slope calculations
-                double diffLat = routeSegmentEnd.latitude - routeSegmentStart.latitude;
-                double diffLng = routeSegmentEnd.longitude - routeSegmentStart.longitude;
+                double diffLat = routeSegmentEnd.getLatitude() - routeSegmentStart.getLatitude();
+                double diffLng = routeSegmentEnd.getLongitude() - routeSegmentStart.getLongitude();
 
-                double midPointLat = routeSegmentStart.latitude + (diffLat * segmentDurationRatio);
-                double midPointLng = routeSegmentStart.longitude + (diffLng * segmentDurationRatio);
+                double midPointLat = routeSegmentStart.getLatitude() + (diffLat * segmentDurationRatio);
+                double midPointLng = routeSegmentStart.getLongitude() + (diffLng * segmentDurationRatio);
 
                 // Create two new segments based on start, midpoint, end to represent split
-                LatLng segmentMidPoint = new LatLng(midPointLat, midPointLng);
+                Coordinate segmentMidPoint = new Coordinate(midPointLat, midPointLng);
                 RouteSegment segmentFirstHalf = new RouteSegment(routeSegmentStart,
                         segmentMidPoint, segmentDurationFirstHalf);
                 RouteSegment segmentSecondHalf = new RouteSegment(segmentMidPoint,
