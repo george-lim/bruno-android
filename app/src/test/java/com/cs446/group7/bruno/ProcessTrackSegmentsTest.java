@@ -150,18 +150,6 @@ public class ProcessTrackSegmentsTest {
         assertEqualTrackSegments(model.getTrackSegments(), answer);
     }
 
-    @Test(expected=IndexOutOfBoundsException.class)
-    public void routeDurationLongerThanPlaylistDuration() {
-        List<BrunoTrack> tracks = new LinkedList<>();
-        tracks.add(new BrunoTrack("testName1", "testArtist1", 140000));
-        BrunoPlaylist playlist = new BrunoPlaylistImpl("id", "playlistName", tracks);
-
-        PlaylistModel model = new PlaylistModel();
-        model.setRouteSegments(mockSegments);
-        model.setRouteColours(DEFAULT_ROUTE_COLOURS);
-        model.setPlaylist(playlist);
-    }
-
     @Ignore("Legacy test: PlaylistModel no longer exposes getRouteSegments() method.")
     @Test
     public void routeSegmentDurationLongerThanTrackDuration() {

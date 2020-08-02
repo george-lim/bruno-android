@@ -27,10 +27,7 @@ public class PlaylistModel {
 
     // MARK: - Private methods
 
-    /**
-     * Group route segments into track segments
-     * NOTE: Total playlist duration is expected to be longer than the total route segment duration.
-     */
+    // Group route segments into track segments
     private List<TrackSegment> processSegments() {
         if (routeSegments == null || routeColours == null || playlist == null) {
             return null;
