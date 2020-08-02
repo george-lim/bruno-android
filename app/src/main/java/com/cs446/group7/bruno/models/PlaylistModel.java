@@ -200,9 +200,9 @@ public class PlaylistModel {
 
     // Returns the location on the route corresponding to the current track's playback position
     public Coordinate getPlaylistRouteLocation(long playbackPosition) {
-        // Bruno has finished and is stationary at the start/end location of the route
+        // Bruno has finished and is stationary at the end location of the route
         if (trackIndex >= trackSegments.size()) {
-            return routeSegments.get(0).getStartCoordinate();
+            return routeSegments.get(routeSegments.size() - 1).getEndCoordinate();
         }
 
         double completedTrackSegmentsDistance = getCompletedTrackSegmentsDistance();
