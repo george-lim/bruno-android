@@ -1,28 +1,28 @@
 package com.cs446.group7.bruno.music;
 
+import com.cs446.group7.bruno.music.playlist.PlaylistMetadata;
+
 import java.util.List;
 
 public class BrunoPlaylistImpl implements BrunoPlaylist {
-    private String id;
-    private String name;
+    private PlaylistMetadata metadata;
     private List<BrunoTrack> tracks;
 
     public BrunoPlaylistImpl(final String id,
                              final String name,
                              final List<BrunoTrack> tracks) {
-        this.id = id;
-        this.name = name;
+        this.metadata = new PlaylistMetadata(id, name, tracks.size());
         this.tracks = tracks;
     }
 
     @Override
     public String getId() {
-        return id;
+        return metadata.getId();
     }
 
     @Override
     public String getName() {
-        return name;
+        return metadata.getName();
     }
 
     @Override
