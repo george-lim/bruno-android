@@ -8,7 +8,6 @@ import android.util.Log;
 import com.cs446.group7.bruno.BuildConfig;
 import com.cs446.group7.bruno.MainActivity;
 import com.cs446.group7.bruno.R;
-import com.cs446.group7.bruno.dao.FitnessRecordData;
 import com.cs446.group7.bruno.location.LocationServiceSubscriber;
 import com.cs446.group7.bruno.models.RouteModel;
 import com.cs446.group7.bruno.music.BrunoTrack;
@@ -16,8 +15,6 @@ import com.cs446.group7.bruno.music.player.MockMusicPlayerImpl;
 import com.cs446.group7.bruno.music.player.MusicPlayer;
 import com.cs446.group7.bruno.music.player.MusicPlayerException;
 import com.cs446.group7.bruno.music.player.MusicPlayerSubscriber;
-import com.cs446.group7.bruno.persistence.FitnessRecordDAO;
-import com.cs446.group7.bruno.persistence.FitnessRecordEntry;
 import com.cs446.group7.bruno.preferencesstorage.PreferencesStorage;
 import com.cs446.group7.bruno.sensor.PedometerSubscriber;
 import com.cs446.group7.bruno.settings.SettingsService;
@@ -25,12 +22,6 @@ import com.cs446.group7.bruno.utils.Callback;
 import com.cs446.group7.bruno.utils.LatLngUtils;
 import com.cs446.group7.bruno.utils.NoFailCallback;
 import com.google.android.gms.maps.model.LatLng;
-
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
 
 import androidx.annotation.NonNull;
 
@@ -51,7 +42,6 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
 
     private MusicPlayer musicPlayer;
 
-    // TODO: Remove this when there's a better reset logic
     private boolean isRouteCompleted;
 
     // MARK: - Lifecycle methods
@@ -255,49 +245,7 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
         model.setUserStopTime();
         musicPlayer.stopAndDisconnect();
 
-        // TODO: save to fitness records
-        final long userDuration = model.getUserDuration();
-        final Locale locale = resources.getConfiguration().locale;
-
-        final FitnessRecordData fitnessRecordData = new FitnessRecordData(
-                model.getMode() == RouteModel.Mode.RUN ? FitnessRecordData.Mode.RUN : FitnessRecordData.Mode.WALK,
-                model.getUserStartTime(),
-                model.getUserDuration(),
-                1000, // TODO: add
-                1000, // TODO: add
-                model.getSteps(),
-                model.getPlaylist().getTracks(),
-                model.getTrackSegments()
-        );
-
-        try {
-            final String serializedString = fitnessRecordData.serialize();
-            final FitnessRecordDAO fitnessRecordDAO = MainActivity.getPersistenceService().getFitnessRecordDAO();
-            final FitnessRecordEntry newRecord = new FitnessRecordEntry();
-            newRecord.setRecordDataString(serializedString);
-            fitnessRecordDAO.insert(newRecord);
-
-            List<FitnessRecordEntry> records = fitnessRecordDAO.getRecords();
-
-            for (FitnessRecordEntry record : records) {
-                Log.e(this.getClass().getSimpleName(), "Data: " + record.getRecordDataString());
-            }
-
-
-        } catch (IOException e) {
-            Log.e(getClass().getSimpleName(), e.toString());
-        }
-
-        // PersistenceService.store(...)
-
-        // TODO: Remove this after persistence is done
-        SimpleDateFormat dateFormat = new SimpleDateFormat("MMM d • h:mm aa", locale);
-
-        Date startTime = model.getUserStartTime();
-
-        Log.i(getClass().getSimpleName(), String.format("Exercise Start: %s", dateFormat.format(startTime)));
-        Log.i(getClass().getSimpleName(), String.format("Exercise duration: %s seconds", userDuration / 1000d));
-
+        model.saveRecordToDatabase();
 
         model.hardReset();
 
@@ -306,7 +254,6 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
                 resources.getColor(R.color.colorSecondary, null));
         delegate.updateDistanceToCheckpoint("0 m");
 
-        // TODO: Currently temporary; in the future we will probably take the user to the fitness details of this run
         delegate.showAlertDialog(
                 resources.getString(R.string.run_completion_title),
                 resources.getString(R.string.run_completion_message),
