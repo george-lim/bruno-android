@@ -22,16 +22,11 @@ public class MockPlaylistGeneratorImpl implements PlaylistGenerator {
         callback.onSuccess(new BrunoPlaylistImpl("id", "name", tracks));
     }
 
-    public void getUserPlaylists(String accessToken, final Callback<List<PlaylistInfo>, Exception> callback) {
-        final List<PlaylistInfo> playlists = new ArrayList<>();
+    public void getUserPlaylists(String accessToken, final Callback<List<PlaylistMetadata>, Exception> callback) {
+        final List<PlaylistMetadata> playlists = new ArrayList<>();
         final int playlistCount = 20;
         for (int i = 0; i < playlistCount; ++i) {
-            playlists.add(new PlaylistInfo(
-                    "id " + i,
-                    "name " + i,
-                    "description " + i,
-                    i
-            ));
+            playlists.add(new PlaylistMetadata("id " + i, "name " + i, i));
         }
         callback.onSuccess(playlists);
     }

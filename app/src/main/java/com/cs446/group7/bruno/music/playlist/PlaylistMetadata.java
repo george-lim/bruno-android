@@ -4,18 +4,16 @@ import com.cs446.group7.bruno.music.BrunoTrack;
 
 import java.util.List;
 
-// Contains information about a playlist, used to select the user's fallback playlist
-public class PlaylistInfo {
+// Contains information about a playlist
+public class PlaylistMetadata {
 
     private final String id;
     private final String name;
-    private final String description;
     private final int numTracks;
 
-    public PlaylistInfo(final String id, final String name, final String description, final int numTracks) {
+    public PlaylistMetadata(final String id, final String name, final int numTracks) {
         this.id = id;
         this.name = name;
-        this.description = description;
         this.numTracks = numTracks;
     }
 
@@ -25,10 +23,6 @@ public class PlaylistInfo {
 
     public String getName() {
         return name;
-    }
-
-    public String getDescription() {
-        return description;
     }
 
     public int getTrackCount() {

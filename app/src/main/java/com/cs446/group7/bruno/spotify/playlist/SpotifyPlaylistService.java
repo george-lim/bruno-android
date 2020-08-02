@@ -12,7 +12,7 @@ import com.cs446.group7.bruno.music.BrunoPlaylist;
 import com.cs446.group7.bruno.music.BrunoPlaylistImpl;
 import com.cs446.group7.bruno.music.BrunoTrack;
 import com.cs446.group7.bruno.music.playlist.PlaylistGenerator;
-import com.cs446.group7.bruno.music.playlist.PlaylistInfo;
+import com.cs446.group7.bruno.music.playlist.PlaylistMetadata;
 import com.cs446.group7.bruno.utils.Callback;
 
 import org.json.JSONException;
@@ -68,7 +68,7 @@ public class SpotifyPlaylistService implements PlaylistGenerator {
 
     // Retrieves a list of the user's playlists which they can select from for their fallback playlist
     // NOTE: The tracks within the playlists will not be retrieved, since it is not used during playlist selection
-    public void getUserPlaylists(final String accessToken, final Callback<List<PlaylistInfo>, Exception> callback) {
+    public void getUserPlaylists(final String accessToken, final Callback<List<PlaylistMetadata>, Exception> callback) {
         final StringRequest stringRequest = new StringRequest(Request.Method.GET,
                 "https://api.spotify.com/v1/me/playlists",
                 response -> {
