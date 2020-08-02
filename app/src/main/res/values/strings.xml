@@ -32,8 +32,11 @@
     <string name="onboarding_missing_spotify_installation_description">Spotify app not found on the device, please install it from the Play Store.</string>
     <string name="onboarding_missing_access_title">Missing Access</string>
     <string name="onboarding_missing_access_text">Bruno requires the following capabilities to function properly. Permissions can always be granted from system settings.</string>
+    <string name="onboarding_missing_internet_text">Bruno requires an active internet connection to proceed. Please wait until your device is connected to an active network before proceeding.</string>
     <string name="onboarding_fallback_playlist_title">Pick a Fallback Playlist</string>
     <string name="onboarding_fallback_playlist_hint">Select a Spotify playlist to use during your route if you lose connection to the Internet. Make sure that this playlist is downloaded on your device.</string>
+    <string name="onboarding_fallback_playlist_no_playlist_description">You have no playlists. Add playlists to your Spotify account so that we can detect.</string>
+    <string name="onboarding_fallback_playlist_fail">Something went wrong, please try again. If try again not work, please wait 5 mins.</string>
     <string name="onboarding_all_done">All Done!</string>
     <!--  Settings  -->
     <string name="settings_user_preferences_title">Your Preferences</string>

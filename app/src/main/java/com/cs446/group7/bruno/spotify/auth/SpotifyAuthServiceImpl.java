@@ -40,7 +40,7 @@ public class SpotifyAuthServiceImpl implements SpotifyAuthService {
         final AuthorizationRequest.Builder builder = new AuthorizationRequest.Builder(clientID,
                 AuthorizationResponse.Type.TOKEN, redirectURI);
         builder.setShowDialog(true);
-        builder.setScopes(new String[]{"app-remote-control", "playlist-read-private"});
+        builder.setScopes(new String[]{"app-remote-control", "playlist-read-private", "user-read-private"});
         final AuthorizationRequest authRequest = builder.build();
         final SpotifyRequest spotifyRequest = new SpotifyRequest(authRequest, clientCallback);
         delegate.handleSpotifyRequest(spotifyRequest);
@@ -54,7 +54,7 @@ public class SpotifyAuthServiceImpl implements SpotifyAuthService {
                     try {
                         final JSONObject json = new JSONObject(response);
                         final String subscriptionLvl = json.getString("product");
-                        callback.onSuccess(subscriptionLvl == "premium");
+                        callback.onSuccess(subscriptionLvl.equals("premium"));
                     } catch (JSONException e) {
                         Log.e(TAG, "checkIfUserIsPremium: JSON parsing failure: " + e.getMessage());
                         callback.onFailed(e);

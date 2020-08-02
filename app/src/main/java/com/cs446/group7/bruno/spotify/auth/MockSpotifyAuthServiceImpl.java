@@ -9,7 +9,7 @@ public class MockSpotifyAuthServiceImpl implements SpotifyAuthService {
     }
 
     @Override
-    public void checkIfUserIsPremium(String token, Callback<Boolean, Void> callback) {
+    public void checkIfUserIsPremium(String token, Callback<Boolean, Exception> callback) {
         callback.onSuccess(true);
     }
 }
