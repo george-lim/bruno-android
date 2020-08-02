@@ -3,8 +3,6 @@ package com.cs446.group7.bruno.models;
 import android.location.Location;
 import android.util.Log;
 
-import com.cs446.group7.bruno.colourizedroute.ColourizedRoute;
-import com.cs446.group7.bruno.colourizedroute.ColourizedRouteSegment;
 import com.cs446.group7.bruno.music.BrunoPlaylist;
 import com.cs446.group7.bruno.music.BrunoTrack;
 import com.cs446.group7.bruno.routing.RouteSegment;
@@ -29,29 +27,13 @@ public class RouteModel extends ViewModel {
 
     private Mode mode = Mode.WALK;
     private int durationIndex = 0;
-
-    private List<RouteSegment> routeSegments = null;
-    private int[] routeColours = null;
-    private BrunoPlaylist playlist = null;
-    private ColourizedRoute colourizedRoute = null;
     private Location currentLocation = null;
-    private BrunoTrack currentTrack = null;
     private int steps = 0;
     private Date userStartTime = null;
     private Date userStopTime = null;
 
-    private CheckpointsModel checkpointsModel = null;
-
-    // MARK: - Private methods
-
-    private void updateColourizedRoute() {
-        if (routeSegments != null && routeColours != null && playlist != null) {
-            colourizedRoute = new ColourizedRoute(routeSegments, routeColours, playlist);
-        }
-        else {
-            colourizedRoute = null;
-        }
-    }
+    private PlaylistModel playlistModel = new PlaylistModel();
+    private CheckpointsModel checkpointsModel = new CheckpointsModel();
 
     // MARK: - Public methods
 
@@ -76,26 +58,24 @@ public class RouteModel extends ViewModel {
     }
 
     public void setRouteSegments(final List<RouteSegment> routeSegments) {
-        this.routeSegments = routeSegments;
-        this.checkpointsModel = new CheckpointsModel(routeSegments);
-        updateColourizedRoute();
+        playlistModel.setRouteSegments(routeSegments);
+        checkpointsModel.setRouteSegments(routeSegments);
     }
 
     public void setRouteColours(final int[] routeColours) {
-        this.routeColours = routeColours;
+        playlistModel.setRouteColours(routeColours);
     }
 
     public BrunoPlaylist getPlaylist() {
-        return playlist;
+        return playlistModel.getPlaylist();
     }
 
     public void setPlaylist(final BrunoPlaylist playlist) {
-        this.playlist = playlist;
-        updateColourizedRoute();
+        playlistModel.setPlaylist(playlist);
     }
 
-    public ColourizedRoute getColourizedRoute() {
-        return colourizedRoute;
+    public List<TrackSegment> getTrackSegments() {
+        return playlistModel.getTrackSegments();
     }
 
     public Location getCurrentLocation() {
@@ -107,11 +87,11 @@ public class RouteModel extends ViewModel {
     }
 
     public BrunoTrack getCurrentTrack() {
-        return currentTrack;
+        return playlistModel.getCurrentTrack();
     }
 
     public void setCurrentTrack(final BrunoTrack currentTrack) {
-        this.currentTrack = currentTrack;
+        playlistModel.setCurrentTrack(currentTrack);
     }
 
     public void incrementStep() {
@@ -143,40 +123,15 @@ public class RouteModel extends ViewModel {
         return userStopTime.getTime() - userStartTime.getTime(); // In Milliseconds
     }
 
-    // MARK: - User distance calculations
-
-    // Returns distance travelled by the user on the route
-    private double getUserRouteDistance() {
-        return checkpointsModel.getRouteDistanceToCurrentCheckpoint()
-                - checkpointsModel.getDistanceToCurrentCheckpoint(currentLocation);
-    }
-
-    // Returns distance travelled by the playlist on the route
-    private double getPlaylistRouteDistance(long playbackPosition) {
-        List<BrunoTrack> tracks = playlist.getTracks();
-        List<ColourizedRouteSegment> colourizedRouteSegments = colourizedRoute.getSegments();
-        int i = 0;
-        double distance = 0;
-
-        while (tracks.get(i) != currentTrack) {
-            distance += colourizedRouteSegments.get(i).getDistance();
-            i++;
-        }
-
-        double currentTrackPlaybackRatio = (double)playbackPosition / currentTrack.getDuration();
-        distance += currentTrackPlaybackRatio * colourizedRouteSegments.get(i).getDistance();
-
-        return distance;
-    }
-
     // Returns difference in distance between the user and the playlist on the route
-    public double getUserPlaylistDistance(long playbackPosition) {
-        return getUserRouteDistance() - getPlaylistRouteDistance(playbackPosition);
+    public double getDistanceBetweenUserAndPlaylist(long playbackPosition) {
+        return checkpointsModel.getUserRouteDistance(currentLocation)
+                - playlistModel.getPlaylistRouteDistance(playbackPosition);
     }
 
     // MARK: - CheckpointsModel methods
 
-    public LatLng getCurrentCheckpoint() {
+    public LatLng getCheckpoint() {
         // Fail-safe
         if (hasCompletedAllCheckpoints()) {
             return null;
@@ -194,22 +149,23 @@ public class RouteModel extends ViewModel {
         checkpointsModel.advanceCheckpoint();
     }
 
-    public double getDistanceToCurrentCheckpoint() {
+    public double getDistanceToCheckpoint() {
         // Fail-safe
         if (hasCompletedAllCheckpoints()) {
             return 0;
         }
 
-        return checkpointsModel.getDistanceToCurrentCheckpoint(currentLocation);
+        return checkpointsModel.getDistanceToCheckpoint(currentLocation);
     }
 
     public boolean hasCompletedAllCheckpoints() {
-        // Fail-safe
-        if (checkpointsModel == null) {
-            return true;
-        }
-
         return checkpointsModel.hasCompletedAllCheckpoints();
+    }
+
+    // MARK: - PlaylistModel methods
+
+    public boolean hasTrackSegments() {
+        return playlistModel.getTrackSegments() != null;
     }
 
     /**
@@ -218,7 +174,8 @@ public class RouteModel extends ViewModel {
     public void softReset() {
         userStartTime = null;
         userStopTime = null;
-
+        steps = 0;
+        playlistModel.resetCurrentTrack();
         checkpointsModel.resetCheckpoint();
     }
 
@@ -229,11 +186,8 @@ public class RouteModel extends ViewModel {
         softReset();
         mode = Mode.WALK;
         durationIndex = 0;
-        routeSegments = null;
-        routeColours = null;
-        playlist = null;
-        colourizedRoute = null;
         currentLocation = null;
-        checkpointsModel = null;
+        playlistModel.reset();
+        checkpointsModel.reset();
     }
 }
