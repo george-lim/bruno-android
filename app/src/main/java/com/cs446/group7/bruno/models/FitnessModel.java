@@ -46,7 +46,7 @@ public class FitnessModel extends ViewModel {
 
         for (final WalkRunSession session : sessions) {
             try {
-                fitnessSessionDataList.add(FitnessSessionData.deserialize(session.getMyData()));
+                fitnessSessionDataList.add(FitnessSessionData.deserialize(session.getSessionDataString()));
             } catch (IOException | ClassNotFoundException e) {
                 Log.e(getClass().getSimpleName(), "Failed to load session: " + e.toString());
             }

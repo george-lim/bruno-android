@@ -293,13 +293,13 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
             WalkRunSessionDAO sessionDAO = MainActivity.getPersistenceService().getWalkRunSessionDAO();
 
             WalkRunSession session = new WalkRunSession();
-            session.setMyData(serializedString);
+            session.setSessionDataString(serializedString);
             sessionDAO.insert(session);
 
             List<WalkRunSession> sessions = sessionDAO.getSessions();
 
             for (WalkRunSession s : sessions) {
-                Log.e(this.getClass().getSimpleName(), "Data: " + s.getMyData());
+                Log.e(this.getClass().getSimpleName(), "Data: " + s.getSessionDataString());
             }
 
 
