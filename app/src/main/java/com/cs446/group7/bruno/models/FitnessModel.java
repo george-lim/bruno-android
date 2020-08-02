@@ -63,7 +63,7 @@ public class FitnessModel extends ViewModel {
                     @Override
                     public void onRouteReady(List<RouteSegment> routeSegments) {
                         mockRouteSegments = routeSegments;
-                        playlistGenerator.getPlaylist(new Callback<BrunoPlaylist, Exception>() {
+                        playlistGenerator.discoverPlaylist(new Callback<BrunoPlaylist, Exception>() {
                             @Override
                             public void onSuccess(BrunoPlaylist result) {
                                 mockPlaylist = result;
