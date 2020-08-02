@@ -5,8 +5,6 @@ import android.content.res.Resources;
 import android.location.Location;
 import android.util.Log;
 
-import androidx.annotation.NonNull;
-
 import com.cs446.group7.bruno.BuildConfig;
 import com.cs446.group7.bruno.MainActivity;
 import com.cs446.group7.bruno.R;
@@ -24,6 +22,12 @@ import com.cs446.group7.bruno.utils.Callback;
 import com.cs446.group7.bruno.utils.LatLngUtils;
 import com.cs446.group7.bruno.utils.NoFailCallback;
 import com.google.android.gms.maps.model.LatLng;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
+import androidx.annotation.NonNull;
 
 public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerSubscriber, PedometerSubscriber {
 
@@ -66,7 +70,10 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
         setupUI();
 
         // Connect player, and play playlist after connection succeeds
-        connectPlayer(context, result -> musicPlayer.play());
+        connectPlayer(context, result -> {
+            model.setUserStartTime();
+            musicPlayer.play();
+        });
     }
 
     public void onDestroy() {
@@ -92,7 +99,7 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
         BrunoTrack currentTrack = model.getCurrentTrack();
 
         if (currentTrack != null) {
-            delegate.updateCurrentSongUI(currentTrack.name, currentTrack.album);
+            delegate.updateCurrentSongUI(currentTrack.getName(), currentTrack.getArtists());
         }
 
         delegate.drawRoute(model.getColourizedRoute());
@@ -225,7 +232,7 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
         musicPlayer.getPlaybackPosition(new Callback<Long, Throwable>() {
             @Override
             public void onSuccess(Long playbackPosition) {
-                long songDurationToEndpoint = model.getCurrentTrack().duration - playbackPosition;
+                long songDurationToEndpoint = model.getCurrentTrack().getDuration() - playbackPosition;
                 // expectedDistance is the predicted distance the user will travel before the current song ends
                 double expectedDistance = model.getCurrentLocation().getSpeed() * (songDurationToEndpoint / 1000d);
                 int diff = (int)(expectedDistance - distanceToTrackEndpoint);
@@ -256,8 +263,24 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
     /**
      * Logic when the route is completed goes here.
      */
-    public void onRouteCompleted() {
+    private void onRouteCompleted() {
+        model.setUserStopTime();
         musicPlayer.stopAndDisconnect();
+
+        // TODO: save to fitness records
+        final long userDuration = model.getUserDuration();
+        final Locale locale = resources.getConfiguration().locale;
+
+        final String pattern = "MMM d • h:mm aa";
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat(pattern, locale);
+
+        Date startTime = model.getUserStartTime();
+        Date stopTime = model.getUserStopTime();
+
+        Log.i(getClass().getSimpleName(), String.format("Exercise Start: %s", dateFormat.format(startTime)));
+        Log.i(getClass().getSimpleName(), String.format("Exercise End: %s", dateFormat.format(stopTime)));
+        Log.i(getClass().getSimpleName(), String.format("Exercise duration: %s seconds", userDuration / 1000d));
 
         model.hardReset();
 
@@ -312,7 +335,7 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
     @Override
     public void onTrackChanged(BrunoTrack track) {
         model.setCurrentTrack(track);
-        delegate.updateCurrentSongUI(track.name, track.album);
+        delegate.updateCurrentSongUI(track.getName(), track.getArtists());
         delegate.showRouteInfoCard();
     }
 

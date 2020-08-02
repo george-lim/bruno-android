@@ -21,20 +21,21 @@ public class TrackParser implements SpotifyParser {
             final JSONObject responseTrack = pagingItems.getJSONObject(i).getJSONObject("track");
             final String outputAlbum = responseTrack.getJSONObject("album").getString("name");
 
-            final ArrayList<String> outputArtists = new ArrayList<String>();
+            String outputArtists = "";
             final JSONArray responseArtists = responseTrack.getJSONArray("artists");
-
             // Iterate through the artists of each track
             for (int j = 0; j < responseArtists.length(); ++j) {
-                outputArtists.add(responseArtists.getJSONObject(j).getString("name"));
+                outputArtists += responseArtists.getJSONObject(j).getString("name");
+                if (j + 1 < responseArtists.length()) {
+                    outputArtists += ", ";
+                }
             }
 
             // implicit int to long conversion - harmless
             final long outputDuration = responseTrack.getInt("duration_ms");
             String outputTrackName = responseTrack.getString("name");
 
-            BrunoTrack currentTrack = new BrunoTrack(outputTrackName, outputAlbum,
-                    outputDuration, outputArtists);
+            BrunoTrack currentTrack = new BrunoTrack(outputTrackName, outputArtists, outputDuration);
             tracks.add(currentTrack);
         }
         return tracks;

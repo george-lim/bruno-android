@@ -9,6 +9,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.cs446.group7.bruno.MainActivity;
 import com.cs446.group7.bruno.R;
 import com.cs446.group7.bruno.music.BrunoPlaylist;
+import com.cs446.group7.bruno.music.BrunoPlaylistImpl;
 import com.cs446.group7.bruno.music.BrunoTrack;
 import com.cs446.group7.bruno.music.playlist.PlaylistGenerator;
 import com.cs446.group7.bruno.music.playlist.PlaylistInfo;
@@ -151,8 +152,8 @@ public class SpotifyPlaylistService implements PlaylistGenerator {
                                 new Callback<List<BrunoTrack>, Exception>() {
                                     @Override
                                     public void onSuccess(List<BrunoTrack> result) {
-                                        final BrunoPlaylist outputPlaylist = new BrunoPlaylist(playlistId, outputPlaylistName,
-                                                outputDescription, result);
+                                        final BrunoPlaylist outputPlaylist = new BrunoPlaylistImpl(playlistId,
+                                                outputPlaylistName, result);
                                         callback.onSuccess(outputPlaylist);
                                     }
 
