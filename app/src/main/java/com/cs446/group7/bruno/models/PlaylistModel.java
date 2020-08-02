@@ -171,11 +171,15 @@ public class PlaylistModel {
         return distance;
     }
 
+    public void resetCurrentTrack() {
+        setCurrentTrack(null);
+    }
+
     public void reset() {
         routeSegments = null;
         routeColours = null;
         playlist = null;
         trackSegments = null;
-        currentTrack = null;
+        resetCurrentTrack();
     }
 }

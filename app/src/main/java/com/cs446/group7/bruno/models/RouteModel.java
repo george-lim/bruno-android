@@ -174,7 +174,8 @@ public class RouteModel extends ViewModel {
     public void softReset() {
         userStartTime = null;
         userStopTime = null;
-
+        steps = 0;
+        playlistModel.resetCurrentTrack();
         checkpointsModel.resetCheckpoint();
     }
 
@@ -183,11 +184,9 @@ public class RouteModel extends ViewModel {
      */
     public void hardReset() {
         softReset();
-
         mode = Mode.WALK;
         durationIndex = 0;
         currentLocation = null;
-
         playlistModel.reset();
         checkpointsModel.reset();
     }
