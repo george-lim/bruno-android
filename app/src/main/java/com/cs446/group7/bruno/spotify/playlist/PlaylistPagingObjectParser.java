@@ -10,7 +10,9 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-// This class is capable of parsing the paging items from the Spotify API into a list of PlaylistMetadata
+/**
+ * Pages the items of a Spotify paging object into a list of PlaylistMetadata.
+ */
 public class PlaylistPagingObjectParser extends SpotifyPagingObjectParser<PlaylistMetadata> {
 
     public PlaylistPagingObjectParser(final String token, final DefaultRetryPolicy retryPolicy) {

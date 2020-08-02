@@ -6,6 +6,9 @@ import com.cs446.group7.bruno.utils.Callback;
 
 import java.util.List;
 
+/**
+ * This class is responsible for implementing functions which call the Spotify Web API.
+ */
 public interface SpotifyPlaylistAPI {
     void getPublicAuthorizationToken(final Callback<String, Exception> callback);
     void getPlaylist(final String playlistId,

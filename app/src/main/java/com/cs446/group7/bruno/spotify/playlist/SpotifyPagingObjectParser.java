@@ -18,7 +18,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-// This interface allows us to select the type of parsing we wish to do on the items of a paging object
+/**
+ * This class is used to handle the paging objects which are returned from the Web API
+ * Subclasses are capable of parsing the paging object into lists of different types
+ * The recursive parsing logic is performed between getPagingObject() and parsePagingObject()
+ */
 public abstract class SpotifyPagingObjectParser<T>  {
 
     private String token;
@@ -34,6 +38,8 @@ public abstract class SpotifyPagingObjectParser<T>  {
 
     protected abstract List<T> parsePagingItems(JSONArray pagingItems) throws JSONException;
 
+    // Given a paging object, process the items using a specific type of parser, and then get the next paging object
+    // if there is one available.
     public void parsePagingObject(final JSONObject pagingObj, final Callback<List<T>, Exception> callback) {
         try {
             List<T> pagingResult = this.parsePagingItems(pagingObj.getJSONArray("items"));
@@ -61,6 +67,7 @@ public abstract class SpotifyPagingObjectParser<T>  {
         }
     }
 
+    // Sends a request to the Spotify Web API to get a paging object, and then parses it.
     private void getPagingObject(final String url, final Callback<JSONObject, Exception> callback) {
         final StringRequest stringRequest = new StringRequest(Request.Method.GET,
                 url,

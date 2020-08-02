@@ -19,7 +19,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,10 +52,8 @@ public class SpotifyPlaylistService implements PlaylistGenerator, SpotifyPlaylis
         clientSecret = context.getResources().getString(R.string.spotify_client_secret);
     }
 
-    // Call this to get the BrunoPlaylist - it goes through authentication and then the playlist
+    // Call this to get the BrunoPlaylist - it goes through public authentication and then the playlist
     // endpoint to provide the BrunoPlaylist requested by callback
-    // All failures are sent back through callback.onFailed
-    // Needs internet access to succeed, since it uses API calls
     public void discoverPlaylist(final Callback<BrunoPlaylist, Exception> callback) {
         getPublicAuthorizationToken(new Callback<String, Exception>() {
             @Override
@@ -72,7 +69,7 @@ public class SpotifyPlaylistService implements PlaylistGenerator, SpotifyPlaylis
     }
 
     // Retrieves a list of the user's playlists which they can select from for their fallback playlist
-    // NOTE: The tracks within the playlists will not be retrieved, since it is not used during playlist selection
+    // Requires an access token which is capable of retrieving private playlist information
     public void getUserPlaylistLibrary(final String accessToken, final Callback<List<PlaylistMetadata>, Exception> callback) {
         final StringRequest stringRequest = new StringRequest(Request.Method.GET,
                 "https://api.spotify.com/v1/me/playlists",
@@ -99,8 +96,9 @@ public class SpotifyPlaylistService implements PlaylistGenerator, SpotifyPlaylis
         addRetryAndSendRequest(stringRequest);
     }
 
-    // In order to use the Spotify API, an authorization token needs to be retrieved from Spotify
-    // Using the client id and client secret, we can retrieve this token first before using the playlist endpoint
+    // In order to use the Spotify API, an authorization token needs to be retrieved from Spotify using our
+    // application credentials. Using the client id and client secret, we can retrieve this token first before using
+    // the playlist endpoint.
     public void getPublicAuthorizationToken(final Callback<String, Exception> callback) {
         final StringRequest authRequest = new StringRequest(Request.Method.POST, authorizationEndpoint,
                 response -> {
@@ -108,11 +106,11 @@ public class SpotifyPlaylistService implements PlaylistGenerator, SpotifyPlaylis
                         final JSONObject responseJson = new JSONObject(response);
                         callback.onSuccess(responseJson.getString("access_token"));
                     } catch (JSONException e) {
-                        Log.e(TAG, "getAuthorizationToken: JSON parsing failure: " + e.getMessage());
+                        Log.e(TAG, "getPublicAuthorizationToken: JSON parsing failure: " + e.getMessage());
                         callback.onFailed(e);
                     }
                 }, error -> {
-            Log.e(TAG, "getAuthorizationToken: Error with sending the request: " + error.getMessage());
+            Log.e(TAG, "getPublicAuthorizationToken: Error with sending the request: " + error.getMessage());
             callback.onFailed(new Exception(error));
         }) {
             @Override
@@ -130,7 +128,7 @@ public class SpotifyPlaylistService implements PlaylistGenerator, SpotifyPlaylis
                 try {
                     return requestBody == null ? null : requestBody.getBytes("utf-8");
                 } catch (UnsupportedEncodingException e) {
-                    Log.e(TAG, "getAuthorizationToken: Failed to encode request body: " + e.getMessage());
+                    Log.e(TAG, "getPublicAuthorizationToken: Failed to encode request body: " + e.getMessage());
                     callback.onFailed(e);
                     return null;
                 }
@@ -139,9 +137,9 @@ public class SpotifyPlaylistService implements PlaylistGenerator, SpotifyPlaylis
         addRetryAndSendRequest(authRequest);
     }
 
-    // With the authorization token, we can use the playlist API to retrieve a JSON representation
-    // of the playlist. This gets parsed in BrunoPlaylist.getPlaylistFromJSON(), and returned to
-    // the callback.
+    // Returns a playlist using Spotify's playlist endpoint using the token and playlist id. The token should have
+    // sufficient credentials to access the playlist. (e.g. a public access token is not capable of retrieving the
+    // user's private playlists)
     public void getPlaylist(final String token,
                              final String playlistId,
                              final Callback<BrunoPlaylist, Exception> callback) {

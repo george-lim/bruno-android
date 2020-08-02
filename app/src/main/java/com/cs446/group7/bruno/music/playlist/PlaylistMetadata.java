@@ -4,7 +4,7 @@ import com.cs446.group7.bruno.music.BrunoTrack;
 
 import java.util.List;
 
-// Contains information about a playlist
+// Contains playlist metadata
 public class PlaylistMetadata {
 
     private final String id;

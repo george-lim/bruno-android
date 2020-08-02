@@ -9,6 +9,9 @@ import com.cs446.group7.bruno.utils.Callback;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Mock class which will generate fake responses from the Spotify API.
+ */
 public class MockSpotifyPlaylistAPIImpl implements SpotifyPlaylistAPI {
     public void getPublicAuthorizationToken(final Callback<String, Exception> callback) {
         callback.onSuccess("token");
@@ -26,7 +29,7 @@ public class MockSpotifyPlaylistAPIImpl implements SpotifyPlaylistAPI {
             tracks.add(new BrunoTrack("name" + i, artists, threeMinutes));
         }
 
-        callback.onSuccess(new BrunoPlaylistImpl("id", "name", tracks));
+        callback.onSuccess(new BrunoPlaylistImpl(playlistId, "name", tracks));
     }
 
     public void getUserPlaylistLibrary(String accessToken, final Callback<List<PlaylistMetadata>, Exception> callback) {
