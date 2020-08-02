@@ -125,7 +125,8 @@ public class PlaylistModel {
         List<TrackSegment> trackSegments = getTrackSegments();
         double distance = 0;
 
-        for (int i = 0; i < trackIndex; ++i) {
+        // Only iterate up to trackSegments.size() if Bruno has finished the route
+        for (int i = 0; i < Math.min(trackIndex, trackSegments.size()); ++i) {
             distance += trackSegments.get(i % tracks.size()).getDistance();
         }
 
@@ -168,11 +169,6 @@ public class PlaylistModel {
 
     public void setCurrentTrack(final BrunoTrack currentTrack) {
         this.currentTrack = currentTrack;
-
-        /* trackIndex equals number of track segments if Bruno has already finished the route,
-           do not increment trackIndex afterwards */
-        if (trackSegments != null && trackIndex + 1 > trackSegments.size()) return;
-
         trackIndex++;
     }
 
@@ -181,7 +177,7 @@ public class PlaylistModel {
         double distance = getCompletedTrackSegmentsDistance();
 
         // Bruno has finished the route and is stationary, do not increment distance
-        if (trackIndex == trackSegments.size()) {
+        if (trackIndex >= trackSegments.size()) {
             return distance;
         }
 
@@ -205,7 +201,7 @@ public class PlaylistModel {
     // Returns the location on the route corresponding to the current track's playback position
     public Coordinate getPlaylistRouteLocation(long playbackPosition) {
         // Bruno has finished and is stationary at the start/end location of the route
-        if (trackIndex == trackSegments.size()) {
+        if (trackIndex >= trackSegments.size()) {
             return routeSegments.get(0).getStartCoordinate();
         }
 
