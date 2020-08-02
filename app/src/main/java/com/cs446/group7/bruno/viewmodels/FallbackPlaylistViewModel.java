@@ -2,10 +2,10 @@ package com.cs446.group7.bruno.viewmodels;
 
 import com.cs446.group7.bruno.BuildConfig;
 import com.cs446.group7.bruno.MainActivity;
-import com.cs446.group7.bruno.music.playlist.MockPlaylistGeneratorImpl;
-import com.cs446.group7.bruno.music.playlist.PlaylistGenerator;
-import com.cs446.group7.bruno.music.playlist.PlaylistInfo;
+import com.cs446.group7.bruno.music.playlist.PlaylistMetadata;
 import com.cs446.group7.bruno.spotify.auth.SpotifyAuthService;
+import com.cs446.group7.bruno.spotify.playlist.MockSpotifyPlaylistAPIImpl;
+import com.cs446.group7.bruno.spotify.playlist.SpotifyPlaylistAPI;
 import com.cs446.group7.bruno.utils.Callback;
 
 import java.util.List;
@@ -24,10 +24,10 @@ public class FallbackPlaylistViewModel {
         auth.requestUserAuth(new Callback<String, Void>() {
             @Override
             public void onSuccess(String token) {
-                getPlaylistGenerator().getUserPlaylists(token, new Callback<List<PlaylistInfo>, Exception>() {
+                getSpotifyPlaylistAPI().getUserPlaylistLibrary(token, new Callback<List<PlaylistMetadata>, Exception>() {
                     @Override
-                    public void onSuccess(List<PlaylistInfo> playlistInfos) {
-                        delegate.updatePlaylistData(playlistInfos);
+                    public void onSuccess(List<PlaylistMetadata> playlistMetadata) {
+                        delegate.updatePlaylistData(playlistMetadata);
                     }
 
                     @Override
@@ -44,9 +44,9 @@ public class FallbackPlaylistViewModel {
         });
     }
 
-    private PlaylistGenerator getPlaylistGenerator() {
+    private SpotifyPlaylistAPI getSpotifyPlaylistAPI() {
         return BuildConfig.DEBUG
-                ? new MockPlaylistGeneratorImpl()
+                ? new MockSpotifyPlaylistAPIImpl()
                 : MainActivity.getSpotifyService().getPlaylistService();
     }
 }

@@ -13,11 +13,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.cs446.group7.bruno.R;
-import com.cs446.group7.bruno.music.playlist.PlaylistInfo;
+import com.cs446.group7.bruno.music.playlist.PlaylistMetadata;
 import com.cs446.group7.bruno.viewmodels.FallbackPlaylistViewModel;
 import com.cs446.group7.bruno.viewmodels.FallbackPlaylistViewModelDelegate;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class FallbackPlaylistFragment extends Fragment implements FallbackPlaylistViewModelDelegate {
@@ -51,7 +50,7 @@ public class FallbackPlaylistFragment extends Fragment implements FallbackPlayli
         fallbackPlaylistsList.setHasFixedSize(true);
         fallbackPlaylistsList.setLayoutManager(new LinearLayoutManager(getActivity()));
         // Data
-        adapter = new FallbackPlaylistsAdapter(new ArrayList());
+        adapter = new FallbackPlaylistsAdapter();
         fallbackPlaylistsList.setAdapter(adapter);
     }
 
@@ -59,8 +58,8 @@ public class FallbackPlaylistFragment extends Fragment implements FallbackPlayli
         Log.d("borisg", "saving playlist");
     }
 
-    public void updatePlaylistData(final List<PlaylistInfo> playlistInfos) {
-        adapter.setPlaylistInfo(playlistInfos);
+    public void updatePlaylistData(final List<PlaylistMetadata> playlists) {
+        adapter.setPlaylists(playlists);
         adapter.notifyDataSetChanged();
     }
 }

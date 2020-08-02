@@ -10,17 +10,18 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.cs446.group7.bruno.R;
-import com.cs446.group7.bruno.music.playlist.PlaylistInfo;
+import com.cs446.group7.bruno.music.playlist.PlaylistMetadata;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class FallbackPlaylistsAdapter extends RecyclerView.Adapter<FallbackPlaylistsAdapter.FallbackPlaylistViewHolder> {
 
-    private List<PlaylistInfo> playlists;
+    private List<PlaylistMetadata> playlists;
     private int positionSelected = 0;
 
-    public FallbackPlaylistsAdapter(final List<PlaylistInfo> playlists) {
-        this.playlists = playlists;
+    public FallbackPlaylistsAdapter() {
+        this.playlists = new ArrayList<>();
     }
 
     @NonNull
@@ -41,8 +42,8 @@ public class FallbackPlaylistsAdapter extends RecyclerView.Adapter<FallbackPlayl
         return playlists.size();
     }
 
-    public void setPlaylistInfo(List<PlaylistInfo> playlistInfos) {
-        playlists = playlistInfos;
+    public void setPlaylists(List<PlaylistMetadata> playlists) {
+        this.playlists = playlists;
     }
 
     public class FallbackPlaylistViewHolder extends RecyclerView.ViewHolder {
@@ -60,9 +61,9 @@ public class FallbackPlaylistsAdapter extends RecyclerView.Adapter<FallbackPlayl
             radioButton.setOnClickListener(this::handleItemSelected);
         }
 
-        public void updateUI(PlaylistInfo playlistInfo) {
-            playlistName.setText(playlistInfo.name);
-            playlistNumTracks.setText(playlistInfo.numTracks + " tracks");
+        public void updateUI(PlaylistMetadata playlistInfo) {
+            playlistName.setText(playlistInfo.getName());
+            playlistNumTracks.setText(playlistInfo.getTrackCount() + " tracks");
         }
 
         private void handleItemSelected(final View view) {
