@@ -57,8 +57,6 @@ public class FitnessRecordData implements Serializable {
         return (FitnessRecordData) result;
     }
 
-    public boolean isWalk() { return mode == Mode.WALK; }
-
     public boolean isRun() { return mode == Mode.RUN; }
 
     public Date getStartTime() {
