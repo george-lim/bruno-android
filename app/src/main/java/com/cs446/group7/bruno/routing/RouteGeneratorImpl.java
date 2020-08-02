@@ -18,7 +18,7 @@ import java.util.List;
 public class RouteGeneratorImpl extends RouteGenerator {
     private final String TAG = getClass().getSimpleName();
 
-    public RouteGeneratorImpl(Context context, String gMapsApiKey) {
+    public RouteGeneratorImpl(final Context context, final String gMapsApiKey) {
         super(context, gMapsApiKey);
     }
 

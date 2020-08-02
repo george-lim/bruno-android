@@ -24,7 +24,7 @@ public abstract class RouteGenerator {
     protected static final int DEG_PER_PI_RADIAN = 180;
     protected static final int NUMBER_OF_POINTS = 3;
 
-    protected Context context;
+    protected final Context context;
     protected final String gMapsApiKey;
 
     /**
@@ -48,7 +48,9 @@ public abstract class RouteGenerator {
      * @param rotation rotation (rad)
      * @return list of {@code LatLng} points in route order
      */
-    static List<Coordinate> generateWaypoints(final Coordinate origin, double totalDistance, double rotation) {
+    protected static List<Coordinate> generateWaypoints(final Coordinate origin,
+                                                        double totalDistance,
+                                                        double rotation) {
         final double distanceInLatLngDegree = distanceToLatLngDegree(origin, totalDistance);
         final double l = distanceInLatLngDegree / NUMBER_OF_POINTS;
         final double a = 2 * Math.PI / NUMBER_OF_POINTS;
@@ -73,7 +75,8 @@ public abstract class RouteGenerator {
      * @param routeJson json containing the raw response
      * @throws JSONException
      */
-    static List<RouteSegment> parseRouteSegmentsFromJson(final JSONObject routeJson) throws JSONException {
+    protected static List<RouteSegment> parseRouteSegmentsFromJson(final JSONObject routeJson)
+            throws JSONException {
         String encodedPath = routeJson.getJSONArray("routes")
                 .getJSONObject(0)
                 .getJSONObject("overview_polyline")
@@ -107,7 +110,7 @@ public abstract class RouteGenerator {
      * @param origin origin coordinate
      * @param totalDistance distance (m)
      */
-    static double distanceToLatLngDegree(final Coordinate origin, double totalDistance) {
+    private static double distanceToLatLngDegree(final Coordinate origin, double totalDistance) {
         final double metresPerLngDegree = metresPerLngDegree(origin.getLatitude());
         // assuming that we typically travel in N-S direction as much as in E-W for now
         final double averageMetresPerLatLngDegree = (METRES_PER_LAT_DEG + metresPerLngDegree) / 2;
@@ -117,11 +120,11 @@ public abstract class RouteGenerator {
     /**
      * Converts Latitude and longitude measures to distance in meters
      */
-    static double metresPerLngDegree(double lat) {
+    private static double metresPerLngDegree(double lat) {
         return (EARTH_CIRCUMFERENCE_METRES * Math.cos(lat * (Math.PI / DEG_PER_PI_RADIAN))) / (2 * DEG_PER_PI_RADIAN);
     }
 
-    public RouteGenerator(Context context, final String gMapsApiKey) {
+    public RouteGenerator(final Context context, final String gMapsApiKey) {
         this.context = context;
         this.gMapsApiKey = gMapsApiKey;
     }
