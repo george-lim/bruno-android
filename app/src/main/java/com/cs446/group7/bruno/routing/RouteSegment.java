@@ -9,10 +9,10 @@ public class RouteSegment {
 
     public RouteSegment(final Coordinate startCoordinate,
                         final Coordinate endCoordinate,
-                        final long milliseconds) {
+                        final long duration) {
         this.startCoordinate = startCoordinate;
         this.endCoordinate = endCoordinate;
-        this.duration = milliseconds;
+        this.duration = duration;
     }
 
     public Coordinate getStartCoordinate() {
