@@ -15,7 +15,6 @@ import com.cs446.group7.bruno.routing.RouteGenerator;
 import com.cs446.group7.bruno.routing.RouteGeneratorException;
 import com.cs446.group7.bruno.routing.RouteSegment;
 import com.cs446.group7.bruno.utils.Callback;
-import com.google.android.gms.maps.model.LatLng;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -32,6 +31,7 @@ public class FitnessModel extends ViewModel {
     // TODO: Remove all after when real data is given (this is Mock data)
     private List<RouteSegment> mockRouteSegments;
     private BrunoPlaylist mockPlaylist;
+    private final String TAG = getClass().getSimpleName();
 
     public FitnessModel() {
         loadFitnessRecords();
@@ -47,7 +47,7 @@ public class FitnessModel extends ViewModel {
             try {
                 fitnessRecordDataList.add(FitnessRecordData.deserialize(entry.getRecordDataString()));
             } catch (IOException | ClassNotFoundException e) {
-                Log.e(getClass().getSimpleName(), "Failed to load record: " + e.toString());
+                Log.e(TAG, "Failed to load record: " + e.toString());
             }
         }
 
@@ -93,7 +93,9 @@ public class FitnessModel extends ViewModel {
                                                     data.serialize()
                                             )
                                     );
-                                } catch (IOException | ClassNotFoundException ignored) {}
+                                } catch (IOException | ClassNotFoundException e) {
+                                    Log.e(TAG, "Failed to load dummy record: " + e.toString());
+                                }
 
                                 fitnessRecordDataList.add(new FitnessRecordData(
                                         FitnessRecordData.Mode.RUN,
@@ -141,16 +143,20 @@ public class FitnessModel extends ViewModel {
                             }
 
                             @Override
-                            public void onFailed(Exception result) {}
+                            public void onFailed(Exception result) {
+                                Log.e(TAG, result.toString());
+                            }
                         });
 
                     }
 
                     @Override
-                    public void onRouteError(RouteGeneratorException exception) {}
+                    public void onRouteError(RouteGeneratorException exception) {
+                        Log.e(TAG, exception.toString());
+                    }
                 },
-                new LatLng(43.464951, -80.523911),
-                2400,
+                null,
+                0,
                 0
         );
     }
