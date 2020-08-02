@@ -141,7 +141,13 @@ public class PlaylistModel {
     }
 
     public void mergePlaylist(final BrunoPlaylist playlist, long playbackPosition) {
-        this.playlist = new MergedBrunoPlaylistImpl(this.playlist, playlist, currentTrack, playbackPosition);
+        this.playlist = new MergedBrunoPlaylistImpl(
+                this.playlist,
+                playlist,
+                currentTrack,
+                playbackPosition
+        );
+
         trackSegments = processSegments();
     }
 
@@ -153,6 +159,7 @@ public class PlaylistModel {
         return currentTrack;
     }
 
+    // TODO: Decide how we handle current track desync with playlist.
     public void setCurrentTrack(final BrunoTrack currentTrack) {
         this.currentTrack = currentTrack;
         trackIndex++;
@@ -169,7 +176,8 @@ public class PlaylistModel {
         }
 
         double currentTrackPlaybackRatio = (double)playbackPosition / currentTrack.getDuration();
-        distance += currentTrackPlaybackRatio * trackSegments.get(trackIndex).getDistance();
+        double currentTrackDistance = trackSegments.get(trackIndex % tracks.size()).getDistance();
+        distance += currentTrackPlaybackRatio * currentTrackDistance;
 
         return distance;
     }
@@ -182,6 +190,17 @@ public class PlaylistModel {
         }
 
         return distance;
+    }
+
+    public long getTotalPlaybackDuration(long playbackPosition) {
+        List<BrunoTrack> tracks = playlist.getTracks();
+        long duration = 0;
+
+        for (int i = 0; i < trackIndex; ++i) {
+            duration += tracks.get(i % tracks.size()).getDuration();
+        }
+
+        return duration + playbackPosition;
     }
 
     public void resetPlayback() {

@@ -41,13 +41,7 @@ public class MergedBrunoPlaylistImpl extends BrunoPlaylist {
             mergedTracks.add(track);
         }
 
-        BrunoTrack splitMergeTrack = new BrunoTrack(
-                mergeTrack.getName(),
-                mergeTrack.getArtists(),
-                mergeTrackPlaylistPosition
-        );
-
-        mergedTracks.add(splitMergeTrack);
+        mergedTracks.add(mergeTrack.split(mergeTrackPlaylistPosition));
         mergedTracks.addAll(secondaryPlaylist.getTracks());
 
         return mergedTracks;
