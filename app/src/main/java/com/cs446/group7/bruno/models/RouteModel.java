@@ -26,7 +26,7 @@ public class RouteModel extends ViewModel {
 
     // MARK: - Constants
 
-    public static final int[] DURATIONS_IN_MINUTES = { 15, 30, 45, 60, 75 };
+    public static final int[] DURATIONS_IN_MINUTES = { 15, 30, 45, 60, 75, 90, 105, 120 };
 
     // MARK: - Private members
 
@@ -77,6 +77,10 @@ public class RouteModel extends ViewModel {
 
     public void setPlaylist(final BrunoPlaylist playlist) {
         playlistModel.setPlaylist(playlist);
+    }
+
+    public void mergePlaylist(final BrunoPlaylist playlist, long playbackPosition) {
+        playlistModel.mergePlaylist(playlist, playbackPosition);
     }
 
     public List<TrackSegment> getTrackSegments() {
@@ -198,7 +202,7 @@ public class RouteModel extends ViewModel {
         userStartTime = null;
         userStopTime = null;
         steps = 0;
-        playlistModel.resetCurrentTrack();
+        playlistModel.resetPlayback();
         checkpointsModel.resetCheckpoint();
     }
 

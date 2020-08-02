@@ -10,11 +10,13 @@ import com.cs446.group7.bruno.MainActivity;
 import com.cs446.group7.bruno.R;
 import com.cs446.group7.bruno.location.LocationServiceSubscriber;
 import com.cs446.group7.bruno.models.RouteModel;
+import com.cs446.group7.bruno.music.BrunoPlaylist;
 import com.cs446.group7.bruno.music.BrunoTrack;
 import com.cs446.group7.bruno.music.player.MockMusicPlayerImpl;
 import com.cs446.group7.bruno.music.player.MusicPlayer;
 import com.cs446.group7.bruno.music.player.MusicPlayerException;
 import com.cs446.group7.bruno.music.player.MusicPlayerSubscriber;
+import com.cs446.group7.bruno.music.playlist.MockPlaylistGeneratorImpl;
 import com.cs446.group7.bruno.preferencesstorage.PreferencesStorage;
 import com.cs446.group7.bruno.sensor.PedometerSubscriber;
 import com.cs446.group7.bruno.settings.SettingsService;
@@ -99,12 +101,15 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
 
         delegate.drawRoute(model.getTrackSegments());
 
-        updateDistanceBetweenUserAndPlaylist();
-        updateDistanceToCheckpoint();
+        refreshUI();
+    }
 
+    private void refreshUI() {
         final Location currentLocation = model.getCurrentLocation();
         final float bearing = currentLocation.getBearing();
         delegate.animateCamera(LatLngUtils.locationToLatLng(currentLocation), bearing, CAMERA_TILT, CAMERA_ZOOM);
+        updateDistanceBetweenUserAndPlaylist();
+        updateDistanceToCheckpoint();
     }
 
     private void showPlayerConnectProgressDialog() {
@@ -238,6 +243,18 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
         delegate.updateDistanceToCheckpoint((int)distanceToCheckpoint + " m");
     }
 
+    private void handlePlaylistChange(final BrunoPlaylist playlist, long playbackPosition) {
+        musicPlayer.stop();
+        musicPlayer.setPlayerPlaylist(playlist);
+
+        model.mergePlaylist(playlist, playbackPosition);
+        delegate.clearMap();
+        delegate.drawRoute(model.getTrackSegments());
+        refreshUI();
+
+        musicPlayer.play();
+    }
+
     /**
      * Logic when the route is completed goes here.
      */
@@ -287,9 +304,7 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
     public void onLocationUpdate(@NonNull Location location) {
         if (isRouteCompleted) return;
         model.setCurrentLocation(location);
-        delegate.animateCamera(LatLngUtils.locationToLatLng(location), location.getBearing(), CAMERA_TILT, CAMERA_ZOOM);
-        updateDistanceBetweenUserAndPlaylist();
-        updateDistanceToCheckpoint();
+        refreshUI();
     }
 
     // MARK: - MusicPlayerSubscriber methods
