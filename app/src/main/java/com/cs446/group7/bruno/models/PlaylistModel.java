@@ -18,7 +18,7 @@ public class PlaylistModel {
     private BrunoPlaylist playlist;
     private List<TrackSegment> trackSegments;
     private BrunoTrack currentTrack;
-    private int trackIndex = 0;
+    private int trackIndex;
 
     // MARK: - Lifecycle methods
 
@@ -180,7 +180,8 @@ public class PlaylistModel {
 
     public void resetPlayback() {
         setCurrentTrack(null);
-        trackIndex = 0;
+        // NOTE: Must be -1 because setting first song also calls onTrackChanged.
+        trackIndex = -1;
     }
 
     public void reset() {
