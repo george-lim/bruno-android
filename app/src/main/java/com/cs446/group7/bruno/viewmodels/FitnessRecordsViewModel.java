@@ -15,6 +15,10 @@ public class FitnessRecordsViewModel {
         this.resources = context.getResources();
         this.model = model;
         this.delegate = delegate;
+    }
+
+    public void onResume() {
+        model.loadFitnessRecords();
         setupUI();
     }
 

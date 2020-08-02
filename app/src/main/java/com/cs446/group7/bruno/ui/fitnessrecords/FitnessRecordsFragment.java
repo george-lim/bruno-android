@@ -69,4 +69,10 @@ public class FitnessRecordsFragment extends Fragment implements FitnessRecordsVi
         final FitnessRecordsAdapter adapter = new FitnessRecordsAdapter(detailsDAOList, locale);
         fitnessRecordsList.setAdapter(adapter);
     }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        viewModel.onResume();
+    }
 }

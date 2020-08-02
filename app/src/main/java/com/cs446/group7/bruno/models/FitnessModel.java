@@ -25,7 +25,7 @@ import androidx.lifecycle.ViewModel;
 
 public class FitnessModel extends ViewModel {
 
-    private List<FitnessRecordData> fitnessRecordDataList;
+    private List<FitnessRecordData> fitnessRecordDataList = new ArrayList<>();
     private int selectedIndex;
 
     // TODO: Remove all after when real data is given (this is Mock data)
@@ -33,12 +33,8 @@ public class FitnessModel extends ViewModel {
     private BrunoPlaylist mockPlaylist;
     private final String TAG = getClass().getSimpleName();
 
-    public FitnessModel() {
-        loadFitnessRecords();
-    }
-
-    private void loadFitnessRecords() {
-        fitnessRecordDataList = new ArrayList<>();
+    public void loadFitnessRecords() {
+        fitnessRecordDataList.clear();
 
         final FitnessRecordDAO fitnessRecordDAO = MainActivity.getPersistenceService().getFitnessRecordDAO();
         final List<FitnessRecordEntry> entries = fitnessRecordDAO.getRecords();
@@ -170,6 +166,6 @@ public class FitnessModel extends ViewModel {
     }
 
     public List<FitnessRecordData> getFitnessRecords() {
-        return fitnessRecordDataList == null ? new ArrayList<>() : fitnessRecordDataList;
+        return fitnessRecordDataList;
     }
 }
