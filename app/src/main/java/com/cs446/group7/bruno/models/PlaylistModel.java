@@ -210,42 +210,37 @@ public class PlaylistModel {
         double completedDistanceInCurrentTrackSegment =
                 playlistRouteDistance - completedTrackSegmentsDistance;
 
-        final List<Coordinate> currentTrackSegmentLocations =
+        final List<Coordinate> currentTrackSegmentCoordinates =
                 trackSegments.get(trackIndex).getCoordinates();
 
         double distance = 0;
-        Coordinate playlistRouteLocation = null;
+        Coordinate playlistRouteCoordinate = null;
 
-        for (int i = 0; i < currentTrackSegmentLocations.size() - 1; ++i) {
-            final Coordinate routeSegmentStart = currentTrackSegmentLocations.get(i);
-            final Coordinate routeSegmentEnd = currentTrackSegmentLocations.get(i + 1);
+        for (int i = 0; i < currentTrackSegmentCoordinates.size() - 1; ++i) {
+            final Coordinate routeSegmentStart = currentTrackSegmentCoordinates.get(i);
+            final Coordinate routeSegmentEnd = currentTrackSegmentCoordinates.get(i + 1);
 
-            double nextRouteSegmentDistance = currentTrackSegmentLocations
-                    .get(i)
-                    .getDistance(currentTrackSegmentLocations.get(i + 1));
+            double routeSegmentDistance = routeSegmentStart.getDistance(routeSegmentEnd);
 
-
-            if (distance + nextRouteSegmentDistance >= completedDistanceInCurrentTrackSegment) {
+            if (distance + routeSegmentDistance >= completedDistanceInCurrentTrackSegment) {
                 double diffLat = routeSegmentEnd.getLatitude() - routeSegmentStart.getLatitude();
                 double diffLng = routeSegmentEnd.getLongitude() - routeSegmentStart.getLongitude();
-                double routeSegmentDistance = routeSegmentStart.getDistance(routeSegmentEnd);
 
-                double playbackRatioInCurrentRouteSegment =
-                        (completedDistanceInCurrentTrackSegment - distance) / routeSegmentDistance;
+                double currentTrackPlaybackRatio = (double)playbackPosition / currentTrack.getDuration();
 
                 double playlistLocationLat =
-                        routeSegmentStart.getLatitude() + (diffLat * playbackRatioInCurrentRouteSegment);
+                        routeSegmentStart.getLatitude() + (diffLat * currentTrackPlaybackRatio);
                 double playlistLocationLng =
-                        routeSegmentStart.getLongitude() + (diffLng * playbackRatioInCurrentRouteSegment);
+                        routeSegmentStart.getLongitude() + (diffLng * currentTrackPlaybackRatio);
 
-                playlistRouteLocation = new Coordinate(playlistLocationLat, playlistLocationLng);
+                playlistRouteCoordinate = new Coordinate(playlistLocationLat, playlistLocationLng);
                 break;
             }
 
-            distance += nextRouteSegmentDistance;
+            distance += routeSegmentDistance;
         }
 
-        return playlistRouteLocation;
+        return playlistRouteCoordinate;
     }
 
     public void resetPlayback() {
