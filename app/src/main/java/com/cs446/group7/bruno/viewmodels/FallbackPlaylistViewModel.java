@@ -11,6 +11,7 @@ import com.cs446.group7.bruno.music.playlist.PlaylistMetadata;
 import com.cs446.group7.bruno.spotify.SpotifyService;
 import com.cs446.group7.bruno.spotify.playlist.MockSpotifyPlaylistAPIImpl;
 import com.cs446.group7.bruno.spotify.playlist.SpotifyPlaylistAPI;
+import com.cs446.group7.bruno.ui.shared.FallbackPlaylistAction;
 import com.cs446.group7.bruno.utils.Callback;
 import com.cs446.group7.bruno.utils.ClosureQueue;
 
@@ -19,14 +20,17 @@ import java.util.List;
 public class FallbackPlaylistViewModel {
 
     private Context context;
+    private FallbackPlaylistAction wrapperDelegate;
     private FallbackPlaylistViewModelDelegate delegate;
     private String token;
     private boolean ongoingRequest;
     public final String TAG = this.getClass().getSimpleName();
 
     public FallbackPlaylistViewModel(final Context context,
+                                     final FallbackPlaylistAction wrapperDelegate,
                                      final FallbackPlaylistViewModelDelegate delegate) {
         this.context = context;
+        this.wrapperDelegate = wrapperDelegate;
         this.delegate = delegate;
     }
 
@@ -42,14 +46,12 @@ public class FallbackPlaylistViewModel {
         // Make sure have necessary capabilities
         boolean isSpotifyInstalled = SpotifyService.isSpotifyInstalled(context);
         if (!isSpotifyInstalled) {
-            delegate.showSpotifyErrorView(
-                    context.getResources().getString(R.string.onboarding_missing_spotify_installation_description));
+            showSpotifyError(context.getResources().getString(R.string.onboarding_missing_spotify_installation_description));
             return;
         }
         boolean hasInternet = MainActivity.getCapabilityService().isCapabilityEnabled(Capability.INTERNET);
         if (!hasInternet) {
-            delegate.showSpotifyErrorView(
-                    context.getResources().getString(R.string.onboarding_missing_internet_text));
+            showSpotifyError(context.getResources().getString(R.string.onboarding_missing_internet_text));
             return;
         }
 
@@ -68,8 +70,7 @@ public class FallbackPlaylistViewModel {
                     @Override
                     public void onFailed(Void result) {
                         Log.d(TAG, "Get user auth fail");
-                        delegate.showSpotifyErrorView(
-                                context.getResources().getString(R.string.onboarding_fallback_playlist_fail));
+                        showSpotifyError(context.getResources().getString(R.string.onboarding_fallback_playlist_fail));
                         callback.onFailed(null);
                     }
                 });
@@ -80,8 +81,7 @@ public class FallbackPlaylistViewModel {
                 @Override
                 public void onSuccess(Boolean isPremium) {
                     if (!isPremium) {
-                        delegate.showSpotifyErrorView(
-                                context.getResources().getString(R.string.onboarding_missing_spotify_installation_description));
+                        showNotPremiumUser();
                         callback.onFailed(null);
                     } else {
                         callback.onSuccess(null);
@@ -91,8 +91,7 @@ public class FallbackPlaylistViewModel {
                 @Override
                 public void onFailed(Exception e) {
                     Log.d(TAG, "Check if user is premium fail");
-                    delegate.showSpotifyErrorView(
-                            context.getResources().getString(R.string.onboarding_fallback_playlist_fail));
+                    showSpotifyError(context.getResources().getString(R.string.onboarding_fallback_playlist_fail));
                     callback.onFailed(null);
                 }
             });
@@ -102,9 +101,9 @@ public class FallbackPlaylistViewModel {
                 @Override
                 public void onSuccess(List<PlaylistMetadata> playlistMetadata) {
                     if (playlistMetadata.size() == 0) {
-                        delegate.showNoPlaylistsView();
+                        showNoPlaylist();
                     } else {
-                        delegate.showPlaylistSelectionView(playlistMetadata);
+                        showSelectPlaylist(playlistMetadata);
                     }
                     callback.onSuccess(null);
                 }
@@ -112,8 +111,7 @@ public class FallbackPlaylistViewModel {
                 @Override
                 public void onFailed(Exception result) {
                     Log.d(TAG, "Get user playlists fail");
-                    delegate.showSpotifyErrorView(
-                            context.getResources().getString(R.string.onboarding_fallback_playlist_fail));
+                    showSpotifyError(context.getResources().getString(R.string.onboarding_fallback_playlist_fail));
                     callback.onFailed(null);
                 }
             });
@@ -131,13 +129,43 @@ public class FallbackPlaylistViewModel {
         });
     }
 
-    public void getPlaylistDetails(PlaylistMetadata playlist) {
-
-    }
 
     private SpotifyPlaylistAPI getSpotifyPlaylistAPI() {
         return BuildConfig.DEBUG
                 ? new MockSpotifyPlaylistAPIImpl()
                 : MainActivity.getSpotifyService().getPlaylistService();
+    }
+
+    private void showSelectPlaylist(List<PlaylistMetadata> playlists) {
+        wrapperDelegate.updatePrimaryAction(
+                FallbackPlaylistAction.ActionType.SELECT_PLAYLIST,
+                view -> wrapperDelegate.onSelectPlaylistPressed());
+        delegate.showPlaylistSelectionView(playlists);
+    }
+
+    private void showNoPlaylist() {
+        wrapperDelegate.updatePrimaryAction(
+                FallbackPlaylistAction.ActionType.NO_PLAYLIST,
+                view -> wrapperDelegate.onNoPlaylistPressed());
+        delegate.showNoPlaylistsView();
+    }
+
+    private void showNotPremiumUser() {
+        wrapperDelegate.updatePrimaryAction(
+                FallbackPlaylistAction.ActionType.QUIT,
+                view -> delegate.quitApp());
+        delegate.showSpotifyErrorView(
+                context.getResources().getString(R.string.onboarding_fallback_playlist_not_premium_user));
+    }
+
+    private void showSpotifyError(final String errorText) {
+        wrapperDelegate.updatePrimaryAction(
+                FallbackPlaylistAction.ActionType.QUIT,
+                view -> delegate.quitApp());
+        delegate.showSpotifyErrorView(errorText);
+    }
+
+    private void getPlaylistDetails(PlaylistMetadata playlist) {
+
     }
 }

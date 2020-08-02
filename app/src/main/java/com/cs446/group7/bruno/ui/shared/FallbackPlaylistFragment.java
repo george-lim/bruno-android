@@ -31,7 +31,8 @@ public class FallbackPlaylistFragment extends Fragment implements FallbackPlayli
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        viewModel = new FallbackPlaylistViewModel(getActivity().getApplicationContext(), this);
+        FallbackPlaylistAction wrapperFragment = (FallbackPlaylistAction) this.getParentFragment();
+        viewModel = new FallbackPlaylistViewModel(getActivity().getApplicationContext(), wrapperFragment,this);
     }
 
     @Override
@@ -93,5 +94,10 @@ public class FallbackPlaylistFragment extends Fragment implements FallbackPlayli
         playlistSelectionView.setVisibility(View.INVISIBLE);
         noPlaylistsView.setVisibility(View.INVISIBLE);
         spotifyErrorView.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void quitApp() {
+        requireActivity().finish();
     }
 }

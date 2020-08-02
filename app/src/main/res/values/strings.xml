@@ -15,6 +15,7 @@
     <string name="allow_access_button">Allow Access</string>
     <string name="select_button">Select</string>
     <string name="install_button">Install</string>
+    <string name="quit_button">Quit</string>
     <string name="onboarding_welcome">Welcome to Bruno!</string>
     <string name="onboarding_welcome_text">Bruno is a fitness app that augments your walk or run routines with randomly generated routes and music discovery.</string>
     <string name="onboarding_record">Learn More About Yourself</string>
@@ -27,7 +28,7 @@
     <string name="onboarding_request_active_internet_title">Active Internet</string>
     <string name="onboarding_request_active_internet_hint">Load map data, generate routes, and stream music</string>
     <string name="onboarding_request_spotify_title">Spotify</string>
-    <string name="onboarding_request_spotify_hint">Requires Spotify Premium</string>
+    <string name="onboarding_request_spotify_hint">Requires Spotify to be installed</string>
     <string name="onboarding_missing_spotify_installation_title">Spotify Not Installed</string>
     <string name="onboarding_missing_spotify_installation_description">Spotify app not found on the device, please install it from the Play Store.</string>
     <string name="onboarding_missing_access_title">Missing Access</string>
@@ -35,8 +36,9 @@
     <string name="onboarding_missing_internet_text">Bruno requires an active internet connection to proceed. Please wait until your device is connected to an active network before proceeding.</string>
     <string name="onboarding_fallback_playlist_title">Pick a Fallback Playlist</string>
     <string name="onboarding_fallback_playlist_hint">Select a Spotify playlist to use during your route if you lose connection to the Internet. Make sure that this playlist is downloaded on your device.</string>
-    <string name="onboarding_fallback_playlist_no_playlist_description">You have no playlists. Add playlists to your Spotify account so that we can detect.</string>
-    <string name="onboarding_fallback_playlist_fail">Something went wrong, please try again. If try again not work, please wait 5 mins.</string>
+    <string name="onboarding_fallback_playlist_no_playlist_description">You currently have no Spotify playlists. Add a playlist to your Spotify account and configure your fallback playlist in settings.</string>
+    <string name="onboarding_fallback_playlist_fail">Something went wrong, please try again later.</string>
+    <string name="onboarding_fallback_playlist_not_premium_user">Unfortunately, Bruno requires Spotify Premium to work.</string>
     <string name="onboarding_all_done">All Done!</string>
     <!--  Settings  -->
     <string name="settings_user_preferences_title">Your Preferences</string>

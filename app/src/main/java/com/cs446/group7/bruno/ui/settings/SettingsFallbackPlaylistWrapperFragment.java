@@ -12,11 +12,13 @@ import androidx.fragment.app.FragmentManager;
 
 import com.cs446.group7.bruno.R;
 import com.cs446.group7.bruno.ui.AppbarFormatter;
+import com.cs446.group7.bruno.ui.shared.FallbackPlaylistAction;
 import com.cs446.group7.bruno.ui.shared.FallbackPlaylistFragment;
 
-public class SettingsFallbackPlaylistWrapperFragment extends Fragment {
+public class SettingsFallbackPlaylistWrapperFragment extends Fragment implements FallbackPlaylistAction {
 
     private FallbackPlaylistFragment fallbackPlaylistFragment;
+    private Button btnPrimaryAction;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -28,13 +30,8 @@ public class SettingsFallbackPlaylistWrapperFragment extends Fragment {
                 R.id.appbar_fallback_playlist,
                 getResources().getString(R.string.settings_fallback_playlist_title),
                 true);
-        FragmentManager fragmentManager = getChildFragmentManager();
-        Fragment f = fragmentManager.findFragmentByTag("tag_fallback_playlist");
-        if (f instanceof FallbackPlaylistFragment) {
-            fallbackPlaylistFragment = (FallbackPlaylistFragment) f;
-        }
-        Button btnSave = view.findViewById(R.id.btn_save);
-        btnSave.setOnClickListener(this::handleSave);
+        btnPrimaryAction = view.findViewById(R.id.btn_primary_action);
+        btnPrimaryAction.setOnClickListener(this::handleSave);
         return view;
     }
 
@@ -42,4 +39,31 @@ public class SettingsFallbackPlaylistWrapperFragment extends Fragment {
         fallbackPlaylistFragment.saveSelectedPlaylist();
     }
 
+
+    @Override
+    public void updatePrimaryAction(ActionType action, View.OnClickListener clickListener) {
+        switch (action) {
+            case SELECT_PLAYLIST:
+                btnPrimaryAction.setText(getResources().getString(R.string.save_button));
+                break;
+            case NO_PLAYLIST:
+                btnPrimaryAction.setText(getResources().getString(R.string.ok_button));
+                break;
+            case QUIT:
+                btnPrimaryAction.setText(getResources().getString(R.string.quit_button));
+                break;
+        }
+        btnPrimaryAction.setOnClickListener(clickListener);
+        btnPrimaryAction.setEnabled(true);
+    }
+
+    @Override
+    public void onSelectPlaylistPressed() {
+        requireActivity().onBackPressed();
+    }
+
+    @Override
+    public void onNoPlaylistPressed() {
+        requireActivity().onBackPressed();
+    }
 }

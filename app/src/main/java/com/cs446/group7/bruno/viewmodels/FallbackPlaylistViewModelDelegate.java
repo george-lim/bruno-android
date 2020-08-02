@@ -8,4 +8,5 @@ public interface FallbackPlaylistViewModelDelegate {
     void showPlaylistSelectionView(List<PlaylistMetadata> playlists);
     void showNoPlaylistsView();
     void showSpotifyErrorView(final String errorText);
+    void quitApp();
 }
