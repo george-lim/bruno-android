@@ -2,8 +2,10 @@ package com.cs446.group7.bruno.viewmodels;
 
 import androidx.annotation.NonNull;
 
-import com.cs446.group7.bruno.colourizedroute.ColourizedRoute;
+import com.cs446.group7.bruno.models.TrackSegment;
 import com.google.android.gms.maps.model.LatLng;
+
+import java.util.List;
 
 public interface RoutePlanningViewModelDelegate {
     void setupUI(final String startBtnText,
@@ -17,7 +19,7 @@ public interface RoutePlanningViewModelDelegate {
     void updateStartBtnText(final String text);
     void updateSelectedModeBtn(boolean isWalkingModeBtnSelected);
     void clearMap();
-    void drawRoute(@NonNull final ColourizedRoute colourizedRoute);
+    void drawRoute(@NonNull final List<TrackSegment> trackSegments);
     void moveUserMarker(final LatLng location);
     void showRouteProcessingError(final String errorMessage);
     void navigateToNextScreen();

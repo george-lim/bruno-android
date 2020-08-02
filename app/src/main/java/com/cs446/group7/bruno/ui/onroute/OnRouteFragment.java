@@ -22,9 +22,8 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 
 import com.cs446.group7.bruno.R;
-import com.cs446.group7.bruno.colourizedroute.ColourizedRoute;
-import com.cs446.group7.bruno.colourizedroute.ColourizedRouteSegment;
 import com.cs446.group7.bruno.models.RouteModel;
+import com.cs446.group7.bruno.models.TrackSegment;
 import com.cs446.group7.bruno.utils.BitmapUtils;
 import com.cs446.group7.bruno.viewmodels.OnRouteViewModel;
 import com.cs446.group7.bruno.viewmodels.OnRouteViewModelDelegate;
@@ -41,6 +40,8 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
+import java.util.List;
+
 public class OnRouteFragment extends Fragment implements OnRouteViewModelDelegate {
 
     // MARK: - UI components
@@ -51,8 +52,8 @@ public class OnRouteFragment extends Fragment implements OnRouteViewModelDelegat
     private TextView txtSongTitle;
     private TextView txtSongArtistInfo;
     private ImageView progressIndicator;
-    private TextView txtProgressToTrackEndpoint;
-    private TextView txtDistanceToTrackEndpoint;
+    private TextView txtUserPlaylistDistance;
+    private TextView txtCheckpointDistance;
     private ImageButton btnExitRoute;
 
     // MARK: - Private members
@@ -80,9 +81,9 @@ public class OnRouteFragment extends Fragment implements OnRouteViewModelDelegat
         routeInfoCardView = view.findViewById(R.id.card_view_route_info);
         txtSongTitle = view.findViewById(R.id.text_view_song_title);
         txtSongArtistInfo = view.findViewById(R.id.text_view_song_artist_info);
-        progressIndicator = view.findViewById(R.id.image_view_progress_to_track_endpoint_icon);
-        txtProgressToTrackEndpoint = view.findViewById(R.id.text_view_progress_to_track_endpoint);
-        txtDistanceToTrackEndpoint = view.findViewById(R.id.text_view_distance_to_track_endpoint);
+        progressIndicator = view.findViewById(R.id.image_view_user_playlist_distance);
+        txtUserPlaylistDistance = view.findViewById(R.id.text_view_user_playlist_distance);
+        txtCheckpointDistance = view.findViewById(R.id.text_view_checkpoint_distance);
         btnExitRoute = view.findViewById(R.id.btn_exit_route);
         return view;
     }
@@ -141,13 +142,13 @@ public class OnRouteFragment extends Fragment implements OnRouteViewModelDelegat
     }
 
     @Override
-    public void drawRoute(@NonNull final ColourizedRoute colourizedRoute) {
+    public void drawRoute(@NonNull final List<TrackSegment> trackSegments) {
         final float routeWidth = 14;
 
-        for (ColourizedRouteSegment colourizedRouteSegment : colourizedRoute.getSegments()) {
+        for (TrackSegment trackSegment : trackSegments) {
             map.addPolyline(new PolylineOptions()
-                    .addAll(colourizedRouteSegment.getLocations())
-                    .color(colourizedRouteSegment.getRouteColour())
+                    .addAll(trackSegment.getLocations())
+                    .color(trackSegment.getRouteColour())
                     .width(routeWidth));
         }
     }
@@ -274,18 +275,20 @@ public class OnRouteFragment extends Fragment implements OnRouteViewModelDelegat
     }
 
     @Override
-    public void updateDistanceToTrackEndpoint(final String distanceText) {
-        txtDistanceToTrackEndpoint.setText(distanceText);
-        txtDistanceToTrackEndpoint.setVisibility(View.VISIBLE);
-    }
-
-    @Override
-    public void updateProgressToTrackEndpoint(final String progressText, final Drawable progressIcon, int colour) {
-        txtProgressToTrackEndpoint.setText(progressText);
+    public void updateDistanceBetweenUserAndPlaylist(final String progressText,
+                                                     final Drawable progressIcon,
+                                                     int colour) {
+        txtUserPlaylistDistance.setText(progressText);
         progressIndicator.setImageDrawable(progressIcon);
         progressIndicator.setColorFilter(colour);
         progressIndicator.setVisibility(View.VISIBLE);
-        txtProgressToTrackEndpoint.setVisibility(View.VISIBLE);
+        txtUserPlaylistDistance.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void updateDistanceToCheckpoint(final String distanceText) {
+        txtCheckpointDistance.setText(distanceText);
+        txtCheckpointDistance.setVisibility(View.VISIBLE);
     }
 
     @Override
