@@ -2,7 +2,7 @@ package com.cs446.group7.bruno.routing;
 
 import android.content.Context;
 
-import com.google.android.gms.maps.model.LatLng;
+import com.cs446.group7.bruno.location.Coordinate;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -24,7 +24,10 @@ public class MockRouteGeneratorImpl extends RouteGenerator {
     }
 
     @Override
-    public void generateRoute(OnRouteResponseCallback callback, LatLng start, double totalDistance, double rotation) {
+    public void generateRoute(final OnRouteResponseCallback callback,
+                              final Coordinate origin,
+                              double totalDistance,
+                              double rotation) {
         try {
             callback.onRouteReady(parseRouteSegmentsFromJson(new JSONObject(mockResponses[currentIndex])));
             currentIndex = (currentIndex + 1) % mockResponses.length;

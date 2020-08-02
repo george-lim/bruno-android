@@ -6,7 +6,7 @@ import android.util.Log;
 import com.android.volley.Request;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.cs446.group7.bruno.MainActivity;
-import com.google.android.gms.maps.model.LatLng;
+import com.cs446.group7.bruno.location.Coordinate;
 
 import org.json.JSONException;
 
@@ -16,31 +16,35 @@ import java.util.List;
  * {@link RouteGenerator} real implementation that uses Google's Directions API to generate routes.
  */
 public class RouteGeneratorImpl extends RouteGenerator {
+    private final String TAG = getClass().getSimpleName();
 
     public RouteGeneratorImpl(Context context, String gMapsApiKey) {
         super(context, gMapsApiKey);
     }
 
     @Override
-    public void generateRoute(final OnRouteResponseCallback callback, final LatLng start, final double totalDistance, double rotation) {
+    public void generateRoute(final OnRouteResponseCallback callback,
+                              final Coordinate origin,
+                              final double totalDistance,
+                              double rotation) {
 
         // Select waypoints forming an equilateral triangle
-        final List<LatLng> waypoints = generateWaypoints(start, totalDistance, rotation);
+        final List<Coordinate> waypoints = generateWaypoints(origin, totalDistance, rotation);
 
         // Build waypoint string
         String waypointDelimiter = "";
         StringBuilder builder = new StringBuilder();
-        for (final LatLng waypoint : waypoints.subList(1, waypoints.size())) {
+        for (final Coordinate waypoint : waypoints.subList(1, waypoints.size())) {
             builder.append(waypointDelimiter);
             waypointDelimiter = "|";
-            builder.append(waypoint.latitude)
+            builder.append(waypoint.getLatitude())
                     .append(",")
-                    .append(waypoint.longitude);
+                    .append(waypoint.getLongitude());
         }
 
         final String url = DIRECTIONS_ENDPOINT + "json?" +
-                "origin=" + start.latitude + "," + start.longitude + "&"+
-                "destination=" + start.latitude + "," + start.longitude + "&" +
+                "origin=" + origin.getLatitude() + "," + origin.getLongitude() + "&"+
+                "destination=" + origin.getLatitude() + "," + origin.getLongitude() + "&" +
                 "waypoints=" + builder.toString() + "&" +
                 "mode=walking&" +
                 "avoid=tolls|highways|ferries&" +
