@@ -18,6 +18,7 @@ public class PlaylistModel {
     private BrunoPlaylist playlist;
     private List<TrackSegment> trackSegments;
     private BrunoTrack currentTrack;
+    private int trackIndex = 0;
 
     // MARK: - Lifecycle methods
 
@@ -148,22 +149,21 @@ public class PlaylistModel {
 
     public void setCurrentTrack(final BrunoTrack currentTrack) {
         this.currentTrack = currentTrack;
+        trackIndex++;
     }
 
     // Returns distance travelled by the playlist on the route
     public double getPlaylistRouteDistance(long playbackPosition) {
         List<BrunoTrack> tracks = playlist.getTracks();
         List<TrackSegment> trackSegments = getTrackSegments();
-        int i = 0;
         double distance = 0;
 
-        while (tracks.get(i % tracks.size()) != currentTrack) {
-            distance += trackSegments.get(i).getDistance();
-            i++;
+        for (int i = 0; i < trackIndex; ++i) {
+            distance += trackSegments.get(i % tracks.size()).getDistance();
         }
 
         double currentTrackPlaybackRatio = (double)playbackPosition / currentTrack.getDuration();
-        distance += currentTrackPlaybackRatio * trackSegments.get(i).getDistance();
+        distance += currentTrackPlaybackRatio * trackSegments.get(trackIndex).getDistance();
 
         return distance;
     }
@@ -178,8 +178,9 @@ public class PlaylistModel {
         return distance;
     }
 
-    public void resetCurrentTrack() {
+    public void resetPlayback() {
         setCurrentTrack(null);
+        trackIndex = 0;
     }
 
     public void reset() {
@@ -187,6 +188,6 @@ public class PlaylistModel {
         routeColours = null;
         playlist = null;
         trackSegments = null;
-        resetCurrentTrack();
+        resetPlayback();
     }
 }

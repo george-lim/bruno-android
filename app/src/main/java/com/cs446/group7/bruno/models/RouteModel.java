@@ -175,7 +175,7 @@ public class RouteModel extends ViewModel {
         userStartTime = null;
         userStopTime = null;
         steps = 0;
-        playlistModel.resetCurrentTrack();
+        playlistModel.resetPlayback();
         checkpointsModel.resetCheckpoint();
     }
 

@@ -123,6 +123,7 @@ class SpotifyPlayerService implements MusicPlayer {
                         if (currentPlayerState != null && track.equals(currentPlayerState.track)) {
                             // same track, perhaps just paused
                             Log.w(TAG, "Same track!");
+                            return;
                         }
 
                         for (MusicPlayerSubscriber subscriber : spotifyServiceSubscribers) {
