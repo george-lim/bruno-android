@@ -8,7 +8,7 @@ public abstract class BrunoPlaylist {
     public abstract String getName();
     public abstract List<BrunoTrack> getTracks();
 
-    public double getDuration() {
+    public long getDuration() {
         long duration = 0;
 
         for (BrunoTrack track : getTracks()) {
