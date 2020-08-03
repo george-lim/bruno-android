@@ -309,19 +309,6 @@ class SpotifyPlayerService implements MusicPlayer {
                 });
     }
 
-    public void getPlaybackPosition(final Callback<Long, Throwable> callback) {
-        if (!isConnected()) {
-            callback.onFailed(new SpotifyDisconnectedException());
-            return;
-        }
-
-        mSpotifyAppRemote
-                .getPlayerApi()
-                .getPlayerState()
-                .setResultCallback(playerState -> callback.onSuccess(playerState.playbackPosition))
-                .setErrorCallback(callback::onFailed);
-    }
-
     // Converts Spotify's Track object to a BrunoTrack object
     private static BrunoTrack convertToBrunoTrack(@NonNull final Track track) {
         String artists = "";

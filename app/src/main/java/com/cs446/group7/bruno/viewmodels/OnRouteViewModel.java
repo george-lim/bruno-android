@@ -172,34 +172,21 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
             return;
         }
 
-        musicPlayer.getPlaybackPosition(new Callback<Long, Throwable>() {
-            @Override
-            public void onSuccess(Long playbackPosition) {
-                int userPlaylistDistance = (int)model.getDistanceBetweenUserAndPlaylist(playbackPosition);
+        int userPlaylistDistance = (int)model.getDistanceBetweenUserAndPlaylist(playbackPosition);
 
-                if (userPlaylistDistance < 0) {
-                    delegate.updateDistanceBetweenUserAndPlaylist(
-                            -userPlaylistDistance + " m",
-                            resources.getDrawable(R.drawable.ic_angle_double_down, null),
-                            resources.getColor(R.color.colorPrimary, null));
-                } else {
-                    delegate.updateDistanceBetweenUserAndPlaylist(
-                            userPlaylistDistance + " m",
-                            resources.getDrawable(R.drawable.ic_angle_double_up, null),
-                            resources.getColor(R.color.colorSecondary, null));
-                }
+        if (userPlaylistDistance < 0) {
+            delegate.updateDistanceBetweenUserAndPlaylist(
+                    -userPlaylistDistance + " m",
+                    resources.getDrawable(R.drawable.ic_angle_double_down, null),
+                    resources.getColor(R.color.colorPrimary, null));
+        } else {
+            delegate.updateDistanceBetweenUserAndPlaylist(
+                    userPlaylistDistance + " m",
+                    resources.getDrawable(R.drawable.ic_angle_double_up, null),
+                    resources.getColor(R.color.colorSecondary, null));
+        }
 
-                updateBrunoCoordinate(playbackPosition);
-            }
-
-            @Override
-            public void onFailed(Throwable error) {
-                Log.e(getClass().getSimpleName(),
-                        error.getLocalizedMessage() == null
-                                ? "Error occurred when getting playback position"
-                                : error.getLocalizedMessage());
-            }
-        });
+        updateBrunoCoordinate(playbackPosition);
     }
 
     private void updateBrunoCoordinate(long playbackPosition) {
@@ -245,7 +232,7 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
 
             if (model.hasCompletedAllCheckpoints()) {
                 isRouteCompleted = true;
-                stopRouteNavigation(result -> onRouteCompleted());
+                onRouteCompleted();
             }
             else {
                 delegate.updateCheckpointMarker(model.getCheckpoint().getLatLng(), toleranceRadius);
@@ -268,29 +255,13 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
         musicPlayer.play();
     }
 
-    // Final model changes before route completion
-    private void stopRouteNavigation(final NoFailCallback<Void> callback) {
-        musicPlayer.getPlaybackPosition(new Callback<Long, Throwable>() {
-            @Override
-            public void onSuccess(Long result) {
-                model.stopRouteNavigation(result);
-                model.hardReset();
-                callback.onSuccess(null);
-            }
-
-            @Override
-            public void onFailed(Throwable result) {
-                model.stopRouteNavigation(0);
-                model.hardReset();
-                callback.onSuccess(null);
-            }
-        });
-    }
-
     /**
      * Logic when the route is completed goes here.
      */
     private void onRouteCompleted() {
+        model.stopRouteNavigation(playbackPosition);
+        model.hardReset();
+
         musicPlayer.stopAndDisconnect();
 
         delegate.updateDistanceBetweenUserAndPlaylist("0 m",
