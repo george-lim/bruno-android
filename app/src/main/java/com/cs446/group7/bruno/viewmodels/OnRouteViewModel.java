@@ -67,7 +67,7 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
 
         // Connect player, and play playlist after connection succeeds
         connectPlayer(context, result -> {
-            model.setUserStartTime();
+            model.startRouteNavigation();
             musicPlayer.play();
         });
     }
@@ -245,7 +245,7 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
 
             if (model.hasCompletedAllCheckpoints()) {
                 isRouteCompleted = true;
-                onRouteCompleted();
+                stopRouteNavigation(result -> onRouteCompleted());
             }
             else {
                 delegate.updateCheckpointMarker(model.getCheckpoint().getLatLng(), toleranceRadius);
@@ -268,17 +268,30 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
         musicPlayer.play();
     }
 
+    // Final model changes before route completion
+    private void stopRouteNavigation(final NoFailCallback<Void> callback) {
+        musicPlayer.getPlaybackPosition(new Callback<Long, Throwable>() {
+            @Override
+            public void onSuccess(Long result) {
+                model.stopRouteNavigation(result);
+                model.hardReset();
+                callback.onSuccess(null);
+            }
+
+            @Override
+            public void onFailed(Throwable result) {
+                model.stopRouteNavigation(0);
+                model.hardReset();
+                callback.onSuccess(null);
+            }
+        });
+    }
+
     /**
      * Logic when the route is completed goes here.
      */
     private void onRouteCompleted() {
-        model.setUserStopTime();
         musicPlayer.stopAndDisconnect();
-
-        model.saveRecordToDatabase();
-
-        model.hardReset();
-
         delegate.updateDistanceBetweenUserAndPlaylist("0 m",
                 resources.getDrawable(R.drawable.ic_angle_double_up, null),
                 resources.getColor(R.color.colorSecondary, null));

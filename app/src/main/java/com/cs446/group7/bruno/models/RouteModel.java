@@ -35,8 +35,7 @@ public class RouteModel extends ViewModel {
     private Location currentLocation = null;
     private Coordinate currentCoordinate = null;
     private int steps = 0;
-    private Date userStartTime = null;
-    private Date userStopTime = null;
+    private Date startDate = null;
 
     private PlaylistModel playlistModel = new PlaylistModel();
     private CheckpointsModel checkpointsModel = new CheckpointsModel();
@@ -113,41 +112,25 @@ public class RouteModel extends ViewModel {
         steps++;
     }
 
-    public void setUserStartTime() {
-        userStartTime = new Date();
+    public void startRouteNavigation() {
+        startDate = new Date();
     }
 
-    public void setUserStopTime() {
-        userStopTime = new Date();
-    }
+    public void stopRouteNavigation(long playbackPosition) {
+        long userDuration = playlistModel.getTotalPlaybackDuration(playbackPosition);
+        List<BrunoTrack> tracks = playlistModel
+                .getPlaylist()
+                .getTracksUpToDuration(userDuration);
 
-    public long getUserDuration() {
-        if (userStartTime == null || userStopTime == null) {
-            Log.w(getClass().getSimpleName(), "getUserDuration called but start/end time was not set first");
-            return -1;
-        }
-
-        return userStopTime.getTime() - userStartTime.getTime(); // In Milliseconds
-    }
-
-    // Returns difference in distance between the user and the playlist on the route
-    public double getDistanceBetweenUserAndPlaylist(long playbackPosition) {
-        return checkpointsModel.getUserRouteDistance(currentCoordinate)
-                - playlistModel.getPlaylistRouteDistance(playbackPosition);
-    }
-
-    /**
-     * Persists the fitness record data to DB
-     */
-    public void saveRecordToDatabase() {
+        // Persist tracks to database.
         final FitnessRecordData fitnessRecordData = new FitnessRecordData(
                 mode == RouteModel.Mode.RUN ? FitnessRecordData.Mode.RUN : FitnessRecordData.Mode.WALK,
-                userStartTime,
-                getUserDuration(),
-                playlistModel.getPlaylist().getDuration(),
+                startDate,
+                userDuration,
+                4567,  //playlistModel.getPlaylist().getDuration(),
                 playlistModel.getTotalRouteDistance(),
                 steps,
-                getPlaylist().getTracks(),
+                tracks,
                 getTrackSegments()
         );
 
@@ -160,6 +143,12 @@ public class RouteModel extends ViewModel {
         } catch (IOException e) {
             Log.e(getClass().getSimpleName(), "Failed to store FitnessRecord in DB: " + e.toString());
         }
+    }
+
+    // Returns difference in distance between the user and the playlist on the route
+    public double getDistanceBetweenUserAndPlaylist(long playbackPosition) {
+        return checkpointsModel.getUserRouteDistance(currentCoordinate)
+                - playlistModel.getPlaylistRouteDistance(playbackPosition);
     }
 
     public Coordinate getPlaylistRouteCoordinate(long playbackPosition) {
@@ -209,8 +198,7 @@ public class RouteModel extends ViewModel {
      * Resets the progress of the current route, and stats, but keeps the route and checkpoints.
      */
     public void softReset() {
-        userStartTime = null;
-        userStopTime = null;
+        startDate = null;
         steps = 0;
         playlistModel.resetPlayback();
         checkpointsModel.resetCheckpoint();

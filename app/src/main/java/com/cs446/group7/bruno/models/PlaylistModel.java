@@ -156,7 +156,13 @@ public class PlaylistModel implements Serializable {
     }
 
     public void mergePlaylist(final BrunoPlaylist playlist, long playbackPosition) {
-        this.playlist = new MergedBrunoPlaylistImpl(this.playlist, playlist, currentTrack, playbackPosition);
+        this.playlist = new MergedBrunoPlaylistImpl(
+                this.playlist,
+                playlist,
+                currentTrack,
+                playbackPosition
+        );
+
         trackSegments = processSegments();
     }
 
@@ -168,6 +174,7 @@ public class PlaylistModel implements Serializable {
         return currentTrack;
     }
 
+    // TODO: Decide how we handle current track desync with playlist.
     public void setCurrentTrack(final BrunoTrack currentTrack) {
         this.currentTrack = currentTrack;
         trackIndex++;
@@ -175,6 +182,7 @@ public class PlaylistModel implements Serializable {
 
     // Returns distance travelled by the playlist on the route
     public double getPlaylistRouteDistance(long playbackPosition) {
+        List<BrunoTrack> tracks = playlist.getTracks();
         double distance = getCompletedTrackSegmentsDistance();
 
         // Bruno has finished the route and is stationary, do not increment distance
@@ -184,7 +192,8 @@ public class PlaylistModel implements Serializable {
 
         // Add distance traveled in current TrackSegment
         double currentTrackPlaybackRatio = (double)playbackPosition / currentTrack.getDuration();
-        distance += currentTrackPlaybackRatio * trackSegments.get(trackIndex).getDistance();
+        double currentTrackDistance = trackSegments.get(trackIndex % tracks.size()).getDistance();
+        distance += currentTrackPlaybackRatio * currentTrackDistance;
 
         return distance;
     }
@@ -197,6 +206,17 @@ public class PlaylistModel implements Serializable {
         }
 
         return distance;
+    }
+
+    public long getTotalPlaybackDuration(long playbackPosition) {
+        List<BrunoTrack> tracks = playlist.getTracks();
+        long duration = 0;
+
+        for (int i = 0; i < trackIndex; ++i) {
+            duration += tracks.get(i % tracks.size()).getDuration();
+        }
+
+        return duration + playbackPosition;
     }
 
     // Returns the location on the route corresponding to the current track's playback position
