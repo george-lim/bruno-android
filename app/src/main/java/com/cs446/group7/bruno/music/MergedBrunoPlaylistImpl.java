@@ -7,7 +7,7 @@ public class MergedBrunoPlaylistImpl extends BrunoPlaylist {
     private BrunoPlaylist primaryPlaylist;
     private BrunoPlaylist secondaryPlaylist;
     private BrunoTrack mergeTrack;
-    private long mergeTrackPlaylistPosition;
+    private long mergeTrackPlaybackPosition;
 
     public MergedBrunoPlaylistImpl(final BrunoPlaylist primaryPlaylist,
                                    final BrunoPlaylist secondaryPlaylist,
@@ -16,7 +16,7 @@ public class MergedBrunoPlaylistImpl extends BrunoPlaylist {
         this.primaryPlaylist = primaryPlaylist;
         this.secondaryPlaylist = secondaryPlaylist;
         this.mergeTrack = mergeTrack;
-        this.mergeTrackPlaylistPosition = mergeTrackPlaybackPosition;
+        this.mergeTrackPlaybackPosition = mergeTrackPlaybackPosition;
     }
 
     @Override
@@ -41,7 +41,7 @@ public class MergedBrunoPlaylistImpl extends BrunoPlaylist {
             mergedTracks.add(track);
         }
 
-        mergedTracks.add(mergeTrack.split(mergeTrackPlaylistPosition));
+        mergedTracks.add(mergeTrack.split(mergeTrackPlaybackPosition));
         mergedTracks.addAll(secondaryPlaylist.getTracks());
 
         return mergedTracks;
