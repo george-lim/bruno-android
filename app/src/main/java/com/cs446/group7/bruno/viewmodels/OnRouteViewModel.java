@@ -172,7 +172,7 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
             return;
         }
 
-        int userPlaylistDistance = (int)model.getDistanceBetweenUserAndPlaylist(playbackPosition);
+        int userPlaylistDistance = (int)model.getDistanceBetweenUserAndPlaylist();
 
         if (userPlaylistDistance < 0) {
             delegate.updateDistanceBetweenUserAndPlaylist(
@@ -186,11 +186,11 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
                     resources.getColor(R.color.colorSecondary, null));
         }
 
-        updateBrunoCoordinate(playbackPosition);
+        updateBrunoCoordinate();
     }
 
-    private void updateBrunoCoordinate(long playbackPosition) {
-        final Coordinate brunoCoordinate = model.getPlaylistRouteCoordinate(playbackPosition);
+    private void updateBrunoCoordinate() {
+        final Coordinate brunoCoordinate = model.getPlaylistRouteCoordinate();
 
         // Fail-safe
         if (brunoCoordinate == null) return;
@@ -243,11 +243,11 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
         delegate.updateDistanceToCheckpoint((int)distanceToCheckpoint + " m");
     }
 
-    private void handlePlaylistChange(final BrunoPlaylist playlist, long playbackPosition) {
+    private void handlePlaylistChange(final BrunoPlaylist playlist) {
         musicPlayer.stop();
         musicPlayer.setPlayerPlaylist(playlist);
 
-        model.mergePlaylist(playlist, playbackPosition);
+        model.mergePlaylist(playlist);
         delegate.clearMap();
         delegate.drawRoute(model.getTrackSegments());
         refreshUI();
@@ -259,7 +259,7 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
      * Logic when the route is completed goes here.
      */
     private void onRouteCompleted() {
-        model.stopRouteNavigation(playbackPosition);
+        model.stopRouteNavigation();
         model.hardReset();
 
         musicPlayer.stopAndDisconnect();

@@ -7,6 +7,7 @@ import com.cs446.group7.bruno.music.MergedBrunoPlaylistImpl;
 import com.cs446.group7.bruno.routing.RouteSegment;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -20,6 +21,7 @@ public class PlaylistModel {
 
     private List<TrackSegment> trackSegments;
     private int trackIndex;
+    private long trackStartTime;
 
     // MARK: - Lifecycle methods
 
@@ -114,6 +116,10 @@ public class PlaylistModel {
         return result;
     }
 
+    private long getPlaybackPosition() {
+        return new Date().getTime() - trackStartTime;
+    }
+
     // Returns the total distance of TrackSegments that have been completed (excluding current)
     private double getCompletedTrackSegmentsDistance() {
         double distance = 0;
@@ -126,8 +132,8 @@ public class PlaylistModel {
     }
 
     // Returns the travelled distance of current TrackSegment
-    private double getCurrentTrackSegmentDistance(long playbackPosition) {
-        double currentTrackPlaybackRatio = (double)playbackPosition
+    private double getCurrentTrackSegmentDistance() {
+        double currentTrackPlaybackRatio = (double)getPlaybackPosition()
                 / getCurrentTrack().getDuration();
         double currentTrackDistance = trackSegments.get(trackIndex).getDistance();
         return currentTrackPlaybackRatio * currentTrackDistance;
@@ -165,12 +171,12 @@ public class PlaylistModel {
         trackSegments = processSegments();
     }
 
-    public void mergePlaylist(final BrunoPlaylist playlist, long playbackPosition) {
+    public void mergePlaylist(final BrunoPlaylist playlist) {
         setPlaylist(new MergedBrunoPlaylistImpl(
                 this.playlist,
                 playlist,
                 trackIndex,
-                playbackPosition
+                getPlaybackPosition()
         ));
     }
 
@@ -194,39 +200,39 @@ public class PlaylistModel {
     // MARK: - Current playlist playback calculations
 
     // Returns route distance of current playlist playback
-    public double getPlaylistRouteDistance(long playbackPosition) {
+    public double getPlaylistRouteDistance() {
         if (trackIndex >= trackSegments.size()) {
             return getCompletedTrackSegmentsDistance();
         }
 
         return getCompletedTrackSegmentsDistance()
-                + getCurrentTrackSegmentDistance(playbackPosition);
+                + getCurrentTrackSegmentDistance();
     }
 
     // Returns route duration of current playlist playback
-    public long getPlaylistRouteDuration(long playbackPosition) {
+    public long getPlaylistRouteDuration() {
         if (trackIndex >= trackSegments.size()) {
             return getCompletedTrackSegmentsDuration();
         }
 
-        return getCompletedTrackSegmentsDuration() + playbackPosition;
+        return getCompletedTrackSegmentsDuration() + getPlaybackPosition();
     }
 
     // Returns route coordinate of current playlist playback
-    public Coordinate getPlaylistRouteCoordinate(long playbackPosition) {
+    public Coordinate getPlaylistRouteCoordinate() {
         if (trackIndex >= trackSegments.size()) {
             return routeSegments.get(routeSegments.size() - 1).getEndCoordinate();
         }
 
-        return trackSegments.get(trackIndex).getCoordinate(playbackPosition);
+        return trackSegments.get(trackIndex).getCoordinate(getPlaybackPosition());
     }
 
     // MARK: - Reset methods
 
     public void resetPlayback() {
-        setCurrentTrack(null);
         // NOTE: Must be -1 because setting first song also calls onTrackChanged.
         trackIndex = -1;
+        trackStartTime = 0;
     }
 
     public void reset() {
