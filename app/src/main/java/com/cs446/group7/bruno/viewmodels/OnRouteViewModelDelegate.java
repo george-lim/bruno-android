@@ -5,13 +5,14 @@ import android.graphics.drawable.Drawable;
 
 import androidx.annotation.NonNull;
 
+import com.cs446.group7.bruno.location.Coordinate;
 import com.cs446.group7.bruno.models.TrackSegment;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.List;
 
 public interface OnRouteViewModelDelegate {
-    void setupUI(int userAvatarDrawableResourceId);
+    void setupUI(int userAvatarDrawableResourceId, int brunoAvatarDrawableResourceId);
     void updateCurrentSongUI(final String name, final String artists);
     void clearMap();
     void drawRoute(@NonNull final List<TrackSegment> trackSegments);
@@ -40,4 +41,5 @@ public interface OnRouteViewModelDelegate {
                                               int colour);
     void updateDistanceToCheckpoint(final String distanceText);
     void showRouteInfoCard();
+    void updateBrunoMarker(final LatLng location);
 }
