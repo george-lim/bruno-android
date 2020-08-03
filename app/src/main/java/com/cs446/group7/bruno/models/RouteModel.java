@@ -3,10 +3,10 @@ package com.cs446.group7.bruno.models;
 import android.location.Location;
 import android.util.Log;
 
+import com.cs446.group7.bruno.location.Coordinate;
 import com.cs446.group7.bruno.music.BrunoPlaylist;
 import com.cs446.group7.bruno.music.BrunoTrack;
 import com.cs446.group7.bruno.routing.RouteSegment;
-import com.google.android.gms.maps.model.LatLng;
 
 import java.util.Date;
 import java.util.List;
@@ -21,13 +21,14 @@ public class RouteModel extends ViewModel {
 
     // MARK: - Constants
 
-    public static final int[] DURATIONS_IN_MINUTES = { 15, 30, 45, 60, 75 };
+    public static final int[] DURATIONS_IN_MINUTES = { 15, 30, 45, 60, 75, 90, 105, 120 };
 
     // MARK: - Private members
 
     private Mode mode = Mode.WALK;
     private int durationIndex = 0;
     private Location currentLocation = null;
+    private Coordinate currentCoordinate = null;
     private int steps = 0;
     private Date userStartTime = null;
     private Date userStopTime = null;
@@ -74,6 +75,10 @@ public class RouteModel extends ViewModel {
         playlistModel.setPlaylist(playlist);
     }
 
+    public void mergePlaylist(final BrunoPlaylist playlist, long playbackPosition) {
+        playlistModel.mergePlaylist(playlist, playbackPosition);
+    }
+
     public List<TrackSegment> getTrackSegments() {
         return playlistModel.getTrackSegments();
     }
@@ -82,8 +87,13 @@ public class RouteModel extends ViewModel {
         return currentLocation;
     }
 
+    public Coordinate getCurrentCoordinate() {
+        return currentCoordinate;
+    }
+
     public void setCurrentLocation(final Location currentLocation) {
         this.currentLocation = currentLocation;
+        this.currentCoordinate = new Coordinate(currentLocation);
     }
 
     public BrunoTrack getCurrentTrack() {
@@ -125,13 +135,13 @@ public class RouteModel extends ViewModel {
 
     // Returns difference in distance between the user and the playlist on the route
     public double getDistanceBetweenUserAndPlaylist(long playbackPosition) {
-        return checkpointsModel.getUserRouteDistance(currentLocation)
+        return checkpointsModel.getUserRouteDistance(currentCoordinate)
                 - playlistModel.getPlaylistRouteDistance(playbackPosition);
     }
 
     // MARK: - CheckpointsModel methods
 
-    public LatLng getCheckpoint() {
+    public Coordinate getCheckpoint() {
         // Fail-safe
         if (hasCompletedAllCheckpoints()) {
             return null;
@@ -155,7 +165,7 @@ public class RouteModel extends ViewModel {
             return 0;
         }
 
-        return checkpointsModel.getDistanceToCheckpoint(currentLocation);
+        return checkpointsModel.getDistanceToCheckpoint(currentCoordinate);
     }
 
     public boolean hasCompletedAllCheckpoints() {
@@ -175,7 +185,7 @@ public class RouteModel extends ViewModel {
         userStartTime = null;
         userStopTime = null;
         steps = 0;
-        playlistModel.resetCurrentTrack();
+        playlistModel.resetPlayback();
         checkpointsModel.resetCheckpoint();
     }
 
@@ -187,6 +197,7 @@ public class RouteModel extends ViewModel {
         mode = Mode.WALK;
         durationIndex = 0;
         currentLocation = null;
+        currentCoordinate = null;
         playlistModel.reset();
         checkpointsModel.reset();
     }

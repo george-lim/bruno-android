@@ -1,9 +1,10 @@
 package com.cs446.group7.bruno.models;
 
+import com.cs446.group7.bruno.location.Coordinate;
 import com.cs446.group7.bruno.music.BrunoPlaylist;
 import com.cs446.group7.bruno.music.BrunoTrack;
+import com.cs446.group7.bruno.music.MergedBrunoPlaylistImpl;
 import com.cs446.group7.bruno.routing.RouteSegment;
-import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -18,6 +19,7 @@ public class PlaylistModel {
     private BrunoPlaylist playlist;
     private List<TrackSegment> trackSegments;
     private BrunoTrack currentTrack;
+    private int trackIndex;
 
     // MARK: - Lifecycle methods
 
@@ -27,10 +29,7 @@ public class PlaylistModel {
 
     // MARK: - Private methods
 
-    /**
-     * Group route segments into track segments
-     * NOTE: Total playlist duration is expected to be longer than the total route segment duration.
-     */
+    // Group route segments into track segments
     private List<TrackSegment> processSegments() {
         if (routeSegments == null || routeColours == null || playlist == null) {
             return null;
@@ -38,18 +37,18 @@ public class PlaylistModel {
 
         List<TrackSegment> result = new ArrayList<>();
         int routeColourIndex = 0;
-        int currTrackInd = 0;
+        int currentTrackIndex = 0;
         // Duration is measured in milliseconds
         long accumulatedRouteSegmentDuration = 0;
         List<RouteSegment> accumulatedRouteSegments = new LinkedList<>();
         LinkedList<RouteSegment> routeSegmentsCopy = new LinkedList<>(routeSegments);
         List<BrunoTrack> tracks = playlist.getTracks();
         while (routeSegmentsCopy.size() > 0) {
-            BrunoTrack currTrack = tracks.get(currTrackInd);
+            BrunoTrack currTrack = tracks.get(currentTrackIndex);
 
             RouteSegment currentRouteSegment = routeSegmentsCopy.poll();
-            LatLng routeSegmentStart = currentRouteSegment.getStartLocation();
-            LatLng routeSegmentEnd = currentRouteSegment.getEndLocation();
+            Coordinate routeSegmentStart = currentRouteSegment.getStartCoordinate();
+            Coordinate routeSegmentEnd = currentRouteSegment.getEndCoordinate();
             long routeSegmentDuration = currentRouteSegment.getDuration();
             long lastSongSegment = accumulatedRouteSegmentDuration + routeSegmentDuration;
 
@@ -60,14 +59,14 @@ public class PlaylistModel {
                 double segmentDurationRatio = (double) segmentDurationFirstHalf / routeSegmentDuration;
 
                 // Represent the difference in lat and long distances, needed for slope calculations
-                double diffLat = routeSegmentEnd.latitude - routeSegmentStart.latitude;
-                double diffLng = routeSegmentEnd.longitude - routeSegmentStart.longitude;
+                double diffLat = routeSegmentEnd.getLatitude() - routeSegmentStart.getLatitude();
+                double diffLng = routeSegmentEnd.getLongitude() - routeSegmentStart.getLongitude();
 
-                double midPointLat = routeSegmentStart.latitude + (diffLat * segmentDurationRatio);
-                double midPointLng = routeSegmentStart.longitude + (diffLng * segmentDurationRatio);
+                double midPointLat = routeSegmentStart.getLatitude() + (diffLat * segmentDurationRatio);
+                double midPointLng = routeSegmentStart.getLongitude() + (diffLng * segmentDurationRatio);
 
                 // Create two new segments based on start, midpoint, end to represent split
-                LatLng segmentMidPoint = new LatLng(midPointLat, midPointLng);
+                Coordinate segmentMidPoint = new Coordinate(midPointLat, midPointLng);
                 RouteSegment segmentFirstHalf = new RouteSegment(routeSegmentStart,
                         segmentMidPoint, segmentDurationFirstHalf);
                 RouteSegment segmentSecondHalf = new RouteSegment(segmentMidPoint,
@@ -88,7 +87,7 @@ public class PlaylistModel {
                 // Accommodate the second half of route segment for the next track
                 routeSegmentsCopy.push(segmentSecondHalf);
                 accumulatedRouteSegmentDuration = 0;
-                currTrackInd++;
+                currentTrackIndex = (currentTrackIndex + 1) % tracks.size();
             } else if (lastSongSegment == currTrack.getDuration()) {
                 accumulatedRouteSegments.add(currentRouteSegment);
 
@@ -101,7 +100,7 @@ public class PlaylistModel {
                 result.add(trackSegment);
                 accumulatedRouteSegments = new LinkedList<>();
                 accumulatedRouteSegmentDuration = 0;
-                currTrackInd++;
+                currentTrackIndex = (currentTrackIndex + 1) % tracks.size();
             } else {
                 accumulatedRouteSegments.add(currentRouteSegment);
                 accumulatedRouteSegmentDuration += routeSegmentDuration;
@@ -141,6 +140,11 @@ public class PlaylistModel {
         trackSegments = processSegments();
     }
 
+    public void mergePlaylist(final BrunoPlaylist playlist, long playbackPosition) {
+        this.playlist = new MergedBrunoPlaylistImpl(this.playlist, playlist, currentTrack, playbackPosition);
+        trackSegments = processSegments();
+    }
+
     public List<TrackSegment> getTrackSegments() {
         return trackSegments;
     }
@@ -151,28 +155,39 @@ public class PlaylistModel {
 
     public void setCurrentTrack(final BrunoTrack currentTrack) {
         this.currentTrack = currentTrack;
+        trackIndex++;
     }
 
     // Returns distance travelled by the playlist on the route
     public double getPlaylistRouteDistance(long playbackPosition) {
         List<BrunoTrack> tracks = playlist.getTracks();
         List<TrackSegment> trackSegments = getTrackSegments();
-        int i = 0;
         double distance = 0;
 
-        while (tracks.get(i) != currentTrack) {
-            distance += trackSegments.get(i).getDistance();
-            i++;
+        for (int i = 0; i < trackIndex; ++i) {
+            distance += trackSegments.get(i % tracks.size()).getDistance();
         }
 
         double currentTrackPlaybackRatio = (double)playbackPosition / currentTrack.getDuration();
-        distance += currentTrackPlaybackRatio * trackSegments.get(i).getDistance();
+        distance += currentTrackPlaybackRatio * trackSegments.get(trackIndex).getDistance();
 
         return distance;
     }
 
-    public void resetCurrentTrack() {
+    public double getTotalRouteDistance() {
+        double distance = 0;
+
+        for (TrackSegment trackSegment : trackSegments) {
+            distance += trackSegment.getDistance();
+        }
+
+        return distance;
+    }
+
+    public void resetPlayback() {
         setCurrentTrack(null);
+        // NOTE: Must be -1 because setting first song also calls onTrackChanged.
+        trackIndex = -1;
     }
 
     public void reset() {
@@ -180,6 +195,6 @@ public class PlaylistModel {
         routeColours = null;
         playlist = null;
         trackSegments = null;
-        resetCurrentTrack();
+        resetPlayback();
     }
 }

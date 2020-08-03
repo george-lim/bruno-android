@@ -27,10 +27,12 @@ public class BrunoTrack {
     }
 
     @Override
-    public boolean equals(@Nullable Object obj) {
-        if (!(obj instanceof BrunoTrack)) { return false; }
+    public boolean equals(Object obj) {
+        if (!(obj instanceof BrunoTrack)) return false;
+
         BrunoTrack otherTrack = (BrunoTrack) obj;
-        return name.equals(otherTrack.getName()) && artists.equals(otherTrack.getArtists())
-                && duration == otherTrack.getDuration();
+        return name.equals(otherTrack.name) &&
+                artists.equals(otherTrack.artists) &&
+                duration == otherTrack.duration;
     }
 }
