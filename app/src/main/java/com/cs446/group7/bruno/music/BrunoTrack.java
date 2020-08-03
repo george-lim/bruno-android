@@ -1,7 +1,5 @@
 package com.cs446.group7.bruno.music;
 
-import androidx.annotation.Nullable;
-
 // Simple container class containing information about a track
 public class BrunoTrack {
     private String name;
