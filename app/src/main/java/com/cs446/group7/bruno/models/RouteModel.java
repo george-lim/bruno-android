@@ -57,6 +57,10 @@ public class RouteModel extends ViewModel {
     }
 
     public void setRouteSegments(final List<RouteSegment> routeSegments) {
+        if (mode == Mode.RUN) {
+            convertToRunningDurations(routeSegments);
+        }
+
         playlistModel.setRouteSegments(routeSegments);
         checkpointsModel.setRouteSegments(routeSegments);
     }
@@ -187,5 +191,14 @@ public class RouteModel extends ViewModel {
         currentCoordinate = null;
         playlistModel.reset();
         checkpointsModel.reset();
+    }
+
+    // MARK: - private methods
+
+    // Sets durations of each RouteSegment to correspond with running speed
+    private void convertToRunningDurations(final List<RouteSegment> routeSegments) {
+        for (RouteSegment routeSegment : routeSegments) {
+            routeSegment.setRunningDuration();
+        }
     }
 }

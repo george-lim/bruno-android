@@ -7,17 +7,6 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/settings_avatar"
-        style="@style/SettingClickableItemContainer">
-        <TextView
-            style="@style/NormalText"
-            android:text="@string/settings_avatar_title" />
-        <TextView
-            style="@style/HintText"
-            android:text="@string/settings_avatar_hint" />
-    </LinearLayout>
-
-    <LinearLayout
         android:id="@+id/settings_fallback_playlist"
         style="@style/SettingClickableItemContainer">
         <TextView
@@ -27,4 +16,4 @@
             style="@style/HintText"
             android:text="@string/settings_fallback_playlist_hint" />
     </LinearLayout>
-</merge> 
+</merge>

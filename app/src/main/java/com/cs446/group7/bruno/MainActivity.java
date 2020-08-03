@@ -22,7 +22,7 @@ import com.cs446.group7.bruno.capability.hardware.HardwareRequestDelegate;
 import com.cs446.group7.bruno.capability.permission.PermissionRequest;
 import com.cs446.group7.bruno.capability.permission.PermissionRequestDelegate;
 import com.cs446.group7.bruno.location.LocationService;
-import com.cs446.group7.bruno.preferencesstorage.PreferencesStorage;
+import com.cs446.group7.bruno.storage.PreferencesStorage;
 import com.cs446.group7.bruno.sensor.SensorService;
 import com.cs446.group7.bruno.spotify.auth.SpotifyRequest;
 import com.cs446.group7.bruno.spotify.auth.SpotifyRequestDelegate;
