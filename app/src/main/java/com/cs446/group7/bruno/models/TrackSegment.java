@@ -12,33 +12,29 @@ public class TrackSegment {
     // MARK: - Private members
 
     private List<Coordinate> coordinates;
-    private transient List<LatLng> latLngs;
     private int routeColour;
 
     // MARK: - Lifecycle methods
 
     public TrackSegment(final List<RouteSegment> routeSegments,
                         int routeColour) {
-        processCoordinates(routeSegments);
+        coordinates = processCoordinates(routeSegments);
         this.routeColour = routeColour;
     }
 
     // MARK: - Private methods
 
-    public void processCoordinates(final List<RouteSegment> routeSegments) {
-        coordinates = new ArrayList<>(routeSegments.size());
-        latLngs = new ArrayList<>(routeSegments.size());
+    public List<Coordinate> processCoordinates(final List<RouteSegment> routeSegments) {
+        List<Coordinate> coordinates = new ArrayList<>(routeSegments.size());
 
         for (RouteSegment routeSegment : routeSegments) {
-            Coordinate startCoordinate = routeSegment.getStartCoordinate();
-            coordinates.add(startCoordinate);
-            latLngs.add(startCoordinate.getLatLng());
+            coordinates.add(routeSegment.getStartCoordinate());
         }
 
         RouteSegment lastRouteSegment = routeSegments.get(routeSegments.size() - 1);
-        Coordinate endCoordinate = lastRouteSegment.getEndCoordinate();
-        coordinates.add(endCoordinate);
-        latLngs.add(endCoordinate.getLatLng());
+        coordinates.add(lastRouteSegment.getEndCoordinate());
+
+        return coordinates;
     }
 
     // MARK: - Public methods
@@ -48,6 +44,12 @@ public class TrackSegment {
     }
 
     public List<LatLng> getLatLngs() {
+        List<LatLng> latLngs = new ArrayList<>(coordinates.size());
+
+        for (Coordinate coordinate : coordinates) {
+            latLngs.add(coordinate.getLatLng());
+        }
+
         return latLngs;
     }
 
