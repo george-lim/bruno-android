@@ -9,10 +9,9 @@ import com.cs446.group7.bruno.capability.Capability;
 import com.cs446.group7.bruno.capability.CapabilityService;
 import com.cs446.group7.bruno.music.player.MockMusicPlayerImpl;
 import com.cs446.group7.bruno.music.player.MusicPlayer;
-import com.cs446.group7.bruno.music.player.MusicPlayerException;
+import com.cs446.group7.bruno.spotify.SpotifyService;
 import com.cs446.group7.bruno.utils.Callback;
 import com.cs446.group7.bruno.utils.NoFailClosureQueue;
-import com.spotify.android.appremote.api.error.CouldNotFindSpotifyApp;
 
 public class OnboardingPermissionViewModel {
 
@@ -31,13 +30,19 @@ public class OnboardingPermissionViewModel {
     }
 
     public void handleSkip() {
-        delegate.showPopUp(
-                context.getResources().getString(R.string.onboarding_missing_access_title),
-                context.getResources().getString(R.string.onboarding_missing_access_text),
-                context.getResources().getString(R.string.ok_button),
-                (dialogInterface, i) -> delegate.moveToNextTab(),
-                true
-        );
+        if (isAllAccessAllowed()) {
+            delegate.moveToNextTab();
+        } else if (!accessToSpotify) {
+            showSpotifyNotInstallPopUp();
+        } else {
+            delegate.showPopUp(
+                    context.getResources().getString(R.string.onboarding_missing_access_title),
+                    context.getResources().getString(R.string.onboarding_missing_access_text),
+                    context.getResources().getString(R.string.ok_button),
+                    (dialogInterface, i) -> delegate.moveToNextTab(),
+                    true
+            );
+        }
     }
 
     public void handleAllowAccess() {
@@ -52,7 +57,6 @@ public class OnboardingPermissionViewModel {
         // granted access to icon UI.
         NoFailClosureQueue<Void> queue = new NoFailClosureQueue<>();
         CapabilityService capabilityService = MainActivity.getCapabilityService();
-        MusicPlayer player = getMusicPlayer();
         queue.add((result, callback) -> capabilityService.request(Capability.LOCATION, new Callback<Void, Void>() {
             @Override
             public void onSuccess(Void result) {
@@ -77,29 +81,15 @@ public class OnboardingPermissionViewModel {
                 callback.onSuccess(null);
             }
         }));
-        queue.add((result, callback) -> player.connect(context, new Callback<Void, MusicPlayerException>() {
-            @Override
-            public void onSuccess(Void result) {
+        queue.add((result, callback) -> {
+            if (SpotifyService.isSpotifyInstalled(context)) {
                 accessToSpotify = true;
                 updateUserAccess();
-                player.disconnect();
-                callback.onSuccess(null);
+            } else {
+                showSpotifyNotInstallPopUp();
             }
-
-            @Override
-            public void onFailed(MusicPlayerException exception) {
-                if (exception.getCause() instanceof CouldNotFindSpotifyApp) {
-                    delegate.showPopUp(
-                            context.getResources().getString(R.string.onboarding_missing_spotify_installation_title),
-                            exception.getMessage(),
-                            context.getResources().getString(R.string.ok_button),
-                            (dialogInterface, i) -> dialogInterface.dismiss(),
-                            true
-                    );
-                }
-                callback.onSuccess(null);
-            }
-        }));
+            callback.onSuccess(null);
+        });
         queue.run(result -> { /* NOOP since UI is already updated*/ });
     }
 
@@ -114,6 +104,7 @@ public class OnboardingPermissionViewModel {
         accessToLocationPermission = capabilityService.isPermissionEnabled(Capability.LOCATION);
         accessToLocationService = capabilityService.isHardwareCapabilityEnabled(Capability.LOCATION);
         accessToActiveInternet = capabilityService.isCapabilityEnabled(Capability.INTERNET);
+        accessToSpotify = SpotifyService.isSpotifyInstalled(context);
         updateAccessRequestStatus();
         updatePrimaryAction();
     }
@@ -124,6 +115,16 @@ public class OnboardingPermissionViewModel {
                 accessToLocationService,
                 accessToActiveInternet,
                 accessToSpotify);
+    }
+
+    private void showSpotifyNotInstallPopUp() {
+        delegate.showPopUp(
+                context.getResources().getString(R.string.onboarding_missing_spotify_installation_title),
+                context.getResources().getString(R.string.onboarding_missing_spotify_installation_description),
+                context.getResources().getString(R.string.install_button),
+                (dialogInterface, i) -> delegate.redirectSpotifyInstallationInGooglePlay(),
+                true
+        );
     }
 
     private void updatePrimaryAction() {

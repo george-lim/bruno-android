@@ -4,7 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
-import com.cs446.group7.bruno.ui.shared.AvatarFragment;
+import com.cs446.group7.bruno.ui.shared.FallbackPlaylistFragment;
 
 public class OnboardingPagerAdapter extends FragmentStateAdapter {
 
@@ -24,6 +24,8 @@ public class OnboardingPagerAdapter extends FragmentStateAdapter {
                 return new OnboardingAvatarWrapperFragment();
             case OnboardingTab.PERMISSION:
                 return new OnboardingPermissionFragment();
+            case OnboardingTab.FALLBACK_PLAYLIST:
+                return new OnboardingFallbackPlaylistWrapperFragment();
             case OnboardingTab.DONE:
                 return new OnboardingDoneFragment();
             default:

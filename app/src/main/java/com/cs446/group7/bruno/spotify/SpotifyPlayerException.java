@@ -37,7 +37,7 @@ public class SpotifyPlayerException extends MusicPlayerException {
             return "You have been logged out of Spotify. Please log in then try again.";
         }
         else if (throwable instanceof NotLoggedInException) {
-            return "You are not logged in to Spotify. Please log in through the app and try again.";
+            return "You are not logged into Spotify. Please log in through the app and try again.";
         }
         else if (throwable instanceof OfflineModeException) {
             return "Spotify is in offline mode, but Bruno requires online features. Please enable it via the Spotify app.";

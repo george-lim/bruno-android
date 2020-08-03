@@ -15,7 +15,7 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import com.cs446.group7.bruno.MainActivity;
 import com.cs446.group7.bruno.R;
-import com.cs446.group7.bruno.preferencesstorage.PreferencesStorage;
+import com.cs446.group7.bruno.storage.PreferencesStorage;
 import com.cs446.group7.bruno.ui.fitnessrecords.FitnessRecordsFragment;
 import com.cs446.group7.bruno.ui.routeplanning.RoutePlanningFragment;
 import com.cs446.group7.bruno.ui.settings.SettingsFragment;
