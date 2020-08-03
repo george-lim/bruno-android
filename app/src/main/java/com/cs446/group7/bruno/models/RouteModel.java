@@ -123,9 +123,7 @@ public class RouteModel extends ViewModel {
 
     public void stopRouteNavigation(long playbackPosition) {
         final long userDuration = playlistModel.getTotalPlaybackDuration(playbackPosition);
-        final List<BrunoTrack> tracks = playlistModel
-                .getPlaylist()
-                .getTracksUpToDuration(userDuration);
+        final BrunoPlaylist playlist = playlistModel.getPlaylist();
 
         // Persist tracks to database.
         final FitnessRecordData fitnessRecordData = new FitnessRecordData(
@@ -135,7 +133,7 @@ public class RouteModel extends ViewModel {
                 new Random().nextInt(901) * 1000,  // TODO: Bruno time playlistModel.getPlaylist().getDuration(),
                 playlistModel.getTotalRouteDistance(),
                 steps,
-                tracks,
+                playlist,
                 getTrackSegments()
         );
 

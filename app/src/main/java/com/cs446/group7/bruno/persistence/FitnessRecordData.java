@@ -3,6 +3,7 @@ package com.cs446.group7.bruno.persistence;
 import android.util.Base64;
 
 import com.cs446.group7.bruno.models.TrackSegment;
+import com.cs446.group7.bruno.music.BrunoPlaylist;
 import com.cs446.group7.bruno.music.BrunoTrack;
 
 import java.io.ByteArrayInputStream;
@@ -21,6 +22,15 @@ public class FitnessRecordData implements Serializable {
 
     public enum Mode { WALK, RUN }
 
+    private final Mode mode;
+    private final Date startTime;
+    private final long userDuration;
+    private final long expectedDuration;
+    private final double routeDistance;
+    private final int steps;
+    private final BrunoPlaylist playlist;
+    private final List<TrackSegment> trackSegments;
+
     public FitnessRecordData(
             final Mode mode,
             final Date startTime,
@@ -28,7 +38,7 @@ public class FitnessRecordData implements Serializable {
             long expectedDuration,
             double routeDistance,
             int steps,
-            final List<BrunoTrack> tracks,
+            final BrunoPlaylist playlist,
             final List<TrackSegment> trackSegments) {
         this.mode = mode;
         this.startTime = startTime;
@@ -36,18 +46,9 @@ public class FitnessRecordData implements Serializable {
         this.expectedDuration = expectedDuration;
         this.routeDistance = routeDistance;
         this.steps = steps;
-        this.tracks = tracks;
+        this.playlist = playlist;
         this.trackSegments = trackSegments;
     }
-
-    private final Mode mode;
-    private final Date startTime;
-    private final long userDuration;
-    private final long expectedDuration;
-    private final double routeDistance;
-    private final int steps;
-    private final List<BrunoTrack> tracks;
-    private final List<TrackSegment> trackSegments;
 
     public static FitnessRecordData deserialize(final String serializedString) throws IOException, ClassNotFoundException {
         byte [] data = Base64.decode(serializedString, Base64.DEFAULT);
@@ -79,8 +80,8 @@ public class FitnessRecordData implements Serializable {
         return steps;
     }
 
-    public List<BrunoTrack> getTracks() {
-        return tracks;
+    public List<BrunoTrack> getTracksUserPlayed() {
+        return playlist.getTracksUpToDuration(userDuration);
     }
 
     public List<TrackSegment> getTrackSegments() {

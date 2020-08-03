@@ -1,9 +1,10 @@
 package com.cs446.group7.bruno.music;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MergedBrunoPlaylistImpl extends BrunoPlaylist {
+public class MergedBrunoPlaylistImpl extends BrunoPlaylist implements Serializable {
     private BrunoPlaylist primaryPlaylist;
     private BrunoPlaylist secondaryPlaylist;
     private BrunoTrack mergeTrack;

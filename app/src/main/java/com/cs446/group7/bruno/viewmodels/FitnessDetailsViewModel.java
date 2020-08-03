@@ -35,7 +35,7 @@ public class FitnessDetailsViewModel {
                 currentFitnessRecord.getSteps()
         );
 
-        delegate.setupTracklist(currentFitnessRecord.getTracks());
+        delegate.setupTracklist(currentFitnessRecord.getTracksUserPlayed());
         delegate.drawRoute(currentFitnessRecord.getTrackSegments());
     }
 }

@@ -24,8 +24,6 @@ public class MockFitnessRecordDAO implements FitnessRecordDAO {
     private final String TAG = getClass().getSimpleName();
     private final int[] COLOURS =  { -537719, -6234730, -7879170,  -6188606, -1003060, -938359, -5719896, -5977857 };
 
-    private List<RouteSegment> mockRouteSegments;
-    private BrunoPlaylist mockPlaylist;
     private List<FitnessRecordEntry> recordEntries;
 
     private static FitnessRecordEntry makeEntry(final FitnessRecordData data) {
@@ -47,16 +45,14 @@ public class MockFitnessRecordDAO implements FitnessRecordDAO {
                 new OnRouteResponseCallback() {
                     @Override
                     public void onRouteReady(List<RouteSegment> routeSegments) {
-                        mockRouteSegments = routeSegments;
                         playlistGenerator.discoverPlaylist(new Callback<BrunoPlaylist, Exception>() {
                             @Override
                             public void onSuccess(BrunoPlaylist result) {
-                                mockPlaylist = result;
 
                                 PlaylistModel model = new PlaylistModel();
-                                model.setRouteSegments(mockRouteSegments);
+                                model.setRouteSegments(routeSegments);
                                 model.setRouteColours(COLOURS);
-                                model.setPlaylist(mockPlaylist);
+                                model.setPlaylist(result);
 
                                 final FitnessRecordData data = new FitnessRecordData(
                                         FitnessRecordData.Mode.WALK,
@@ -65,7 +61,7 @@ public class MockFitnessRecordDAO implements FitnessRecordDAO {
                                         15 * 60 * 1000,
                                         2000,
                                         420,
-                                        mockPlaylist.getTracks(),
+                                        result,
                                         model.getTrackSegments()
                                 );
 
@@ -85,7 +81,7 @@ public class MockFitnessRecordDAO implements FitnessRecordDAO {
                                         73 * 60 * 1000,
                                         3456,
                                         1478,
-                                        mockPlaylist.getTracks(),
+                                        result,
                                         model.getTrackSegments()
                                 )));
 
@@ -96,7 +92,7 @@ public class MockFitnessRecordDAO implements FitnessRecordDAO {
                                         25 * 60 * 1000,
                                         2470,
                                         690,
-                                        mockPlaylist.getTracks(),
+                                        result,
                                         model.getTrackSegments()
                                 )));
 
@@ -107,7 +103,7 @@ public class MockFitnessRecordDAO implements FitnessRecordDAO {
                                         140 * 60 * 1000,
                                         6789,
                                         1234,
-                                        mockPlaylist.getTracks(),
+                                        result,
                                         model.getTrackSegments()
                                 )));
 
@@ -118,7 +114,7 @@ public class MockFitnessRecordDAO implements FitnessRecordDAO {
                                         60 * 60 * 1000,
                                         1560,
                                         5433,
-                                        mockPlaylist.getTracks(),
+                                        result,
                                         model.getTrackSegments()
                                 )));
 
@@ -129,7 +125,7 @@ public class MockFitnessRecordDAO implements FitnessRecordDAO {
                                         45 * 1000,
                                         100,
                                         57,
-                                        mockPlaylist.getTracks(),
+                                        result,
                                         model.getTrackSegments()
                                 )));
                             }
