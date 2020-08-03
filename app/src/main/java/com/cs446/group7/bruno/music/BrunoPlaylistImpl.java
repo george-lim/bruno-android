@@ -30,4 +30,7 @@ public class BrunoPlaylistImpl extends BrunoPlaylist implements Serializable {
     public BrunoTrack getTrack(int index) {
         return tracks.get(index % tracks.size());
     }
+
+    @Override
+    public boolean isTracksEmpty() { return tracks.size() == 0; }
 }

@@ -38,4 +38,9 @@ public class MergedBrunoPlaylistImpl extends BrunoPlaylist {
             return secondaryPlaylist.getTrack((index - mergeTrackIndex) - 1);
         }
     }
+
+    @Override
+    public boolean isTracksEmpty() {
+        return primaryPlaylist.isTracksEmpty() && secondaryPlaylist.isTracksEmpty();
+    }
 }

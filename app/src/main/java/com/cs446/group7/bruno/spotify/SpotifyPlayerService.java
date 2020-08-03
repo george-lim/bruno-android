@@ -132,6 +132,9 @@ class SpotifyPlayerService implements MusicPlayer {
                     if (!isFallbackTriggered && didPlayerStopPlaying(playerState)) {
                         Log.w(TAG, "Fallback playlist triggered.");
                         isFallbackTriggered = true;
+                        if (spotifyServiceSubscribers.isEmpty()) {
+                            Log.w(TAG, "No subscribers to alert about the fallback playlist.");
+                        }
                         for (MusicPlayerSubscriber subscriber : spotifyServiceSubscribers) {
                             subscriber.onFallback();
                         }

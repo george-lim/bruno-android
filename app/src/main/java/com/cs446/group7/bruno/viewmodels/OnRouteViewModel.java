@@ -17,6 +17,7 @@ import com.cs446.group7.bruno.music.player.MockMusicPlayerImpl;
 import com.cs446.group7.bruno.music.player.MusicPlayer;
 import com.cs446.group7.bruno.music.player.MusicPlayerException;
 import com.cs446.group7.bruno.music.player.MusicPlayerSubscriber;
+import com.cs446.group7.bruno.storage.FileStorage;
 import com.cs446.group7.bruno.storage.PreferencesStorage;
 import com.cs446.group7.bruno.sensor.PedometerSubscriber;
 import com.cs446.group7.bruno.settings.SettingsService;
@@ -39,6 +40,7 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
     private Resources resources;
     private RouteModel model;
     private OnRouteViewModelDelegate delegate;
+    private Context context;
 
     private MusicPlayer musicPlayer;
 
@@ -53,6 +55,7 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
         this.resources = context.getResources();
         this.model = model;
         this.delegate = delegate;
+        this.context = context;
         this.isRouteCompleted = false;
 
         musicPlayer = getMusicPlayer();
@@ -256,16 +259,26 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
         delegate.updateDistanceToCheckpoint((int)distanceToCheckpoint + " m");
     }
 
-    private void handlePlaylistChange(final BrunoPlaylist playlist, long playbackPosition) {
-        musicPlayer.stop();
-        musicPlayer.setPlayerPlaylist(playlist);
+    private void handlePlaylistChange(final BrunoPlaylist playlist) {
+        musicPlayer.getPlaybackPosition(new Callback<Long, Throwable>() {
+            @Override
+            public void onSuccess(Long result) {
+                musicPlayer.stop();
+                musicPlayer.setPlayerPlaylist(playlist);
 
-        model.mergePlaylist(playlist, playbackPosition);
-        delegate.clearMap();
-        delegate.drawRoute(model.getTrackSegments());
-        refreshUI();
+                model.mergePlaylist(playlist, result);
+                delegate.clearMap();
+                delegate.drawRoute(model.getTrackSegments());
+                refreshUI();
 
-        musicPlayer.play();
+                musicPlayer.play();
+            }
+
+            @Override
+            public void onFailed(Throwable result) {
+                Log.e(getClass().getSimpleName(), "Failed to get playback position during playlist change");
+            }
+        });
     }
 
     // Final model changes before route completion
@@ -346,7 +359,25 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
 
     @Override
     public void onFallback() {
-        // TODO: Add logic here once the fallback playlist is retrievable from storage
+        Log.e(getClass().getSimpleName(), "Got to onFallback");
+        BrunoPlaylist playlist;
+        try {
+            playlist = FileStorage.readFileAsSerializable(context, FileStorage.FALLBACK_PLAYLIST);
+            // Don't use a playlist with no tracks
+            if (playlist.isTracksEmpty()) {
+                playlist = null;
+            }
+        } catch (Exception e) {
+            playlist = null; //explicit
+        }
+        if (playlist != null) {
+            Log.d(getClass().getSimpleName(),
+                    "onFallback: Received fallback playlist with name " + playlist.getName()
+                            + " and id " + playlist.getId());
+            handlePlaylistChange(playlist);
+        } else {
+            Log.e(getClass().getSimpleName(), "onFallback: null fallback playlist");
+        }
     }
 
     // MARK: - PedometerSubscriber methods
