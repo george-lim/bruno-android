@@ -124,7 +124,7 @@ class SpotifyPlayerService implements MusicPlayer {
                     if (track != null) {
                         Log.d(TAG, String.format("Received Track: %s", track.toString()));
                         // Check to see if the track received corresponds to the beginning of the playlist
-                        if (!hasReachedFirstSong && convertToBrunoTrack(track).equals(playlist.getTracks().get(0))) {
+                        if (!hasReachedFirstSong && convertToBrunoTrack(track).equals(playlist.getTrack(0))) {
                             Log.d(TAG, "Received the first song related to the playlist.");
                             hasReachedFirstSong = true;
                         }
