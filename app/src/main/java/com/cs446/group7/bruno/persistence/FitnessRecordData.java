@@ -16,7 +16,8 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * The class that holds the data for a run.
+ * The class that holds the data for a fitness record to be persisted.
+ * This is the object that gets serialized and stored into the database
  */
 public class FitnessRecordData implements Serializable {
 

@@ -129,7 +129,9 @@ public class MainActivity extends AppCompatActivity
         return sensorService;
     }
 
-    public static PreferencesStorage getPreferencesStorage() { return preferencesStorage; }
+    public static PreferencesStorage getPreferencesStorage() {
+        return preferencesStorage;
+    }
 
     public static PersistenceService getPersistenceService() {
         return persistenceService;

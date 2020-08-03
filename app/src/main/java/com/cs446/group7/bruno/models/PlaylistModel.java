@@ -6,12 +6,11 @@ import com.cs446.group7.bruno.music.BrunoTrack;
 import com.cs446.group7.bruno.music.MergedBrunoPlaylistImpl;
 import com.cs446.group7.bruno.routing.RouteSegment;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-public class PlaylistModel implements Serializable {
+public class PlaylistModel {
 
     // MARK: - Private members
 
