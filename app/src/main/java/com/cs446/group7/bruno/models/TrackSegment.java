@@ -90,6 +90,6 @@ public class TrackSegment {
         long routeSegmentDuration = durations.get(routeSegmentIndex);
         double routeSegmentPlaybackRatio = (double)routeSegmentPlaybackPosition / routeSegmentDuration;
 
-        return routeSegmentStart.getMidPoint(routeSegmentEnd, routeSegmentPlaybackRatio);
+        return routeSegmentStart.getSplitPoint(routeSegmentEnd, routeSegmentPlaybackRatio);
     }
 }

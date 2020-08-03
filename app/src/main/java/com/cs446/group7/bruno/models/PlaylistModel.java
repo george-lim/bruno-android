@@ -57,10 +57,14 @@ public class PlaylistModel {
                 long segmentDurationSecondHalf = routeSegmentDuration - segmentDurationFirstHalf;
                 double segmentDurationRatio = (double) segmentDurationFirstHalf / routeSegmentDuration;
                 
-                Coordinate segmentMidPoint = routeSegmentStart.getMidPoint(routeSegmentEnd, segmentDurationRatio);
+                Coordinate segmentSplitPoint = routeSegmentStart.getSplitPoint(
+                        routeSegmentEnd,
+                        segmentDurationRatio
+                );
+
                 RouteSegment segmentFirstHalf = new RouteSegment(routeSegmentStart,
-                        segmentMidPoint, segmentDurationFirstHalf);
-                RouteSegment segmentSecondHalf = new RouteSegment(segmentMidPoint,
+                        segmentSplitPoint, segmentDurationFirstHalf);
+                RouteSegment segmentSecondHalf = new RouteSegment(segmentSplitPoint,
                         routeSegmentEnd, segmentDurationSecondHalf);
 
                 // Create mapping of accumulated segments and first half segment with current track

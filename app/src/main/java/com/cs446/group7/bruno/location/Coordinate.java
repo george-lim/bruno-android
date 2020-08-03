@@ -59,7 +59,7 @@ public class Coordinate implements Serializable {
     }
 
     // Returns a proportional coordinate between this and destination using linear interpolation
-    public Coordinate getMidPoint(final Coordinate destination, double proportion) {
+    public Coordinate getSplitPoint(final Coordinate destination, double proportion) {
         double latitudeDifference = destination.latitude - latitude;
         double longitudeDifference = destination.longitude - longitude;
         return new Coordinate(
