@@ -129,7 +129,7 @@ public class PlaylistModel {
             return 0;
         }
 
-        // Ensure that playback position can never exceed current track duration, due to desync.
+        // Force playbackPosition to be capped at the current track duration
         return Math.min(new Date().getTime() - trackStartTime, getCurrentTrack().getDuration());
     }
 
@@ -245,10 +245,13 @@ public class PlaylistModel {
 
     // MARK: - Music player synchronization methods
 
-    // TODO: Handle current track desync from Spotify.
     public void onTrackChanged(final BrunoTrack track) {
-        trackIndex++;
-        trackStartTime = new Date().getTime();
+        // Stay on the same song until the next song matches what we expect
+        if (hasStartedPlaylistRoute() && !hasCompletedPlaylistRoute()
+                && track == playlist.getTrack(trackIndex + 1)) {
+            trackIndex++;
+            trackStartTime = new Date().getTime();
+        }
     }
 
     // MARK: - Reset methods
