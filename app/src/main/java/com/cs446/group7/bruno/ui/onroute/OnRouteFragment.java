@@ -22,7 +22,6 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 
 import com.cs446.group7.bruno.R;
-import com.cs446.group7.bruno.location.Coordinate;
 import com.cs446.group7.bruno.models.RouteModel;
 import com.cs446.group7.bruno.models.TrackSegment;
 import com.cs446.group7.bruno.utils.BitmapUtils;
@@ -149,6 +148,7 @@ public class OnRouteFragment extends Fragment implements OnRouteViewModelDelegat
     public void clearMap() {
         map.clear();
         userMarker = null;
+        brunoMarker = null;
         checkpointMarker = null;
     }
 

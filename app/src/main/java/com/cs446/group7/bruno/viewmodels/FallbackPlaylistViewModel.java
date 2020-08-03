@@ -195,11 +195,10 @@ public class FallbackPlaylistViewModel {
         delegate.showProgressDialog();
         getSpotifyPlaylistAPI().getPlaylist(token, fallbackPlaylist.getId(), new Callback<BrunoPlaylist, Exception>() {
             @Override
-            public void onSuccess(BrunoPlaylist result) {
-                BrunoPlaylistImpl playlist = new BrunoPlaylistImpl(result.getId(), result.getName(), result.getTracks());
+            public void onSuccess(BrunoPlaylist playlist) {
                 try {
                     Log.d(TAG, playlist.getName());
-                    FileStorage.writeSerializableToFile(context, FileStorage.FALLBACK_PLAYLIST, playlist);
+                    FileStorage.writeSerializableToFile(context, FileStorage.FALLBACK_PLAYLIST, (BrunoPlaylistImpl)playlist);
                     MainActivity.getPreferencesStorage().putString(PreferencesStorage.FALLBACK_PLAYLIST_ID, playlist.getId());
                     wrapperDelegate.onSelectPlaylistPressed();
                 } catch (Exception e) {
