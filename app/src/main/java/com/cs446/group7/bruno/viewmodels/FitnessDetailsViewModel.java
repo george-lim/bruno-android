@@ -3,9 +3,8 @@ package com.cs446.group7.bruno.viewmodels;
 import android.content.Context;
 import android.content.res.Resources;
 
-import com.cs446.group7.bruno.R;
-import com.cs446.group7.bruno.persistence.FitnessRecordData;
 import com.cs446.group7.bruno.models.FitnessModel;
+import com.cs446.group7.bruno.persistence.FitnessRecordData;
 import com.cs446.group7.bruno.settings.SettingsService;
 import com.cs446.group7.bruno.utils.TimeUtils;
 
@@ -27,12 +26,13 @@ public class FitnessDetailsViewModel {
 
     private void setupUI() {
         final FitnessRecordData currentFitnessRecord = model.getCurrentFitnessRecord();
-        final String dateTimeString = TimeUtils.formatDateTime(currentFitnessRecord.getStartTime(), SettingsService.DATE_TIME_FORMAT, resources.getConfiguration().locale);
+        final String dateTimeString = TimeUtils.formatDateTime(currentFitnessRecord.getStartTime(),
+                SettingsService.DATE_TIME_FORMAT, resources.getConfiguration().locale);
 
         delegate.setupUI(
                dateTimeString,
-                (int)(currentFitnessRecord.getUserDuration() / 1000d),
-                (int)(currentFitnessRecord.getExpectedDuration() / 1000d),
+                currentFitnessRecord.getUserDuration() / 1000,
+                currentFitnessRecord.getExpectedDuration() / 1000,
                 currentFitnessRecord.getSteps()
         );
 

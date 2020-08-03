@@ -10,7 +10,6 @@ import com.cs446.group7.bruno.persistence.FitnessRecordEntry;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import androidx.lifecycle.ViewModel;
@@ -32,7 +31,9 @@ public class FitnessModel extends ViewModel {
             try {
                 fitnessRecordDataList.add(FitnessRecordData.deserialize(entry.getRecordDataString()));
             } catch (IOException | ClassNotFoundException e) {
+                // Happens when the structure of FitnessRecordData changes so we must discard all old data
                 Log.e(TAG, "Failed to load record: " + e.toString());
+                fitnessRecordDAO.delete(entry);
             }
         }
 
