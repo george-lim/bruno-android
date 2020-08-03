@@ -247,8 +247,7 @@ public class PlaylistModel {
 
     public void onTrackChanged(final BrunoTrack track) {
         // Stay on the same song until the next song matches what we expect
-        if (hasStartedPlaylistRoute() && !hasCompletedPlaylistRoute()
-                && track == playlist.getTrack(trackIndex + 1)) {
+        if (!hasCompletedPlaylistRoute() && track.equals(playlist.getTrack(trackIndex + 1))) {
             trackIndex++;
             trackStartTime = new Date().getTime();
         }
