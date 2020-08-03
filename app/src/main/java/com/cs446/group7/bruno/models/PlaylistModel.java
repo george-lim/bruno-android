@@ -187,7 +187,9 @@ public class PlaylistModel {
         trackIndex++;
     }
 
-    // Returns distance travelled by the playlist on the route
+    // MARK: - Current playlist playback calculations
+
+    // Returns route distance of current playlist playback
     public double getPlaylistRouteDistance(long playbackPosition) {
         if (trackIndex >= trackSegments.size()) {
             return getCompletedTrackSegmentsDistance();
@@ -197,6 +199,7 @@ public class PlaylistModel {
                 + getCurrentTrackSegmentDistance(playbackPosition);
     }
 
+    // Returns route duration of current playlist playback
     public long getPlaylistRouteDuration(long playbackPosition) {
         if (trackIndex >= trackSegments.size()) {
             return getCompletedTrackSegmentsDuration();
@@ -205,7 +208,7 @@ public class PlaylistModel {
         return getCompletedTrackSegmentsDuration() + playbackPosition;
     }
 
-    // Returns the location on the route corresponding to the current track's playback position
+    // Returns route coordinate of current playlist playback
     public Coordinate getPlaylistRouteCoordinate(long playbackPosition) {
         if (trackIndex >= trackSegments.size()) {
             return routeSegments.get(routeSegments.size() - 1).getEndCoordinate();
@@ -213,6 +216,8 @@ public class PlaylistModel {
 
         return trackSegments.get(trackIndex).getCoordinate(playbackPosition);
     }
+
+    // MARK: - Reset methods
 
     public void resetPlayback() {
         setCurrentTrack(null);
