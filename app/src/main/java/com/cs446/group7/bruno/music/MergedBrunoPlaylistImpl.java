@@ -1,22 +1,19 @@
 package com.cs446.group7.bruno.music;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class MergedBrunoPlaylistImpl extends BrunoPlaylist {
     private BrunoPlaylist primaryPlaylist;
     private BrunoPlaylist secondaryPlaylist;
-    private BrunoTrack mergeTrack;
-    private long mergeTrackPlaybackPosition;
+    private int mergeTrackIndex;
+    private long mergePlaybackPosition;
 
     public MergedBrunoPlaylistImpl(final BrunoPlaylist primaryPlaylist,
                                    final BrunoPlaylist secondaryPlaylist,
-                                   final BrunoTrack mergeTrack,
-                                   long mergeTrackPlaybackPosition) {
+                                   int mergeTrackIndex,
+                                   long mergePlaybackPosition) {
         this.primaryPlaylist = primaryPlaylist;
         this.secondaryPlaylist = secondaryPlaylist;
-        this.mergeTrack = mergeTrack;
-        this.mergeTrackPlaybackPosition = mergeTrackPlaybackPosition;
+        this.mergeTrackIndex = mergeTrackIndex;
+        this.mergePlaybackPosition = mergePlaybackPosition;
     }
 
     @Override
@@ -30,20 +27,15 @@ public class MergedBrunoPlaylistImpl extends BrunoPlaylist {
     }
 
     @Override
-    public List<BrunoTrack> getTracks() {
-        List<BrunoTrack> mergedTracks = new ArrayList<>();
-
-        for (BrunoTrack track : primaryPlaylist.getTracks()) {
-            if (track == mergeTrack) {
-                break;
-            }
-
-            mergedTracks.add(track);
+    public BrunoTrack getTrack(int index) {
+        if (index < mergeTrackIndex) {
+            return primaryPlaylist.getTrack(index);
         }
-
-        mergedTracks.add(mergeTrack.split(mergeTrackPlaybackPosition));
-        mergedTracks.addAll(secondaryPlaylist.getTracks());
-
-        return mergedTracks;
+        else if (index == mergeTrackIndex) {
+            return primaryPlaylist.getTrack(index).split(mergePlaybackPosition);
+        }
+        else {
+            return secondaryPlaylist.getTrack((index - mergeTrackIndex) - 1);
+        }
     }
 }

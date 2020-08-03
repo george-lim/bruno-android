@@ -34,11 +34,8 @@ public class MockMusicPlayerImpl implements MusicPlayer {
     // Simulates playing the playlist in the background, with proper track delay.
     private void playSongs() {
         try {
-            List<BrunoTrack> tracks = playlist.getTracks();
-
-            // Play each song with repeat
-            for (int i = 0; true; i = (i + 1) % tracks.size()) {
-                BrunoTrack track = tracks.get(i);
+            for (int trackIndex = 0; true; ++trackIndex) {
+                BrunoTrack track = playlist.getTrack(trackIndex);
 
                 // Dispatch to UI thread
                 new Handler(Looper.getMainLooper()).post(() -> {
