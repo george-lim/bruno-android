@@ -1,14 +1,12 @@
 package com.cs446.group7.bruno;
 
-import android.util.Log;
-
+import com.cs446.group7.bruno.location.Coordinate;
 import com.cs446.group7.bruno.models.PlaylistModel;
 import com.cs446.group7.bruno.models.TrackSegment;
 import com.cs446.group7.bruno.music.BrunoPlaylist;
 import com.cs446.group7.bruno.music.BrunoPlaylistImpl;
 import com.cs446.group7.bruno.music.BrunoTrack;
 import com.cs446.group7.bruno.routing.RouteSegment;
-import com.google.android.gms.maps.model.LatLng;
 
 import org.junit.After;
 import org.junit.Before;
@@ -24,23 +22,23 @@ import static org.junit.Assert.assertEquals;
 public class ProcessTrackSegmentsTest {
     // These mock segments create a box around the university of waterloo
     RouteSegment mockSegment1 = new RouteSegment(
-            new LatLng(43.476861, -80.539940),
-            new LatLng(43.478633, -80.535248),
+            new Coordinate(43.476861, -80.539940),
+            new Coordinate(43.478633, -80.535248),
             60000l
     );
     RouteSegment mockSegment2 = new RouteSegment(
-            new LatLng(43.478633, -80.535248),
-            new LatLng(43.473752, -80.531724),
+            new Coordinate(43.478633, -80.535248),
+            new Coordinate(43.473752, -80.531724),
             80000l
     );
     RouteSegment mockSegment3 = new RouteSegment(
-            new LatLng(43.473752, -80.531724),
-            new LatLng(43.472029, -80.536262),
+            new Coordinate(43.473752, -80.531724),
+            new Coordinate(43.472029, -80.536262),
             60000l
     );
     RouteSegment mockSegment4 = new RouteSegment(
-            new LatLng(43.472029, -80.536262),
-            new LatLng(43.476861, -80.539940),
+            new Coordinate(43.472029, -80.536262),
+            new Coordinate(43.476861, -80.539940),
             80000l
     );
     LinkedList<RouteSegment> mockSegments = new LinkedList<>();
@@ -64,8 +62,8 @@ public class ProcessTrackSegmentsTest {
                                           final List<TrackSegment> segments2) {
         assertEquals(segments1.size(), segments2.size());
         for (int i = 0; i < segments1.size(); ++i) {
-            List<LatLng> locations1 = segments1.get(i).getLocations();
-            List<LatLng> locations2 = segments2.get(i).getLocations();
+            List<Coordinate> locations1 = segments1.get(i).getCoordinates();
+            List<Coordinate> locations2 = segments2.get(i).getCoordinates();
             assertEquals(locations1, locations2);
         }
     }
@@ -148,18 +146,6 @@ public class ProcessTrackSegmentsTest {
         model.setRouteColours(DEFAULT_ROUTE_COLOURS);
         model.setPlaylist(playlist);
         assertEqualTrackSegments(model.getTrackSegments(), answer);
-    }
-
-    @Test(expected=IndexOutOfBoundsException.class)
-    public void routeDurationLongerThanPlaylistDuration() {
-        List<BrunoTrack> tracks = new LinkedList<>();
-        tracks.add(new BrunoTrack("testName1", "testArtist1", 140000));
-        BrunoPlaylist playlist = new BrunoPlaylistImpl("id", "playlistName", tracks);
-
-        PlaylistModel model = new PlaylistModel();
-        model.setRouteSegments(mockSegments);
-        model.setRouteColours(DEFAULT_ROUTE_COLOURS);
-        model.setPlaylist(playlist);
     }
 
     @Ignore("Legacy test: PlaylistModel no longer exposes getRouteSegments() method.")

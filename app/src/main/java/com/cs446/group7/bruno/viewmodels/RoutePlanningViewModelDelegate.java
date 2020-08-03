@@ -20,7 +20,7 @@ public interface RoutePlanningViewModelDelegate {
     void updateSelectedModeBtn(boolean isWalkingModeBtnSelected);
     void clearMap();
     void drawRoute(@NonNull final List<TrackSegment> trackSegments);
-    void moveUserMarker(final LatLng location);
+    void moveUserMarker(final LatLng latlng);
     void showRouteProcessingError(final String errorMessage);
     void navigateToNextScreen();
 }

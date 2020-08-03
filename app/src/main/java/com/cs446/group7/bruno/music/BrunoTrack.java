@@ -25,4 +25,14 @@ public class BrunoTrack implements Serializable {
     public long getDuration() {
         return duration;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof BrunoTrack)) return false;
+
+        BrunoTrack otherTrack = (BrunoTrack) obj;
+        return name.equals(otherTrack.name) &&
+                artists.equals(otherTrack.artists) &&
+                duration == otherTrack.duration;
+    }
 }

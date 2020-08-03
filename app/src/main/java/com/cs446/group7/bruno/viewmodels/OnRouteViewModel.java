@@ -8,8 +8,10 @@ import android.util.Log;
 import com.cs446.group7.bruno.BuildConfig;
 import com.cs446.group7.bruno.MainActivity;
 import com.cs446.group7.bruno.R;
+import com.cs446.group7.bruno.location.Coordinate;
 import com.cs446.group7.bruno.location.LocationServiceSubscriber;
 import com.cs446.group7.bruno.models.RouteModel;
+import com.cs446.group7.bruno.music.BrunoPlaylist;
 import com.cs446.group7.bruno.music.BrunoTrack;
 import com.cs446.group7.bruno.music.player.MockMusicPlayerImpl;
 import com.cs446.group7.bruno.music.player.MusicPlayer;
@@ -19,9 +21,7 @@ import com.cs446.group7.bruno.storage.PreferencesStorage;
 import com.cs446.group7.bruno.sensor.PedometerSubscriber;
 import com.cs446.group7.bruno.settings.SettingsService;
 import com.cs446.group7.bruno.utils.Callback;
-import com.cs446.group7.bruno.utils.LatLngUtils;
 import com.cs446.group7.bruno.utils.NoFailCallback;
-import com.google.android.gms.maps.model.LatLng;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -104,12 +104,19 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
 
         delegate.drawRoute(model.getTrackSegments());
 
+        refreshUI();
+    }
+
+    private void refreshUI() {
+        delegate.animateCamera(
+                model.getCurrentCoordinate().getLatLng(),
+                model.getCurrentLocation().getBearing(),
+                CAMERA_TILT,
+                CAMERA_ZOOM
+        );
+
         updateDistanceBetweenUserAndPlaylist();
         updateDistanceToCheckpoint();
-
-        final Location currentLocation = model.getCurrentLocation();
-        final float bearing = currentLocation.getBearing();
-        delegate.animateCamera(LatLngUtils.locationToLatLng(currentLocation), bearing, CAMERA_TILT, CAMERA_ZOOM);
     }
 
     private void showPlayerConnectProgressDialog() {
@@ -215,15 +222,13 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
         // total tolerance radius
         final double toleranceRadius = BASE_TOLERANCE_RADIUS + speedMargin + accuracyDeviation;
 
-        final LatLng currentCheckpoint = model.getCheckpoint();
+        final Coordinate currentCheckpoint = model.getCheckpoint();
 
         // Note: the radius drawn on UI is always constant as we cannot foresee the other location variables, it's just
         // to give an idea where the user should be around
-        delegate.updateCheckpointMarker(currentCheckpoint, BASE_TOLERANCE_RADIUS);
+        delegate.updateCheckpointMarker(currentCheckpoint.getLatLng(), BASE_TOLERANCE_RADIUS);
 
-        final LatLng currLatLng = LatLngUtils.locationToLatLng(currentLocation);
-
-        final double distanceFromCheckpoint = LatLngUtils.getLatLngDistanceInMetres(currLatLng, currentCheckpoint);
+        final double distanceFromCheckpoint = model.getCurrentCoordinate().getDistance(currentCheckpoint);
 
         // Checkpoint is counted if and only if  user is within the tolerance radius;
         // this is calculated dynamically as the location updates, which may be larger than what is drawn
@@ -235,12 +240,24 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
                 onRouteCompleted();
             }
             else {
-                delegate.updateCheckpointMarker(model.getCheckpoint(), toleranceRadius);
+                delegate.updateCheckpointMarker(model.getCheckpoint().getLatLng(), toleranceRadius);
             }
         }
 
         double distanceToCheckpoint = model.getDistanceToCheckpoint();
         delegate.updateDistanceToCheckpoint((int)distanceToCheckpoint + " m");
+    }
+
+    private void handlePlaylistChange(final BrunoPlaylist playlist, long playbackPosition) {
+        musicPlayer.stop();
+        musicPlayer.setPlayerPlaylist(playlist);
+
+        model.mergePlaylist(playlist, playbackPosition);
+        delegate.clearMap();
+        delegate.drawRoute(model.getTrackSegments());
+        refreshUI();
+
+        musicPlayer.play();
     }
 
     /**
@@ -308,9 +325,7 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
     public void onLocationUpdate(@NonNull Location location) {
         if (isRouteCompleted) return;
         model.setCurrentLocation(location);
-        delegate.animateCamera(LatLngUtils.locationToLatLng(location), location.getBearing(), CAMERA_TILT, CAMERA_ZOOM);
-        updateDistanceBetweenUserAndPlaylist();
-        updateDistanceToCheckpoint();
+        refreshUI();
     }
 
     // MARK: - MusicPlayerSubscriber methods
