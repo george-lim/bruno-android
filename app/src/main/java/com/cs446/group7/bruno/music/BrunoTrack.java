@@ -24,6 +24,10 @@ public class BrunoTrack {
         return duration;
     }
 
+    public BrunoTrack split(long playlistPosition) {
+        return new BrunoTrack(name, artists, playlistPosition);
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (!(obj instanceof BrunoTrack)) return false;
