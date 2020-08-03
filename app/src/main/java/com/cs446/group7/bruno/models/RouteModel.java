@@ -106,10 +106,6 @@ public class RouteModel extends ViewModel {
         steps++;
     }
 
-    public Date getStartDate() {
-        return startDate;
-    }
-
     public void startRouteNavigation() {
         startDate = new Date();
     }
@@ -126,6 +122,10 @@ public class RouteModel extends ViewModel {
     public double getDistanceBetweenUserAndPlaylist(long playbackPosition) {
         return checkpointsModel.getUserRouteDistance(currentCoordinate)
                 - playlistModel.getPlaylistRouteDistance(playbackPosition);
+    }
+
+    public Coordinate getPlaylistRouteCoordinate(long playbackPosition) {
+        return playlistModel.getPlaylistRouteCoordinate(playbackPosition);
     }
 
     // MARK: - CheckpointsModel methods

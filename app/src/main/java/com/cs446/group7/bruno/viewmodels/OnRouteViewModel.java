@@ -22,6 +22,7 @@ import com.cs446.group7.bruno.sensor.PedometerSubscriber;
 import com.cs446.group7.bruno.settings.SettingsService;
 import com.cs446.group7.bruno.utils.Callback;
 import com.cs446.group7.bruno.utils.NoFailCallback;
+import com.google.android.gms.maps.model.LatLng;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -93,8 +94,9 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
     private void setupUI() {
         int userAvatarDrawableResourceId = MainActivity.getPreferencesStorage()
                 .getInt(PreferencesStorage.USER_AVATAR, PreferencesStorage.DEFAULT_AVATAR);
+        int brunoAvatarDrawableResourceId = R.drawable.ic_bruno_avatar;
 
-        delegate.setupUI(userAvatarDrawableResourceId);
+        delegate.setupUI(userAvatarDrawableResourceId, brunoAvatarDrawableResourceId);
 
         BrunoTrack currentTrack = model.getCurrentTrack();
 
@@ -191,6 +193,8 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
                             resources.getDrawable(R.drawable.ic_angle_double_up, null),
                             resources.getColor(R.color.colorSecondary, null));
                 }
+
+                updateBrunoCoordinate(playbackPosition);
             }
 
             @Override
@@ -201,6 +205,15 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
                                 : error.getLocalizedMessage());
             }
         });
+    }
+
+    private void updateBrunoCoordinate(long playbackPosition) {
+        final Coordinate brunoCoordinate = model.getPlaylistRouteCoordinate(playbackPosition);
+
+        // Fail-safe
+        if (brunoCoordinate == null) return;
+
+        delegate.updateBrunoMarker(brunoCoordinate.getLatLng());
     }
 
     private void updateDistanceToCheckpoint() {
