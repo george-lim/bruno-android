@@ -56,7 +56,7 @@ public class PlaylistModel {
                 long segmentDurationFirstHalf = track.getDuration() - accumulatedRouteSegmentDuration;
                 long segmentDurationSecondHalf = routeSegmentDuration - segmentDurationFirstHalf;
                 double segmentDurationRatio = (double) segmentDurationFirstHalf / routeSegmentDuration;
-                
+
                 Coordinate segmentSplitPoint = routeSegmentStart.getSplitPoint(
                         routeSegmentEnd,
                         segmentDurationRatio
