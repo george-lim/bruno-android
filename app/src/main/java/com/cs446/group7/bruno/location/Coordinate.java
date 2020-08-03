@@ -58,6 +58,16 @@ public class Coordinate implements Serializable {
                 (Math.cos(latitude) * Math.cos(destination.latitude) * haversine(diffLngRad))));
     }
 
+    // Returns a proportional coordinate between this and destination using linear interpolation
+    public Coordinate getSplitPoint(final Coordinate destination, double proportion) {
+        double latitudeDifference = destination.latitude - latitude;
+        double longitudeDifference = destination.longitude - longitude;
+        return new Coordinate(
+                latitude + proportion * latitudeDifference,
+                longitude + proportion * longitudeDifference
+        );
+    }
+
     public LatLng getLatLng() {
         return new LatLng(latitude, longitude);
     }
