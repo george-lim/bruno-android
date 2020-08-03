@@ -1,4 +1,4 @@
-package com.cs446.group7.bruno.preferencesstorage;
+package com.cs446.group7.bruno.storage;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -15,6 +15,7 @@ public class PreferencesStorage {
     // String identifier to get share preference value
     public static String COMPLETED_ONBOARDING = "completed_onboarding";
     public static String USER_AVATAR = "user_avatar";
+    public static String FALLBACK_PLAYLIST_ID = "fallback_playlist_id";
     public static int DEFAULT_AVATAR = R.drawable.ic_avatar_1;
 
     public PreferencesStorage(@NonNull final Context context) {
@@ -38,6 +39,16 @@ public class PreferencesStorage {
     public void putInt(final String key, final int value) {
         SharedPreferences.Editor editor = pref.edit();
         editor.putInt(key, value);
+        editor.apply();
+    }
+
+    public String getString(final String key, final String defaultVal) {
+        return pref.getString(key, defaultVal);
+    }
+
+    public void putString(final String key, final String value) {
+        SharedPreferences.Editor editor = pref.edit();
+        editor.putString(key, value);
         editor.apply();
     }
 }

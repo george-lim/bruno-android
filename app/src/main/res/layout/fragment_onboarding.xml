@@ -76,9 +76,21 @@
             android:layout_margin="5dp"
             android:background="@drawable/tab_circle_state"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/tab5_indicator"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/tab3_indicator"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <View
+            android:id="@+id/tab5_indicator"
+            android:layout_width="40dp"
+            android:layout_height="3dp"
+            android:layout_margin="5dp"
+            android:background="@drawable/tab_circle_state"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/tab4_indicator"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.505" />
 

@@ -25,6 +25,9 @@
             android:id="@+id/action_fragmenttoplevel_to_fragmentsettingavatar"
             app:destination="@id/fragment_settings_avatar_wrapper" />
         <action
+            android:id="@+id/action_fragmenttoplevel_to_fragmentfallbackplaylist"
+            app:destination="@id/fragment_fallback_playlist_wrapper" />
+        <action
             android:id="@+id/action_fragmenttoplvl_to_fragmenttermsandconditions"
             app:destination="@id/fragment_terms_and_conditions" />
         <action
@@ -83,4 +86,9 @@
         android:label="fragment_settings_avatar_wrapper"
         tools:layout="@layout/fragment_settings_avatar_wrapper" />
 
+    <fragment
+        android:id="@+id/fragment_fallback_playlist_wrapper"
+        android:name="com.cs446.group7.bruno.ui.settings.SettingsFallbackPlaylistWrapperFragment"
+        android:label="fragment_fallback_playlist_wrapper"
+        tools:layout="@layout/fragment_settings_fallback_playlist_wrapper" />
 </navigation>

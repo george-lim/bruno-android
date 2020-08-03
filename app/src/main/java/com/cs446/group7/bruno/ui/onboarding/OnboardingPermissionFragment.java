@@ -2,8 +2,10 @@ package com.cs446.group7.bruno.ui.onboarding;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -44,6 +46,12 @@ public class OnboardingPermissionFragment extends Fragment implements Onboarding
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        viewModel.updateUserAccess();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
         viewModel.updateUserAccess();
     }
 
@@ -117,5 +125,12 @@ public class OnboardingPermissionFragment extends Fragment implements Onboarding
 
     public void moveToNextTab() {
         onboardingFragment.moveToNextTab();
+    }
+
+    public void redirectSpotifyInstallationInGooglePlay() {
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(Uri.parse("https://play.google.com/store/apps/details?id=com.spotify.music"));
+        intent.setPackage("com.android.vending");
+        startActivity(intent);
     }
 }
