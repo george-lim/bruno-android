@@ -116,8 +116,21 @@ public class PlaylistModel {
         return result;
     }
 
+    private boolean hasStartedPlaylistRoute() {
+        return trackIndex >= 0;
+    }
+
+    private boolean hasCompletedPlaylistRoute() {
+        return trackIndex >= trackSegments.size();
+    }
+
     private long getPlaybackPosition() {
-        return new Date().getTime() - trackStartTime;
+        if (!hasStartedPlaylistRoute()) {
+            return 0;
+        }
+
+        // Ensure that playback position can never exceed current track duration, due to desync.
+        return Math.min(new Date().getTime() - trackStartTime, getCurrentTrack().getDuration());
     }
 
     // Returns the total distance of TrackSegments that have been completed (excluding current)
@@ -133,6 +146,10 @@ public class PlaylistModel {
 
     // Returns the travelled distance of current TrackSegment
     private double getCurrentTrackSegmentDistance() {
+        if (!hasStartedPlaylistRoute()) {
+            return 0;
+        }
+
         double currentTrackPlaybackRatio = (double)getPlaybackPosition()
                 / getCurrentTrack().getDuration();
         double currentTrackDistance = trackSegments.get(trackIndex).getDistance();
@@ -185,23 +202,18 @@ public class PlaylistModel {
     }
 
     public BrunoTrack getCurrentTrack() {
-        if (trackIndex < 0) {
+        if (!hasStartedPlaylistRoute()) {
             return null;
         }
 
         return playlist.getTrack(trackIndex);
     }
 
-    // TODO: Handle current track desync from Spotify.
-    public void setCurrentTrack(final BrunoTrack currentTrack) {
-        trackIndex++;
-    }
-
     // MARK: - Current playlist playback calculations
 
     // Returns route distance of current playlist playback
     public double getPlaylistRouteDistance() {
-        if (trackIndex >= trackSegments.size()) {
+        if (hasCompletedPlaylistRoute()) {
             return getCompletedTrackSegmentsDistance();
         }
 
@@ -211,7 +223,7 @@ public class PlaylistModel {
 
     // Returns route duration of current playlist playback
     public long getPlaylistRouteDuration() {
-        if (trackIndex >= trackSegments.size()) {
+        if (hasCompletedPlaylistRoute()) {
             return getCompletedTrackSegmentsDuration();
         }
 
@@ -220,11 +232,23 @@ public class PlaylistModel {
 
     // Returns route coordinate of current playlist playback
     public Coordinate getPlaylistRouteCoordinate() {
-        if (trackIndex >= trackSegments.size()) {
+        if (!hasStartedPlaylistRoute()) {
+            return routeSegments.get(0).getStartCoordinate();
+        }
+        else if (hasCompletedPlaylistRoute()) {
             return routeSegments.get(routeSegments.size() - 1).getEndCoordinate();
         }
+        else {
+            return trackSegments.get(trackIndex).getCoordinate(getPlaybackPosition());
+        }
+    }
 
-        return trackSegments.get(trackIndex).getCoordinate(getPlaybackPosition());
+    // MARK: - Music player synchronization methods
+
+    // TODO: Handle current track desync from Spotify.
+    public void onTrackChanged(final BrunoTrack track) {
+        trackIndex++;
+        trackStartTime = new Date().getTime();
     }
 
     // MARK: - Reset methods

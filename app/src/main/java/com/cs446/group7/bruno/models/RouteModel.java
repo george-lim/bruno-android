@@ -158,17 +158,16 @@ public class RouteModel extends ViewModel {
         return playlistModel.getCurrentTrack();
     }
 
-    // TODO: Rename this
-    public void setCurrentTrack(final BrunoTrack currentTrack) {
-        playlistModel.setCurrentTrack(currentTrack);
-    }
-
     public void mergePlaylist(final BrunoPlaylist playlist) {
         playlistModel.mergePlaylist(playlist);
     }
 
     public Coordinate getPlaylistRouteCoordinate() {
         return playlistModel.getPlaylistRouteCoordinate();
+    }
+
+    public void onTrackChanged(final BrunoTrack currentTrack) {
+        playlistModel.onTrackChanged(currentTrack);
     }
 
     /**

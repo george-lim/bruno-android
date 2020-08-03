@@ -112,6 +112,7 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
                 CAMERA_ZOOM
         );
 
+        updateBrunoCoordinate();
         updateDistanceBetweenUserAndPlaylist();
         updateDistanceToCheckpoint();
     }
@@ -160,18 +161,12 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
         });
     }
 
+    private void updateBrunoCoordinate() {
+        final Coordinate brunoCoordinate = model.getPlaylistRouteCoordinate();
+        delegate.updateBrunoMarker(brunoCoordinate.getLatLng());
+    }
+
     private void updateDistanceBetweenUserAndPlaylist() {
-        // Fail-safe
-        if (isRouteCompleted) return;
-
-        // placeholder display until current track is ready
-        if (model.getCurrentTrack() == null) {
-            delegate.updateDistanceBetweenUserAndPlaylist("0 m",
-                    resources.getDrawable(R.drawable.ic_angle_double_up, null),
-                    resources.getColor(R.color.colorSecondary, null));
-            return;
-        }
-
         int userPlaylistDistance = (int)model.getDistanceBetweenUserAndPlaylist();
 
         if (userPlaylistDistance < 0) {
@@ -185,19 +180,9 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
                     resources.getDrawable(R.drawable.ic_angle_double_up, null),
                     resources.getColor(R.color.colorSecondary, null));
         }
-
-        updateBrunoCoordinate();
     }
 
-    private void updateBrunoCoordinate() {
-        final Coordinate brunoCoordinate = model.getPlaylistRouteCoordinate();
-
-        // Fail-safe
-        if (brunoCoordinate == null) return;
-
-        delegate.updateBrunoMarker(brunoCoordinate.getLatLng());
-    }
-
+    // TODO: Move this calculation into RouteModel.
     private void updateDistanceToCheckpoint() {
         /*
             Set a tolerance radius depending on how fast the user is moving. The faster they are, the more
@@ -243,7 +228,7 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
         delegate.updateDistanceToCheckpoint((int)distanceToCheckpoint + " m");
     }
 
-    private void handlePlaylistChange(final BrunoPlaylist playlist) {
+    private void handlePlaylistChanged(final BrunoPlaylist playlist) {
         musicPlayer.stop();
         musicPlayer.setPlayerPlaylist(playlist);
 
@@ -309,8 +294,8 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
     // MARK: - MusicPlayerSubscriber methods
 
     @Override
-    public void onTrackChanged(BrunoTrack track) {
-        model.setCurrentTrack(track);
+    public void onTrackChanged(final BrunoTrack track) {
+        model.onTrackChanged(track);
         delegate.updateCurrentSongUI(track.getName(), track.getArtists());
         delegate.showRouteInfoCard();
     }
