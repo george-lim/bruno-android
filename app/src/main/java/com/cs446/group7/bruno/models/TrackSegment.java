@@ -36,7 +36,7 @@ public class TrackSegment {
         }
 
         RouteSegment lastRouteSegment = routeSegments.get(routeSegments.size() - 1);
-        Coordinate endCoordinate = lastRouteSegment.getStartCoordinate();
+        Coordinate endCoordinate = lastRouteSegment.getEndCoordinate();
         coordinates.add(endCoordinate);
         latLngs.add(endCoordinate.getLatLng());
     }
