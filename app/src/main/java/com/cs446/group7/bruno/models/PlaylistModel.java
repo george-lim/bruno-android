@@ -120,6 +120,20 @@ public class PlaylistModel implements Serializable {
         return result;
     }
 
+    // Returns the total distance of TrackSegments that have been completed (excluding current)
+    private double getCompletedTrackSegmentsDistance() {
+        List<BrunoTrack> tracks = playlist.getTracks();
+        List<TrackSegment> trackSegments = getTrackSegments();
+        double distance = 0;
+
+        // Only iterate up to trackSegments.size() if Bruno has finished the route
+        for (int i = 0; i < Math.min(trackIndex, trackSegments.size()); ++i) {
+            distance += trackSegments.get(i % tracks.size()).getDistance();
+        }
+
+        return distance;
+    }
+
     // MARK: - Public methods
 
     public void setRouteSegments(final List<RouteSegment> routeSegments) {
@@ -161,14 +175,14 @@ public class PlaylistModel implements Serializable {
 
     // Returns distance travelled by the playlist on the route
     public double getPlaylistRouteDistance(long playbackPosition) {
-        List<BrunoTrack> tracks = playlist.getTracks();
-        List<TrackSegment> trackSegments = getTrackSegments();
-        double distance = 0;
+        double distance = getCompletedTrackSegmentsDistance();
 
-        for (int i = 0; i < trackIndex; ++i) {
-            distance += trackSegments.get(i % tracks.size()).getDistance();
+        // Bruno has finished the route and is stationary, do not increment distance
+        if (trackIndex >= trackSegments.size()) {
+            return distance;
         }
 
+        // Add distance traveled in current TrackSegment
         double currentTrackPlaybackRatio = (double)playbackPosition / currentTrack.getDuration();
         distance += currentTrackPlaybackRatio * trackSegments.get(trackIndex).getDistance();
 
@@ -183,6 +197,51 @@ public class PlaylistModel implements Serializable {
         }
 
         return distance;
+    }
+
+    // Returns the location on the route corresponding to the current track's playback position
+    public Coordinate getPlaylistRouteCoordinate(long playbackPosition) {
+        // Bruno has finished and is stationary at the end location of the route
+        if (trackIndex >= trackSegments.size()) {
+            return routeSegments.get(routeSegments.size() - 1).getEndCoordinate();
+        }
+
+        double completedTrackSegmentsDistance = getCompletedTrackSegmentsDistance();
+        double playlistRouteDistance = getPlaylistRouteDistance(playbackPosition);
+        double completedDistanceInCurrentTrackSegment =
+                playlistRouteDistance - completedTrackSegmentsDistance;
+
+        final List<Coordinate> currentTrackSegmentCoordinates =
+                trackSegments.get(trackIndex).getCoordinates();
+
+        double distance = 0;
+        Coordinate playlistRouteCoordinate = null;
+
+        for (int i = 0; i < currentTrackSegmentCoordinates.size() - 1; ++i) {
+            final Coordinate routeSegmentStart = currentTrackSegmentCoordinates.get(i);
+            final Coordinate routeSegmentEnd = currentTrackSegmentCoordinates.get(i + 1);
+
+            double routeSegmentDistance = routeSegmentStart.getDistance(routeSegmentEnd);
+
+            if (distance + routeSegmentDistance >= completedDistanceInCurrentTrackSegment) {
+                double diffLat = routeSegmentEnd.getLatitude() - routeSegmentStart.getLatitude();
+                double diffLng = routeSegmentEnd.getLongitude() - routeSegmentStart.getLongitude();
+
+                double currentTrackPlaybackRatio = (double)playbackPosition / currentTrack.getDuration();
+
+                double playlistCoordinateLat =
+                        routeSegmentStart.getLatitude() + (diffLat * currentTrackPlaybackRatio);
+                double playlistCoordinateLng =
+                        routeSegmentStart.getLongitude() + (diffLng * currentTrackPlaybackRatio);
+
+                playlistRouteCoordinate = new Coordinate(playlistCoordinateLat, playlistCoordinateLng);
+                break;
+            }
+
+            distance += routeSegmentDistance;
+        }
+
+        return playlistRouteCoordinate;
     }
 
     public void resetPlayback() {
