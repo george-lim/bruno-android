@@ -144,7 +144,7 @@ class SpotifyPlayerService implements MusicPlayer {
                     if (track != null) {
                         Log.d(TAG, String.format("Received Track: %s", track.toString()));
                         // Check to see if the track received corresponds to the beginning of the playlist
-                        if (!hasReachedFirstSong && convertToBrunoTrack(track).equals(playlist.getTracks().get(0))) {
+                        if (!hasReachedFirstSong && convertToBrunoTrack(track).equals(playlist.getTrack(0))) {
                             Log.d(TAG, "Received the first song related to the playlist.");
                             hasReachedFirstSong = true;
                         }
@@ -183,7 +183,7 @@ class SpotifyPlayerService implements MusicPlayer {
         if (!isPlayerStarted) {
             // Need to make sure that the track is not null and is equal to the first song of the playlist
             boolean isBeginningOfPlaylist = currentState.track != null
-                    && convertToBrunoTrack(currentState.track).equals(playlist.getTracks().get(0));
+                    && convertToBrunoTrack(currentState.track).equals(playlist.getTrack(0));
             // Then check if the first song is currently playing and at a non-zero playback position
             isPlayerStarted =
                     isBeginningOfPlaylist && currentState.playbackSpeed != 0.0 && currentState.playbackPosition > 0;

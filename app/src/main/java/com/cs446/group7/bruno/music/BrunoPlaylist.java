@@ -7,15 +7,14 @@ import java.util.List;
 public abstract class BrunoPlaylist {
     public abstract String getId();
     public abstract String getName();
-    public abstract List<BrunoTrack> getTracks();
+    public abstract BrunoTrack getTrack(int index);
 
     public List<BrunoTrack> getTracksUpToDuration(long duration) {
-        List<BrunoTrack> tracks = getTracks();
         List<BrunoTrack> result = new ArrayList<>();
-        int i;
+        int trackIndex;
 
-        for (i = 0; true; i = (i + 1) % tracks.size()) {
-            BrunoTrack track = tracks.get(i);
+        for (trackIndex = 0; true; ++trackIndex) {
+            BrunoTrack track = getTrack(trackIndex);
 
             if (duration - track.getDuration() <= 0) {
                 break;
@@ -25,7 +24,7 @@ public abstract class BrunoPlaylist {
             result.add(track);
         }
 
-        result.add(tracks.get(i).split(duration));
+        result.add(getTrack(trackIndex).split(duration));
 
         return result;
     }

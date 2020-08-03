@@ -15,7 +15,6 @@ import com.cs446.group7.bruno.routing.RouteSegment;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
-import java.util.Random;
 
 import androidx.lifecycle.ViewModel;
 
@@ -122,7 +121,9 @@ public class RouteModel extends ViewModel {
     }
 
     public void stopRouteNavigation(long playbackPosition) {
-        final long userDuration = playlistModel.getTotalPlaybackDuration(playbackPosition);
+        final long userDuration = new Date().getTime() - startDate.getTime();
+        final long brunoDuration = playlistModel.getPlaylistRouteDuration(playbackPosition);
+        final double routeDistance = playlistModel.getPlaylistRouteDistance(playbackPosition);
         final BrunoPlaylist playlist = playlistModel.getPlaylist();
 
         // Persist tracks to database.
@@ -130,8 +131,8 @@ public class RouteModel extends ViewModel {
                 mode == RouteModel.Mode.RUN ? FitnessRecordData.Mode.RUN : FitnessRecordData.Mode.WALK,
                 startDate,
                 userDuration,
-                new Random().nextInt(901) * 1000,  // TODO: Bruno time playlistModel.getPlaylist().getDuration(),
-                playlistModel.getTotalRouteDistance(),
+                brunoDuration,
+                routeDistance,
                 steps,
                 playlist,
                 getTrackSegments()
@@ -152,10 +153,6 @@ public class RouteModel extends ViewModel {
     public double getDistanceBetweenUserAndPlaylist(long playbackPosition) {
         return checkpointsModel.getUserRouteDistance(currentCoordinate)
                 - playlistModel.getPlaylistRouteDistance(playbackPosition);
-    }
-
-    public Coordinate getPlaylistRouteCoordinate(long playbackPosition) {
-        return playlistModel.getPlaylistRouteCoordinate(playbackPosition);
     }
 
     // MARK: - CheckpointsModel methods
@@ -195,6 +192,10 @@ public class RouteModel extends ViewModel {
 
     public boolean hasTrackSegments() {
         return playlistModel.getTrackSegments() != null;
+    }
+
+    public Coordinate getPlaylistRouteCoordinate(long playbackPosition) {
+        return playlistModel.getPlaylistRouteCoordinate(playbackPosition);
     }
 
     /**
