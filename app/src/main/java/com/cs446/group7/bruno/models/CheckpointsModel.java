@@ -37,6 +37,11 @@ public class CheckpointsModel {
 
     // Returns distance from the start of the route to the current checkpoint
     private double getTotalDistanceToCheckpoint() {
+        // Fail-safe
+        if (hasCompletedAllCheckpoints()) {
+            return 0;
+        }
+
         double distance = 0;
 
         for (int i = 0; i < checkpointIndex; ++i) {
@@ -71,6 +76,11 @@ public class CheckpointsModel {
     }
 
     public boolean hasCompletedAllCheckpoints() {
+        // Fail-safe
+        if (checkpoints == null) {
+            return true;
+        }
+
         return checkpointIndex == checkpoints.size();
     }
 

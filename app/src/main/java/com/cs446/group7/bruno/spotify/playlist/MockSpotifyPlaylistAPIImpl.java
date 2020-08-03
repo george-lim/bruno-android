@@ -17,9 +17,9 @@ public class MockSpotifyPlaylistAPIImpl implements SpotifyPlaylistAPI {
         callback.onSuccess("token");
     }
 
-    public void getPlaylist(final String playlistId,
-                     final String accessToken,
-                     final Callback<BrunoPlaylist, Exception> callback) {
+    public void getPlaylist(final String accessToken,
+                            final String playlistId,
+                            final Callback<BrunoPlaylist, Exception> callback) {
         ArrayList<BrunoTrack> tracks = new ArrayList<BrunoTrack>(5);
         String artists = "Jimin, Taylor Swift";
         long threeMinutes = 180000; // Milliseconds

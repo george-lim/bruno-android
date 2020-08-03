@@ -1,7 +1,9 @@
 package com.cs446.group7.bruno.music;
 
+import java.io.Serializable;
+
 // Simple container class containing information about a track
-public class BrunoTrack {
+public class BrunoTrack implements Serializable {
     private String name;
     private String artists;
     private long duration; // Milliseconds
@@ -22,6 +24,10 @@ public class BrunoTrack {
 
     public long getDuration() {
         return duration;
+    }
+
+    public BrunoTrack split(long playlistPosition) {
+        return new BrunoTrack(name, artists, playlistPosition);
     }
 
     @Override

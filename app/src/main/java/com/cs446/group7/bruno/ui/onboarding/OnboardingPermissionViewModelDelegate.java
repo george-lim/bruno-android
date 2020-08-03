@@ -14,4 +14,5 @@ public interface OnboardingPermissionViewModelDelegate {
                    boolean isCancelable);
     void updatePrimaryButton(String text);
     void moveToNextTab();
+    void redirectSpotifyInstallationInGooglePlay();
 }

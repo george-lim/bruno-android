@@ -17,11 +17,12 @@ import com.cs446.group7.bruno.music.player.MockMusicPlayerImpl;
 import com.cs446.group7.bruno.music.player.MusicPlayer;
 import com.cs446.group7.bruno.music.player.MusicPlayerException;
 import com.cs446.group7.bruno.music.player.MusicPlayerSubscriber;
-import com.cs446.group7.bruno.preferencesstorage.PreferencesStorage;
+import com.cs446.group7.bruno.storage.PreferencesStorage;
 import com.cs446.group7.bruno.sensor.PedometerSubscriber;
 import com.cs446.group7.bruno.settings.SettingsService;
 import com.cs446.group7.bruno.utils.Callback;
 import com.cs446.group7.bruno.utils.NoFailCallback;
+import com.google.android.gms.maps.model.LatLng;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -71,7 +72,7 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
 
         // Connect player, and play playlist after connection succeeds
         connectPlayer(context, result -> {
-            model.setUserStartTime();
+            model.startRouteNavigation();
             musicPlayer.play();
         });
     }
@@ -93,8 +94,9 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
     private void setupUI() {
         int userAvatarDrawableResourceId = MainActivity.getPreferencesStorage()
                 .getInt(PreferencesStorage.USER_AVATAR, PreferencesStorage.DEFAULT_AVATAR);
+        int brunoAvatarDrawableResourceId = R.drawable.ic_bruno_avatar;
 
-        delegate.setupUI(userAvatarDrawableResourceId);
+        delegate.setupUI(userAvatarDrawableResourceId, brunoAvatarDrawableResourceId);
 
         BrunoTrack currentTrack = model.getCurrentTrack();
 
@@ -191,6 +193,8 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
                             resources.getDrawable(R.drawable.ic_angle_double_up, null),
                             resources.getColor(R.color.colorSecondary, null));
                 }
+
+                updateBrunoCoordinate(playbackPosition);
             }
 
             @Override
@@ -201,6 +205,15 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
                                 : error.getLocalizedMessage());
             }
         });
+    }
+
+    private void updateBrunoCoordinate(long playbackPosition) {
+        final Coordinate brunoCoordinate = model.getPlaylistRouteCoordinate(playbackPosition);
+
+        // Fail-safe
+        if (brunoCoordinate == null) return;
+
+        delegate.updateBrunoMarker(brunoCoordinate.getLatLng());
     }
 
     private void updateDistanceToCheckpoint() {
@@ -237,7 +250,7 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
 
             if (model.hasCompletedAllCheckpoints()) {
                 isRouteCompleted = true;
-                onRouteCompleted();
+                stopRouteNavigation(result -> onRouteCompleted());
             }
             else {
                 delegate.updateCheckpointMarker(model.getCheckpoint().getLatLng(), toleranceRadius);
@@ -260,43 +273,42 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
         musicPlayer.play();
     }
 
+    // Final model changes before route completion
+    private void stopRouteNavigation(final NoFailCallback<Void> callback) {
+        musicPlayer.getPlaybackPosition(new Callback<Long, Throwable>() {
+            @Override
+            public void onSuccess(Long result) {
+                model.stopRouteNavigation(result);
+                model.hardReset();
+                callback.onSuccess(null);
+            }
+
+            @Override
+            public void onFailed(Throwable result) {
+                model.stopRouteNavigation(0);
+                model.hardReset();
+                callback.onSuccess(null);
+            }
+        });
+    }
+
     /**
      * Logic when the route is completed goes here.
      */
     private void onRouteCompleted() {
-        model.setUserStopTime();
         musicPlayer.stopAndDisconnect();
-
-        // TODO: save to fitness records
-        final long userDuration = model.getUserDuration();
-        final Locale locale = resources.getConfiguration().locale;
-
-        final String pattern = "MMM d • h:mm aa";
-
-        SimpleDateFormat dateFormat = new SimpleDateFormat(pattern, locale);
-
-        Date startTime = model.getUserStartTime();
-        Date stopTime = model.getUserStopTime();
-
-        Log.i(getClass().getSimpleName(), String.format("Exercise Start: %s", dateFormat.format(startTime)));
-        Log.i(getClass().getSimpleName(), String.format("Exercise End: %s", dateFormat.format(stopTime)));
-        Log.i(getClass().getSimpleName(), String.format("Exercise duration: %s seconds", userDuration / 1000d));
-
-        model.hardReset();
 
         delegate.updateDistanceBetweenUserAndPlaylist("0 m",
                 resources.getDrawable(R.drawable.ic_angle_double_up, null),
                 resources.getColor(R.color.colorSecondary, null));
         delegate.updateDistanceToCheckpoint("0 m");
 
-        // TODO: Currently temporary; in the future we will probably take the user to the fitness details of this run
+        // TODO: Implement a route completion screen.
         delegate.showAlertDialog(
                 resources.getString(R.string.run_completion_title),
                 resources.getString(R.string.run_completion_message),
                 resources.getString(R.string.ok_button),
-                (dialogInterface, i) -> {
-                    delegate.navigateToPreviousScreen();
-                },
+                (dialogInterface, i) -> delegate.navigateToPreviousScreen(),
                 false
         );
     }

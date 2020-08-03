@@ -38,10 +38,14 @@ class SpotifyPlayerService implements MusicPlayer {
 
     private PlayerState currentPlayerState;
     private BrunoPlaylist playlist;
+
     // Indicates if the player has been stopped and subsequently triggered fallback playlist behavior
     private boolean isFallbackTriggered = false;
     // Indicates if the player is done initializing and is playing the first song of the playlist
     private boolean isPlayerStarted = false;
+    // Indicates if the player has received information about the first song of the playlist
+    private boolean hasReachedFirstSong = false;
+
     public SpotifyPlayerService() {
         spotifyServiceSubscribers = new ArrayList<>();
     }
@@ -120,7 +124,7 @@ class SpotifyPlayerService implements MusicPlayer {
                 .setEventCallback(playerState -> {
                     if (playerState == null || playerState.equals(currentPlayerState)) return;
 
-                    Log.d(TAG, playerState.toString());
+                    Log.d(TAG, "Received new PlayerState: " + playerState.toString());
 
                     // Detect and handle fallback behaviour.
                     // Since we only have one fallback playlist, we only trigger fallback once.
@@ -136,20 +140,28 @@ class SpotifyPlayerService implements MusicPlayer {
                     }
 
                     Track track = playerState.track;
+
                     if (track != null) {
-                        if (currentPlayerState != null && track.equals(currentPlayerState.track)) {
-                            // same track, perhaps just paused
-                            Log.w(TAG, "Same track!");
-                            return;
+                        Log.d(TAG, String.format("Received Track: %s", track.toString()));
+                        // Check to see if the track received corresponds to the beginning of the playlist
+                        if (!hasReachedFirstSong && convertToBrunoTrack(track).equals(playlist.getTracks().get(0))) {
+                            Log.d(TAG, "Received the first song related to the playlist.");
+                            hasReachedFirstSong = true;
                         }
 
-                        for (MusicPlayerSubscriber subscriber : spotifyServiceSubscribers) {
-                            subscriber.onTrackChanged(convertToBrunoTrack(track));
+                        boolean isDifferentTrack =
+                                !(currentPlayerState != null && track.equals(currentPlayerState.track));
+
+                        // Only alert subscribers about new track changes once we reach the first song of the playlist
+                        if (hasReachedFirstSong && isDifferentTrack ) {
+                            Log.d(TAG, "Alerting subscribers about a new track change.");
+                            for (MusicPlayerSubscriber subscriber : spotifyServiceSubscribers) {
+                                subscriber.onTrackChanged(convertToBrunoTrack(track));
+                            }
                         }
 
-                        Log.d(TAG, String.format("Curr Track: %s", track.toString()));
                     } else {
-                        Log.w(TAG, "Track is null!");
+                        Log.w(TAG, "Received a null track!");
                     }
                     currentPlayerState = playerState;
                 })
@@ -174,7 +186,7 @@ class SpotifyPlayerService implements MusicPlayer {
                     && convertToBrunoTrack(currentState.track).equals(playlist.getTracks().get(0));
             // Then check if the first song is currently playing and at a non-zero playback position
             isPlayerStarted =
-                    isBeginningOfPlaylist && currentState.playbackSpeed == 1.0 && currentState.playbackPosition > 0;
+                    isBeginningOfPlaylist && currentState.playbackSpeed != 0.0 && currentState.playbackPosition > 0;
             if (isPlayerStarted) {
                 Log.d(TAG, "The player has started playing.");
             }
@@ -208,6 +220,8 @@ class SpotifyPlayerService implements MusicPlayer {
         PlayerApi api = mSpotifyAppRemote.getPlayerApi();
 
         ClosureQueue<Void, Throwable> queue = new ClosureQueue<>();
+        // Reset the check for the first track which matches the playlist
+        hasReachedFirstSong = false;
 
         /*
             Set player shuffle to off if possible.

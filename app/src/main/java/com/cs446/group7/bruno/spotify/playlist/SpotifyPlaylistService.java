@@ -29,27 +29,19 @@ public class SpotifyPlaylistService implements PlaylistGenerator, SpotifyPlaylis
 
     private final String playlistEndpoint = "https://api.spotify.com/v1/playlists/";
     private final String authorizationEndpoint = "https://accounts.spotify.com/api/token";
+    private final DefaultRetryPolicy retryPolicy;
     private final String clientId;
     private final String clientSecret;
     private final String TAG = this.getClass().getSimpleName();
-    // Default is 2500 MS
-    private static final int REQUEST_TIMEOUT_MS = DefaultRetryPolicy.DEFAULT_TIMEOUT_MS;
-    // Default is 1 retry, but we use 5 instead
-    private static final int REQUEST_MAX_RETRIES = 5;
-    // Default is 1f (i.e. first request waits 2500MS, the next request waits 5000MS, etc...)
-    private static final float REQUEST_BACKOFF_MULT = DefaultRetryPolicy.DEFAULT_BACKOFF_MULT;
-    private static final DefaultRetryPolicy retryPolicy = new DefaultRetryPolicy(
-            REQUEST_TIMEOUT_MS,
-            REQUEST_MAX_RETRIES,
-            REQUEST_BACKOFF_MULT
-    );
+
     // Could be expanded to use different playlists
     private static final String DEFAULT_PLAYLIST_ID = "27q9PVUOHGeSJlz6jSgt2f";
 
     // Needs context for secret variables
-    public SpotifyPlaylistService(final Context context) {
+    public SpotifyPlaylistService(final Context context, final DefaultRetryPolicy retryPolicy) {
         clientId = context.getResources().getString(R.string.spotify_client_id);
         clientSecret = context.getResources().getString(R.string.spotify_client_secret);
+        this.retryPolicy = retryPolicy;
     }
 
     // Call this to get the BrunoPlaylist - it goes through public authentication and then the playlist
@@ -141,8 +133,8 @@ public class SpotifyPlaylistService implements PlaylistGenerator, SpotifyPlaylis
     // sufficient credentials to access the playlist. (e.g. a public access token is not capable of retrieving the
     // user's private playlists)
     public void getPlaylist(final String token,
-                             final String playlistId,
-                             final Callback<BrunoPlaylist, Exception> callback) {
+                            final String playlistId,
+                            final Callback<BrunoPlaylist, Exception> callback) {
         final StringRequest stringRequest = new StringRequest(Request.Method.GET,
                 playlistEndpoint + playlistId,
                 response -> {
