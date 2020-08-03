@@ -39,7 +39,7 @@ class SpotifyPlayerService implements MusicPlayer {
     private PlayerState currentPlayerState;
     private BrunoPlaylist playlist;
     // Indicates if the player has been stopped and subsequently triggered fallback playlist behavior
-    private boolean isPlaybackStopped = false;
+    private boolean isFallbackTriggered = false;
     // Indicates if the player is done initializing and is playing the first song of the playlist
     private boolean isPlayerStarted = false;
     public SpotifyPlayerService() {
@@ -122,10 +122,12 @@ class SpotifyPlayerService implements MusicPlayer {
 
                     Log.d(TAG, playerState.toString());
 
-                    // Detect and handle fallback behaviour if we haven't triggered fallback already
-                    if (!isPlaybackStopped && didPlayerStopPlaying(playerState)) {
+                    // Detect and handle fallback behaviour.
+                    // Since we only have one fallback playlist, we only trigger fallback once.
+                    // Note that the track could be null when the player has stopped.
+                    if (!isFallbackTriggered && didPlayerStopPlaying(playerState)) {
                         Log.w(TAG, "Fallback playlist triggered.");
-                        isPlaybackStopped = true;
+                        isFallbackTriggered = true;
                         for (MusicPlayerSubscriber subscriber : spotifyServiceSubscribers) {
                             subscriber.onFallback();
                         }
