@@ -111,10 +111,9 @@ public class RouteModel extends ViewModel {
     }
 
     public void stopRouteNavigation(long playbackPosition) {
-        long totalPlaybackDuration = playlistModel.getTotalPlaybackDuration(playbackPosition);
-        List<BrunoTrack> tracks = playlistModel
-                .getPlaylist()
-                .getTracksUpToDuration(totalPlaybackDuration);
+        long userDuration = new Date().getTime() - startDate.getTime();
+        long brunoDuration = playlistModel.getPlaylistRouteDuration(playbackPosition);
+        List<BrunoTrack> tracks = playlistModel.getPlaylist().getTracksUpToDuration(userDuration);
         // TODO: Persist tracks to database.
     }
 
@@ -122,10 +121,6 @@ public class RouteModel extends ViewModel {
     public double getDistanceBetweenUserAndPlaylist(long playbackPosition) {
         return checkpointsModel.getUserRouteDistance(currentCoordinate)
                 - playlistModel.getPlaylistRouteDistance(playbackPosition);
-    }
-
-    public Coordinate getPlaylistRouteCoordinate(long playbackPosition) {
-        return playlistModel.getPlaylistRouteCoordinate(playbackPosition);
     }
 
     // MARK: - CheckpointsModel methods
@@ -165,6 +160,10 @@ public class RouteModel extends ViewModel {
 
     public boolean hasTrackSegments() {
         return playlistModel.getTrackSegments() != null;
+    }
+
+    public Coordinate getPlaylistRouteCoordinate(long playbackPosition) {
+        return playlistModel.getPlaylistRouteCoordinate(playbackPosition);
     }
 
     /**

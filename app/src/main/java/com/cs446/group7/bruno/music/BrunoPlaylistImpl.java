@@ -26,7 +26,7 @@ public class BrunoPlaylistImpl extends BrunoPlaylist {
     }
 
     @Override
-    public List<BrunoTrack> getTracks() {
-        return tracks;
+    public BrunoTrack getTrack(int index) {
+        return tracks.get(index % tracks.size());
     }
 }
