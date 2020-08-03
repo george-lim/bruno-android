@@ -15,6 +15,7 @@ import com.cs446.group7.bruno.routing.RouteSegment;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 import androidx.lifecycle.ViewModel;
 
@@ -117,8 +118,8 @@ public class RouteModel extends ViewModel {
     }
 
     public void stopRouteNavigation(long playbackPosition) {
-        long userDuration = playlistModel.getTotalPlaybackDuration(playbackPosition);
-        List<BrunoTrack> tracks = playlistModel
+        final long userDuration = playlistModel.getTotalPlaybackDuration(playbackPosition);
+        final List<BrunoTrack> tracks = playlistModel
                 .getPlaylist()
                 .getTracksUpToDuration(userDuration);
 
@@ -127,7 +128,7 @@ public class RouteModel extends ViewModel {
                 mode == RouteModel.Mode.RUN ? FitnessRecordData.Mode.RUN : FitnessRecordData.Mode.WALK,
                 startDate,
                 userDuration,
-                4567,  //playlistModel.getPlaylist().getDuration(),
+                new Random().nextInt(901) * 1000,  // TODO: Bruno time playlistModel.getPlaylist().getDuration(),
                 playlistModel.getTotalRouteDistance(),
                 steps,
                 tracks,
