@@ -14,6 +14,7 @@ import com.cs446.group7.bruno.spotify.SpotifyService;
 import com.cs446.group7.bruno.spotify.playlist.MockSpotifyPlaylistAPIImpl;
 import com.cs446.group7.bruno.spotify.playlist.SpotifyPlaylistAPI;
 import com.cs446.group7.bruno.storage.FileStorage;
+import com.cs446.group7.bruno.storage.PreferencesStorage;
 import com.cs446.group7.bruno.ui.shared.FallbackPlaylistAction;
 import com.cs446.group7.bruno.utils.Callback;
 import com.cs446.group7.bruno.utils.ClosureQueue;
@@ -40,7 +41,6 @@ public class FallbackPlaylistViewModel {
 
     public void setCurrentPlaylistAsFallBack(PlaylistMetadata playlist) {
         fallbackPlaylist = playlist;
-        Log.d("borisg", fallbackPlaylist.getName() + " " + fallbackPlaylist.getTrackCount());
     }
 
     public void getUserPlaylistLibrary() {
@@ -72,7 +72,6 @@ public class FallbackPlaylistViewModel {
                 spotifyService.getAuthService().requestUserAuth(new Callback<String, Void>() {
                     @Override
                     public void onSuccess(String resultToken) {
-                        Log.d("borisg", resultToken);
                         token = resultToken;
                         callback.onSuccess(null);
                     }
@@ -148,10 +147,21 @@ public class FallbackPlaylistViewModel {
     }
 
     private void showSelectPlaylist(List<PlaylistMetadata> playlists) {
+        int index = 0;
+        String savedFallbackPlaylistId =
+                MainActivity.getPreferencesStorage().getString(PreferencesStorage.FALLBACK_PLAYLIST_ID, null);
+        if (savedFallbackPlaylistId != null) {
+            for (int i = 0; i < playlists.size(); ++i) {
+                if (playlists.get(i).getId().equals(savedFallbackPlaylistId)) {
+                    index = i;
+                    break;
+                }
+            }
+        }
         wrapperDelegate.updatePrimaryAction(
                 FallbackPlaylistAction.ActionType.SELECT_PLAYLIST,
                 view -> saveFallbackPlaylist());
-        delegate.showPlaylistSelectionView(playlists);
+        delegate.showPlaylistSelectionView(playlists, index);
     }
 
     private void showNoPlaylist() {
@@ -190,6 +200,7 @@ public class FallbackPlaylistViewModel {
                 try {
                     Log.d(TAG, playlist.getName());
                     FileStorage.writeSerializableToFile(context, FileStorage.FALLBACK_PLAYLIST, playlist);
+                    MainActivity.getPreferencesStorage().putString(PreferencesStorage.FALLBACK_PLAYLIST_ID, playlist.getId());
                     wrapperDelegate.onSelectPlaylistPressed();
                 } catch (Exception e) {
                     Log.d(TAG, e.getCause() + ": " + e.getMessage());

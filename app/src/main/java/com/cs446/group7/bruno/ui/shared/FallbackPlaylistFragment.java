@@ -69,13 +69,9 @@ public class FallbackPlaylistFragment extends Fragment implements FallbackPlayli
         fallbackPlaylistsList.setAdapter(adapter);
     }
 
-    public void saveSelectedPlaylist() {
-        Log.d("borisg", "saving playlist");
-    }
-
     @Override
-    public void showPlaylistSelectionView(List<PlaylistMetadata> playlists) {
-        adapter.setPlaylists(playlists);
+    public void showPlaylistSelectionView(final List<PlaylistMetadata> playlists, final int selectedIndex) {
+        adapter.setPlaylists(playlists, selectedIndex);
         adapter.notifyDataSetChanged();
 
         playlistSelectionView.setVisibility(View.VISIBLE);

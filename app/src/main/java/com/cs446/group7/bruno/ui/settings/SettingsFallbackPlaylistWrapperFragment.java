@@ -31,14 +31,9 @@ public class SettingsFallbackPlaylistWrapperFragment extends Fragment implements
                 getResources().getString(R.string.settings_fallback_playlist_title),
                 true);
         btnPrimaryAction = view.findViewById(R.id.btn_primary_action);
-        btnPrimaryAction.setOnClickListener(this::handleSave);
+        btnPrimaryAction.setEnabled(false);
         return view;
     }
-
-    private void handleSave(final View view) {
-        fallbackPlaylistFragment.saveSelectedPlaylist();
-    }
-
 
     @Override
     public void updatePrimaryAction(ActionType action, View.OnClickListener clickListener) {

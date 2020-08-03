@@ -48,8 +48,9 @@ public class FallbackPlaylistsAdapter extends RecyclerView.Adapter<FallbackPlayl
         return playlists.size();
     }
 
-    public void setPlaylists(List<PlaylistMetadata> playlists) {
+    public void setPlaylists(final List<PlaylistMetadata> playlists, final int positionSelected) {
         this.playlists = playlists;
+        this.positionSelected = positionSelected;
     }
 
     public class FallbackPlaylistViewHolder extends RecyclerView.ViewHolder {

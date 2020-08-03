@@ -133,8 +133,8 @@ public class SpotifyPlaylistService implements PlaylistGenerator, SpotifyPlaylis
     // sufficient credentials to access the playlist. (e.g. a public access token is not capable of retrieving the
     // user's private playlists)
     public void getPlaylist(final String token,
-                             final String playlistId,
-                             final Callback<BrunoPlaylist, Exception> callback) {
+                            final String playlistId,
+                            final Callback<BrunoPlaylist, Exception> callback) {
         final StringRequest stringRequest = new StringRequest(Request.Method.GET,
                 playlistEndpoint + playlistId,
                 response -> {
