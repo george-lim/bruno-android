@@ -3,6 +3,7 @@ package com.cs446.group7.bruno.viewmodels;
 import android.content.Context;
 import android.content.res.Resources;
 
+import com.cs446.group7.bruno.R;
 import com.cs446.group7.bruno.persistence.FitnessRecordData;
 import com.cs446.group7.bruno.models.FitnessModel;
 import com.cs446.group7.bruno.settings.SettingsService;
@@ -36,6 +37,9 @@ public class FitnessDetailsViewModel {
         );
 
         delegate.setupTracklist(currentFitnessRecord.getTracksUserPlayed());
-        delegate.drawRoute(currentFitnessRecord.getTrackSegments());
+    }
+
+    public void onMapReady() {
+        delegate.drawRoute(model.getCurrentFitnessRecord().getTrackSegments());
     }
 }

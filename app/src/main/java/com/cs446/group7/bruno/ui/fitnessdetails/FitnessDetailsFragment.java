@@ -75,12 +75,13 @@ public class FitnessDetailsFragment extends Fragment implements FitnessDetailsVi
         SupportMapFragment mapFragment = (SupportMapFragment)getChildFragmentManager()
                 .findFragmentById(R.id.fitness_details_map);
 
+        FitnessModel model = new ViewModelProvider(requireActivity()).get(FitnessModel.class);
+        model.setSelectedIndex(getArguments().getInt("recordIndex"));
+        viewModel = new FitnessDetailsViewModel(getActivity().getApplicationContext(), model, this);
+
         mapFragment.getMapAsync(googleMap -> {
             map = googleMap;
-
-            FitnessModel model = new ViewModelProvider(requireActivity()).get(FitnessModel.class);
-            model.setSelectedIndex(getArguments().getInt("recordIndex"));
-            viewModel = new FitnessDetailsViewModel(getActivity().getApplicationContext(), model, this);
+            viewModel.onMapReady();
         });
     }
 
@@ -145,12 +146,12 @@ public class FitnessDetailsFragment extends Fragment implements FitnessDetailsVi
                     .color(trackSegment.getRouteColour())
                     .width(routeWidth));
 
-            for (LatLng location : trackSegmentLocations) {
+            for (final LatLng location : trackSegmentLocations) {
                 boundsBuilder.include(location);
             }
         }
 
-        LatLngBounds bounds = boundsBuilder.build();
+        final LatLngBounds bounds = boundsBuilder.build();
         map.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 200));
         // disallow movement
         map.getUiSettings().setAllGesturesEnabled(false);
