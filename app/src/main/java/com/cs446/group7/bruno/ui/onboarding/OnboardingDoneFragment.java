@@ -12,7 +12,7 @@ import androidx.navigation.Navigation;
 
 import com.cs446.group7.bruno.MainActivity;
 import com.cs446.group7.bruno.R;
-import com.cs446.group7.bruno.preferencesstorage.PreferencesStorage;
+import com.cs446.group7.bruno.storage.PreferencesStorage;
 
 public class OnboardingDoneFragment extends Fragment {
 

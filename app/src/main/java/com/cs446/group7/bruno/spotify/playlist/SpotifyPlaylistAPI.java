@@ -11,9 +11,11 @@ import java.util.List;
  */
 public interface SpotifyPlaylistAPI {
     void getPublicAuthorizationToken(final Callback<String, Exception> callback);
-    void getPlaylist(final String playlistId,
-                     final String accessToken,
+
+    void getPlaylist(final String accessToken,
+                     final String playlistId,
                      final Callback<BrunoPlaylist, Exception> callback);
+
     void getUserPlaylistLibrary(final String accessToken,
                                 final Callback<List<PlaylistMetadata>, Exception> callback);
 }
