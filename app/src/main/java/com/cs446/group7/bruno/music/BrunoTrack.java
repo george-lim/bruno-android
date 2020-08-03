@@ -1,5 +1,7 @@
 package com.cs446.group7.bruno.music;
 
+import androidx.annotation.Nullable;
+
 // Simple container class containing information about a track
 public class BrunoTrack {
     private String name;
@@ -22,5 +24,13 @@ public class BrunoTrack {
 
     public long getDuration() {
         return duration;
+    }
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        if (!(obj instanceof BrunoTrack)) { return false; }
+        BrunoTrack otherTrack = (BrunoTrack) obj;
+        return name.equals(otherTrack.getName()) && artists.equals(otherTrack.getArtists())
+                && duration == otherTrack.getDuration();
     }
 }

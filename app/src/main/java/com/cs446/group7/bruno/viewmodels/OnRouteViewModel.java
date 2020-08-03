@@ -322,6 +322,11 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
         delegate.showRouteInfoCard();
     }
 
+    @Override
+    public void onFallback() {
+        // TODO: Add logic here once the fallback playlist is retrievable from storage
+    }
+
     // MARK: - PedometerSubscriber methods
 
     @Override
