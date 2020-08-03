@@ -3,15 +3,13 @@ package com.cs446.group7.bruno.models;
 import android.location.Location;
 import android.util.Log;
 
-import com.cs446.group7.bruno.BuildConfig;
 import com.cs446.group7.bruno.MainActivity;
-import com.cs446.group7.bruno.persistence.FitnessRecordData;
 import com.cs446.group7.bruno.location.Coordinate;
 import com.cs446.group7.bruno.music.BrunoPlaylist;
 import com.cs446.group7.bruno.music.BrunoTrack;
 import com.cs446.group7.bruno.persistence.FitnessRecordDAO;
+import com.cs446.group7.bruno.persistence.FitnessRecordData;
 import com.cs446.group7.bruno.persistence.FitnessRecordEntry;
-import com.cs446.group7.bruno.persistence.MockFitnessRecordDAO;
 import com.cs446.group7.bruno.routing.RouteSegment;
 
 import java.io.IOException;
@@ -155,10 +153,7 @@ public class RouteModel extends ViewModel {
 
         try { // Serialize and store record in DB
             final String serializedString = fitnessRecordData.serialize();
-            final FitnessRecordDAO fitnessRecordDAO =
-                    BuildConfig.DEBUG
-                    ? new MockFitnessRecordDAO()
-                    : MainActivity.getPersistenceService().getFitnessRecordDAO();
+            final FitnessRecordDAO fitnessRecordDAO = MainActivity.getPersistenceService().getFitnessRecordDAO();
             final FitnessRecordEntry newRecord = new FitnessRecordEntry();
             newRecord.setRecordDataString(serializedString);
             fitnessRecordDAO.insert(newRecord);

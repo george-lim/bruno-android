@@ -2,12 +2,10 @@ package com.cs446.group7.bruno.models;
 
 import android.util.Log;
 
-import com.cs446.group7.bruno.BuildConfig;
 import com.cs446.group7.bruno.MainActivity;
 import com.cs446.group7.bruno.persistence.FitnessRecordDAO;
 import com.cs446.group7.bruno.persistence.FitnessRecordData;
 import com.cs446.group7.bruno.persistence.FitnessRecordEntry;
-import com.cs446.group7.bruno.persistence.MockFitnessRecordDAO;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -25,10 +23,7 @@ public class FitnessModel extends ViewModel {
     public void loadFitnessRecords() {
         fitnessRecordDataList.clear();
 
-        final FitnessRecordDAO fitnessRecordDAO = BuildConfig.DEBUG
-                ? new MockFitnessRecordDAO()
-                : MainActivity.getPersistenceService().getFitnessRecordDAO();
-
+        final FitnessRecordDAO fitnessRecordDAO = MainActivity.getPersistenceService().getFitnessRecordDAO();
         final List<FitnessRecordEntry> entries = fitnessRecordDAO.getRecords();
 
         for (final FitnessRecordEntry entry : entries) {

@@ -2,6 +2,8 @@ package com.cs446.group7.bruno.persistence;
 
 import android.content.Context;
 
+import com.cs446.group7.bruno.BuildConfig;
+
 import androidx.room.Room;
 
 public class PersistenceService {
@@ -9,10 +11,14 @@ public class PersistenceService {
     private FitnessRecordDAO recordDAO;
 
     public PersistenceService(final Context context) {
-        database = Room.databaseBuilder(context, AppDatabase.class, FitnessRecordEntry.TABLE_NAME)
-                .allowMainThreadQueries()
-                .build();
-        recordDAO = database.getRecordDAO();
+        if (BuildConfig.DEBUG) {
+            recordDAO = new MockFitnessRecordDAO();
+        } else {
+            database = Room.databaseBuilder(context, AppDatabase.class, FitnessRecordEntry.TABLE_NAME)
+                    .allowMainThreadQueries()
+                    .build();
+            recordDAO = database.getRecordDAO();
+        }
     }
 
     public FitnessRecordDAO getFitnessRecordDAO() {
