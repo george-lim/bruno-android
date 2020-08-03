@@ -129,18 +129,12 @@ class SpotifyPlayerService implements MusicPlayer {
                             hasReachedFirstSong = true;
                         }
 
-                        boolean isDifferentTrack = true;
-                        // Check to see if the track is the same as the previous player state
-                        // If there is no current player state then the given track is a new one
-                        if (currentPlayerState != null && (track.equals(currentPlayerState.track))) {
-                            // Same track, perhaps just paused
-                            isDifferentTrack = false;
-                            Log.d(TAG, "Received the same track as before.");
-                        }
+                        boolean isDifferentTrack =
+                                !(currentPlayerState != null && (track.equals(currentPlayerState.track)));
 
                         // Only alert subscribers about new track changes once we reach the first song of the playlist
                         if (hasReachedFirstSong && isDifferentTrack ) {
-                            Log.d(TAG, "Alerting subscribers about a track change.");
+                            Log.d(TAG, "Alerting subscribers about a new track change.");
                             for (MusicPlayerSubscriber subscriber : spotifyServiceSubscribers) {
                                 subscriber.onTrackChanged(convertToBrunoTrack(track));
                             }
