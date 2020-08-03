@@ -130,7 +130,7 @@ class SpotifyPlayerService implements MusicPlayer {
                         }
 
                         boolean isDifferentTrack =
-                                !(currentPlayerState != null && (track.equals(currentPlayerState.track)));
+                                !(currentPlayerState != null && track.equals(currentPlayerState.track));
 
                         // Only alert subscribers about new track changes once we reach the first song of the playlist
                         if (hasReachedFirstSong && isDifferentTrack ) {
