@@ -22,7 +22,6 @@ import com.cs446.group7.bruno.sensor.PedometerSubscriber;
 import com.cs446.group7.bruno.settings.SettingsService;
 import com.cs446.group7.bruno.utils.Callback;
 import com.cs446.group7.bruno.utils.NoFailCallback;
-import com.google.android.gms.maps.model.LatLng;
 
 import androidx.annotation.NonNull;
 
@@ -36,6 +35,10 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
     private static final int EXTRA_TOLERANCE_MARGIN = 1;
 
     // MARK: - Private members
+
+    // DEBUG ONLY
+    private static final int NUM_DEBUG_CHECKPOINTS = 5;
+    private int debugCheckpointIndex;
 
     private Resources resources;
     private RouteModel model;
@@ -240,16 +243,17 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
 
         // Checkpoint is counted if and only if  user is within the tolerance radius;
         // this is calculated dynamically as the location updates, which may be larger than what is drawn
-        if (distanceFromCheckpoint <= toleranceRadius) {
+        if (BuildConfig.DEBUG || distanceFromCheckpoint <= toleranceRadius) {
             model.advanceCheckpoint();
 
-            if (model.hasCompletedAllCheckpoints()) {
+            if (model.hasCompletedAllCheckpoints() || (BuildConfig.DEBUG && debugCheckpointIndex > NUM_DEBUG_CHECKPOINTS)) {
                 isRouteCompleted = true;
                 stopRouteNavigation(result -> onRouteCompleted());
             }
             else {
                 delegate.updateCheckpointMarker(model.getCheckpoint().getLatLng(), toleranceRadius);
             }
+            debugCheckpointIndex++;
         }
 
         double distanceToCheckpoint = model.getDistanceToCheckpoint();
