@@ -38,6 +38,7 @@ class SpotifyPlayerService implements MusicPlayer {
 
     private PlayerState currentPlayerState;
     private BrunoPlaylist playlist;
+    private boolean hasReachedFirstSong = false;
 
     public SpotifyPlayerService() {
         spotifyServiceSubscribers = new ArrayList<>();
@@ -117,22 +118,36 @@ class SpotifyPlayerService implements MusicPlayer {
                 .setEventCallback(playerState -> {
                     if (playerState == null || playerState.equals(currentPlayerState)) return;
 
-                    Log.d(TAG, playerState.toString());
+                    Log.d(TAG, "Received new PlayerState: " + playerState.toString());
                     Track track = playerState.track;
+
                     if (track != null) {
-                        if (currentPlayerState != null && track.equals(currentPlayerState.track)) {
-                            // same track, perhaps just paused
-                            Log.w(TAG, "Same track!");
-                            return;
+                        Log.d(TAG, String.format("Received Track: %s", track.toString()));
+                        // Check to see if the track received corresponds to the beginning of the playlist
+                        if (!hasReachedFirstSong && convertToBrunoTrack(track).equals(playlist.getTracks().get(0))) {
+                            Log.d(TAG, "Received the first song related to the playlist.");
+                            hasReachedFirstSong = true;
                         }
 
-                        for (MusicPlayerSubscriber subscriber : spotifyServiceSubscribers) {
-                            subscriber.onTrackChanged(convertToBrunoTrack(track));
+                        boolean isDifferentTrack = true;
+                        // Check to see if the track is the same as the previous player state
+                        // If there is no current player state then the given track is a new one
+                        if (currentPlayerState != null && (track.equals(currentPlayerState.track))) {
+                            // Same track, perhaps just paused
+                            isDifferentTrack = false;
+                            Log.d(TAG, "Received the same track as before.");
                         }
 
-                        Log.d(TAG, String.format("Curr Track: %s", track.toString()));
+                        // Only alert subscribers about new track changes once we reach the first song of the playlist
+                        if (hasReachedFirstSong && isDifferentTrack ) {
+                            Log.d(TAG, "Alerting subscribers about a track change.");
+                            for (MusicPlayerSubscriber subscriber : spotifyServiceSubscribers) {
+                                subscriber.onTrackChanged(convertToBrunoTrack(track));
+                            }
+                        }
+
                     } else {
-                        Log.w(TAG, "Track is null!");
+                        Log.w(TAG, "Received a null track!");
                     }
                     currentPlayerState = playerState;
                 })
@@ -159,6 +174,8 @@ class SpotifyPlayerService implements MusicPlayer {
         PlayerApi api = mSpotifyAppRemote.getPlayerApi();
 
         ClosureQueue<Void, Throwable> queue = new ClosureQueue<>();
+        // Reset the check for the first track which matches the playlist
+        hasReachedFirstSong = false;
 
         /*
             Set player shuffle to off if possible.
