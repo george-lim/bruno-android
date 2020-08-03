@@ -12,7 +12,7 @@ import androidx.fragment.app.Fragment;
 
 import com.cs446.group7.bruno.MainActivity;
 import com.cs446.group7.bruno.R;
-import com.cs446.group7.bruno.preferencesstorage.PreferencesStorage;
+import com.cs446.group7.bruno.storage.PreferencesStorage;
 
 import java.util.HashMap;
 import java.util.Map;

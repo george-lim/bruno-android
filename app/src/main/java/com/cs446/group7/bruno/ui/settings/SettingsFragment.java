@@ -36,6 +36,9 @@ public class SettingsFragment extends Fragment {
         LinearLayout avatarItem = rootView.findViewById(R.id.settings_avatar);
         avatarItem.setOnClickListener(view ->
                 navigateUsingAction(R.id.action_fragmenttoplevel_to_fragmentsettingavatar));
+        LinearLayout fallbackPlaylistItem = rootView.findViewById(R.id.settings_fallback_playlist);
+        fallbackPlaylistItem.setOnClickListener(view ->
+                navigateUsingAction(R.id.action_fragmenttoplevel_to_fragmentfallbackplaylist));
     }
 
     private void setupAboutBruno(final View rootView) {

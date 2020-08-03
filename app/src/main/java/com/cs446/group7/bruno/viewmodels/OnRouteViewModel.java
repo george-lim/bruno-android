@@ -17,7 +17,7 @@ import com.cs446.group7.bruno.music.player.MockMusicPlayerImpl;
 import com.cs446.group7.bruno.music.player.MusicPlayer;
 import com.cs446.group7.bruno.music.player.MusicPlayerException;
 import com.cs446.group7.bruno.music.player.MusicPlayerSubscriber;
-import com.cs446.group7.bruno.preferencesstorage.PreferencesStorage;
+import com.cs446.group7.bruno.storage.PreferencesStorage;
 import com.cs446.group7.bruno.sensor.PedometerSubscriber;
 import com.cs446.group7.bruno.settings.SettingsService;
 import com.cs446.group7.bruno.utils.Callback;
@@ -344,6 +344,11 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
         model.setCurrentTrack(track);
         delegate.updateCurrentSongUI(track.getName(), track.getArtists());
         delegate.showRouteInfoCard();
+    }
+
+    @Override
+    public void onFallback() {
+        // TODO: Add logic here once the fallback playlist is retrievable from storage
     }
 
     // MARK: - PedometerSubscriber methods
