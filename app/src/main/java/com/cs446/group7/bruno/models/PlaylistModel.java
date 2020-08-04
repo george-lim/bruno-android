@@ -7,6 +7,7 @@ import com.cs446.group7.bruno.music.MergedBrunoPlaylistImpl;
 import com.cs446.group7.bruno.routing.RouteSegment;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -56,7 +57,7 @@ public class PlaylistModel {
                 long segmentDurationFirstHalf = track.getDuration() - accumulatedRouteSegmentDuration;
                 long segmentDurationSecondHalf = routeSegmentDuration - segmentDurationFirstHalf;
                 double segmentDurationRatio = (double) segmentDurationFirstHalf / routeSegmentDuration;
-                
+
                 Coordinate segmentSplitPoint = routeSegmentStart.getSplitPoint(
                         routeSegmentEnd,
                         segmentDurationRatio
@@ -114,6 +115,32 @@ public class PlaylistModel {
         return result;
     }
 
+    private boolean hasStartedPlaylistRoute() {
+        return trackIndex >= 0;
+    }
+
+    private boolean hasCompletedPlaylistRoute(long playbackPosition) {
+        if (!hasStartedPlaylistRoute()) {
+            return false;
+        }
+        else if (trackIndex + 1 == trackSegments.size()
+                && playbackPosition >= trackSegments.get(trackIndex).getDuration()) {
+            return true;
+        }
+        else {
+            return trackIndex >= trackSegments.size();
+        }
+    }
+
+    // After merge, playbackPosition can still be desynchronized until track change
+    private long getSafePlaybackPosition(long playbackPosition) {
+        if (!hasStartedPlaylistRoute()) {
+            return 0;
+        }
+
+        return Math.min(playbackPosition, playlist.getTrack(trackIndex).getDuration());
+    }
+
     // Returns the total distance of TrackSegments that have been completed (excluding current)
     private double getCompletedTrackSegmentsDistance() {
         double distance = 0;
@@ -127,6 +154,10 @@ public class PlaylistModel {
 
     // Returns the travelled distance of current TrackSegment
     private double getCurrentTrackSegmentDistance(long playbackPosition) {
+        if (!hasStartedPlaylistRoute()) {
+            return 0;
+        }
+
         double currentTrackPlaybackRatio = (double)playbackPosition
                 / getCurrentTrack().getDuration();
         double currentTrackDistance = trackSegments.get(trackIndex).getDistance();
@@ -166,11 +197,25 @@ public class PlaylistModel {
     }
 
     public void mergePlaylist(final BrunoPlaylist playlist, long playbackPosition) {
+        long safePlaybackPosition = getSafePlaybackPosition(playbackPosition);
+
+        // No need to merge if this is happening at the start of the playlist
+        if (!hasStartedPlaylistRoute() || trackIndex == 0 && safePlaybackPosition == 0) {
+            setPlaylist(playlist);
+            return;
+        }
+
+        // If safePlaybackPosition cannot be determined or is zero, merge from the end of previous song
+        if (safePlaybackPosition == 0) {
+            trackIndex--;
+            safePlaybackPosition = playlist.getTrack(trackIndex).getDuration();
+        }
+
         setPlaylist(new MergedBrunoPlaylistImpl(
                 this.playlist,
                 playlist,
                 trackIndex,
-                playbackPosition
+                getSafePlaybackPosition(safePlaybackPosition)
         ));
     }
 
@@ -179,52 +224,65 @@ public class PlaylistModel {
     }
 
     public BrunoTrack getCurrentTrack() {
-        if (trackIndex < 0) {
+        if (!hasStartedPlaylistRoute()) {
             return null;
         }
 
         return playlist.getTrack(trackIndex);
     }
 
-    // TODO: Handle current track desync from Spotify.
-    public void setCurrentTrack(final BrunoTrack currentTrack) {
-        trackIndex++;
-    }
-
     // MARK: - Current playlist playback calculations
 
     // Returns route distance of current playlist playback
     public double getPlaylistRouteDistance(long playbackPosition) {
-        if (trackIndex >= trackSegments.size()) {
+        long safePlaybackPosition = getSafePlaybackPosition(playbackPosition);
+
+        if (hasCompletedPlaylistRoute(safePlaybackPosition)) {
             return getCompletedTrackSegmentsDistance();
         }
 
         return getCompletedTrackSegmentsDistance()
-                + getCurrentTrackSegmentDistance(playbackPosition);
+                + getCurrentTrackSegmentDistance(safePlaybackPosition);
     }
 
     // Returns route duration of current playlist playback
     public long getPlaylistRouteDuration(long playbackPosition) {
-        if (trackIndex >= trackSegments.size()) {
+        long safePlaybackPosition = getSafePlaybackPosition(playbackPosition);
+
+        if (hasCompletedPlaylistRoute(safePlaybackPosition)) {
             return getCompletedTrackSegmentsDuration();
         }
 
-        return getCompletedTrackSegmentsDuration() + playbackPosition;
+        return getCompletedTrackSegmentsDuration() + safePlaybackPosition;
     }
 
     // Returns route coordinate of current playlist playback
     public Coordinate getPlaylistRouteCoordinate(long playbackPosition) {
-        if (trackIndex >= trackSegments.size()) {
+        long safePlaybackPosition = getSafePlaybackPosition(playbackPosition);
+
+        if (!hasStartedPlaylistRoute()) {
+            return routeSegments.get(0).getStartCoordinate();
+        }
+        else if (hasCompletedPlaylistRoute(safePlaybackPosition)) {
             return routeSegments.get(routeSegments.size() - 1).getEndCoordinate();
         }
+        else {
+            return trackSegments.get(trackIndex).getCoordinate(safePlaybackPosition);
+        }
+    }
 
-        return trackSegments.get(trackIndex).getCoordinate(playbackPosition);
+    // MARK: - Music player synchronization methods
+
+    public void onTrackChanged(final BrunoTrack track) {
+        // Stay on the same song until the next song matches what we expect
+        if (track.equals(playlist.getTrack(trackIndex + 1))) {
+            trackIndex++;
+        }
     }
 
     // MARK: - Reset methods
 
     public void resetPlayback() {
-        setCurrentTrack(null);
         // NOTE: Must be -1 because setting first song also calls onTrackChanged.
         trackIndex = -1;
     }
