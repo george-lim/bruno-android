@@ -253,8 +253,8 @@ public class PlaylistModel {
     public double getTotalPlaylistRouteDistance() {
         double distance = 0;
 
-        for (int i = 0; i < trackSegments.size(); ++i) {
-            distance += trackSegments.get(i).getDistance();
+        for (TrackSegment trackSegment : trackSegments) {
+            distance += trackSegment.getDistance();
         }
 
         return distance;
