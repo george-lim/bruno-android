@@ -86,7 +86,7 @@ public class RouteModel extends ViewModel {
         startDate = new Date();
     }
 
-    public void stopRouteNavigation(long playbackPosition) {
+    public void stopRouteNavigation() {
         double userDistance = checkpointsModel.getUserRouteDistance(currentCoordinate);
         long userDuration = new Date().getTime() - startDate.getTime();
         double brunoDistance = playlistModel.getTotalPlaylistRouteDistance();

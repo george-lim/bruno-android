@@ -229,7 +229,7 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
 
             if (model.hasCompletedAllCheckpoints()) {
                 isRouteCompleted = true;
-                stopRouteNavigation(result -> onRouteCompleted());
+                onRouteCompleted();
             }
             else {
                 delegate.updateCheckpointMarker(model.getCheckpoint().getLatLng(), toleranceRadius);
@@ -252,29 +252,13 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
         musicPlayer.play();
     }
 
-    // Final model changes before route completion
-    private void stopRouteNavigation(final NoFailCallback<Void> callback) {
-        musicPlayer.getPlaybackPosition(new Callback<Long, Throwable>() {
-            @Override
-            public void onSuccess(Long playbackPosition) {
-                model.stopRouteNavigation(playbackPosition);
-                model.hardReset();
-                callback.onSuccess(null);
-            }
-
-            @Override
-            public void onFailed(Throwable result) {
-                model.stopRouteNavigation(0);
-                model.hardReset();
-                callback.onSuccess(null);
-            }
-        });
-    }
-
     /**
      * Logic when the route is completed goes here.
      */
     private void onRouteCompleted() {
+        model.stopRouteNavigation();
+        model.hardReset();
+
         musicPlayer.stopAndDisconnect();
 
         delegate.updateDistanceBetweenUserAndPlaylist("0 m",
