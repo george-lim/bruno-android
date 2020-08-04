@@ -38,6 +38,7 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
     // MARK: - Private members
 
     // DEBUG ONLY
+    private static final boolean IS_DEBUG = false;
     private static final int NUM_DEBUG_CHECKPOINTS = 5;
     private int debugCheckpointIndex;
 
@@ -232,10 +233,10 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
 
         // Checkpoint is counted if and only if  user is within the tolerance radius;
         // this is calculated dynamically as the location updates, which may be larger than what is drawn
-        if (BuildConfig.DEBUG || distanceFromCheckpoint <= toleranceRadius) {
+        if (IS_DEBUG || distanceFromCheckpoint <= toleranceRadius) {
             model.advanceCheckpoint();
 
-            if (model.hasCompletedAllCheckpoints() || (BuildConfig.DEBUG && debugCheckpointIndex > NUM_DEBUG_CHECKPOINTS)) {
+            if (model.hasCompletedAllCheckpoints() || (IS_DEBUG && debugCheckpointIndex > NUM_DEBUG_CHECKPOINTS)) {
                 isRouteCompleted = true;
                 onRouteCompleted();
             }
