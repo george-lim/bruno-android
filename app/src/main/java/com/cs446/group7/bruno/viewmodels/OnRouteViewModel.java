@@ -117,7 +117,20 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
                 CAMERA_ZOOM
         );
 
-        updateDistanceBetweenUserAndPlaylist();
+        musicPlayer.getPlaybackPosition(new Callback<Long, Throwable>() {
+            @Override
+            public void onSuccess(Long playbackPosition) {
+                updateBrunoCoordinate(playbackPosition);
+                updateDistanceBetweenUserAndPlaylist(playbackPosition);
+            }
+
+            @Override
+            public void onFailed(Throwable result) {
+                updateBrunoCoordinate(0);
+                updateDistanceBetweenUserAndPlaylist(0);
+            }
+        });
+
         updateDistanceToCheckpoint();
     }
 
@@ -165,16 +178,24 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
         });
     }
 
-    private void updateDistanceBetweenUserAndPlaylist() {
-        // Fail-safe
-        if (isRouteCompleted) return;
+    private void updateBrunoCoordinate(long playbackPosition) {
+        final Coordinate brunoCoordinate = model.getPlaylistRouteCoordinate(playbackPosition);
+        delegate.updateBrunoMarker(brunoCoordinate.getLatLng());
+    }
 
-        // placeholder display until current track is ready
-        if (model.getCurrentTrack() == null) {
-            delegate.updateDistanceBetweenUserAndPlaylist("0 m",
+    private void updateDistanceBetweenUserAndPlaylist(long playbackPosition) {
+        int userPlaylistDistance = (int)model.getDistanceBetweenUserAndPlaylist(playbackPosition);
+
+        if (userPlaylistDistance < 0) {
+            delegate.updateDistanceBetweenUserAndPlaylist(
+                    -userPlaylistDistance + " m",
+                    resources.getDrawable(R.drawable.ic_angle_double_down, null),
+                    resources.getColor(R.color.colorPrimary, null));
+        } else {
+            delegate.updateDistanceBetweenUserAndPlaylist(
+                    userPlaylistDistance + " m",
                     resources.getDrawable(R.drawable.ic_angle_double_up, null),
                     resources.getColor(R.color.colorSecondary, null));
-            return;
         }
 
         musicPlayer.getPlaybackPosition(new Callback<Long, Throwable>() {
@@ -206,15 +227,7 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
         });
     }
 
-    private void updateBrunoCoordinate(long playbackPosition) {
-        final Coordinate brunoCoordinate = model.getPlaylistRouteCoordinate(playbackPosition);
-
-        // Fail-safe
-        if (brunoCoordinate == null) return;
-
-        delegate.updateBrunoMarker(brunoCoordinate.getLatLng());
-    }
-
+    // TODO: Move this calculation into RouteModel.
     private void updateDistanceToCheckpoint() {
         /*
             Set a tolerance radius depending on how fast the user is moving. The faster they are, the more
@@ -249,8 +262,9 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
 
             if (model.hasCompletedAllCheckpoints()) {
                 isRouteCompleted = true;
-                stopRouteNavigation(result -> onRouteCompleted());
-            } else {
+                onRouteCompleted();
+            }
+            else {
                 delegate.updateCheckpointMarker(model.getCheckpoint().getLatLng(), toleranceRadius);
             }
         }
@@ -259,51 +273,39 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
         delegate.updateDistanceToCheckpoint((int) distanceToCheckpoint + " m");
     }
 
-    private void handlePlaylistChange(final BrunoPlaylist playlist) {
-        musicPlayer.getPlaybackPosition(new Callback<Long, Throwable>() {
-            @Override
-            public void onSuccess(Long result) {
-                musicPlayer.stop();
-                musicPlayer.setPlayerPlaylist(playlist);
+    private void handlePlaylistChanged(final BrunoPlaylist playlist, long playbackPosition) {
+        musicPlayer.stop();
+        musicPlayer.setPlayerPlaylist(playlist);
 
-                model.mergePlaylist(playlist, result);
-                delegate.clearMap();
-                delegate.drawRoute(model.getTrackSegments());
-                refreshUI();
+        model.mergePlaylist(playlist, playbackPosition);
+        delegate.clearMap();
+        delegate.drawRoute(model.getTrackSegments());
+        refreshUI();
 
-                musicPlayer.play();
-            }
-
-            @Override
-            public void onFailed(Throwable result) {
-                Log.e(TAG, "Failed to get playback position during playlist change");
-            }
-        });
+        musicPlayer.play();
     }
 
-    // Final model changes before route completion
-    private void stopRouteNavigation(final NoFailCallback<Void> callback) {
-        musicPlayer.getPlaybackPosition(new Callback<Long, Throwable>() {
-            @Override
-            public void onSuccess(Long result) {
-                model.stopRouteNavigation(result);
-                model.hardReset();
-                callback.onSuccess(null);
-            }
-
-            @Override
-            public void onFailed(Throwable result) {
-                model.stopRouteNavigation(0);
-                model.hardReset();
-                callback.onSuccess(null);
-            }
-        });
+    private void handleFallbackFailed() {
+        Log.d(TAG, "onFallback: null fallback playlist");
+        delegate.showAlertDialog(
+                context.getResources().getString(R.string.fallback_fail_title),
+                context.getResources().getString(R.string.fallback_fail_description),
+                context.getResources().getString(R.string.ok_button),
+                (dialogInterface, i) -> {
+                    model.hardReset();
+                    musicPlayer.stopAndDisconnect();
+                    delegate.navigateToPreviousScreen();
+                },
+                false);
     }
 
     /**
      * Logic when the route is completed goes here.
      */
     private void onRouteCompleted() {
+        model.stopRouteNavigation();
+        model.hardReset();
+
         musicPlayer.stopAndDisconnect();
 
         delegate.updateDistanceBetweenUserAndPlaylist("0 m",
@@ -351,8 +353,8 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
     // MARK: - MusicPlayerSubscriber methods
 
     @Override
-    public void onTrackChanged(BrunoTrack track) {
-        model.setCurrentTrack(track);
+    public void onTrackChanged(final BrunoTrack track) {
+        model.onTrackChanged(track);
         delegate.updateCurrentSongUI(track.getName(), track.getArtists());
         delegate.showRouteInfoCard();
     }
@@ -360,35 +362,38 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
     @Override
     public void onFallback() {
         Log.d(TAG, "onFallback: fallback triggered");
-        BrunoPlaylist playlist;
+        final BrunoPlaylist playlist;
         try {
             playlist = FileStorage.readFileAsSerializable(context, FileStorage.FALLBACK_PLAYLIST);
             // Don't use a playlist with no tracks
             if (playlist.isTracksEmpty()) {
-                playlist = null;
+                handleFallbackFailed();
             }
         } catch (Exception e) {
             // When a user don't have a fallback playlist, FileStorage will throw a FileNotFoundError
-            playlist = null; //explicit
+            handleFallbackFailed();
+            return;
         }
 
         if (playlist != null) {
             Log.d(TAG, "onFallback: Received fallback playlist with name " + playlist.getName()
                     + " and id " + playlist.getId());
-            handlePlaylistChange(playlist);
+            musicPlayer.getPlaybackPosition(new Callback<Long, Throwable>() {
+                @Override
+                public void onSuccess(Long result) {
+                    handlePlaylistChanged(playlist, result);
+                }
+
+                @Override
+                public void onFailed(Throwable result) {
+
+                }
+            });
+
         } else {
-            Log.d(TAG, "onFallback: null fallback playlist");
-            delegate.showAlertDialog(
-                    context.getResources().getString(R.string.fallback_fail_title),
-                    context.getResources().getString(R.string.fallback_fail_description),
-                    context.getResources().getString(R.string.ok_button),
-                    (dialogInterface, i) -> {
-                        model.hardReset();
-                        musicPlayer.stopAndDisconnect();
-                        delegate.navigateToPreviousScreen();
-                    },
-                    false);
+            handleFallbackFailed();
         }
+
     }
 
     // MARK: - PedometerSubscriber methods

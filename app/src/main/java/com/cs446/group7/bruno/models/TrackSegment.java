@@ -60,7 +60,6 @@ public class TrackSegment {
 
     // Returns distance of the track segment
     public double getDistance() {
-        List<Coordinate> coordinates = getCoordinates();
         double distance = 0;
 
         for (int i = 0; i+1 < coordinates.size(); ++i) {
@@ -68,6 +67,16 @@ public class TrackSegment {
         }
 
         return distance;
+    }
+
+    public long getDuration() {
+        long totalDuration = 0;
+
+        for (long duration : durations) {
+            totalDuration += duration;
+        }
+
+        return totalDuration;
     }
 
     // Returns the coordinate at the playbackPosition of a track

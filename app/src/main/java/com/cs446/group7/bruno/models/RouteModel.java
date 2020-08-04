@@ -65,26 +65,6 @@ public class RouteModel extends ViewModel {
         checkpointsModel.setRouteSegments(routeSegments);
     }
 
-    public void setRouteColours(final int[] routeColours) {
-        playlistModel.setRouteColours(routeColours);
-    }
-
-    public BrunoPlaylist getPlaylist() {
-        return playlistModel.getPlaylist();
-    }
-
-    public void setPlaylist(final BrunoPlaylist playlist) {
-        playlistModel.setPlaylist(playlist);
-    }
-
-    public void mergePlaylist(final BrunoPlaylist playlist, long playbackPosition) {
-        playlistModel.mergePlaylist(playlist, playbackPosition);
-    }
-
-    public List<TrackSegment> getTrackSegments() {
-        return playlistModel.getTrackSegments();
-    }
-
     public Location getCurrentLocation() {
         return currentLocation;
     }
@@ -98,14 +78,6 @@ public class RouteModel extends ViewModel {
         this.currentCoordinate = new Coordinate(currentLocation);
     }
 
-    public BrunoTrack getCurrentTrack() {
-        return playlistModel.getCurrentTrack();
-    }
-
-    public void setCurrentTrack(final BrunoTrack currentTrack) {
-        playlistModel.setCurrentTrack(currentTrack);
-    }
-
     public void incrementStep() {
         steps++;
     }
@@ -114,11 +86,14 @@ public class RouteModel extends ViewModel {
         startDate = new Date();
     }
 
-    public void stopRouteNavigation(long playbackPosition) {
+    public void stopRouteNavigation() {
+        double userDistance = checkpointsModel.getUserRouteDistance(currentCoordinate);
         long userDuration = new Date().getTime() - startDate.getTime();
-        long brunoDuration = playlistModel.getPlaylistRouteDuration(playbackPosition);
-        List<BrunoTrack> tracks = playlistModel.getPlaylist().getTracksUpToDuration(userDuration);
-        // TODO: Persist tracks to database.
+        double brunoDistance = playlistModel.getTotalPlaylistRouteDistance();
+        long brunoDuration = playlistModel.getTotalPlaylistRouteDuration();
+        BrunoPlaylist playlist = playlistModel.getPlaylist();
+        List<TrackSegment> trackSegments = playlistModel.getTrackSegments();
+        // TODO: Persist these to database.
     }
 
     // Returns difference in distance between the user and the playlist on the route
@@ -162,12 +137,40 @@ public class RouteModel extends ViewModel {
 
     // MARK: - PlaylistModel methods
 
+    public void setRouteColours(final int[] routeColours) {
+        playlistModel.setRouteColours(routeColours);
+    }
+
+    public BrunoPlaylist getPlaylist() {
+        return playlistModel.getPlaylist();
+    }
+
+    public void setPlaylist(final BrunoPlaylist playlist) {
+        playlistModel.setPlaylist(playlist);
+    }
+
     public boolean hasTrackSegments() {
-        return playlistModel.getTrackSegments() != null;
+        return getTrackSegments() != null;
+    }
+
+    public List<TrackSegment> getTrackSegments() {
+        return playlistModel.getTrackSegments();
+    }
+
+    public BrunoTrack getCurrentTrack() {
+        return playlistModel.getCurrentTrack();
+    }
+
+    public void mergePlaylist(final BrunoPlaylist playlist, long playbackPosition) {
+        playlistModel.mergePlaylist(playlist, playbackPosition);
     }
 
     public Coordinate getPlaylistRouteCoordinate(long playbackPosition) {
         return playlistModel.getPlaylistRouteCoordinate(playbackPosition);
+    }
+
+    public void onTrackChanged(final BrunoTrack currentTrack) {
+        playlistModel.onTrackChanged(currentTrack);
     }
 
     /**
