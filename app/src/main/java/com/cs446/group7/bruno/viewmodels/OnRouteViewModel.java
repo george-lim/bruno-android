@@ -264,7 +264,7 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
                 context.getResources().getString(R.string.fallback_fail_description),
                 context.getResources().getString(R.string.ok_button),
                 (dialogInterface, i) -> {
-                    model.hardReset();
+                    model.softReset();
                     musicPlayer.stopAndDisconnect();
                     delegate.navigateToPreviousScreen();
                 },
@@ -298,7 +298,19 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
     // MARK: - User action handlers
 
     public void handleExitRoute() {
-        onFallback();
+        delegate.showAlertDialog(
+                resources.getString(R.string.run_exit_title),
+                resources.getString(R.string.run_exit_message),
+                resources.getString(R.string.yes_button),
+                (dialogInterface, i) -> {
+                    model.softReset();
+                    musicPlayer.stopAndDisconnect();
+                    delegate.navigateToPreviousScreen();
+                },
+                resources.getString(R.string.no_button),
+                null,
+                true
+        );
     }
 
     // MARK: - LocationServiceSubscriber methods
