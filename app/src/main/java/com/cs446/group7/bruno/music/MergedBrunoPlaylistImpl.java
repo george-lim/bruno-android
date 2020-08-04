@@ -33,11 +33,19 @@ public class MergedBrunoPlaylistImpl extends BrunoPlaylist implements Serializab
         if (index < mergeTrackIndex) {
             return primaryPlaylist.getTrack(index);
         }
+        else if (index == mergeTrackIndex && mergePlaybackPosition == 0) {
+            return secondaryPlaylist.getTrack(0);
+        }
         else if (index == mergeTrackIndex) {
             return primaryPlaylist.getTrack(index).split(mergePlaybackPosition);
         }
         else {
             return secondaryPlaylist.getTrack((index - mergeTrackIndex) - 1);
         }
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return primaryPlaylist.isEmpty() && secondaryPlaylist.isEmpty();
     }
 }

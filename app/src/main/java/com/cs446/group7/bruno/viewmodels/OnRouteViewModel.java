@@ -17,6 +17,7 @@ import com.cs446.group7.bruno.music.player.MockMusicPlayerImpl;
 import com.cs446.group7.bruno.music.player.MusicPlayer;
 import com.cs446.group7.bruno.music.player.MusicPlayerException;
 import com.cs446.group7.bruno.music.player.MusicPlayerSubscriber;
+import com.cs446.group7.bruno.storage.FileStorage;
 import com.cs446.group7.bruno.storage.PreferencesStorage;
 import com.cs446.group7.bruno.sensor.PedometerSubscriber;
 import com.cs446.group7.bruno.settings.SettingsService;
@@ -43,10 +44,13 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
     private Resources resources;
     private RouteModel model;
     private OnRouteViewModelDelegate delegate;
+    private Context context;
 
     private MusicPlayer musicPlayer;
 
     private boolean isRouteCompleted;
+
+    private String TAG = getClass().getSimpleName();
 
     // MARK: - Lifecycle methods
 
@@ -56,6 +60,7 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
         this.resources = context.getResources();
         this.model = model;
         this.delegate = delegate;
+        this.context = context;
         this.isRouteCompleted = false;
 
         musicPlayer = getMusicPlayer();
@@ -168,7 +173,7 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
             @Override
             public void onFailed(MusicPlayerException result) {
                 String errorMessage = result.getLocalizedMessage();
-                Log.e(getClass().getSimpleName(), "onFailed connect: " + errorMessage);
+                Log.e(TAG, "onFailed connect: " + errorMessage);
 
                 dismissPlayerConnectProgressDialog();
                 showPlayerConnectFailureDialog(errorMessage);
@@ -241,7 +246,7 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
         }
 
         double distanceToCheckpoint = model.getDistanceToCheckpoint();
-        delegate.updateDistanceToCheckpoint((int)distanceToCheckpoint + " m");
+        delegate.updateDistanceToCheckpoint((int) distanceToCheckpoint + " m");
     }
 
     private void handlePlaylistChanged(final BrunoPlaylist playlist, long playbackPosition) {
@@ -254,6 +259,20 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
         refreshUI();
 
         musicPlayer.play();
+    }
+
+    private void handleFallbackFailed() {
+        Log.d(TAG, "onFallback: null fallback playlist");
+        delegate.showAlertDialog(
+                context.getResources().getString(R.string.fallback_fail_title),
+                context.getResources().getString(R.string.fallback_fail_description),
+                context.getResources().getString(R.string.ok_button),
+                (dialogInterface, i) -> {
+                    model.softReset();
+                    musicPlayer.stopAndDisconnect();
+                    delegate.navigateToPreviousScreen();
+                },
+                false);
     }
 
     /**
@@ -316,7 +335,33 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
 
     @Override
     public void onFallback() {
-        // TODO: Add logic here once the fallback playlist is retrievable from storage
+        musicPlayer.getPlaybackPosition(new Callback<Long, Throwable>() {
+            @Override
+            public void onSuccess(Long playbackPosition) {
+                BrunoPlaylist playlist;
+
+                try {
+                    playlist = FileStorage.readFileAsSerializable(context, FileStorage.FALLBACK_PLAYLIST);
+                    // Don't use a playlist with no tracks
+                    if (playlist.isEmpty()) {
+                        handleFallbackFailed();
+                        return;
+                    }
+                }
+                catch (Exception e) {
+                    // When a user don't have a fallback playlist, FileStorage will throw a FileNotFoundError
+                    handleFallbackFailed();
+                    return;
+                }
+
+                handlePlaylistChanged(playlist, playbackPosition);
+            }
+
+            @Override
+            public void onFailed(Throwable result) {
+                handleFallbackFailed();
+            }
+        });
     }
 
     // MARK: - PedometerSubscriber methods
