@@ -65,26 +65,6 @@ public class RouteModel extends ViewModel {
         checkpointsModel.setRouteSegments(routeSegments);
     }
 
-    public void setRouteColours(final int[] routeColours) {
-        playlistModel.setRouteColours(routeColours);
-    }
-
-    public BrunoPlaylist getPlaylist() {
-        return playlistModel.getPlaylist();
-    }
-
-    public void setPlaylist(final BrunoPlaylist playlist) {
-        playlistModel.setPlaylist(playlist);
-    }
-
-    public void mergePlaylist(final BrunoPlaylist playlist, long playbackPosition) {
-        playlistModel.mergePlaylist(playlist, playbackPosition);
-    }
-
-    public List<TrackSegment> getTrackSegments() {
-        return playlistModel.getTrackSegments();
-    }
-
     public Location getCurrentLocation() {
         return currentLocation;
     }
@@ -96,14 +76,6 @@ public class RouteModel extends ViewModel {
     public void setCurrentLocation(final Location currentLocation) {
         this.currentLocation = currentLocation;
         this.currentCoordinate = new Coordinate(currentLocation);
-    }
-
-    public BrunoTrack getCurrentTrack() {
-        return playlistModel.getCurrentTrack();
-    }
-
-    public void setCurrentTrack(final BrunoTrack currentTrack) {
-        playlistModel.setCurrentTrack(currentTrack);
     }
 
     public void incrementStep() {
@@ -162,12 +134,40 @@ public class RouteModel extends ViewModel {
 
     // MARK: - PlaylistModel methods
 
+    public void setRouteColours(final int[] routeColours) {
+        playlistModel.setRouteColours(routeColours);
+    }
+
+    public BrunoPlaylist getPlaylist() {
+        return playlistModel.getPlaylist();
+    }
+
+    public void setPlaylist(final BrunoPlaylist playlist) {
+        playlistModel.setPlaylist(playlist);
+    }
+
     public boolean hasTrackSegments() {
-        return playlistModel.getTrackSegments() != null;
+        return getTrackSegments() != null;
+    }
+
+    public List<TrackSegment> getTrackSegments() {
+        return playlistModel.getTrackSegments();
+    }
+
+    public BrunoTrack getCurrentTrack() {
+        return playlistModel.getCurrentTrack();
+    }
+
+    public void mergePlaylist(final BrunoPlaylist playlist, long playbackPosition) {
+        playlistModel.mergePlaylist(playlist, playbackPosition);
     }
 
     public Coordinate getPlaylistRouteCoordinate(long playbackPosition) {
         return playlistModel.getPlaylistRouteCoordinate(playbackPosition);
+    }
+
+    public void onTrackChanged(final BrunoTrack currentTrack) {
+        playlistModel.onTrackChanged(currentTrack);
     }
 
     /**
