@@ -197,34 +197,6 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
                     resources.getDrawable(R.drawable.ic_angle_double_up, null),
                     resources.getColor(R.color.colorSecondary, null));
         }
-
-        musicPlayer.getPlaybackPosition(new Callback<Long, Throwable>() {
-            @Override
-            public void onSuccess(Long playbackPosition) {
-                int userPlaylistDistance = (int) model.getDistanceBetweenUserAndPlaylist(playbackPosition);
-
-                if (userPlaylistDistance < 0) {
-                    delegate.updateDistanceBetweenUserAndPlaylist(
-                            -userPlaylistDistance + " m",
-                            resources.getDrawable(R.drawable.ic_angle_double_down, null),
-                            resources.getColor(R.color.colorPrimary, null));
-                } else {
-                    delegate.updateDistanceBetweenUserAndPlaylist(
-                            userPlaylistDistance + " m",
-                            resources.getDrawable(R.drawable.ic_angle_double_up, null),
-                            resources.getColor(R.color.colorSecondary, null));
-                }
-
-                updateBrunoCoordinate(playbackPosition);
-            }
-
-            @Override
-            public void onFailed(Throwable error) {
-                Log.e(TAG, error.getLocalizedMessage() == null
-                        ? "Error occurred when getting playback position"
-                        : error.getLocalizedMessage());
-            }
-        });
     }
 
     // TODO: Move this calculation into RouteModel.
