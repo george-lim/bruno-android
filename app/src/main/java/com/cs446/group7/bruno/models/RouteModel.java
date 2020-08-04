@@ -200,6 +200,10 @@ public class RouteModel extends ViewModel {
 
     // Sets durations of each RouteSegment to correspond with running speed
     private void convertToRunningDurations(final List<RouteSegment> routeSegments) {
+        if (routeSegments == null) {
+            return;
+        }
+
         for (RouteSegment routeSegment : routeSegments) {
             routeSegment.setRunningDuration();
         }
