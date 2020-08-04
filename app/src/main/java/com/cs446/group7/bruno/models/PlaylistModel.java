@@ -193,12 +193,6 @@ public class PlaylistModel {
             return;
         }
 
-        // If safePlaybackPosition cannot be determined or is zero, merge from the end of previous song
-        if (safePlaybackPosition == 0) {
-            trackIndex--;
-            safePlaybackPosition = playlist.getTrack(trackIndex).getDuration();
-        }
-
         setPlaylist(new MergedBrunoPlaylistImpl(
                 this.playlist,
                 playlist,
