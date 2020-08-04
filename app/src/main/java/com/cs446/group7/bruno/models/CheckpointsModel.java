@@ -22,6 +22,10 @@ public class CheckpointsModel {
     // MARK: - Private methods
 
     private List<Coordinate> processCheckpoints(final List<RouteSegment> routeSegments) {
+        if (routeSegments == null) {
+            checkpoints = null;
+        }
+
         List<Coordinate> checkpoints = new ArrayList<>();
 
         for (RouteSegment routeSegment : routeSegments) {
