@@ -23,7 +23,7 @@ public class CheckpointsModel {
 
     private List<Coordinate> processCheckpoints(final List<RouteSegment> routeSegments) {
         if (routeSegments == null) {
-            checkpoints = null;
+            return null;
         }
 
         List<Coordinate> checkpoints = new ArrayList<>();
