@@ -361,39 +361,33 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
 
     @Override
     public void onFallback() {
-        Log.d(TAG, "onFallback: fallback triggered");
-        final BrunoPlaylist playlist;
-        try {
-            playlist = FileStorage.readFileAsSerializable(context, FileStorage.FALLBACK_PLAYLIST);
-            // Don't use a playlist with no tracks
-            if (playlist.isTracksEmpty()) {
+        musicPlayer.getPlaybackPosition(new Callback<Long, Throwable>() {
+            @Override
+            public void onSuccess(Long playbackPosition) {
+                BrunoPlaylist playlist;
+
+                try {
+                    playlist = FileStorage.readFileAsSerializable(context, FileStorage.FALLBACK_PLAYLIST);
+                    // Don't use a playlist with no tracks
+                    if (playlist.isTracksEmpty()) {
+                        handleFallbackFailed();
+                        return;
+                    }
+                }
+                catch (Exception e) {
+                    // When a user don't have a fallback playlist, FileStorage will throw a FileNotFoundError
+                    handleFallbackFailed();
+                    return;
+                }
+
+                handlePlaylistChanged(playlist, playbackPosition);
+            }
+
+            @Override
+            public void onFailed(Throwable result) {
                 handleFallbackFailed();
             }
-        } catch (Exception e) {
-            // When a user don't have a fallback playlist, FileStorage will throw a FileNotFoundError
-            handleFallbackFailed();
-            return;
-        }
-
-        if (playlist != null) {
-            Log.d(TAG, "onFallback: Received fallback playlist with name " + playlist.getName()
-                    + " and id " + playlist.getId());
-            musicPlayer.getPlaybackPosition(new Callback<Long, Throwable>() {
-                @Override
-                public void onSuccess(Long result) {
-                    handlePlaylistChanged(playlist, result);
-                }
-
-                @Override
-                public void onFailed(Throwable result) {
-
-                }
-            });
-
-        } else {
-            handleFallbackFailed();
-        }
-
+        });
     }
 
     // MARK: - PedometerSubscriber methods
