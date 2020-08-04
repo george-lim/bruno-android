@@ -119,8 +119,17 @@ public class PlaylistModel {
         return trackIndex >= 0;
     }
 
-    private boolean hasCompletedPlaylistRoute() {
-        return trackIndex >= trackSegments.size();
+    private boolean hasCompletedPlaylistRoute(long playbackPosition) {
+        if (!hasStartedPlaylistRoute()) {
+            return false;
+        }
+        else if (trackIndex + 1 == trackSegments.size()
+                && playbackPosition >= trackSegments.get(trackIndex).getDuration()) {
+            return true;
+        }
+        else {
+            return trackIndex >= trackSegments.size();
+        }
     }
 
     // After merge, playbackPosition can still be desynchronized until track change
@@ -228,7 +237,7 @@ public class PlaylistModel {
     public double getPlaylistRouteDistance(long playbackPosition) {
         long safePlaybackPosition = getSafePlaybackPosition(playbackPosition);
 
-        if (hasCompletedPlaylistRoute()) {
+        if (hasCompletedPlaylistRoute(safePlaybackPosition)) {
             return getCompletedTrackSegmentsDistance();
         }
 
@@ -240,7 +249,7 @@ public class PlaylistModel {
     public long getPlaylistRouteDuration(long playbackPosition) {
         long safePlaybackPosition = getSafePlaybackPosition(playbackPosition);
 
-        if (hasCompletedPlaylistRoute()) {
+        if (hasCompletedPlaylistRoute(safePlaybackPosition)) {
             return getCompletedTrackSegmentsDuration();
         }
 
@@ -254,7 +263,7 @@ public class PlaylistModel {
         if (!hasStartedPlaylistRoute()) {
             return routeSegments.get(0).getStartCoordinate();
         }
-        else if (hasCompletedPlaylistRoute()) {
+        else if (hasCompletedPlaylistRoute(safePlaybackPosition)) {
             return routeSegments.get(routeSegments.size() - 1).getEndCoordinate();
         }
         else {
@@ -266,7 +275,7 @@ public class PlaylistModel {
 
     public void onTrackChanged(final BrunoTrack track) {
         // Stay on the same song until the next song matches what we expect
-        if (!hasCompletedPlaylistRoute() && track.equals(playlist.getTrack(trackIndex + 1))) {
+        if (track.equals(playlist.getTrack(trackIndex + 1))) {
             trackIndex++;
         }
     }
