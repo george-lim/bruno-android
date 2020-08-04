@@ -7,7 +7,6 @@ import com.cs446.group7.bruno.music.MergedBrunoPlaylistImpl;
 import com.cs446.group7.bruno.routing.RouteSegment;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -164,17 +163,6 @@ public class PlaylistModel {
         return currentTrackPlaybackRatio * currentTrackDistance;
     }
 
-    // Returns the total duration of TrackSegments that have been completed (excluding current)
-    private long getCompletedTrackSegmentsDuration() {
-        long duration = 0;
-
-        for (int i = 0; i < Math.min(trackIndex, trackSegments.size()); ++i) {
-            duration += playlist.getTrack(i).getDuration();
-        }
-
-        return duration;
-    }
-
     // MARK: - Public methods
 
     public void setRouteSegments(final List<RouteSegment> routeSegments) {
@@ -245,17 +233,6 @@ public class PlaylistModel {
                 + getCurrentTrackSegmentDistance(safePlaybackPosition);
     }
 
-    // Returns route duration of current playlist playback
-    public long getPlaylistRouteDuration(long playbackPosition) {
-        long safePlaybackPosition = getSafePlaybackPosition(playbackPosition);
-
-        if (hasCompletedPlaylistRoute(safePlaybackPosition)) {
-            return getCompletedTrackSegmentsDuration();
-        }
-
-        return getCompletedTrackSegmentsDuration() + safePlaybackPosition;
-    }
-
     // Returns route coordinate of current playlist playback
     public Coordinate getPlaylistRouteCoordinate(long playbackPosition) {
         long safePlaybackPosition = getSafePlaybackPosition(playbackPosition);
@@ -269,6 +246,28 @@ public class PlaylistModel {
         else {
             return trackSegments.get(trackIndex).getCoordinate(safePlaybackPosition);
         }
+    }
+
+    // MARK: - Total playlist playback calculations
+
+    public double getTotalPlaylistRouteDistance() {
+        double distance = 0;
+
+        for (TrackSegment trackSegment : trackSegments) {
+            distance += trackSegment.getDistance();
+        }
+
+        return distance;
+    }
+
+    public long getTotalPlaylistRouteDuration() {
+        long duration = 0;
+
+        for (TrackSegment trackSegment : trackSegments) {
+            duration += trackSegment.getDuration();
+        }
+
+        return duration;
     }
 
     // MARK: - Music player synchronization methods
