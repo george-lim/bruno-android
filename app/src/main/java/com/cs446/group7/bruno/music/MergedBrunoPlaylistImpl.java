@@ -31,6 +31,9 @@ public class MergedBrunoPlaylistImpl extends BrunoPlaylist {
         if (index < mergeTrackIndex) {
             return primaryPlaylist.getTrack(index);
         }
+        else if (index == mergeTrackIndex && mergePlaybackPosition == 0) {
+            return secondaryPlaylist.getTrack(0);
+        }
         else if (index == mergeTrackIndex) {
             return primaryPlaylist.getTrack(index).split(mergePlaybackPosition);
         }
