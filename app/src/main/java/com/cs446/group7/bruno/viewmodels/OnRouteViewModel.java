@@ -47,6 +47,8 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
     // TODO: Remove this when there's a better reset logic
     private boolean isRouteCompleted;
 
+    private String TAG = getClass().getSimpleName();
+
     // MARK: - Lifecycle methods
 
     public OnRouteViewModel(final Context context,
@@ -155,7 +157,7 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
             @Override
             public void onFailed(MusicPlayerException result) {
                 String errorMessage = result.getLocalizedMessage();
-                Log.e(getClass().getSimpleName(), "onFailed connect: " + errorMessage);
+                Log.e(TAG, "onFailed connect: " + errorMessage);
 
                 dismissPlayerConnectProgressDialog();
                 showPlayerConnectFailureDialog(errorMessage);
@@ -178,7 +180,7 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
         musicPlayer.getPlaybackPosition(new Callback<Long, Throwable>() {
             @Override
             public void onSuccess(Long playbackPosition) {
-                int userPlaylistDistance = (int)model.getDistanceBetweenUserAndPlaylist(playbackPosition);
+                int userPlaylistDistance = (int) model.getDistanceBetweenUserAndPlaylist(playbackPosition);
 
                 if (userPlaylistDistance < 0) {
                     delegate.updateDistanceBetweenUserAndPlaylist(
@@ -197,10 +199,9 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
 
             @Override
             public void onFailed(Throwable error) {
-                Log.e(getClass().getSimpleName(),
-                        error.getLocalizedMessage() == null
-                                ? "Error occurred when getting playback position"
-                                : error.getLocalizedMessage());
+                Log.e(TAG, error.getLocalizedMessage() == null
+                        ? "Error occurred when getting playback position"
+                        : error.getLocalizedMessage());
             }
         });
     }
@@ -249,14 +250,13 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
             if (model.hasCompletedAllCheckpoints()) {
                 isRouteCompleted = true;
                 stopRouteNavigation(result -> onRouteCompleted());
-            }
-            else {
+            } else {
                 delegate.updateCheckpointMarker(model.getCheckpoint().getLatLng(), toleranceRadius);
             }
         }
 
         double distanceToCheckpoint = model.getDistanceToCheckpoint();
-        delegate.updateDistanceToCheckpoint((int)distanceToCheckpoint + " m");
+        delegate.updateDistanceToCheckpoint((int) distanceToCheckpoint + " m");
     }
 
     private void handlePlaylistChange(final BrunoPlaylist playlist) {
@@ -276,7 +276,7 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
 
             @Override
             public void onFailed(Throwable result) {
-                Log.e(getClass().getSimpleName(), "Failed to get playback position during playlist change");
+                Log.e(TAG, "Failed to get playback position during playlist change");
             }
         });
     }
@@ -359,7 +359,7 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
 
     @Override
     public void onFallback() {
-        Log.e(getClass().getSimpleName(), "Got to onFallback");
+        Log.d(TAG, "onFallback: fallback triggered");
         BrunoPlaylist playlist;
         try {
             playlist = FileStorage.readFileAsSerializable(context, FileStorage.FALLBACK_PLAYLIST);
@@ -368,15 +368,26 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
                 playlist = null;
             }
         } catch (Exception e) {
+            // When a user don't have a fallback playlist, FileStorage will throw a FileNotFoundError
             playlist = null; //explicit
         }
+
         if (playlist != null) {
-            Log.d(getClass().getSimpleName(),
-                    "onFallback: Received fallback playlist with name " + playlist.getName()
-                            + " and id " + playlist.getId());
+            Log.d(TAG, "onFallback: Received fallback playlist with name " + playlist.getName()
+                    + " and id " + playlist.getId());
             handlePlaylistChange(playlist);
         } else {
-            Log.e(getClass().getSimpleName(), "onFallback: null fallback playlist");
+            Log.d(TAG, "onFallback: null fallback playlist");
+            delegate.showAlertDialog(
+                    context.getResources().getString(R.string.fallback_fail_title),
+                    context.getResources().getString(R.string.fallback_fail_description),
+                    context.getResources().getString(R.string.ok_button),
+                    (dialogInterface, i) -> {
+                        model.hardReset();
+                        musicPlayer.stopAndDisconnect();
+                        delegate.navigateToPreviousScreen();
+                    },
+                    false);
         }
     }
 
