@@ -28,9 +28,12 @@ public class FitnessDetailsViewModel {
         final FitnessRecordData currentFitnessRecord = model.getCurrentFitnessRecord();
         final String dateTimeString = TimeUtils.formatDateTime(currentFitnessRecord.getStartTime(),
                 SettingsService.DATE_TIME_FORMAT, resources.getConfiguration().locale);
+        final String distanceString = String.format(resources.getConfiguration().locale,
+                "%.1f km", currentFitnessRecord.getRouteDistance() / 1000);
 
         delegate.setupUI(
                dateTimeString,
+                distanceString,
                 currentFitnessRecord.getUserDuration() / 1000,
                 currentFitnessRecord.getExpectedDuration() / 1000,
                 currentFitnessRecord.getSteps()

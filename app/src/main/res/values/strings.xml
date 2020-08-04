@@ -80,7 +80,8 @@
     <string name="fitness_details_you">You</string>
     <string name="fitness_details_bruno">Bruno</string>
     <string name="fitness_details_crown_description">Running award</string>
-    <string name="fitness_details_steps_description">On route step indicator</string>
+    <string name="fitness_details_distance_description">Total distance indicator</string>
+    <string name="fitness_details_steps_description">Total steps indicator</string>
     <string name="fitness_details_clock_description">Total time elapsed indicator</string>
     <string name="fitness_details_steps_placeholder">%d steps</string>
     <string name="fitness_details_music_description">Music note</string>

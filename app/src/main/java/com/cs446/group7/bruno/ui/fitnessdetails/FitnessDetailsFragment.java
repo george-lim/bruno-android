@@ -40,8 +40,10 @@ public class FitnessDetailsFragment extends Fragment implements FitnessDetailsVi
     private ImageView imgLeaderboardBrunoCrown;
     private TextView txtLeaderboardYouTime;
     private TextView txtLeaderboardBrunoTime;
+    private ImageView imgStatsDistance;
     private ImageView imgStatsSteps;
     private ImageView imgStatsClock;
+    private TextView txtStatsDistance;
     private TextView txtStatsSteps;
     private TextView txtStatsClock;
     private LinearLayout runTracklist;
@@ -60,8 +62,10 @@ public class FitnessDetailsFragment extends Fragment implements FitnessDetailsVi
         imgLeaderboardBrunoCrown = view.findViewById(R.id.image_view_leaderboard_bruno_crown);
         txtLeaderboardYouTime = view.findViewById(R.id.text_view_leaderboard_you_time);
         txtLeaderboardBrunoTime = view.findViewById(R.id.text_view_leaderboard_bruno_time);
+        imgStatsDistance = view.findViewById(R.id.image_view_stats_distance);
         imgStatsSteps = view.findViewById(R.id.image_view_stats_steps);
         imgStatsClock = view.findViewById(R.id.image_view_stats_clock);
+        txtStatsDistance = view.findViewById(R.id.text_view_stats_distance);
         txtStatsSteps = view.findViewById(R.id.text_view_stats_steps);
         txtStatsClock = view.findViewById(R.id.text_view_stats_clock);
         runTracklist = view.findViewById(R.id.linear_layout_fitness_detail_tracklist);
@@ -88,9 +92,10 @@ public class FitnessDetailsFragment extends Fragment implements FitnessDetailsVi
     // MARK: - FitnessDetailsViewModelDelegate methods
 
     @Override
-    public void setupUI(final String dateTimeString, long userDuration, long brunoDuration, int stepCount) {
+    public void setupUI(final String dateTimeString, final String distanceString, long userDuration, long brunoDuration, int stepCount) {
         txtLeaderboardYouTime.setText(TimeUtils.getDurationString(userDuration));
         txtLeaderboardBrunoTime.setText(TimeUtils.getDurationString(brunoDuration));
+        txtStatsDistance.setText(distanceString);
         txtStatsSteps.setText(String.format(getResources().getString(R.string.fitness_details_steps_placeholder), stepCount));
         txtStatsClock.setText(TimeUtils.formatDuration(userDuration));
 
