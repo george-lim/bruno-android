@@ -156,7 +156,7 @@ class SpotifyPlayerService implements MusicPlayer {
                                 !(currentPlayerState != null && track.equals(currentPlayerState.track));
 
                         // Only alert subscribers about new track changes once we reach the first song of the playlist
-                        if (hasReachedFirstSong && isDifferentTrack ) {
+                        if ((hasReachedFirstSong || isFallbackTriggered) && isDifferentTrack) {
                             Log.d(TAG, "Alerting subscribers about a new track change.");
                             for (MusicPlayerSubscriber subscriber : spotifyServiceSubscribers) {
                                 subscriber.onTrackChanged(convertToBrunoTrack(track));
