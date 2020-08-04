@@ -87,10 +87,13 @@ public class RouteModel extends ViewModel {
     }
 
     public void stopRouteNavigation(long playbackPosition) {
+        double userDistance = checkpointsModel.getUserRouteDistance(currentCoordinate);
         long userDuration = new Date().getTime() - startDate.getTime();
-        long brunoDuration = playlistModel.getPlaylistRouteDuration(playbackPosition);
-        List<BrunoTrack> tracks = playlistModel.getPlaylist().getTracksUpToDuration(userDuration);
-        // TODO: Persist tracks to database.
+        double brunoDistance = playlistModel.getTotalPlaylistRouteDistance();
+        long brunoDuration = playlistModel.getTotalPlaylistRouteDuration();
+        BrunoPlaylist playlist = playlistModel.getPlaylist();
+        List<TrackSegment> trackSegments = playlistModel.getTrackSegments();
+        // TODO: Persist these to database.
     }
 
     // Returns difference in distance between the user and the playlist on the route
