@@ -75,5 +75,6 @@
     <string name="run_exit_message">Bruno doesn\'t like it when you quit in the middle. He will stop playing your music.</string>
     <string name="on_route_stop">EXIT</string>
     <string name="fallback_fail_title">Something went wrong</string>
-    <string name="fallback_fail_description">Bruno is unable continue the run. Either you have not yet set a fallback playlist or Bruno encounters a problem. Your current progress will be lost.</string>
+    <string name="fallback_fail_description">Bruno is unable to continue the run. You have either not yet set a
+        fallback playlist or Bruno encountered a problem. Your current progress will be lost.</string>
 </resources>
