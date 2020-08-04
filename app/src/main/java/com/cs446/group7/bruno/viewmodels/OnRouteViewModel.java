@@ -326,19 +326,7 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
     // MARK: - User action handlers
 
     public void handleExitRoute() {
-        delegate.showAlertDialog(
-                resources.getString(R.string.run_exit_title),
-                resources.getString(R.string.run_exit_message),
-                resources.getString(R.string.yes_button),
-                (dialogInterface, i) -> {
-                    model.softReset();
-                    musicPlayer.stopAndDisconnect();
-                    delegate.navigateToPreviousScreen();
-                },
-                resources.getString(R.string.no_button),
-                null,
-                true
-        );
+        onFallback();
     }
 
     // MARK: - LocationServiceSubscriber methods
@@ -369,7 +357,7 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
                 try {
                     playlist = FileStorage.readFileAsSerializable(context, FileStorage.FALLBACK_PLAYLIST);
                     // Don't use a playlist with no tracks
-                    if (playlist.isTracksEmpty()) {
+                    if (playlist.isEmpty()) {
                         handleFallbackFailed();
                         return;
                     }

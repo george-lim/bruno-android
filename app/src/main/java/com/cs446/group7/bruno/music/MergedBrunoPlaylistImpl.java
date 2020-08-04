@@ -43,7 +43,7 @@ public class MergedBrunoPlaylistImpl extends BrunoPlaylist {
     }
 
     @Override
-    public boolean isTracksEmpty() {
-        return primaryPlaylist.isTracksEmpty() && secondaryPlaylist.isTracksEmpty();
+    public boolean isEmpty() {
+        return primaryPlaylist.isEmpty() && secondaryPlaylist.isEmpty();
     }
 }

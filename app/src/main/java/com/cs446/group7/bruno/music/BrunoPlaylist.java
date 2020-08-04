@@ -8,7 +8,7 @@ public abstract class BrunoPlaylist {
     public abstract String getId();
     public abstract String getName();
     public abstract BrunoTrack getTrack(int index);
-    public abstract boolean isTracksEmpty();
+    public abstract boolean isEmpty();
 
     public List<BrunoTrack> getTracksUpToDuration(long duration) {
         List<BrunoTrack> result = new ArrayList<>();

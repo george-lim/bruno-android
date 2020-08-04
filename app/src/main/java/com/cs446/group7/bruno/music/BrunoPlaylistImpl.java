@@ -32,5 +32,5 @@ public class BrunoPlaylistImpl extends BrunoPlaylist implements Serializable {
     }
 
     @Override
-    public boolean isTracksEmpty() { return tracks.size() == 0; }
+    public boolean isEmpty() { return tracks.size() == 0; }
 }
