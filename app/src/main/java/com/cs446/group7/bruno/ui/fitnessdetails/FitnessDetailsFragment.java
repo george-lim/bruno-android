@@ -88,11 +88,11 @@ public class FitnessDetailsFragment extends Fragment implements FitnessDetailsVi
     // MARK: - FitnessDetailsViewModelDelegate methods
 
     @Override
-    public void setupUI(final String dateTimeString, long yourRunDuration, long brunoDuration, int stepCount) {
-        txtLeaderboardYouTime.setText(TimeUtils.getDurationString(yourRunDuration));
+    public void setupUI(final String dateTimeString, long userDuration, long brunoDuration, int stepCount) {
+        txtLeaderboardYouTime.setText(TimeUtils.getDurationString(userDuration));
         txtLeaderboardBrunoTime.setText(TimeUtils.getDurationString(brunoDuration));
         txtStatsSteps.setText(String.format(getResources().getString(R.string.fitness_details_steps_placeholder), stepCount));
-        txtStatsClock.setText(TimeUtils.formatDuration(yourRunDuration));
+        txtStatsClock.setText(TimeUtils.formatDuration(userDuration));
 
         AppbarFormatter.format((AppCompatActivity) getActivity(),
                 getView(),
@@ -101,11 +101,11 @@ public class FitnessDetailsFragment extends Fragment implements FitnessDetailsVi
                 true);
 
         // Crown
-        if (yourRunDuration < brunoDuration) {
+        if (userDuration < brunoDuration) {
             // You win
             imgLeaderboardYouCrown.setColorFilter(getResources().getColor(R.color.colorCrown, null));
             imgLeaderboardBrunoCrown.setVisibility(View.INVISIBLE);
-        } else if (yourRunDuration > brunoDuration) {
+        } else if (userDuration > brunoDuration) {
             // You lose
             imgLeaderboardYouCrown.setVisibility(View.INVISIBLE);
             imgLeaderboardBrunoCrown.setColorFilter(getResources().getColor(R.color.colorCrown, null));
