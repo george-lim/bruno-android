@@ -95,10 +95,7 @@ public class RouteModel extends ViewModel {
     public void stopRouteNavigation() {
         final long userDuration = new Date().getTime() - startDate.getTime();
         final long brunoDuration = playlistModel.getTotalPlaylistRouteDuration();
-        final double routeDistance = playlistModel.getTotalPlaylistRouteDistance();
-        final BrunoPlaylist playlist = playlistModel.getPlaylist();
-
-        // double userDistance = checkpointsModel.getUserRouteDistance(currentCoordinate);
+        final double brunoDistance = playlistModel.getTotalPlaylistRouteDistance();
 
         // Persist tracks to database.
         final FitnessRecordData fitnessRecordData = new FitnessRecordData(
@@ -106,9 +103,9 @@ public class RouteModel extends ViewModel {
                 startDate,
                 userDuration,
                 brunoDuration,
-                routeDistance,
+                brunoDistance,
                 steps,
-                playlist,
+                getPlaylist(),
                 getTrackSegments()
         );
 
