@@ -112,8 +112,20 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
                 CAMERA_ZOOM
         );
 
-        updateBrunoCoordinate();
-        updateDistanceBetweenUserAndPlaylist();
+        musicPlayer.getPlaybackPosition(new Callback<Long, Throwable>() {
+            @Override
+            public void onSuccess(Long playbackPosition) {
+                updateBrunoCoordinate(playbackPosition);
+                updateDistanceBetweenUserAndPlaylist(playbackPosition);
+            }
+
+            @Override
+            public void onFailed(Throwable result) {
+                updateBrunoCoordinate(0);
+                updateDistanceBetweenUserAndPlaylist(0);
+            }
+        });
+
         updateDistanceToCheckpoint();
     }
 
@@ -161,13 +173,13 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
         });
     }
 
-    private void updateBrunoCoordinate() {
-        final Coordinate brunoCoordinate = model.getPlaylistRouteCoordinate();
+    private void updateBrunoCoordinate(long playbackPosition) {
+        final Coordinate brunoCoordinate = model.getPlaylistRouteCoordinate(playbackPosition);
         delegate.updateBrunoMarker(brunoCoordinate.getLatLng());
     }
 
-    private void updateDistanceBetweenUserAndPlaylist() {
-        int userPlaylistDistance = (int)model.getDistanceBetweenUserAndPlaylist();
+    private void updateDistanceBetweenUserAndPlaylist(long playbackPosition) {
+        int userPlaylistDistance = (int)model.getDistanceBetweenUserAndPlaylist(playbackPosition);
 
         if (userPlaylistDistance < 0) {
             delegate.updateDistanceBetweenUserAndPlaylist(
@@ -217,7 +229,7 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
 
             if (model.hasCompletedAllCheckpoints()) {
                 isRouteCompleted = true;
-                onRouteCompleted();
+                stopRouteNavigation(result -> onRouteCompleted());
             }
             else {
                 delegate.updateCheckpointMarker(model.getCheckpoint().getLatLng(), toleranceRadius);
@@ -228,11 +240,11 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
         delegate.updateDistanceToCheckpoint((int)distanceToCheckpoint + " m");
     }
 
-    private void handlePlaylistChanged(final BrunoPlaylist playlist) {
+    private void handlePlaylistChanged(final BrunoPlaylist playlist, long playbackPosition) {
         musicPlayer.stop();
         musicPlayer.setPlayerPlaylist(playlist);
 
-        model.mergePlaylist(playlist);
+        model.mergePlaylist(playlist, playbackPosition);
         delegate.clearMap();
         delegate.drawRoute(model.getTrackSegments());
         refreshUI();
@@ -240,13 +252,29 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
         musicPlayer.play();
     }
 
+    // Final model changes before route completion
+    private void stopRouteNavigation(final NoFailCallback<Void> callback) {
+        musicPlayer.getPlaybackPosition(new Callback<Long, Throwable>() {
+            @Override
+            public void onSuccess(Long playbackPosition) {
+                model.stopRouteNavigation(playbackPosition);
+                model.hardReset();
+                callback.onSuccess(null);
+            }
+
+            @Override
+            public void onFailed(Throwable result) {
+                model.stopRouteNavigation(0);
+                model.hardReset();
+                callback.onSuccess(null);
+            }
+        });
+    }
+
     /**
      * Logic when the route is completed goes here.
      */
     private void onRouteCompleted() {
-        model.stopRouteNavigation();
-        model.hardReset();
-
         musicPlayer.stopAndDisconnect();
 
         delegate.updateDistanceBetweenUserAndPlaylist("0 m",

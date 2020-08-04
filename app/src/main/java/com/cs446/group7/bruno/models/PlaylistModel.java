@@ -21,7 +21,6 @@ public class PlaylistModel {
 
     private List<TrackSegment> trackSegments;
     private int trackIndex;
-    private long trackStartTime;
 
     // MARK: - Lifecycle methods
 
@@ -124,13 +123,13 @@ public class PlaylistModel {
         return trackIndex >= trackSegments.size();
     }
 
-    private long getPlaybackPosition() {
+    // After merge, playbackPosition can still be desynchronized until track change
+    private long getSafePlaybackPosition(long playbackPosition) {
         if (!hasStartedPlaylistRoute()) {
             return 0;
         }
 
-        // Force playbackPosition to be capped at the current track duration
-        return Math.min(new Date().getTime() - trackStartTime, getCurrentTrack().getDuration());
+        return Math.min(playbackPosition, playlist.getTrack(trackIndex).getDuration());
     }
 
     // Returns the total distance of TrackSegments that have been completed (excluding current)
@@ -145,12 +144,12 @@ public class PlaylistModel {
     }
 
     // Returns the travelled distance of current TrackSegment
-    private double getCurrentTrackSegmentDistance() {
+    private double getCurrentTrackSegmentDistance(long playbackPosition) {
         if (!hasStartedPlaylistRoute()) {
             return 0;
         }
 
-        double currentTrackPlaybackRatio = (double)getPlaybackPosition()
+        double currentTrackPlaybackRatio = (double)playbackPosition
                 / getCurrentTrack().getDuration();
         double currentTrackDistance = trackSegments.get(trackIndex).getDistance();
         return currentTrackPlaybackRatio * currentTrackDistance;
@@ -188,12 +187,26 @@ public class PlaylistModel {
         trackSegments = processSegments();
     }
 
-    public void mergePlaylist(final BrunoPlaylist playlist) {
+    public void mergePlaylist(final BrunoPlaylist playlist, long playbackPosition) {
+        long safePlaybackPosition = getSafePlaybackPosition(playbackPosition);
+
+        // No need to merge if this is happening at the start of the playlist
+        if (!hasStartedPlaylistRoute() || trackIndex == 0 && safePlaybackPosition == 0) {
+            setPlaylist(playlist);
+            return;
+        }
+
+        // If safePlaybackPosition cannot be determined or is zero, merge from the end of previous song
+        if (safePlaybackPosition == 0) {
+            trackIndex--;
+            safePlaybackPosition = playlist.getTrack(trackIndex).getDuration();
+        }
+
         setPlaylist(new MergedBrunoPlaylistImpl(
                 this.playlist,
                 playlist,
                 trackIndex,
-                getPlaybackPosition()
+                getSafePlaybackPosition(safePlaybackPosition)
         ));
     }
 
@@ -212,26 +225,32 @@ public class PlaylistModel {
     // MARK: - Current playlist playback calculations
 
     // Returns route distance of current playlist playback
-    public double getPlaylistRouteDistance() {
+    public double getPlaylistRouteDistance(long playbackPosition) {
+        long safePlaybackPosition = getSafePlaybackPosition(playbackPosition);
+
         if (hasCompletedPlaylistRoute()) {
             return getCompletedTrackSegmentsDistance();
         }
 
         return getCompletedTrackSegmentsDistance()
-                + getCurrentTrackSegmentDistance();
+                + getCurrentTrackSegmentDistance(safePlaybackPosition);
     }
 
     // Returns route duration of current playlist playback
-    public long getPlaylistRouteDuration() {
+    public long getPlaylistRouteDuration(long playbackPosition) {
+        long safePlaybackPosition = getSafePlaybackPosition(playbackPosition);
+
         if (hasCompletedPlaylistRoute()) {
             return getCompletedTrackSegmentsDuration();
         }
 
-        return getCompletedTrackSegmentsDuration() + getPlaybackPosition();
+        return getCompletedTrackSegmentsDuration() + safePlaybackPosition;
     }
 
     // Returns route coordinate of current playlist playback
-    public Coordinate getPlaylistRouteCoordinate() {
+    public Coordinate getPlaylistRouteCoordinate(long playbackPosition) {
+        long safePlaybackPosition = getSafePlaybackPosition(playbackPosition);
+
         if (!hasStartedPlaylistRoute()) {
             return routeSegments.get(0).getStartCoordinate();
         }
@@ -239,7 +258,7 @@ public class PlaylistModel {
             return routeSegments.get(routeSegments.size() - 1).getEndCoordinate();
         }
         else {
-            return trackSegments.get(trackIndex).getCoordinate(getPlaybackPosition());
+            return trackSegments.get(trackIndex).getCoordinate(safePlaybackPosition);
         }
     }
 
@@ -249,7 +268,6 @@ public class PlaylistModel {
         // Stay on the same song until the next song matches what we expect
         if (!hasCompletedPlaylistRoute() && track.equals(playlist.getTrack(trackIndex + 1))) {
             trackIndex++;
-            trackStartTime = new Date().getTime();
         }
     }
 
@@ -258,7 +276,6 @@ public class PlaylistModel {
     public void resetPlayback() {
         // NOTE: Must be -1 because setting first song also calls onTrackChanged.
         trackIndex = -1;
-        trackStartTime = 0;
     }
 
     public void reset() {
