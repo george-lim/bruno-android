@@ -185,6 +185,7 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
 
     private void generateRoute() {
         if (model.getCurrentCoordinate() == null) {
+            onProcessTrackSegmentsFailure();
             return;
         }
 
@@ -220,7 +221,9 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
     private void onProcessTrackSegmentsFailure() {
         delegate.updateStartBtnText(resources.getString(R.string.route_planning_create_route));
         delegate.clearMap();
-        delegate.moveUserMarker(model.getCurrentCoordinate().getLatLng());
+        if (model.getCurrentCoordinate() != null) {
+            delegate.moveUserMarker(model.getCurrentCoordinate().getLatLng());
+        }
         delegate.updateStartBtnEnabled(true);
     }
 
