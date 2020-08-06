@@ -229,7 +229,7 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
                 context.getResources().getString(R.string.fallback_fail_description),
                 context.getResources().getString(R.string.ok_button),
                 (dialogInterface, i) -> {
-                    model.softReset();
+                    model.stopRouteNavigation();
                     musicPlayer.stopAndDisconnect();
                     delegate.navigateToPreviousScreen();
                 },
@@ -245,8 +245,7 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
         }
 
         hasCompletedRoute = true;
-        model.stopRouteNavigation();
-        model.hardReset();
+        model.completeRouteNavigation();
 
         // TODO: Implement a route completion screen.
         delegate.showAlertDialog(
@@ -269,7 +268,7 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
                 resources.getString(R.string.run_exit_message),
                 resources.getString(R.string.yes_button),
                 (dialogInterface, i) -> {
-                    model.softReset();
+                    model.stopRouteNavigation();
                     musicPlayer.stopAndDisconnect();
                     delegate.navigateToPreviousScreen();
                 },
