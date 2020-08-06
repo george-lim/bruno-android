@@ -12,10 +12,10 @@
         android:layout_height="40dp"
         android:layout_marginStart="18dp"
         android:src="@drawable/ic_walking"
-        android:tint="@color/colorSecondary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="@color/colorSecondary" />
 
     <TextView
         android:id="@+id/record_datetime"
@@ -60,9 +60,9 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="18dp"
         android:src="@drawable/ic_arrow_forward"
-        android:tint="@color/colorDisable"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="@color/colorDisable" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

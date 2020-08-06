@@ -25,6 +25,7 @@ public class OnboardingPagerAdapter extends FragmentStateAdapter {
             case OnboardingTab.DONE:
                 return new OnboardingDoneFragment();
             default:
+                // Default is Onboarding welcome screen
                 return new OnboardingWelcomeFragment();
         }
     }
