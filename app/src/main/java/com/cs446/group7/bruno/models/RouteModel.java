@@ -136,7 +136,9 @@ public class RouteModel extends ViewModel {
         BrunoPlaylist playlist = playlistModel.getPlaylist();
         List<TrackSegment> trackSegments = playlistModel.getTrackSegments();
         // TODO: Persist these to database.
+    }
 
+    public void reset() {
         hardReset();
     }
 

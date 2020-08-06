@@ -254,6 +254,7 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
                 resources.getString(R.string.ok_button),
                 (dialogInterface, i) -> {
                     musicPlayer.stopAndDisconnect();
+                    model.reset();
                     delegate.navigateToPreviousScreen();
                 },
                 false
