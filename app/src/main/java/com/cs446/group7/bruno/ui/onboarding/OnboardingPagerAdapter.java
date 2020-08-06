@@ -4,8 +4,6 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
-import com.cs446.group7.bruno.ui.shared.FallbackPlaylistFragment;
-
 public class OnboardingPagerAdapter extends FragmentStateAdapter {
 
     public OnboardingPagerAdapter(@NonNull Fragment fragment) {

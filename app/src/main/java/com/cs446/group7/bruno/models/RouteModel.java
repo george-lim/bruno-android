@@ -2,6 +2,8 @@ package com.cs446.group7.bruno.models;
 
 import android.location.Location;
 
+import androidx.lifecycle.ViewModel;
+
 import com.cs446.group7.bruno.location.Coordinate;
 import com.cs446.group7.bruno.music.BrunoPlaylist;
 import com.cs446.group7.bruno.music.BrunoTrack;
@@ -9,8 +11,6 @@ import com.cs446.group7.bruno.routing.RouteSegment;
 
 import java.util.Date;
 import java.util.List;
-
-import androidx.lifecycle.ViewModel;
 
 public class RouteModel extends ViewModel {
 

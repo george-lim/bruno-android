@@ -5,6 +5,8 @@ import android.content.Context;
 import android.location.Location;
 import android.os.Looper;
 
+import androidx.annotation.Nullable;
+
 import com.cs446.group7.bruno.utils.NoFailCallback;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -14,8 +16,6 @@ import com.google.android.gms.location.LocationServices;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import androidx.annotation.Nullable;
 
 /**
  * Service responsible for handling all logic related to querying the location and receiving location updates.

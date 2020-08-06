@@ -4,7 +4,6 @@ import android.util.Log;
 
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
-import com.android.volley.RetryPolicy;
 import com.android.volley.toolbox.StringRequest;
 import com.cs446.group7.bruno.MainActivity;
 import com.cs446.group7.bruno.utils.Callback;
