@@ -142,6 +142,10 @@ public class RouteModel extends ViewModel {
 
     // Returns difference in distance between the user and the playlist on the route
     public double getDistanceBetweenUserAndPlaylist(long playbackPosition) {
+        if (hasCompletedAllCheckpoints()) {
+            return 0;
+        }
+
         return checkpointsModel.getUserRouteDistance(currentCoordinate)
                 - playlistModel.getPlaylistRouteDistance(playbackPosition);
     }
