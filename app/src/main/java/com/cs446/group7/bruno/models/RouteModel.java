@@ -17,6 +17,7 @@ public class RouteModel extends ViewModel {
     // MARK: - Enums
 
     public enum Mode { WALK, RUN }
+    public enum Stage { PLANNING, NAVIGATION }
 
     // MARK: - Constants
 
@@ -24,6 +25,7 @@ public class RouteModel extends ViewModel {
 
     // MARK: - Private members
 
+    private Stage stage = Stage.PLANNING;
     private Mode mode = Mode.WALK;
     private int durationIndex = 0;
     private Location currentLocation = null;
@@ -33,6 +35,37 @@ public class RouteModel extends ViewModel {
 
     private PlaylistModel playlistModel = new PlaylistModel();
     private CheckpointsModel checkpointsModel = new CheckpointsModel();
+
+    // MARK: - private methods
+
+    private void softReset() {
+        stage = Stage.PLANNING;
+        startDate = null;
+        steps = 0;
+        playlistModel.resetPlayback();
+        checkpointsModel.resetCheckpoint();
+    }
+
+    private void hardReset() {
+        softReset();
+        mode = Mode.WALK;
+        durationIndex = 0;
+        currentLocation = null;
+        currentCoordinate = null;
+        playlistModel.reset();
+        checkpointsModel.reset();
+    }
+
+    // Sets durations of each RouteSegment to correspond with running speed
+    private void convertToRunningDurations(final List<RouteSegment> routeSegments) {
+        if (routeSegments == null) {
+            return;
+        }
+
+        for (RouteSegment routeSegment : routeSegments) {
+            routeSegment.setRunningDuration();
+        }
+    }
 
     // MARK: - Public methods
 
@@ -76,6 +109,10 @@ public class RouteModel extends ViewModel {
     public void setCurrentLocation(final Location currentLocation) {
         this.currentLocation = currentLocation;
         this.currentCoordinate = new Coordinate(currentLocation);
+
+        if (stage == Stage.NAVIGATION) {
+            checkpointsModel.updateCurrentCheckpoint(currentLocation);
+        }
     }
 
     public void incrementStep() {
@@ -84,9 +121,14 @@ public class RouteModel extends ViewModel {
 
     public void startRouteNavigation() {
         startDate = new Date();
+        stage = Stage.NAVIGATION;
     }
 
     public void stopRouteNavigation() {
+        softReset();
+    }
+
+    public void completeRouteNavigation() {
         double userDistance = checkpointsModel.getUserRouteDistance(currentCoordinate);
         long userDuration = new Date().getTime() - startDate.getTime();
         double brunoDistance = playlistModel.getTotalPlaylistRouteDistance();
@@ -96,8 +138,16 @@ public class RouteModel extends ViewModel {
         // TODO: Persist these to database.
     }
 
+    public void reset() {
+        hardReset();
+    }
+
     // Returns difference in distance between the user and the playlist on the route
     public double getDistanceBetweenUserAndPlaylist(long playbackPosition) {
+        if (hasCompletedAllCheckpoints()) {
+            return 0;
+        }
+
         return checkpointsModel.getUserRouteDistance(currentCoordinate)
                 - playlistModel.getPlaylistRouteDistance(playbackPosition);
     }
@@ -113,13 +163,8 @@ public class RouteModel extends ViewModel {
         return checkpointsModel.getCurrentCheckpoint();
     }
 
-    public void advanceCheckpoint() {
-        // Fail-safe
-        if (hasCompletedAllCheckpoints()) {
-            return;
-        }
-
-        checkpointsModel.advanceCheckpoint();
+    public double getCheckpointRadius() {
+        return checkpointsModel.getCheckpointRadius();
     }
 
     public double getDistanceToCheckpoint() {
@@ -171,41 +216,5 @@ public class RouteModel extends ViewModel {
 
     public void onTrackChanged(final BrunoTrack currentTrack) {
         playlistModel.onTrackChanged(currentTrack);
-    }
-
-    /**
-     * Resets the progress of the current route, and stats, but keeps the route and checkpoints.
-     */
-    public void softReset() {
-        startDate = null;
-        steps = 0;
-        playlistModel.resetPlayback();
-        checkpointsModel.resetCheckpoint();
-    }
-
-    /**
-     * Resets everything to the state it was first constructed.
-     */
-    public void hardReset() {
-        softReset();
-        mode = Mode.WALK;
-        durationIndex = 0;
-        currentLocation = null;
-        currentCoordinate = null;
-        playlistModel.reset();
-        checkpointsModel.reset();
-    }
-
-    // MARK: - private methods
-
-    // Sets durations of each RouteSegment to correspond with running speed
-    private void convertToRunningDurations(final List<RouteSegment> routeSegments) {
-        if (routeSegments == null) {
-            return;
-        }
-
-        for (RouteSegment routeSegment : routeSegments) {
-            routeSegment.setRunningDuration();
-        }
     }
 }
