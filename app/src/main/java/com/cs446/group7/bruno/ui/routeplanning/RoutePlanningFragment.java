@@ -3,7 +3,6 @@ package com.cs446.group7.bruno.ui.routeplanning;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,13 +25,12 @@ import com.cs446.group7.bruno.models.TrackSegment;
 import com.cs446.group7.bruno.utils.BitmapUtils;
 import com.cs446.group7.bruno.viewmodels.RoutePlanningViewModel;
 import com.cs446.group7.bruno.viewmodels.RoutePlanningViewModelDelegate;
-import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
@@ -184,50 +182,23 @@ public class RoutePlanningFragment extends Fragment implements RoutePlanningView
         userMarker = null;
     }
 
-    public void drawRoute(@NonNull final List<TrackSegment> trackSegments) {
-        final float routeWidth = 14;
-        LatLngBounds.Builder boundsBuilder = new LatLngBounds.Builder();
-
+    public void drawRoute(@NonNull final List<TrackSegment> trackSegments, float routeWidth) {
         for (TrackSegment trackSegment : trackSegments) {
             List<LatLng> trackSegmentLocations = trackSegment.getLatLngs();
             map.addPolyline(new PolylineOptions()
                     .addAll(trackSegmentLocations)
                     .color(trackSegment.getRouteColour())
                     .width(routeWidth));
-
-            for (LatLng latLng : trackSegmentLocations) {
-                boundsBuilder.include(latLng);
-            }
         }
+    }
 
-        // TODO: Move this logic to view model
-        DisplayMetrics displayMetrics = getContext().getResources().getDisplayMetrics();
-        final float cardViewHeightDp = cardView.getHeight() / displayMetrics.density;
-        final float mapFragmentHeightDp = mapFragmentView.getHeight() / displayMetrics.density;
-        // from tests it seems like we need to add some height to cardView to get a good blockedScreenFraction
-        final double blockedScreenFraction = (cardViewHeightDp + 40) / mapFragmentHeightDp;
-
-        LatLngBounds bounds = boundsBuilder.build();
-        final LatLng minLat = bounds.southwest, maxLat = bounds.northeast;
-
-        // compute offset
-        final double H = maxLat.latitude - minLat.latitude;
-        final double T = H / (1 - blockedScreenFraction);
-        final double offset = T - 2 * H;
-
-        // find mirror point of maxLat and include in bounds
-        final LatLng mirrorMaxLat= new LatLng(2 * minLat.latitude - maxLat.latitude - offset, maxLat.longitude);
-        boundsBuilder.include(mirrorMaxLat);
-
-        bounds = boundsBuilder.build();
-        final int padding = 200;
-
+    public void animateCamera(final CameraUpdate cameraUpdate) {
         // Do not animate camera on initial route
         if (hasDrawnRouteOnce) {
-            map.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, padding));
+            map.animateCamera(cameraUpdate);
         }
         else {
-            map.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, padding));
+            map.moveCamera(cameraUpdate);
             hasDrawnRouteOnce = true;
         }
     }
@@ -258,5 +229,13 @@ public class RoutePlanningFragment extends Fragment implements RoutePlanningView
         else {
             Log.w(getClass().getSimpleName(), "Detected race condition where navigateToNextScreen was called after already navigating to next screen.");
         }
+    }
+
+    public float getCardViewHeight() {
+        return cardView.getHeight();
+    }
+
+    public float getMapViewHeight() {
+        return mapFragmentView.getHeight();
     }
 }

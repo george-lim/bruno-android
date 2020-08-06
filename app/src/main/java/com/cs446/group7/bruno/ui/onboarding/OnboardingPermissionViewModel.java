@@ -2,13 +2,10 @@ package com.cs446.group7.bruno.ui.onboarding;
 
 import android.content.Context;
 
-import com.cs446.group7.bruno.BuildConfig;
 import com.cs446.group7.bruno.MainActivity;
 import com.cs446.group7.bruno.R;
 import com.cs446.group7.bruno.capability.Capability;
 import com.cs446.group7.bruno.capability.CapabilityService;
-import com.cs446.group7.bruno.music.player.MockMusicPlayerImpl;
-import com.cs446.group7.bruno.music.player.MusicPlayer;
 import com.cs446.group7.bruno.spotify.SpotifyService;
 import com.cs446.group7.bruno.utils.Callback;
 import com.cs446.group7.bruno.utils.NoFailClosureQueue;
@@ -22,7 +19,6 @@ public class OnboardingPermissionViewModel {
     private boolean accessToLocationService = false;
     private boolean accessToActiveInternet = false;
     private boolean accessToSpotify = false;
-
 
     public OnboardingPermissionViewModel(final Context context, final OnboardingPermissionViewModelDelegate delegate) {
         this.context = context;
@@ -91,12 +87,6 @@ public class OnboardingPermissionViewModel {
             callback.onSuccess(null);
         });
         queue.run(result -> { /* NOOP since UI is already updated*/ });
-    }
-
-    private MusicPlayer getMusicPlayer() {
-        return BuildConfig.DEBUG
-                ? new MockMusicPlayerImpl()
-                : MainActivity.getSpotifyService().getPlayerService();
     }
 
     public void updateUserAccess() {

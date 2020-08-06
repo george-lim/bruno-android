@@ -20,7 +20,6 @@ import com.cs446.group7.bruno.music.player.MusicPlayerSubscriber;
 import com.cs446.group7.bruno.storage.FileStorage;
 import com.cs446.group7.bruno.storage.PreferencesStorage;
 import com.cs446.group7.bruno.sensor.PedometerSubscriber;
-import com.cs446.group7.bruno.settings.SettingsService;
 import com.cs446.group7.bruno.utils.Callback;
 import com.cs446.group7.bruno.utils.NoFailCallback;
 
@@ -32,8 +31,6 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
 
     private static final int CAMERA_TILT = 60;
     private static final int CAMERA_ZOOM = 18;
-    private static final int BASE_TOLERANCE_RADIUS = 10;
-    private static final int EXTRA_TOLERANCE_MARGIN = 1;
 
     // MARK: - Private members
 
@@ -43,9 +40,7 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
     private Context context;
 
     private MusicPlayer musicPlayer;
-
-    // TODO: Remove this when there's a better reset logic
-    private boolean isRouteCompleted;
+    private boolean hasCompletedRoute;
 
     private String TAG = getClass().getSimpleName();
 
@@ -58,15 +53,16 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
         this.model = model;
         this.delegate = delegate;
         this.context = context;
-        this.isRouteCompleted = false;
 
         musicPlayer = getMusicPlayer();
         musicPlayer.setPlayerPlaylist(model.getPlaylist());
+        musicPlayer.addSubscriber(this);
+
+        hasCompletedRoute = false;
 
         MainActivity.getLocationService().addSubscriber(this);
         MainActivity.getLocationService().startLocationUpdates();
         MainActivity.getSensorService().addPedometerSubscriber(this);
-        musicPlayer.addSubscriber(this);
 
         setupUI();
 
@@ -104,9 +100,13 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
             delegate.updateCurrentSongUI(currentTrack.getName(), currentTrack.getArtists());
         }
 
-        delegate.drawRoute(model.getTrackSegments());
-
+        drawRoute();
         refreshUI();
+    }
+
+    private void drawRoute() {
+        float routeWidth = 14;
+        delegate.drawRoute(model.getTrackSegments(), routeWidth);
     }
 
     private void refreshUI() {
@@ -131,7 +131,17 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
             }
         });
 
-        updateDistanceToCheckpoint();
+        delegate.updateDistanceToCheckpoint((int) model.getDistanceToCheckpoint() + " m");
+
+        if (model.hasCompletedAllCheckpoints()) {
+            onRouteCompleted();
+        }
+        else {
+            delegate.updateCheckpointMarker(
+                    model.getCheckpoint().getLatLng(),
+                    model.getCheckpointRadius()
+            );
+        }
     }
 
     private void showPlayerConnectProgressDialog() {
@@ -199,59 +209,14 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
         }
     }
 
-    // TODO: Move this calculation into RouteModel.
-    private void updateDistanceToCheckpoint() {
-        /*
-            Set a tolerance radius depending on how fast the user is moving. The faster they are, the more
-            margin we should give them. It should also depend on how accurate the GPS is, the more variance, the bigger
-            the margin should be given.
-         */
-
-        final Location currentLocation = model.getCurrentLocation();
-
-        // give extra tolerance if the user is moving faster as their location is more uncertain
-        final double speedMargin = Math.min(SettingsService.PREFERRED_RUNNING_SPEED / 60 + EXTRA_TOLERANCE_MARGIN,
-                currentLocation.getSpeed());
-
-        // max amount of deviation from the actual location (meters)
-        final double accuracyDeviation = currentLocation.getAccuracy();
-
-        // total tolerance radius
-        final double toleranceRadius = BASE_TOLERANCE_RADIUS + speedMargin + accuracyDeviation;
-
-        final Coordinate currentCheckpoint = model.getCheckpoint();
-
-        // Note: the radius drawn on UI is always constant as we cannot foresee the other location variables, it's just
-        // to give an idea where the user should be around
-        delegate.updateCheckpointMarker(currentCheckpoint.getLatLng(), BASE_TOLERANCE_RADIUS);
-
-        final double distanceFromCheckpoint = model.getCurrentCoordinate().getDistance(currentCheckpoint);
-
-        // Checkpoint is counted if and only if  user is within the tolerance radius;
-        // this is calculated dynamically as the location updates, which may be larger than what is drawn
-        if (distanceFromCheckpoint <= toleranceRadius) {
-            model.advanceCheckpoint();
-
-            if (model.hasCompletedAllCheckpoints()) {
-                isRouteCompleted = true;
-                onRouteCompleted();
-            }
-            else {
-                delegate.updateCheckpointMarker(model.getCheckpoint().getLatLng(), toleranceRadius);
-            }
-        }
-
-        double distanceToCheckpoint = model.getDistanceToCheckpoint();
-        delegate.updateDistanceToCheckpoint((int) distanceToCheckpoint + " m");
-    }
-
     private void handlePlaylistChanged(final BrunoPlaylist playlist, long playbackPosition) {
         musicPlayer.stop();
         musicPlayer.setPlayerPlaylist(playlist);
 
         model.mergePlaylist(playlist, playbackPosition);
         delegate.clearMap();
-        delegate.drawRoute(model.getTrackSegments());
+
+        drawRoute();
         refreshUI();
 
         musicPlayer.play();
@@ -264,7 +229,7 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
                 context.getResources().getString(R.string.fallback_fail_description),
                 context.getResources().getString(R.string.ok_button),
                 (dialogInterface, i) -> {
-                    model.softReset();
+                    model.stopRouteNavigation();
                     musicPlayer.stopAndDisconnect();
                     delegate.navigateToPreviousScreen();
                 },
@@ -275,22 +240,23 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
      * Logic when the route is completed goes here.
      */
     private void onRouteCompleted() {
-        model.stopRouteNavigation();
-        model.hardReset();
+        if (hasCompletedRoute) {
+            return;
+        }
 
-        musicPlayer.stopAndDisconnect();
-
-        delegate.updateDistanceBetweenUserAndPlaylist("0 m",
-                resources.getDrawable(R.drawable.ic_angle_double_up, null),
-                resources.getColor(R.color.colorSecondary, null));
-        delegate.updateDistanceToCheckpoint("0 m");
+        hasCompletedRoute = true;
+        model.completeRouteNavigation();
 
         // TODO: Implement a route completion screen.
         delegate.showAlertDialog(
                 resources.getString(R.string.run_completion_title),
                 resources.getString(R.string.run_completion_message),
                 resources.getString(R.string.ok_button),
-                (dialogInterface, i) -> delegate.navigateToPreviousScreen(),
+                (dialogInterface, i) -> {
+                    musicPlayer.stopAndDisconnect();
+                    model.reset();
+                    delegate.navigateToPreviousScreen();
+                },
                 false
         );
     }
@@ -303,7 +269,7 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
                 resources.getString(R.string.run_exit_message),
                 resources.getString(R.string.yes_button),
                 (dialogInterface, i) -> {
-                    model.softReset();
+                    model.stopRouteNavigation();
                     musicPlayer.stopAndDisconnect();
                     delegate.navigateToPreviousScreen();
                 },
@@ -317,7 +283,6 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
 
     @Override
     public void onLocationUpdate(@NonNull Location location) {
-        if (isRouteCompleted) return;
         model.setCurrentLocation(location);
         refreshUI();
     }
