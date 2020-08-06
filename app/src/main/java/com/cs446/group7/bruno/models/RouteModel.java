@@ -76,6 +76,8 @@ public class RouteModel extends ViewModel {
     public void setCurrentLocation(final Location currentLocation) {
         this.currentLocation = currentLocation;
         this.currentCoordinate = new Coordinate(currentLocation);
+
+        checkpointsModel.updateCurrentCheckpoint(currentLocation);
     }
 
     public void incrementStep() {
@@ -113,13 +115,8 @@ public class RouteModel extends ViewModel {
         return checkpointsModel.getCurrentCheckpoint();
     }
 
-    public void advanceCheckpoint() {
-        // Fail-safe
-        if (hasCompletedAllCheckpoints()) {
-            return;
-        }
-
-        checkpointsModel.advanceCheckpoint();
+    public double getCheckpointRadius() {
+        return checkpointsModel.getCheckpointRadius();
     }
 
     public double getDistanceToCheckpoint() {
