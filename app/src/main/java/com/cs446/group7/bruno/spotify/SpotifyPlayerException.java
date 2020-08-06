@@ -55,7 +55,7 @@ public class SpotifyPlayerException extends MusicPlayerException {
             return "Your current version of Spotify is not compatible with Bruno. Please update it to the latest version.";
         }
         else {
-            return "An unexpected error occurred with the Spotify player: " + throwable.getMessage();
+            return "An unexpected error occurred with the Spotify player.";
         }
     }
 }

@@ -20,6 +20,7 @@ public class FileStorage {
         fos.close();
     }
 
+    @SuppressWarnings("unchecked")
     public static <T extends Serializable> T readFileAsSerializable(Context context, String filename)
             throws IOException, ClassNotFoundException {
         FileInputStream fis = context.openFileInput(filename);

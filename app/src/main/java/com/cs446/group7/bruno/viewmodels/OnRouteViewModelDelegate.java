@@ -5,7 +5,6 @@ import android.graphics.drawable.Drawable;
 
 import androidx.annotation.NonNull;
 
-import com.cs446.group7.bruno.location.Coordinate;
 import com.cs446.group7.bruno.models.TrackSegment;
 import com.google.android.gms.maps.model.LatLng;
 

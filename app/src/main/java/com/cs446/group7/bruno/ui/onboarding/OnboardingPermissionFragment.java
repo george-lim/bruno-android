@@ -3,7 +3,6 @@ package com.cs446.group7.bruno.ui.onboarding;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -16,15 +15,21 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 
 import com.cs446.group7.bruno.R;
 
 public class OnboardingPermissionFragment extends Fragment implements OnboardingPermissionViewModelDelegate {
 
+    private ConstraintLayout location_permission_status;
+    private ConstraintLayout location_hardware_status;
+    private ConstraintLayout active_internet_status;
+    private ConstraintLayout spotify_status;
+    private Button btnAllowAccess;
+
     private OnboardingFragment onboardingFragment;
     private OnboardingPermissionViewModel viewModel;
-    private Button btnAllowAccess;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -36,9 +41,14 @@ public class OnboardingPermissionFragment extends Fragment implements Onboarding
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_onboarding_permission, container, false);
+        location_permission_status = view.findViewById(R.id.location_permission_status);
+        location_hardware_status = view.findViewById(R.id.location_hardware_status);
+        active_internet_status = view.findViewById(R.id.active_internet_status);
+        spotify_status = view.findViewById(R.id.spotify_status);
+        btnAllowAccess = view.findViewById(R.id.btn_allow_access);
+
         Button btnSkip = view.findViewById(R.id.btn_skip);
         btnSkip.setOnClickListener(this::handleSkip);
-        btnAllowAccess = view.findViewById(R.id.btn_allow_access);
         btnAllowAccess.setOnClickListener(this::handleAllowAccess);
         return view;
     }
@@ -73,22 +83,22 @@ public class OnboardingPermissionFragment extends Fragment implements Onboarding
                                              final boolean accessToActiveInternet,
                                              final boolean accessToSpotify) {
         updateAccessRequestStatus(
-                getView().findViewById(R.id.location_permission_status),
+                location_permission_status,
                 accessToLocationPermission,
                 getResources().getString(R.string.onboarding_request_location_permission_title),
                 getResources().getString(R.string.onboarding_request_location_permission_hint));
         updateAccessRequestStatus(
-                getView().findViewById(R.id.location_hardware_status),
+                location_hardware_status,
                 accessToLocationService,
                 getResources().getString(R.string.onboarding_request_location_service_title),
                 getResources().getString(R.string.onboarding_request_location_service_hint));
         updateAccessRequestStatus(
-                getView().findViewById(R.id.active_internet_status),
+                active_internet_status,
                 accessToActiveInternet,
                 getResources().getString(R.string.onboarding_request_active_internet_title),
                 getResources().getString(R.string.onboarding_request_active_internet_hint));
         updateAccessRequestStatus(
-                getView().findViewById(R.id.spotify_status),
+                spotify_status,
                 accessToSpotify,
                 getResources().getString(R.string.onboarding_request_spotify_title),
                 getResources().getString(R.string.onboarding_request_spotify_hint));
@@ -99,9 +109,9 @@ public class OnboardingPermissionFragment extends Fragment implements Onboarding
         Drawable icon = enabled
                 ? getResources().getDrawable(R.drawable.ic_check_circle, null)
                 : getResources().getDrawable(R.drawable.ic_times_circle, null);
-        icon.setColorFilter(enabled
+        icon.setTint(enabled
                 ? getResources().getColor(R.color.colorGood, null)
-                : getResources().getColor(R.color.colorError, null), PorterDuff.Mode.SRC_IN);
+                : getResources().getColor(R.color.colorError, null));
         statusIcon.setImageDrawable(icon);
         TextView titleView = view.findViewById(R.id.request_title);
         titleView.setText(title);

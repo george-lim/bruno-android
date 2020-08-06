@@ -8,16 +8,13 @@ import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 
 import com.cs446.group7.bruno.R;
 import com.cs446.group7.bruno.ui.AppbarFormatter;
 import com.cs446.group7.bruno.ui.shared.FallbackPlaylistAction;
-import com.cs446.group7.bruno.ui.shared.FallbackPlaylistFragment;
 
 public class SettingsFallbackPlaylistWrapperFragment extends Fragment implements FallbackPlaylistAction {
 
-    private FallbackPlaylistFragment fallbackPlaylistFragment;
     private Button btnPrimaryAction;
 
     @Override

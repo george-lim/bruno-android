@@ -1,7 +1,5 @@
 package com.cs446.group7.bruno.routing;
 
-import android.content.Context;
-
 import com.cs446.group7.bruno.location.Coordinate;
 import com.cs446.group7.bruno.settings.SettingsService;
 import com.google.android.gms.maps.model.LatLng;
@@ -23,9 +21,6 @@ public abstract class RouteGenerator {
     protected static final double EARTH_CIRCUMFERENCE_METRES = 40075000;
     protected static final int DEG_PER_PI_RADIAN = 180;
     protected static final int NUMBER_OF_POINTS = 3;
-
-    protected final Context context;
-    protected final String gMapsApiKey;
 
     /**
      * Selects a random path from the stored paths.
@@ -73,7 +68,7 @@ public abstract class RouteGenerator {
      * Parse the route generate response into a list of route segments.
      *
      * @param routeJson json containing the raw response
-     * @throws JSONException
+     * @throws JSONException route segments JSON cannot be parsed
      */
     protected static List<RouteSegment> parseRouteSegmentsFromJson(final JSONObject routeJson)
             throws JSONException {
@@ -122,10 +117,5 @@ public abstract class RouteGenerator {
      */
     private static double metresPerLngDegree(double lat) {
         return (EARTH_CIRCUMFERENCE_METRES * Math.cos(lat * (Math.PI / DEG_PER_PI_RADIAN))) / (2 * DEG_PER_PI_RADIAN);
-    }
-
-    public RouteGenerator(final Context context, final String gMapsApiKey) {
-        this.context = context;
-        this.gMapsApiKey = gMapsApiKey;
     }
 }

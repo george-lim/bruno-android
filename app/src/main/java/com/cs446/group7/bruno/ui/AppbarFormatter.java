@@ -27,7 +27,13 @@ public class AppbarFormatter {
 
         activity.setSupportActionBar(toolbar);
         ActionBar actionbar = activity.getSupportActionBar();
+
+        if (actionbar == null) {
+            return;
+        }
+
         actionbar.setDisplayShowTitleEnabled(false);
+
         if (hasBackButton) {
             actionbar.setDisplayShowHomeEnabled(true);
             actionbar.setDisplayHomeAsUpEnabled(true);

@@ -4,7 +4,6 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,6 +30,7 @@ public class FallbackPlaylistFragment extends Fragment implements FallbackPlayli
     private LinearLayout noPlaylistsView;
     private LinearLayout spotifyErrorView;
     private ProgressDialog progressDialog;
+    private TextView tvError;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -46,6 +46,7 @@ public class FallbackPlaylistFragment extends Fragment implements FallbackPlayli
         playlistSelectionView = view.findViewById(R.id.layout_spotify_select_playlist);
         noPlaylistsView = view.findViewById(R.id.layout_spotify_no_playlist);
         spotifyErrorView = view.findViewById(R.id.layout_spotify_error);
+        tvError = view.findViewById(R.id.tv_spotify_error_description);
         setupRecyclerView(view);
         return view;
     }
@@ -88,7 +89,6 @@ public class FallbackPlaylistFragment extends Fragment implements FallbackPlayli
 
     @Override
     public void showSpotifyErrorView(final String errorText) {
-        TextView tvError = getView().findViewById(R.id.tv_spotify_error_description);
         tvError.setText(errorText);
 
         playlistSelectionView.setVisibility(View.INVISIBLE);

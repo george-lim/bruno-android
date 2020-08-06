@@ -13,14 +13,10 @@ import java.util.List;
  * Mock class which will generate fake responses from the Spotify API.
  */
 public class MockSpotifyPlaylistAPIImpl implements SpotifyPlaylistAPI {
-    public void getPublicAuthorizationToken(final Callback<String, Exception> callback) {
-        callback.onSuccess("token");
-    }
-
     public void getPlaylist(final String accessToken,
                             final String playlistId,
                             final Callback<BrunoPlaylist, Exception> callback) {
-        ArrayList<BrunoTrack> tracks = new ArrayList<BrunoTrack>(5);
+        ArrayList<BrunoTrack> tracks = new ArrayList<>(5);
         String artists = "Jimin, Taylor Swift";
         long threeMinutes = 180000; // Milliseconds
         int trackCount = 200;

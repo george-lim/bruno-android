@@ -4,7 +4,6 @@ import android.util.Log;
 
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
-import com.android.volley.RetryPolicy;
 import com.android.volley.toolbox.StringRequest;
 import com.cs446.group7.bruno.MainActivity;
 import com.cs446.group7.bruno.utils.Callback;
@@ -33,7 +32,7 @@ public abstract class SpotifyPagingObjectParser<T>  {
     public SpotifyPagingObjectParser(final String token, final DefaultRetryPolicy retryPolicy) {
         this.token = token;
         this.retryPolicy = retryPolicy;
-        this.output = new ArrayList<T>();
+        this.output = new ArrayList<>();
     }
 
     protected abstract List<T> parsePagingItems(JSONArray pagingItems) throws JSONException;
@@ -46,7 +45,7 @@ public abstract class SpotifyPagingObjectParser<T>  {
             output.addAll(pagingResult);
 
             String nextUrl = pagingObj.getString("next");
-            if (nextUrl != "null") {
+            if (!nextUrl.equals("null")) {
                 getPagingObject(nextUrl, new Callback<JSONObject, Exception>() {
                     @Override
                     public void onSuccess(JSONObject result) {

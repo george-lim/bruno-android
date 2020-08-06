@@ -18,12 +18,13 @@ public class NoFailClosureQueue<Success> implements NoFailClosure<Success> {
     // Execute closures sequentially
     @Override
     public void run(Success result, final NoFailCallback<Success> callback) {
-        if (steps.isEmpty()) {
+        NoFailClosure<Success> nextStep = steps.poll();
+
+        if (nextStep == null) {
             callback.onSuccess(result);
             return;
         }
 
-        NoFailClosure<Success> nextStep = steps.poll();
         nextStep.run(result, nextResult -> run(nextResult, callback));
     }
 

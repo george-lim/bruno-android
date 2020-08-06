@@ -11,7 +11,7 @@ public class Pedometer {
     // MARK: - Pedometer data classes
 
     // Acceleration data class that manages all previously recorded acceleration sensor data
-    private class AccelerationData {
+    private static class AccelerationData {
         // Expected acceleration vector dimension size
         private static final int VECTOR_DIMENSION = 3;
         // Maximum data point buffer size
@@ -41,7 +41,7 @@ public class Pedometer {
     }
 
     // Velocity data class that manages all previously recorded velocity data
-    private class VelocityData {
+    private static class VelocityData {
         // Maximum data point buffer size
         private static final int MAX_SIZE = 10;
         // Total data points observed
@@ -118,7 +118,7 @@ public class Pedometer {
         if (lastVelocityEstimate <= STEP_THRESHOLD && velocityEstimate > STEP_THRESHOLD
                 && timestamp - lastTimestamp > STEP_DELAY_NS) {
             for (PedometerSubscriber subscriber : subscribers) {
-                subscriber.didStep(timestamp);
+                subscriber.didStep();
             }
             lastTimestamp = timestamp;
         }

@@ -19,7 +19,6 @@ import com.cs446.group7.bruno.models.TrackSegment;
 import com.cs446.group7.bruno.music.BrunoPlaylist;
 import com.cs446.group7.bruno.music.playlist.MockPlaylistGeneratorImpl;
 import com.cs446.group7.bruno.music.playlist.PlaylistGenerator;
-import com.cs446.group7.bruno.storage.PreferencesStorage;
 import com.cs446.group7.bruno.routing.MockRouteGeneratorImpl;
 import com.cs446.group7.bruno.routing.OnRouteResponseCallback;
 import com.cs446.group7.bruno.routing.RouteGenerator;
@@ -27,6 +26,7 @@ import com.cs446.group7.bruno.routing.RouteGeneratorException;
 import com.cs446.group7.bruno.routing.RouteGeneratorImpl;
 import com.cs446.group7.bruno.routing.RouteSegment;
 import com.cs446.group7.bruno.settings.SettingsService;
+import com.cs446.group7.bruno.storage.PreferencesStorage;
 import com.cs446.group7.bruno.utils.Callback;
 import com.cs446.group7.bruno.utils.NoFailCallback;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -67,7 +67,7 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
 
         this.model.setRouteColours(resources.getIntArray(R.array.colorRouteList));
 
-        routeGenerator = getRouteGenerator(context);
+        routeGenerator = getRouteGenerator();
         playlistGenerator = getPlaylistGenerator();
 
         MainActivity.getLocationService().addSubscriber(this);
@@ -88,11 +88,11 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
 
     // MARK: - Private methods
 
-    private RouteGenerator getRouteGenerator(final Context context) {
+    private RouteGenerator getRouteGenerator() {
         String googleMapsKey = resources.getString(R.string.google_maps_key);
         return BuildConfig.DEBUG
-                ? new MockRouteGeneratorImpl(context, googleMapsKey)
-                : new RouteGeneratorImpl(context, googleMapsKey);
+                ? new MockRouteGeneratorImpl()
+                : new RouteGeneratorImpl(googleMapsKey);
     }
 
     private PlaylistGenerator getPlaylistGenerator() {
@@ -183,7 +183,10 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
                 model.setPlaylist(null);
                 onProcessTrackSegmentsFailure();
                 delegate.showRouteProcessingError(resources.getString(R.string.route_planning_playlist_error));
-                Log.e(TAG, e.getLocalizedMessage());
+
+                if (e.getLocalizedMessage() != null) {
+                    Log.e(TAG, e.getLocalizedMessage());
+                }
             }
         });
     }
