@@ -20,7 +20,6 @@ public class CheckpointsModel {
 
     private List<Coordinate> checkpoints;
     private int checkpointIndex;
-    private double toleranceRadius;
 
     // MARK: - Lifecycle methods
 
@@ -93,7 +92,7 @@ public class CheckpointsModel {
         final double accuracyDeviation = currentLocation.getAccuracy();
 
         // Update tolerance radius
-        toleranceRadius = BASE_TOLERANCE_RADIUS + speedMargin + accuracyDeviation;
+        double toleranceRadius = BASE_TOLERANCE_RADIUS + speedMargin + accuracyDeviation;
 
         // Advance checkpoint if current location is within tolerance radius
         if (getDistanceToCheckpoint(new Coordinate(currentLocation)) <= toleranceRadius) {
@@ -134,7 +133,6 @@ public class CheckpointsModel {
 
     public void resetCheckpoint() {
         checkpointIndex = 0;
-        toleranceRadius = BASE_TOLERANCE_RADIUS;
     }
 
     public void reset() {
