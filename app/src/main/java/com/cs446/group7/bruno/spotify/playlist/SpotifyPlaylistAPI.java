@@ -10,12 +10,9 @@ import java.util.List;
  * This class is responsible for implementing functions which call the Spotify Web API.
  */
 public interface SpotifyPlaylistAPI {
-    void getPublicAuthorizationToken(final Callback<String, Exception> callback);
-
     void getPlaylist(final String accessToken,
                      final String playlistId,
                      final Callback<BrunoPlaylist, Exception> callback);
-
     void getUserPlaylistLibrary(final String accessToken,
                                 final Callback<List<PlaylistMetadata>, Exception> callback);
 }

@@ -24,22 +24,22 @@ public class ProcessTrackSegmentsTest {
     RouteSegment mockSegment1 = new RouteSegment(
             new Coordinate(43.476861, -80.539940),
             new Coordinate(43.478633, -80.535248),
-            60000l
+            60000L
     );
     RouteSegment mockSegment2 = new RouteSegment(
             new Coordinate(43.478633, -80.535248),
             new Coordinate(43.473752, -80.531724),
-            80000l
+            80000L
     );
     RouteSegment mockSegment3 = new RouteSegment(
             new Coordinate(43.473752, -80.531724),
             new Coordinate(43.472029, -80.536262),
-            60000l
+            60000L
     );
     RouteSegment mockSegment4 = new RouteSegment(
             new Coordinate(43.472029, -80.536262),
             new Coordinate(43.476861, -80.539940),
-            80000l
+            80000L
     );
     LinkedList<RouteSegment> mockSegments = new LinkedList<>();
 

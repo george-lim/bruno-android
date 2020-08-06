@@ -1,6 +1,5 @@
 package com.cs446.group7.bruno.ui.routeplanning;
 
-import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
@@ -57,7 +56,8 @@ public class RoutePlanningFragment extends Fragment implements RoutePlanningView
     private BitmapDescriptor userMarkerIcon;
 
     private boolean hasDrawnRouteOnce = false;
-    private int colorDisable = 0;
+    private int startBtnEnableColour = 0;
+    private int startBtnDisableColour = 0;
 
     // MARK: - Lifecycle methods
 
@@ -141,7 +141,8 @@ public class RoutePlanningFragment extends Fragment implements RoutePlanningView
             }
         });
 
-        colorDisable = getResources().getColor(R.color.colorDisable, null);
+        startBtnEnableColour = getResources().getColor(R.color.colorPrimary, null);
+        startBtnDisableColour = getResources().getColor(R.color.colorDisable, null);
 
         updateStartBtnEnabled(true);
         updateStartBtnText(startBtnText);
@@ -161,10 +162,10 @@ public class RoutePlanningFragment extends Fragment implements RoutePlanningView
         startBtn.setEnabled(isEnabled);
 
         if (isEnabled) {
-            startBtn.getBackground().setColorFilter(null);
+            startBtn.getBackground().setTint(startBtnEnableColour);
         }
         else {
-            startBtn.getBackground().setColorFilter(colorDisable, PorterDuff.Mode.SRC_IN);
+            startBtn.getBackground().setTint(startBtnDisableColour);
         }
     }
 

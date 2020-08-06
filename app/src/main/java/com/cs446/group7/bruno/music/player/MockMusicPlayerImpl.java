@@ -51,9 +51,7 @@ public class MockMusicPlayerImpl implements MusicPlayer {
             }
         }
         // Return from the method immediately
-        catch (InterruptedException e) {
-            return;
-        }
+        catch (InterruptedException e) { }
     }
 
     // MARK: - MusicPlayer methods
@@ -61,10 +59,6 @@ public class MockMusicPlayerImpl implements MusicPlayer {
     public void connect(final Context context,
                         final Callback<Void, MusicPlayerException> callback) {
         callback.onSuccess(null);
-    }
-
-    public void disconnect() {
-        // NOOP
     }
 
     public void addSubscriber(final MusicPlayerSubscriber subscriber) {
@@ -85,7 +79,7 @@ public class MockMusicPlayerImpl implements MusicPlayer {
             return;
         }
 
-        playSongsThread = new Thread(() -> playSongs());
+        playSongsThread = new Thread(this::playSongs);
         playSongsThread.start();
     }
 
@@ -105,7 +99,6 @@ public class MockMusicPlayerImpl implements MusicPlayer {
 
     public void stopAndDisconnect() {
         stop();
-        disconnect();
     }
 
     public void getPlaybackPosition(final Callback<Long, Throwable> callback) {

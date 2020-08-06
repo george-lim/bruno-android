@@ -4,8 +4,6 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
-import com.cs446.group7.bruno.ui.shared.FallbackPlaylistFragment;
-
 public class OnboardingPagerAdapter extends FragmentStateAdapter {
 
     public OnboardingPagerAdapter(@NonNull Fragment fragment) {
@@ -16,8 +14,6 @@ public class OnboardingPagerAdapter extends FragmentStateAdapter {
     @Override
     public Fragment createFragment(int position) {
         switch (position) {
-            case OnboardingTab.WELCOME:
-                return new OnboardingWelcomeFragment();
             case OnboardingTab.RECORD:
                 return new OnboardingRecordFragment();
             case OnboardingTab.AVATAR:
@@ -29,6 +25,7 @@ public class OnboardingPagerAdapter extends FragmentStateAdapter {
             case OnboardingTab.DONE:
                 return new OnboardingDoneFragment();
             default:
+                // Default is Onboarding welcome screen
                 return new OnboardingWelcomeFragment();
         }
     }

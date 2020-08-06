@@ -1,9 +1,6 @@
 package com.cs446.group7.bruno.music.playlist;
 
-import com.cs446.group7.bruno.music.BrunoTrack;
-
 import java.io.Serializable;
-import java.util.List;
 
 // Contains playlist metadata
 public class PlaylistMetadata implements Serializable {

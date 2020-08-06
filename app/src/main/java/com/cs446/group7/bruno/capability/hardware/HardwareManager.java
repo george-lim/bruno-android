@@ -16,8 +16,8 @@ public class HardwareManager {
 
     public HardwareManager(final Context context,
                            final HardwareRequestDelegate delegate) {
-        locationManager = (LocationManager)context.getSystemService(context.LOCATION_SERVICE);
-        connectivityManager = (ConnectivityManager)context.getSystemService(context.CONNECTIVITY_SERVICE);
+        locationManager = (LocationManager)context.getSystemService(Context.LOCATION_SERVICE);
+        connectivityManager = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
         this.delegate = delegate;
     }
 

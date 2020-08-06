@@ -56,7 +56,7 @@ public class AvatarFragment extends Fragment {
         }
         // set avatar 1 as default, note that avatars array may not be in order because of hashmap
         curSelectedAvatar = MainActivity.getPreferencesStorage()
-                .getInt(PreferencesStorage.USER_AVATAR, PreferencesStorage.DEFAULT_AVATAR);;
+                .getInt(PreferencesStorage.USER_AVATAR, PreferencesStorage.DEFAULT_AVATAR);
         int imageViewId = R.id.pick_avatar_1;
         for (Map.Entry<Integer, Integer> mapping : imageViewToAvatarMapping.entrySet()) {
             if (curSelectedAvatar == mapping.getValue()) {
@@ -71,6 +71,7 @@ public class AvatarFragment extends Fragment {
 
     private void selectAvatar(final View view) {
         int id = view.getId();
+        //noinspection ConstantConditions
         curSelectedAvatar = imageViewToAvatarMapping.get(id);
         for (ImageView imageView : avatars) {
             imageView.setSelected(false);
