@@ -13,6 +13,7 @@
     <color name="colorGood">#87F176</color>
     <color name="colorError">#F37260</color>
     <color name="colorNumberPickerDivider">#D9D9D9</color>
+    <color name="colorCrown">#F7CB89</color>
 
     <array name="colorRouteList">
         <item>#F7CB89</item>

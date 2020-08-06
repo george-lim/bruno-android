@@ -6,6 +6,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -15,9 +17,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.cs446.group7.bruno.R;
 import com.cs446.group7.bruno.ui.AppbarFormatter;
 
+import java.util.Locale;
+
 public class FitnessRecordsFragment extends Fragment {
 
-    private RecyclerView fitnessRecordsList;
+    private RecyclerView fitnessRecordsRecyclerView;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -33,19 +37,26 @@ public class FitnessRecordsFragment extends Fragment {
         return view;
     }
 
-    private void setupListView(View view) {
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        setupUI();
+    }
+
+    private void setupListView(final View view) {
         // Fitness records list
-        fitnessRecordsList = view.findViewById(R.id.recycler_view_fitness_record);
-        fitnessRecordsList.setHasFixedSize(true);
-        fitnessRecordsList.setLayoutManager(new LinearLayoutManager(getActivity()));
+        fitnessRecordsRecyclerView = view.findViewById(R.id.recycler_view_fitness_record);
+        fitnessRecordsRecyclerView.setHasFixedSize(true);
+        fitnessRecordsRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         // Divider
-        DividerItemDecoration itemDecoration = new DividerItemDecoration(fitnessRecordsList.getContext(), DividerItemDecoration.VERTICAL);
+        DividerItemDecoration itemDecoration = new DividerItemDecoration(fitnessRecordsRecyclerView.getContext(), DividerItemDecoration.VERTICAL);
         Drawable dividerDrawable = getResources().getDrawable(R.drawable.list_divider, null);
         itemDecoration.setDrawable(dividerDrawable);
-        fitnessRecordsList.addItemDecoration(itemDecoration);
-        // Data
-        int[] data = new int[]{0,1,0,0,1,0,0,0,1,1,1,1,0,0,0}; // dummy
-        FitnessRecordsAdapter adapter = new FitnessRecordsAdapter(data);
-        fitnessRecordsList.setAdapter(adapter);
+        fitnessRecordsRecyclerView.addItemDecoration(itemDecoration);
+    }
+
+    private void setupUI() {
+        final FitnessRecordsAdapter adapter = new FitnessRecordsAdapter();
+        fitnessRecordsRecyclerView.setAdapter(adapter);
     }
 }
