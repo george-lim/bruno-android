@@ -157,7 +157,7 @@
                         android:layout_gravity="center_horizontal"
                         android:contentDescription="@string/fitness_details_distance_description"
                         android:src="@drawable/ic_road"
-                        android:tint="@color/colorPrimary" />
+                        app:tint="@color/colorPrimary" />
 
                     <TextView
                         android:id="@+id/text_view_stats_distance"
@@ -183,7 +183,7 @@
                         android:layout_gravity="center_horizontal"
                         android:contentDescription="@string/fitness_details_steps_description"
                         android:src="@drawable/ic_shoe_print"
-                        android:tint="@color/colorPrimary" />
+                        app:tint="@color/colorPrimary" />
 
                     <TextView
                         android:id="@+id/text_view_stats_steps"
@@ -210,7 +210,7 @@
                         android:layout_weight="1"
                         android:contentDescription="@string/fitness_details_clock_description"
                         android:src="@drawable/ic_clock"
-                        android:tint="@color/colorPrimary" />
+                        app:tint="@color/colorPrimary" />
 
                     <TextView
                         android:id="@+id/text_view_stats_clock"
