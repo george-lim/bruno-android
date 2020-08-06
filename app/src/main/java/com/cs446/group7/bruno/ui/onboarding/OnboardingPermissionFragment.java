@@ -44,7 +44,7 @@ public class OnboardingPermissionFragment extends Fragment implements Onboarding
         location_permission_status = view.findViewById(R.id.location_permission_status);
         location_hardware_status = view.findViewById(R.id.location_hardware_status);
         active_internet_status = view.findViewById(R.id.active_internet_status);
-        spotify_status.findViewById(R.id.spotify_status);
+        spotify_status = view.findViewById(R.id.spotify_status);
         btnAllowAccess = view.findViewById(R.id.btn_allow_access);
 
         Button btnSkip = view.findViewById(R.id.btn_skip);
