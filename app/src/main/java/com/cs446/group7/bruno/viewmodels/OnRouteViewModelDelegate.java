@@ -15,7 +15,7 @@ public interface OnRouteViewModelDelegate {
     void setupUI(int userAvatarDrawableResourceId, int brunoAvatarDrawableResourceId);
     void updateCurrentSongUI(final String name, final String artists);
     void clearMap();
-    void drawRoute(@NonNull final List<TrackSegment> trackSegments);
+    void drawRoute(@NonNull final List<TrackSegment> trackSegments, float routeWidth);
     void updateCheckpointMarker(final LatLng latLng, final double radius);
     void animateCamera(final LatLng latLng, float bearing, int cameraTilt, int cameraZoom);
     void showProgressDialog(final String title,

@@ -3,6 +3,7 @@ package com.cs446.group7.bruno.viewmodels;
 import android.content.Context;
 import android.content.res.Resources;
 import android.location.Location;
+import android.util.DisplayMetrics;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -14,6 +15,7 @@ import com.cs446.group7.bruno.capability.Capability;
 import com.cs446.group7.bruno.location.Coordinate;
 import com.cs446.group7.bruno.location.LocationServiceSubscriber;
 import com.cs446.group7.bruno.models.RouteModel;
+import com.cs446.group7.bruno.models.TrackSegment;
 import com.cs446.group7.bruno.music.BrunoPlaylist;
 import com.cs446.group7.bruno.music.playlist.MockPlaylistGeneratorImpl;
 import com.cs446.group7.bruno.music.playlist.PlaylistGenerator;
@@ -27,6 +29,9 @@ import com.cs446.group7.bruno.routing.RouteSegment;
 import com.cs446.group7.bruno.settings.SettingsService;
 import com.cs446.group7.bruno.utils.Callback;
 import com.cs446.group7.bruno.utils.NoFailCallback;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 
 import java.util.List;
 
@@ -210,10 +215,49 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
         generateRoute();
     }
 
+    private void drawRoute() {
+        float routeWidth = 14;
+        delegate.drawRoute(model.getTrackSegments(), routeWidth);
+    }
+
+    private void animateCamera() {
+        LatLngBounds.Builder boundsBuilder = new LatLngBounds.Builder();
+
+        for (TrackSegment trackSegment : model.getTrackSegments()) {
+            for (LatLng latLng : trackSegment.getLatLngs()) {
+                boundsBuilder.include(latLng);
+            }
+        }
+
+        DisplayMetrics displayMetrics = resources.getDisplayMetrics();
+        final float cardViewHeightDp = delegate.getCardViewHeight() / displayMetrics.density;
+        final float mapFragmentHeightDp = delegate.getMapViewHeight() / displayMetrics.density;
+
+        // from tests it seems like we need to add some height to cardView to get a good blockedScreenFraction
+        final double blockedScreenFraction = (cardViewHeightDp + 40) / mapFragmentHeightDp;
+
+        LatLngBounds bounds = boundsBuilder.build();
+        final LatLng minLat = bounds.southwest, maxLat = bounds.northeast;
+
+        // compute offset
+        final double H = maxLat.latitude - minLat.latitude;
+        final double T = H / (1 - blockedScreenFraction);
+        final double offset = T - 2 * H;
+
+        // find mirror point of maxLat and include in bounds
+        final LatLng mirrorMaxLat= new LatLng(2 * minLat.latitude - maxLat.latitude - offset, maxLat.longitude);
+        boundsBuilder.include(mirrorMaxLat);
+
+        bounds = boundsBuilder.build();
+        final int padding = 200;
+        delegate.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, padding));
+    }
+
     private void onProcessTrackSegmentsSuccess() {
         delegate.updateStartBtnText(resources.getString(R.string.route_planning_start));
         delegate.clearMap();
-        delegate.drawRoute(model.getTrackSegments());
+        drawRoute();
+        animateCamera();
         delegate.moveUserMarker(model.getCurrentCoordinate().getLatLng());
         delegate.updateStartBtnEnabled(true);
     }

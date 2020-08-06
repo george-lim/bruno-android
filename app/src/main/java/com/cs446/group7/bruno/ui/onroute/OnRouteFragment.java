@@ -153,9 +153,7 @@ public class OnRouteFragment extends Fragment implements OnRouteViewModelDelegat
     }
 
     @Override
-    public void drawRoute(@NonNull final List<TrackSegment> trackSegments) {
-        final float routeWidth = 14;
-
+    public void drawRoute(@NonNull final List<TrackSegment> trackSegments, float routeWidth) {
         for (TrackSegment trackSegment : trackSegments) {
             map.addPolyline(new PolylineOptions()
                     .addAll(trackSegment.getLatLngs())
@@ -234,7 +232,6 @@ public class OnRouteFragment extends Fragment implements OnRouteViewModelDelegat
                                 final String positiveButtonText,
                                 final DialogInterface.OnClickListener positiveButtonClickListener,
                                 boolean isCancelable) {
-
         // We don't want multiple, overlapping dialogues
         // it's okay if the dialogue is already dismissed and we re-dismiss it, no need to set to null once dismissed
         if (alertDialog != null) {
@@ -259,7 +256,6 @@ public class OnRouteFragment extends Fragment implements OnRouteViewModelDelegat
                                 final String negativeButtonText,
                                 final DialogInterface.OnClickListener negativeButtonClickListener,
                                 boolean isCancelable) {
-
         if (alertDialog != null) {
             alertDialog.dismiss();
         }

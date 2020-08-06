@@ -104,9 +104,13 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
             delegate.updateCurrentSongUI(currentTrack.getName(), currentTrack.getArtists());
         }
 
-        delegate.drawRoute(model.getTrackSegments());
-
+        drawRoute();
         refreshUI();
+    }
+
+    private void drawRoute() {
+        float routeWidth = 14;
+        delegate.drawRoute(model.getTrackSegments(), routeWidth);
     }
 
     private void refreshUI() {
@@ -251,7 +255,8 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
 
         model.mergePlaylist(playlist, playbackPosition);
         delegate.clearMap();
-        delegate.drawRoute(model.getTrackSegments());
+
+        drawRoute();
         refreshUI();
 
         musicPlayer.play();
