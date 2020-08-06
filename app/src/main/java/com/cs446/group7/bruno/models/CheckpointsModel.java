@@ -75,7 +75,7 @@ public class CheckpointsModel {
     }
 
     public void updateCurrentCheckpoint(final Location currentLocation) {
-        if (checkpoints == null) {
+        if (hasCompletedAllCheckpoints()) {
             return;
         }
 
@@ -116,6 +116,10 @@ public class CheckpointsModel {
 
     // Returns distance from origin to current checkpoint
     public double getDistanceToCheckpoint(final Coordinate coordinate) {
+        if (hasCompletedAllCheckpoints()) {
+            return 0;
+        }
+
         return coordinate.getDistance(getCurrentCheckpoint());
     }
 
