@@ -99,9 +99,9 @@ public class OnboardingPermissionFragment extends Fragment implements Onboarding
         Drawable icon = enabled
                 ? getResources().getDrawable(R.drawable.ic_check_circle, null)
                 : getResources().getDrawable(R.drawable.ic_times_circle, null);
-        icon.setColorFilter(enabled
+        icon.setTint(enabled
                 ? getResources().getColor(R.color.colorGood, null)
-                : getResources().getColor(R.color.colorError, null), PorterDuff.Mode.SRC_IN);
+                : getResources().getColor(R.color.colorError, null));
         statusIcon.setImageDrawable(icon);
         TextView titleView = view.findViewById(R.id.request_title);
         titleView.setText(title);
