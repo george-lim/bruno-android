@@ -1,7 +1,5 @@
 package com.cs446.group7.bruno.routing;
 
-import android.content.Context;
-
 import com.cs446.group7.bruno.location.Coordinate;
 
 import org.json.JSONException;
