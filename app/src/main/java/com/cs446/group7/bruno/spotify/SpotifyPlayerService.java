@@ -174,7 +174,7 @@ class SpotifyPlayerService implements MusicPlayer {
     }
 
     // Should be called when disconnecting from Spotify
-    public void disconnect() {
+    private void disconnect() {
         if (isConnected()) {
             SpotifyAppRemote.disconnect(mSpotifyAppRemote);
         }
@@ -231,41 +231,37 @@ class SpotifyPlayerService implements MusicPlayer {
             NOTE: Free users cannot turn off shuffle. It is also possible for a premium user NOT to
                   be able to turn off shuffle if they previously had songs queued up.
          */
-        queue.add((result, nextCallback) -> {
-            api.getPlayerState()
-                    .setResultCallback(playerState -> {
-                        // If player cannot turn off shuffle, just succeed anyway and move on.
-                        if (!playerState.playbackRestrictions.canToggleShuffle) {
-                            nextCallback.onSuccess(null);
-                            return;
-                        }
+        queue.add((result, nextCallback) -> api.getPlayerState()
+                .setResultCallback(playerState -> {
+                    // If player cannot turn off shuffle, just succeed anyway and move on.
+                    if (!playerState.playbackRestrictions.canToggleShuffle) {
+                        nextCallback.onSuccess(null);
+                        return;
+                    }
 
-                        api.setShuffle(false)
-                                .setResultCallback(empty -> nextCallback.onSuccess(null))
-                                .setErrorCallback(throwable -> nextCallback.onFailed(throwable));
-                    })
-                    .setErrorCallback(throwable -> nextCallback.onFailed(throwable));
-        });
+                    api.setShuffle(false)
+                            .setResultCallback(empty -> nextCallback.onSuccess(null))
+                            .setErrorCallback(nextCallback::onFailed);
+                })
+                .setErrorCallback(nextCallback::onFailed));
 
         /*
             Set player repeat to on if possible.
             NOTE: Free users cannot turn on repeat.
          */
-        queue.add((result, nextCallback) -> {
-            api.getPlayerState()
-                    .setResultCallback(playerState -> {
-                        // If player cannot turn on repeat, just succeed anyway and move on.
-                        if (!playerState.playbackRestrictions.canRepeatContext) {
-                            nextCallback.onSuccess(null);
-                            return;
-                        }
+        queue.add((result, nextCallback) -> api.getPlayerState()
+                .setResultCallback(playerState -> {
+                    // If player cannot turn on repeat, just succeed anyway and move on.
+                    if (!playerState.playbackRestrictions.canRepeatContext) {
+                        nextCallback.onSuccess(null);
+                        return;
+                    }
 
-                        api.setRepeat(Repeat.ALL)
-                                .setResultCallback(empty -> nextCallback.onSuccess(null))
-                                .setErrorCallback(throwable -> nextCallback.onFailed(throwable));
-                    })
-                    .setErrorCallback(throwable -> nextCallback.onFailed(throwable));
-        });
+                    api.setRepeat(Repeat.ALL)
+                            .setResultCallback(empty -> nextCallback.onSuccess(null))
+                            .setErrorCallback(nextCallback::onFailed);
+                })
+                .setErrorCallback(nextCallback::onFailed));
 
         // Now start playing playlist
         queue.add((result, nextCallback) -> {
@@ -273,7 +269,7 @@ class SpotifyPlayerService implements MusicPlayer {
 
             api.play(playlistUrl)
                     .setResultCallback(empty -> nextCallback.onSuccess(null))
-                    .setErrorCallback(throwable -> nextCallback.onFailed(throwable));
+                    .setErrorCallback(nextCallback::onFailed);
         });
 
         queue.run(new Callback<Void, Throwable>() {
@@ -296,9 +292,7 @@ class SpotifyPlayerService implements MusicPlayer {
     public void stop() {
         mSpotifyAppRemote.getPlayerApi()
                 .pause()
-                .setErrorCallback(throwable -> {
-                    Log.e(TAG, "Stop playlist failed with error: " + throwable.toString());
-                });
+                .setErrorCallback(throwable -> Log.e(TAG, "Stop playlist failed with error: " + throwable.toString()));
     }
 
     // Stop the player then disconnect
@@ -327,15 +321,16 @@ class SpotifyPlayerService implements MusicPlayer {
 
     // Converts Spotify's Track object to a BrunoTrack object
     private static BrunoTrack convertToBrunoTrack(@NonNull final Track track) {
-        String artists = "";
+        StringBuilder artists = new StringBuilder();
 
         for (int i = 0; i < track.artists.size(); ++i) {
-            artists += track.artists.get(i).name;
+            artists.append(track.artists.get(i).name);
+
             if (i + 1 < track.artists.size()) {
-                artists += ", ";
+                artists.append(", ");
             }
         }
 
-        return new BrunoTrack(track.name, artists, track.duration);
+        return new BrunoTrack(track.name, artists.toString(), track.duration);
     }
 }

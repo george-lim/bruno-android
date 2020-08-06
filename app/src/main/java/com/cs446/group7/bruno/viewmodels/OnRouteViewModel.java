@@ -330,7 +330,7 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
     // MARK: - PedometerSubscriber methods
 
     @Override
-    public void didStep(long timestamp) {
+    public void didStep() {
         model.incrementStep();
     }
 }

@@ -149,13 +149,12 @@ public class MainActivity extends AppCompatActivity
         if (spotifyRequest != null) {
             activeSpotifyRequests.remove(requestCode);
             AuthorizationResponse response = AuthorizationClient.getResponse(resultCode, data);
-            switch (response.getType()) {
-                case TOKEN:
-                    spotifyRequest.getCallback().onSuccess(response.getAccessToken());
-                    break;
-                default:
-                    // Handles other cases like error and cancellation
-                    spotifyRequest.getCallback().onFailed(null);
+
+            if (response.getType() == AuthorizationResponse.Type.TOKEN) {
+                spotifyRequest.getCallback().onSuccess(response.getAccessToken());
+            }
+            else {
+                spotifyRequest.getCallback().onFailed(null);
             }
         }
     }

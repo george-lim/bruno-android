@@ -14,8 +14,6 @@ public class OnboardingPagerAdapter extends FragmentStateAdapter {
     @Override
     public Fragment createFragment(int position) {
         switch (position) {
-            case OnboardingTab.WELCOME:
-                return new OnboardingWelcomeFragment();
             case OnboardingTab.RECORD:
                 return new OnboardingRecordFragment();
             case OnboardingTab.AVATAR:

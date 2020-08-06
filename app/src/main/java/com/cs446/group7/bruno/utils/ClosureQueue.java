@@ -21,12 +21,12 @@ public class ClosureQueue<Success, Failure> implements Closure<Success, Failure>
     // Execute closures sequentially
     @Override
     public void run(Success result, final Callback<Success, Failure> callback) {
-        if (steps.isEmpty()) {
+        Closure<Success, Failure> nextStep = steps.poll();
+
+        if (nextStep == null) {
             callback.onSuccess(result);
             return;
         }
-
-        Closure<Success, Failure> nextStep = steps.poll();
 
         nextStep.run(result, new Callback<Success, Failure>() {
             @Override

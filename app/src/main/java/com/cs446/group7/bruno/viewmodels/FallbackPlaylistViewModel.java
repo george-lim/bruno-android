@@ -68,64 +68,57 @@ public class FallbackPlaylistViewModel {
         SpotifyService spotifyService = MainActivity.getSpotifyService();
         ClosureQueue<Void, Void> queue = new ClosureQueue<>();
         if (token == null) {
-            queue.add((result, callback) -> {
-                spotifyService.getAuthService().requestUserAuth(new Callback<String, Void>() {
-                    @Override
-                    public void onSuccess(String resultToken) {
-                        token = resultToken;
-                        callback.onSuccess(null);
-                    }
-
-                    @Override
-                    public void onFailed(Void result) {
-                        Log.d(TAG, "Get user auth fail");
-                        showSpotifyError(context.getResources().getString(R.string.onboarding_fallback_playlist_fail));
-                        callback.onFailed(null);
-                    }
-                });
-            });
-        }
-        queue.add((result, callback) -> {
-
-            spotifyService.getAuthService().checkIfUserIsPremium(token, new Callback<Boolean, Exception>() {
+            queue.add((result, callback) -> spotifyService.getAuthService().requestUserAuth(new Callback<String, Void>() {
                 @Override
-                public void onSuccess(Boolean isPremium) {
-                    if (!isPremium) {
-                        showNotPremiumUser();
-                        callback.onFailed(null);
-                    } else {
-                        callback.onSuccess(null);
-                    }
-                }
-
-                @Override
-                public void onFailed(Exception e) {
-                    Log.d(TAG, "Check if user is premium fail");
-                    showSpotifyError(context.getResources().getString(R.string.onboarding_fallback_playlist_fail));
-                    callback.onFailed(null);
-                }
-            });
-        });
-        queue.add((result, callback) -> {
-            getSpotifyPlaylistAPI().getUserPlaylistLibrary(token, new Callback<List<PlaylistMetadata>, Exception>() {
-                @Override
-                public void onSuccess(List<PlaylistMetadata> playlistMetadata) {
-                    if (playlistMetadata.size() == 0) {
-                        showNoPlaylist();
-                    } else {
-                        showSelectPlaylist(playlistMetadata);
-                    }
+                public void onSuccess(String resultToken) {
+                    token = resultToken;
                     callback.onSuccess(null);
                 }
 
                 @Override
-                public void onFailed(Exception result) {
-                    Log.d(TAG, "Get user playlists fail");
+                public void onFailed(Void result) {
+                    Log.d(TAG, "Get user auth fail");
                     showSpotifyError(context.getResources().getString(R.string.onboarding_fallback_playlist_fail));
                     callback.onFailed(null);
                 }
-            });
-        });
+            }));
+        }
+        queue.add((result, callback) -> spotifyService.getAuthService().checkIfUserIsPremium(token, new Callback<Boolean, Exception>() {
+            @Override
+            public void onSuccess(Boolean isPremium) {
+                if (!isPremium) {
+                    showNotPremiumUser();
+                    callback.onFailed(null);
+                } else {
+                    callback.onSuccess(null);
+                }
+            }
+
+            @Override
+            public void onFailed(Exception e) {
+                Log.d(TAG, "Check if user is premium fail");
+                showSpotifyError(context.getResources().getString(R.string.onboarding_fallback_playlist_fail));
+                callback.onFailed(null);
+            }
+        }));
+        queue.add((result, callback) -> getSpotifyPlaylistAPI().getUserPlaylistLibrary(token, new Callback<List<PlaylistMetadata>, Exception>() {
+            @Override
+            public void onSuccess(List<PlaylistMetadata> playlistMetadata) {
+                if (playlistMetadata.size() == 0) {
+                    showNoPlaylist();
+                } else {
+                    showSelectPlaylist(playlistMetadata);
+                }
+                callback.onSuccess(null);
+            }
+
+            @Override
+            public void onFailed(Exception result) {
+                Log.d(TAG, "Get user playlists fail");
+                showSpotifyError(context.getResources().getString(R.string.onboarding_fallback_playlist_fail));
+                callback.onFailed(null);
+            }
+        }));
         queue.run(new Callback<Void, Void>() {
             @Override
             public void onSuccess(Void result) {

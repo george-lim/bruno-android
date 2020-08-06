@@ -18,7 +18,7 @@ import com.cs446.group7.bruno.utils.Callback;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -91,8 +91,9 @@ public class SpotifyPlaylistService implements PlaylistGenerator, SpotifyPlaylis
     // In order to use the Spotify API, an authorization token needs to be retrieved from Spotify using our
     // application credentials. Using the client id and client secret, we can retrieve this token first before using
     // the playlist endpoint.
-    public void getPublicAuthorizationToken(final Callback<String, Exception> callback) {
-        final StringRequest authRequest = new StringRequest(Request.Method.POST, authorizationEndpoint,
+    private void getPublicAuthorizationToken(final Callback<String, Exception> callback) {
+        final StringRequest authRequest;
+        authRequest = new StringRequest(Request.Method.POST, authorizationEndpoint,
                 response -> {
                     try {
                         final JSONObject responseJson = new JSONObject(response);
@@ -116,14 +117,7 @@ public class SpotifyPlaylistService implements PlaylistGenerator, SpotifyPlaylis
                 body += "grant_type=client_credentials";
                 body += "&client_id=" + clientId;
                 body += "&client_secret=" + clientSecret;
-                final String requestBody = body;
-                try {
-                    return requestBody == null ? null : requestBody.getBytes("utf-8");
-                } catch (UnsupportedEncodingException e) {
-                    Log.e(TAG, "getPublicAuthorizationToken: Failed to encode request body: " + e.getMessage());
-                    callback.onFailed(e);
-                    return null;
-                }
+                return body.getBytes(StandardCharsets.UTF_8);
             }
         };
         addRetryAndSendRequest(authRequest);
@@ -166,7 +160,7 @@ public class SpotifyPlaylistService implements PlaylistGenerator, SpotifyPlaylis
         }) {
             @Override
             public Map<String, String> getHeaders() {
-                final Map<String, String> headers = new HashMap<String, String>();
+                final Map<String, String> headers = new HashMap<>();
                 headers.put("Content-Type", "application/json; charset=utf-8");
                 headers.put("Authorization", "Bearer " + token);
                 return headers;
