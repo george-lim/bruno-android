@@ -19,7 +19,7 @@ public class FitnessDetailsViewModel {
 
     // MARK: - Enums
 
-    public enum Winner { YOU, BRUNO, TIE }
+    public enum Winner { USER, BRUNO, TIE }
 
     // MARK: - Private members
 
@@ -71,7 +71,7 @@ public class FitnessDetailsViewModel {
         Winner winner;
 
         if (userDuration < brunoDuration) {
-            winner = Winner.YOU;
+            winner = Winner.USER;
         } else if (userDuration > brunoDuration) {
             winner = Winner.BRUNO;
         } else {

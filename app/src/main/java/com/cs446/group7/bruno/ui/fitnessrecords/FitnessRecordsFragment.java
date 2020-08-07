@@ -11,6 +11,8 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -19,13 +21,15 @@ import com.cs446.group7.bruno.R;
 import com.cs446.group7.bruno.models.FitnessModel;
 import com.cs446.group7.bruno.persistence.FitnessRecord;
 import com.cs446.group7.bruno.ui.AppbarFormatter;
+import com.cs446.group7.bruno.ui.fitnessdetails.FitnessDetailsFragment;
 import com.cs446.group7.bruno.viewmodels.FitnessRecordsViewModel;
 import com.cs446.group7.bruno.viewmodels.FitnessRecordsViewModelDelegate;
 
 import java.util.List;
 import java.util.Locale;
 
-public class FitnessRecordsFragment extends Fragment implements FitnessRecordsViewModelDelegate {
+public class FitnessRecordsFragment extends Fragment
+        implements FitnessRecordsViewModelDelegate, FitnessRecordsAdapterDelegate {
 
     // MARK: - UI components
 
@@ -42,7 +46,7 @@ public class FitnessRecordsFragment extends Fragment implements FitnessRecordsVi
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_fitness_records, container, false);
-        adapter = new FitnessRecordsAdapter();
+        adapter = new FitnessRecordsAdapter(this);
         fitnessRecordsRecyclerView = view.findViewById(R.id.recycler_view_fitness_record);
         fitnessRecordsRecyclerView.setAdapter(adapter);
         return view;
@@ -99,5 +103,15 @@ public class FitnessRecordsFragment extends Fragment implements FitnessRecordsVi
     @Override
     public void setAdapterLocale(final Locale locale) {
         adapter.setLocale(locale);
+    }
+
+    // MARK: - FitnessRecordsAdapterDelegate methods
+
+    @Override
+    public void navigateToFitnessDetails(int fitnessRecordIndex) {
+        Bundle bundle = new Bundle();
+        bundle.putInt(FitnessDetailsFragment.FITNESS_RECORD_INDEX, fitnessRecordIndex);
+        NavController navController = Navigation.findNavController(getActivity(), R.id.nav_host_fragment);
+        navController.navigate(R.id.action_fragmenttoplevel_to_fragmentfitnessdetails, bundle);
     }
 }

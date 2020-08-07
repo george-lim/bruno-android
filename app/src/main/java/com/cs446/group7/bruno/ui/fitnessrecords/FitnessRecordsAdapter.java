@@ -6,8 +6,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.cs446.group7.bruno.R;
@@ -23,12 +21,14 @@ public class FitnessRecordsAdapter extends RecyclerView.Adapter<FitnessRecordsVi
 
     private List<FitnessRecord> data;
     private Locale locale;
+    private FitnessRecordsAdapterDelegate delegate;
 
     // MARK: - Lifecycle methods
 
-    public FitnessRecordsAdapter() {
+    public FitnessRecordsAdapter(FitnessRecordsAdapterDelegate delegate) {
         this.data = new ArrayList<>();
         this.locale = null;
+        this.delegate = delegate;
     }
 
     // MARK: - Public methods
@@ -47,19 +47,16 @@ public class FitnessRecordsAdapter extends RecyclerView.Adapter<FitnessRecordsVi
     @NonNull
     @Override
     public FitnessRecordsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
+        View viewHolderItemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.view_holder_fitness_record, parent, false);
-        return new FitnessRecordsViewHolder(view);
+        return new FitnessRecordsViewHolder(viewHolderItemView);
     }
 
     @Override
     public void onBindViewHolder(@NonNull FitnessRecordsViewHolder holder, int position) {
         holder.populate(data.get(position), locale);
         holder.itemView.setOnClickListener(view -> {
-            Bundle bundle = new Bundle();
-            bundle.putInt("recordIndex", position);
-            NavController navController = Navigation.findNavController(view);
-            navController.navigate(R.id.action_fragmenttoplevel_to_fragmentfitnessdetails, bundle);
+            delegate.navigateToFitnessDetails(position);
         });
     }
 

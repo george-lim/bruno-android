@@ -31,6 +31,10 @@ import java.util.List;
 
 public class FitnessDetailsFragment extends Fragment implements FitnessDetailsViewModelDelegate {
 
+    // MARK: - Public constants
+
+    public static String FITNESS_RECORD_INDEX = "FITNESS_RECORD_INDEX";
+
     // MARK: - UI components
 
     private GoogleMap map;
@@ -75,7 +79,7 @@ public class FitnessDetailsFragment extends Fragment implements FitnessDetailsVi
                 getActivity().getApplicationContext(),
                 model,
                 this,
-                getArguments().getInt("recordIndex")
+                getArguments().getInt(FITNESS_RECORD_INDEX)
         );
 
         mapFragment.getMapAsync(googleMap -> {
@@ -92,18 +96,22 @@ public class FitnessDetailsFragment extends Fragment implements FitnessDetailsVi
         int colourIndex = 0;
 
         for (BrunoTrack track : tracks) {
-            View view = getLayoutInflater().inflate(R.layout.view_holder_fitness_details, null);
-            ImageView musicNote = view.findViewById(R.id.image_view_fitness_details_holder_music);
+            View viewHolderItemView = getLayoutInflater()
+                    .inflate(R.layout.view_holder_fitness_details, null);
+            ImageView musicNote = viewHolderItemView
+                    .findViewById(R.id.image_view_fitness_details_holder_music);
 
             musicNote.setColorFilter(routeColours[colourIndex]);
             colourIndex = (colourIndex + 1) % routeColours.length;
 
-            TextView songName = view.findViewById(R.id.text_view_fitness_details_holder_song);
+            TextView songName = viewHolderItemView
+                    .findViewById(R.id.text_view_fitness_details_holder_song);
             songName.setText(track.getName());
 
-            TextView artist = view.findViewById(R.id.text_view_fitness_details_holder_artist);
+            TextView artist = viewHolderItemView
+                    .findViewById(R.id.text_view_fitness_details_holder_artist);
             artist.setText(track.getArtists());
-            runTracklist.addView(view);
+            runTracklist.addView(viewHolderItemView);
         }
     }
 
@@ -133,7 +141,7 @@ public class FitnessDetailsFragment extends Fragment implements FitnessDetailsVi
         int colorCrown = getResources().getColor(R.color.colorCrown, null);
 
         switch (winner) {
-            case YOU:
+            case USER:
                 imgLeaderboardUserCrown.getDrawable().setTint(colorCrown);
                 imgLeaderboardBrunoCrown.setVisibility(View.INVISIBLE);
                 break;
