@@ -100,6 +100,7 @@ public class BrunoBot implements LocationService {
 
     @Override
     public void addSubscriber(final LocationServiceSubscriber subscriber) {
+        if (subscribers.contains(subscriber)) return;
         subscribers.add(subscriber);
     }
 
