@@ -57,7 +57,7 @@
                     android:paddingBottom="16dp">
 
                     <ImageView
-                        android:id="@+id/image_view_leaderboard_you_crown"
+                        android:id="@+id/image_view_leaderboard_user_crown"
                         android:layout_width="25dp"
                         android:layout_height="20dp"
                         android:layout_weight="1"
@@ -65,7 +65,7 @@
                         android:src="@drawable/ic_crown" />
 
                     <TextView
-                        android:id="@+id/text_view_leaderboard_you"
+                        android:id="@+id/text_view_leaderboard_user"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="7"
@@ -73,7 +73,7 @@
                         android:textColor="@color/colorOnBackground" />
 
                     <TextView
-                        android:id="@+id/text_view_leaderboard_you_time"
+                        android:id="@+id/text_view_leaderboard_user_time"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="2" />

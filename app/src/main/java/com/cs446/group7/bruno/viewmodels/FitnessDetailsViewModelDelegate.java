@@ -7,7 +7,7 @@ import com.google.android.gms.maps.CameraUpdate;
 import java.util.List;
 
 public interface FitnessDetailsViewModelDelegate {
-    void setupUI(final String leaderboardYouTimeText,
+    void setupUI(final String leaderboardUserTimeText,
                  final String leaderboardBrunoTimeText,
                  final String statsDistanceText,
                  final String statsStepsText,

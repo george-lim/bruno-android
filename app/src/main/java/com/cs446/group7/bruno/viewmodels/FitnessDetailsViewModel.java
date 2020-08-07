@@ -52,7 +52,7 @@ public class FitnessDetailsViewModel {
         long brunoDuration = fitnessRecord.getExpectedDuration() / 1000;
         int stepCount = fitnessRecord.getSteps();
 
-        String leaderboardYouTimeText = DateTimeUtils.getDurationString(userDuration);
+        String leaderboardUserTimeText = DateTimeUtils.getDurationString(userDuration);
         String leaderboardBrunoTimeText = DateTimeUtils.getDurationString(brunoDuration);
         String statsDistanceText = String.format(
                 locale,
@@ -79,7 +79,7 @@ public class FitnessDetailsViewModel {
         }
 
         delegate.setupUI(
-                leaderboardYouTimeText,
+                leaderboardUserTimeText,
                 leaderboardBrunoTimeText,
                 statsDistanceText,
                 statsStepsText,

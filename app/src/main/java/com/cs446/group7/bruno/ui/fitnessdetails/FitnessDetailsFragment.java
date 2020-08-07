@@ -34,9 +34,9 @@ public class FitnessDetailsFragment extends Fragment implements FitnessDetailsVi
     // MARK: - UI components
 
     private GoogleMap map;
-    private ImageView imgLeaderboardYouCrown;
+    private ImageView imgLeaderboardUserCrown;
     private ImageView imgLeaderboardBrunoCrown;
-    private TextView txtLeaderboardYouTime;
+    private TextView txtLeaderboardUserTime;
     private TextView txtLeaderboardBrunoTime;
     private TextView txtStatsDistance;
     private TextView txtStatsSteps;
@@ -52,9 +52,9 @@ public class FitnessDetailsFragment extends Fragment implements FitnessDetailsVi
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_fitness_details, container, false);
-        imgLeaderboardYouCrown = view.findViewById(R.id.image_view_leaderboard_you_crown);
+        imgLeaderboardUserCrown = view.findViewById(R.id.image_view_leaderboard_user_crown);
         imgLeaderboardBrunoCrown = view.findViewById(R.id.image_view_leaderboard_bruno_crown);
-        txtLeaderboardYouTime = view.findViewById(R.id.text_view_leaderboard_you_time);
+        txtLeaderboardUserTime = view.findViewById(R.id.text_view_leaderboard_user_time);
         txtLeaderboardBrunoTime = view.findViewById(R.id.text_view_leaderboard_bruno_time);
         txtStatsDistance = view.findViewById(R.id.text_view_stats_distance);
         txtStatsSteps = view.findViewById(R.id.text_view_stats_steps);
@@ -110,7 +110,7 @@ public class FitnessDetailsFragment extends Fragment implements FitnessDetailsVi
     // MARK: - FitnessDetailsViewModelDelegate methods
 
     @Override
-    public void setupUI(final String leaderboardYouTimeText,
+    public void setupUI(final String leaderboardUserTimeText,
                         final String leaderboardBrunoTimeText,
                         final String statsDistanceText,
                         final String statsStepsText,
@@ -118,7 +118,7 @@ public class FitnessDetailsFragment extends Fragment implements FitnessDetailsVi
                         final String appBarTitle,
                         final FitnessDetailsViewModel.Winner winner,
                         final List<BrunoTrack> tracks) {
-        txtLeaderboardYouTime.setText(leaderboardYouTimeText);
+        txtLeaderboardUserTime.setText(leaderboardUserTimeText);
         txtLeaderboardBrunoTime.setText(leaderboardBrunoTimeText);
         txtStatsDistance.setText(statsDistanceText);
         txtStatsSteps.setText(statsStepsText);
@@ -134,15 +134,15 @@ public class FitnessDetailsFragment extends Fragment implements FitnessDetailsVi
 
         switch (winner) {
             case YOU:
-                imgLeaderboardYouCrown.getDrawable().setTint(colorCrown);
+                imgLeaderboardUserCrown.getDrawable().setTint(colorCrown);
                 imgLeaderboardBrunoCrown.setVisibility(View.INVISIBLE);
                 break;
             case BRUNO:
-                imgLeaderboardYouCrown.setVisibility(View.INVISIBLE);
+                imgLeaderboardUserCrown.setVisibility(View.INVISIBLE);
                 imgLeaderboardBrunoCrown.getDrawable().setTint(colorCrown);
                 break;
             case TIE:
-                imgLeaderboardYouCrown.getDrawable().setTint(colorCrown);
+                imgLeaderboardUserCrown.getDrawable().setTint(colorCrown);
                 imgLeaderboardBrunoCrown.getDrawable().setTint(colorCrown);
                 break;
         }
