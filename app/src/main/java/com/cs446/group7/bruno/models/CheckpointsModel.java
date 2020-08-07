@@ -94,8 +94,10 @@ public class CheckpointsModel {
         // Update tolerance radius
         double toleranceRadius = BASE_TOLERANCE_RADIUS + speedMargin + accuracyDeviation;
 
-        // Advance checkpoint if current location is within tolerance radius
-        if (getDistanceToCheckpoint(new Coordinate(currentLocation)) <= toleranceRadius) {
+        Coordinate currentCoordinate = new Coordinate(currentLocation);
+
+        // Continuously advance checkpoint if current location is within tolerance radius
+        while (getDistanceToCheckpoint(currentCoordinate) <= toleranceRadius) {
             checkpointIndex++;
         }
     }
