@@ -22,6 +22,7 @@ import com.cs446.group7.bruno.capability.hardware.HardwareRequestDelegate;
 import com.cs446.group7.bruno.capability.permission.PermissionRequest;
 import com.cs446.group7.bruno.capability.permission.PermissionRequestDelegate;
 import com.cs446.group7.bruno.location.LocationService;
+import com.cs446.group7.bruno.location.LocationServiceImpl;
 import com.cs446.group7.bruno.sensor.SensorService;
 import com.cs446.group7.bruno.spotify.SpotifyService;
 import com.cs446.group7.bruno.spotify.auth.SpotifyRequest;
@@ -69,7 +70,7 @@ public class MainActivity extends AppCompatActivity
         activeHardwareRequests = new HashMap<>();
         activeSpotifyRequests = new HashMap<>();
 
-        locationService = new LocationService(getApplicationContext());
+        locationService = new LocationServiceImpl(getApplicationContext());
         spotifyService = new SpotifyService(getApplicationContext(), this);
         sensorService = new SensorService(getApplicationContext());
         preferencesStorage = new PreferencesStorage(getApplicationContext());

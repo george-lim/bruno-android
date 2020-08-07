@@ -10,7 +10,9 @@ import androidx.annotation.NonNull;
 import com.cs446.group7.bruno.BuildConfig;
 import com.cs446.group7.bruno.MainActivity;
 import com.cs446.group7.bruno.R;
+import com.cs446.group7.bruno.location.BrunoBot;
 import com.cs446.group7.bruno.location.Coordinate;
+import com.cs446.group7.bruno.location.LocationService;
 import com.cs446.group7.bruno.location.LocationServiceSubscriber;
 import com.cs446.group7.bruno.models.RouteModel;
 import com.cs446.group7.bruno.music.BrunoPlaylist;
@@ -39,6 +41,7 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
     private OnRouteViewModelDelegate delegate;
     private Context context;
 
+    private LocationService locationService;
     private MusicPlayer musicPlayer;
     private boolean hasCompletedRoute;
 
@@ -60,8 +63,10 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
 
         hasCompletedRoute = false;
 
-        MainActivity.getLocationService().addSubscriber(this);
-        MainActivity.getLocationService().startLocationUpdates();
+        locationService = getLocationService();
+        locationService.addSubscriber(this);
+        locationService.startLocationUpdates();
+
         MainActivity.getSensorService().addPedometerSubscriber(this);
 
         setupUI();
@@ -80,6 +85,12 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
     }
 
     // MARK: - Private methods
+
+    private LocationService getLocationService() {
+        return BuildConfig.DEBUG
+                ? new BrunoBot(model)
+                : MainActivity.getLocationService();
+    }
 
     private MusicPlayer getMusicPlayer() {
         return BuildConfig.DEBUG
