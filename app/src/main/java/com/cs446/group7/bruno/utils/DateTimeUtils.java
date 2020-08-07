@@ -24,9 +24,9 @@ public class DateTimeUtils {
         seconds = seconds % 60;
 
         if (hours > 0) {
-            return hours + ":" + twoDigitString(minutes) + ":" + twoDigitString(seconds);
+            return hours + ":" + addTwoDigitPadding(minutes) + ":" + addTwoDigitPadding(seconds);
         } else {
-            return twoDigitString(minutes) + ":" + twoDigitString(seconds);
+            return addTwoDigitPadding(minutes) + ":" + addTwoDigitPadding(seconds);
         }
     }
 
@@ -49,7 +49,7 @@ public class DateTimeUtils {
         return dateFormat.format(dateTime);
     }
 
-    private static String twoDigitString(long number) {
+    private static String addTwoDigitPadding(long number) {
         if (number == 0) {
             return "00";
         }
