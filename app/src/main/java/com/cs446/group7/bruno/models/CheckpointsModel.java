@@ -97,7 +97,7 @@ public class CheckpointsModel {
         Coordinate currentCoordinate = new Coordinate(currentLocation);
 
         // Continuously advance checkpoint if current location is within tolerance radius
-        while (getDistanceToCheckpoint(currentCoordinate) <= toleranceRadius) {
+        while (!hasCompletedAllCheckpoints() && getDistanceToCheckpoint(currentCoordinate) <= toleranceRadius) {
             checkpointIndex++;
         }
     }
@@ -130,7 +130,7 @@ public class CheckpointsModel {
             return true;
         }
 
-        return checkpointIndex == checkpoints.size();
+        return checkpointIndex >= checkpoints.size();
     }
 
     public void resetCheckpoint() {
