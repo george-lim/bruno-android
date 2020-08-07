@@ -12,28 +12,24 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.cs446.group7.bruno.R;
-import com.cs446.group7.bruno.location.Coordinate;
+import com.cs446.group7.bruno.models.FitnessModel;
 import com.cs446.group7.bruno.models.TrackSegment;
 import com.cs446.group7.bruno.music.BrunoTrack;
-import com.cs446.group7.bruno.routing.RouteSegment;
 import com.cs446.group7.bruno.ui.AppbarFormatter;
-import com.google.android.gms.maps.CameraUpdateFactory;
+import com.cs446.group7.bruno.viewmodels.FitnessDetailsViewModel;
+import com.cs446.group7.bruno.viewmodels.FitnessDetailsViewModelDelegate;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.PolylineOptions;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public class FitnessDetailsFragment extends Fragment {
-
-    // MARK: - Enums
-
-    private enum Winner { YOU, BRUNO, TIE }
+public class FitnessDetailsFragment extends Fragment implements FitnessDetailsViewModelDelegate {
 
     // MARK: - UI components
 
@@ -47,7 +43,11 @@ public class FitnessDetailsFragment extends Fragment {
     private TextView txtStatsClock;
     private LinearLayout runTracklist;
 
-    // MARK: - Lifecycle Methods
+    // MARK: - Private members
+
+    private FitnessDetailsViewModel viewModel;
+
+    // MARK: - Lifecycle methods
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -70,132 +70,99 @@ public class FitnessDetailsFragment extends Fragment {
         SupportMapFragment mapFragment = (SupportMapFragment)getChildFragmentManager()
                 .findFragmentById(R.id.fitness_details_map);
 
+        FitnessModel model = new ViewModelProvider(requireActivity()).get(FitnessModel.class);
+        viewModel = new FitnessDetailsViewModel(
+                getActivity().getApplicationContext(),
+                model,
+                this,
+                getArguments().getInt("recordIndex")
+        );
+
         mapFragment.getMapAsync(googleMap -> {
             map = googleMap;
-            mockViewModelResponsibilities();
+            map.getUiSettings().setAllGesturesEnabled(false);
+            viewModel.onMapReady();
         });
     }
 
     // MARK: - Private methods
 
-    // MOCK - Populate fitness details with dummy data.
-    private void mockViewModelResponsibilities() {
-        setupUI("17:00",
-                "15:00",
-                "2.0 km",
-                "420 steps",
-                "17 min",
-                "Aug 6 • 3:45 PM",
-                Winner.BRUNO);
+    private void setupTracklist(final List<BrunoTrack> tracks) {
+        int[] routeColours = getResources().getIntArray(R.array.colorRouteList);
+        int colourIndex = 0;
 
-        List<BrunoTrack> tracks = new ArrayList<>();
-        tracks.add(new BrunoTrack("testName", "testArtist", 280000));
-        tracks.add(new BrunoTrack("testName 2", "testArtist", 280000));
-        tracks.add(new BrunoTrack("testName 3", "testArtist", 280000));
-        setupTracklist(tracks);
+        for (BrunoTrack track : tracks) {
+            View view = getLayoutInflater().inflate(R.layout.view_holder_fitness_details, null);
+            ImageView musicNote = view.findViewById(R.id.image_view_fitness_details_holder_music);
 
-        RouteSegment mockSegment1 = new RouteSegment(
-                new Coordinate(43.476861, -80.539940),
-                new Coordinate(43.478633, -80.535248),
-                60000L
-        );
-        RouteSegment mockSegment2 = new RouteSegment(
-                new Coordinate(43.478633, -80.535248),
-                new Coordinate(43.473752, -80.531724),
-                80000L
-        );
-        RouteSegment mockSegment3 = new RouteSegment(
-                new Coordinate(43.473752, -80.531724),
-                new Coordinate(43.472029, -80.536262),
-                60000L
-        );
-        RouteSegment mockSegment4 = new RouteSegment(
-                new Coordinate(43.472029, -80.536262),
-                new Coordinate(43.476861, -80.539940),
-                80000L
-        );
+            musicNote.setColorFilter(routeColours[colourIndex]);
+            colourIndex = (colourIndex + 1) % routeColours.length;
 
-        List<RouteSegment> mockSegments = new ArrayList<>();
-        mockSegments.add(mockSegment1);
-        mockSegments.add(mockSegment2);
-        mockSegments.add(mockSegment3);
-        mockSegments.add(mockSegment4);
+            TextView songName = view.findViewById(R.id.text_view_fitness_details_holder_song);
+            songName.setText(track.getName());
 
-        List<TrackSegment> trackSegments = new ArrayList<>();
-        trackSegments.add(new TrackSegment(mockSegments, -537719));
-        drawRoute(trackSegments);
+            TextView artist = view.findViewById(R.id.text_view_fitness_details_holder_artist);
+            artist.setText(track.getArtists());
+            runTracklist.addView(view);
+        }
     }
 
-    private void setupUI(final String leaderboardYourTime,
-                         final String leaderboardBrunoTime,
-                         final String statsDistance,
-                         final String statsSteps,
-                         final String statsClock,
-                         final String appBarHeader,
-                         final Winner winner) {
-        txtLeaderboardYouTime.setText(leaderboardYourTime);
-        txtLeaderboardBrunoTime.setText(leaderboardBrunoTime);
-        txtStatsDistance.setText(statsDistance);
-        txtStatsSteps.setText(statsSteps);
-        txtStatsClock.setText(statsClock);
+    // MARK: - FitnessDetailsViewModelDelegate methods
+
+    @Override
+    public void setupUI(final String leaderboardYouTimeText,
+                        final String leaderboardBrunoTimeText,
+                        final String statsDistanceText,
+                        final String statsStepsText,
+                        final String statsClockText,
+                        final String appBarTitle,
+                        final FitnessDetailsViewModel.Winner winner,
+                        final List<BrunoTrack> tracks) {
+        txtLeaderboardYouTime.setText(leaderboardYouTimeText);
+        txtLeaderboardBrunoTime.setText(leaderboardBrunoTimeText);
+        txtStatsDistance.setText(statsDistanceText);
+        txtStatsSteps.setText(statsStepsText);
+        txtStatsClock.setText(statsClockText);
 
         AppbarFormatter.format((AppCompatActivity) getActivity(),
                 getView(),
                 R.id.appbar_fitness_details,
-                appBarHeader,
+                appBarTitle,
                 true);
+
+        int colorCrown = getResources().getColor(R.color.colorCrown, null);
 
         switch (winner) {
             case YOU:
-                imgLeaderboardYouCrown.getDrawable().setTint(getResources().getColor(R.color.colorCrown, null));
+                imgLeaderboardYouCrown.getDrawable().setTint(colorCrown);
                 imgLeaderboardBrunoCrown.setVisibility(View.INVISIBLE);
                 break;
             case BRUNO:
                 imgLeaderboardYouCrown.setVisibility(View.INVISIBLE);
-                imgLeaderboardBrunoCrown.getDrawable().setTint(getResources().getColor(R.color.colorCrown, null));
+                imgLeaderboardBrunoCrown.getDrawable().setTint(colorCrown);
                 break;
             case TIE:
-                imgLeaderboardYouCrown.getDrawable().setTint(getResources().getColor(R.color.colorCrown, null));
-                imgLeaderboardBrunoCrown.getDrawable().setTint(getResources().getColor(R.color.colorCrown, null));
+                imgLeaderboardYouCrown.getDrawable().setTint(colorCrown);
+                imgLeaderboardBrunoCrown.getDrawable().setTint(colorCrown);
                 break;
         }
+
+        setupTracklist(tracks);
     }
 
-    private void setupTracklist(final List<BrunoTrack> tracks) {
-        int[] colors = getResources().getIntArray(R.array.colorRouteList);
-        for (int i = 0; i < tracks.size(); i++) {
-            BrunoTrack track = tracks.get(i);
-            View vi = getLayoutInflater().inflate(R.layout.view_holder_fitness_details, null);
-            ImageView musicNote = vi.findViewById(R.id.image_view_fitness_details_holder_music);
-            musicNote.setColorFilter(colors[i % colors.length]);
-            TextView songName = vi.findViewById(R.id.text_view_fitness_details_holder_song);
-            songName.setText(track.getName());
-
-            TextView artist = vi.findViewById(R.id.text_view_fitness_details_holder_artist);
-            artist.setText(track.getArtists());
-            runTracklist.addView(vi);
-        }
-    }
-
-    private void drawRoute(final List<TrackSegment> trackSegments) {
-        final float routeWidth = 14;
-        LatLngBounds.Builder boundsBuilder = new LatLngBounds.Builder();
-
+    @Override
+    public void drawRoute(final List<TrackSegment> trackSegments, float routeWidth) {
         for (TrackSegment trackSegment : trackSegments) {
             List<LatLng> trackSegmentLocations = trackSegment.getLatLngs();
             map.addPolyline(new PolylineOptions()
                     .addAll(trackSegmentLocations)
                     .color(trackSegment.getRouteColour())
                     .width(routeWidth));
-
-            for (final LatLng location : trackSegmentLocations) {
-                boundsBuilder.include(location);
-            }
         }
+    }
 
-        final LatLngBounds bounds = boundsBuilder.build();
-        map.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 200));
-        // disallow movement
-        map.getUiSettings().setAllGesturesEnabled(false);
+    @Override
+    public void moveCamera(final CameraUpdate cameraUpdate) {
+        map.moveCamera(cameraUpdate);
     }
 }
