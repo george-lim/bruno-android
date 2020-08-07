@@ -100,8 +100,8 @@ public class FitnessDetailsViewModel {
 
         for (TrackSegment trackSegment : trackSegments) {
             List<LatLng> trackSegmentLatLngs = trackSegment.getLatLngs();
-            for (LatLng location : trackSegmentLatLngs) {
-                boundsBuilder.include(location);
+            for (LatLng latLng : trackSegmentLatLngs) {
+                boundsBuilder.include(latLng);
             }
         }
 
