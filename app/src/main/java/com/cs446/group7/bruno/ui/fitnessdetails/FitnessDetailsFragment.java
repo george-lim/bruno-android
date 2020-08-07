@@ -33,7 +33,7 @@ public class FitnessDetailsFragment extends Fragment implements FitnessDetailsVi
 
     // MARK: - Public constants
 
-    public static String FITNESS_RECORD_INDEX = "FITNESS_RECORD_INDEX";
+    public static final String FITNESS_RECORD_INDEX = "FITNESS_RECORD_INDEX";
 
     // MARK: - UI components
 
