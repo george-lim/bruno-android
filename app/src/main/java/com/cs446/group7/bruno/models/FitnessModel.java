@@ -28,7 +28,6 @@ public class FitnessModel extends ViewModel {
         fitnessRecordDataList.clear();
 
         // MOCK: - Dummy data
-        final int[] colours =  { -537719, -6234730, -7879170,  -6188606, -1003060, -938359, -5719896, -5977857 };
         final List<BrunoTrack> mockTracks = new ArrayList<BrunoTrack>() {{
             add(new BrunoTrack("testName", "testArtist", 280000));
             add(new BrunoTrack("testName 2", "testArtist", 140000));
@@ -37,7 +36,7 @@ public class FitnessModel extends ViewModel {
 
         final BrunoPlaylist mockPlaylist = new BrunoPlaylistImpl("1", "mockList", mockTracks);
 
-        final List<RouteSegment> mockSegments = new ArrayList<RouteSegment>() {{
+        final List<RouteSegment> mockSegments1 = new ArrayList<RouteSegment>() {{
             add(new RouteSegment(
                     new Coordinate(43.476861, -80.539940),
                     new Coordinate(43.478633, -80.535248),
@@ -48,6 +47,9 @@ public class FitnessModel extends ViewModel {
                     new Coordinate(43.473752, -80.531724),
                     80000L
             ));
+        }};
+
+        final List<RouteSegment> mockSegments2 = new ArrayList<RouteSegment>() {{
             add(new RouteSegment(
                     new Coordinate(43.473752, -80.531724),
                     new Coordinate(43.472029, -80.536262),
@@ -61,7 +63,8 @@ public class FitnessModel extends ViewModel {
         }};
 
         final List<TrackSegment> mockTrackSegments = new ArrayList<TrackSegment>() {{
-            add(new TrackSegment(mockSegments, -537719));
+            add(new TrackSegment(mockSegments1, -537719));
+            add(new TrackSegment(mockSegments2, -6234730));
         }};
 
         fitnessRecordDataList.add(new FitnessRecordData(
@@ -78,8 +81,8 @@ public class FitnessModel extends ViewModel {
         fitnessRecordDataList.add(new FitnessRecordData(
                 FitnessRecordData.Mode.RUN,
                 new Date(1595794800000L),
-                21 * 60 * 1000,
                 25 * 60 * 1000,
+                21 * 60 * 1000,
                 2470,
                 690,
                 mockPlaylist,
@@ -111,7 +114,7 @@ public class FitnessModel extends ViewModel {
         fitnessRecordDataList.add(new FitnessRecordData(
                 FitnessRecordData.Mode.RUN,
                 new Date(1581674932000L),
-                34 * 1000,
+                45 * 1000,
                 45 * 1000,
                 100,
                 57,
