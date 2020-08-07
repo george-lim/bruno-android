@@ -18,17 +18,21 @@ import java.util.Locale;
 
 public class FitnessDetailsViewModel {
 
+    private FitnessModel model;
+    private FitnessDetailsViewModelDelegate delegate;
+
     // MARK: - Lifecycle methods
 
     public FitnessDetailsViewModel(final Context context,
                                    final FitnessModel model,
                                    final FitnessDetailsViewModelDelegate delegate) {
+        this.delegate = delegate;
+        this.model = model;
+
         Resources resources = context.getResources();
         FitnessRecordData fitnessRecordData = model.getCurrentFitnessRecord();
         setupUI(resources, fitnessRecordData, delegate);
         delegate.setupTracklist(fitnessRecordData.getTracksUserPlayed());
-        drawRoute(fitnessRecordData.getTrackSegments(), delegate);
-        moveCamera(fitnessRecordData.getTrackSegments(), delegate);
     }
 
     // MARK: - Private methods
@@ -85,14 +89,14 @@ public class FitnessDetailsViewModel {
         );
     }
 
-    private void drawRoute(final List<TrackSegment> trackSegments,
-                           final FitnessDetailsViewModelDelegate delegate) {
+    private void drawRoute() {
+        final List<TrackSegment> trackSegments = model.getCurrentFitnessRecord().getTrackSegments();
         float routeWidth = 14;
         delegate.drawRoute(trackSegments, routeWidth);
     }
 
-    private void moveCamera(final List<TrackSegment> trackSegments,
-                            final FitnessDetailsViewModelDelegate delegate) {
+    private void moveCamera() {
+        final List<TrackSegment> trackSegments = model.getCurrentFitnessRecord().getTrackSegments();
         LatLngBounds.Builder boundsBuilder = new LatLngBounds.Builder();
 
         for (TrackSegment trackSegment : trackSegments) {
@@ -104,5 +108,11 @@ public class FitnessDetailsViewModel {
 
         final LatLngBounds bounds = boundsBuilder.build();
         delegate.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 200));
+    }
+
+    // MARK: - Public methods
+    public void onMapReady() {
+        drawRoute();
+        moveCamera();
     }
 }

@@ -70,18 +70,21 @@ public class FitnessDetailsFragment extends Fragment implements FitnessDetailsVi
         SupportMapFragment mapFragment = (SupportMapFragment)getChildFragmentManager()
                 .findFragmentById(R.id.fitness_details_map);
 
+
+        FitnessModel model = new ViewModelProvider(requireActivity()).get(FitnessModel.class);
+        model.setSelectedIndex(getArguments().getInt("recordIndex"));
+        viewModel = new FitnessDetailsViewModel(
+                getActivity().getApplicationContext(),
+                model,
+                this
+        );
+
         mapFragment.getMapAsync(googleMap -> {
             map = googleMap;
             map.getUiSettings().setAllGesturesEnabled(false);
-
-            FitnessModel model = new ViewModelProvider(requireActivity()).get(FitnessModel.class);
-            model.setSelectedIndex(getArguments().getInt("recordIndex"));
-            viewModel = new FitnessDetailsViewModel(
-                    getActivity().getApplicationContext(),
-                    model,
-                    this
-            );
+            viewModel.onMapReady();
         });
+
     }
 
     // MARK: - FitnessDetailsViewModelDelegate methods
