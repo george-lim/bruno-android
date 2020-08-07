@@ -2,13 +2,12 @@ package com.cs446.group7.bruno.viewmodels;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.os.Build;
 
 import com.cs446.group7.bruno.R;
 import com.cs446.group7.bruno.models.FitnessModel;
 import com.cs446.group7.bruno.models.TrackSegment;
 import com.cs446.group7.bruno.persistence.FitnessRecord;
-import com.cs446.group7.bruno.utils.TimeUtils;
+import com.cs446.group7.bruno.utils.DateTimeUtils;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
@@ -47,22 +46,16 @@ public class FitnessDetailsViewModel {
 
     // MARK: - Private methods
 
-    @SuppressWarnings("deprecation")
-    private Locale getLocale(final Resources resources) {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
-                ? resources.getConfiguration().getLocales().get(0)
-                : resources.getConfiguration().locale;
-    }
-
     private void setupUI(final Resources resources) {
+        Locale locale = DateTimeUtils.getLocale(resources);
         long userDuration = fitnessRecord.getUserDuration() / 1000;
         long brunoDuration = fitnessRecord.getExpectedDuration() / 1000;
         int stepCount = fitnessRecord.getSteps();
 
-        String leaderboardYouTimeText = TimeUtils.getDurationString(userDuration);
-        String leaderboardBrunoTimeText = TimeUtils.getDurationString(brunoDuration);
+        String leaderboardYouTimeText = DateTimeUtils.getDurationString(userDuration);
+        String leaderboardBrunoTimeText = DateTimeUtils.getDurationString(brunoDuration);
         String statsDistanceText = String.format(
-                getLocale(resources),
+                locale,
                 "%.1f km",
                 fitnessRecord.getRouteDistance() / 1000
         );
@@ -70,11 +63,10 @@ public class FitnessDetailsViewModel {
                 resources.getString(R.string.fitness_details_steps_placeholder),
                 stepCount
         );
-        String statsClockText = TimeUtils.formatDuration(userDuration);
-        String appBarTitle = TimeUtils.formatDateTime(
+        String statsClockText = DateTimeUtils.formatDuration(userDuration);
+        String appBarTitle = DateTimeUtils.formatDateTime(
                 fitnessRecord.getStartTime(),
-                TimeUtils.DATE_TIME_FORMAT,
-                getLocale(resources)
+                locale
         );
         Winner winner;
 

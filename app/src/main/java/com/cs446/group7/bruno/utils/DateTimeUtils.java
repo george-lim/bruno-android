@@ -1,12 +1,22 @@
 package com.cs446.group7.bruno.utils;
 
+import android.content.res.Resources;
+import android.os.Build;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-public class TimeUtils {
-    // Format for the date time in the UI
-    public static final String DATE_TIME_FORMAT = "MMM d • h:mm aa";
+public class DateTimeUtils {
+    // Default date time format
+    private static final String DATE_TIME_FORMAT = "MMM d • h:mm aa";
+
+    @SuppressWarnings("deprecation")
+    public static Locale getLocale(final Resources resources) {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
+                ? resources.getConfiguration().getLocales().get(0)
+                : resources.getConfiguration().locale;
+    }
 
     public static String getDurationString(long seconds) {
         long hours = seconds / 3600;
@@ -34,8 +44,8 @@ public class TimeUtils {
         return String.format(Locale.getDefault(), "%.1f hr", (float)minutes / 60);
     }
 
-    public static String formatDateTime(final Date dateTime, final String format, final Locale locale) {
-        final SimpleDateFormat dateFormat = new SimpleDateFormat(format, locale);
+    public static String formatDateTime(final Date dateTime, final Locale locale) {
+        final SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_TIME_FORMAT, locale);
         return dateFormat.format(dateTime);
     }
 

@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.cs446.group7.bruno.R;
 import com.cs446.group7.bruno.models.RouteModel;
 import com.cs446.group7.bruno.persistence.FitnessRecord;
-import com.cs446.group7.bruno.utils.TimeUtils;
+import com.cs446.group7.bruno.utils.DateTimeUtils;
 
 import java.util.Locale;
 
@@ -45,14 +45,10 @@ public class FitnessRecordsViewHolder extends RecyclerView.ViewHolder {
 
         double distanceKilometer = fitnessRecord.getRouteDistance() / 1000d;
         long durationSeconds = Math.round(fitnessRecord.getUserDuration() / 1000d);
-        String dateTimeText = TimeUtils.formatDateTime(
-                fitnessRecord.getStartTime(),
-                TimeUtils.DATE_TIME_FORMAT,
-                locale
-        );
+        String dateTimeText = DateTimeUtils.formatDateTime(fitnessRecord.getStartTime(), locale);
 
         datetime.setText(dateTimeText);
         distance.setText(String.format(locale,"%.1f km", distanceKilometer));
-        duration.setText(TimeUtils.formatDuration(durationSeconds));
+        duration.setText(DateTimeUtils.formatDuration(durationSeconds));
     }
 }
