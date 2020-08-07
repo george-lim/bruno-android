@@ -95,9 +95,9 @@ public class RoutePlanningFragment extends Fragment implements RoutePlanningView
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-        viewModel.onDestroy();
+    public void onDestroyView() {
+        super.onDestroyView();
+        viewModel.onDestroyView();
     }
 
     // MARK: - User actions
