@@ -39,6 +39,12 @@ public class FitnessDetailsViewModel {
         setupUI(resources);
     }
 
+    public void onMapReady() {
+        List<TrackSegment> trackSegments = fitnessRecord.getTrackSegments();
+        drawRoute(trackSegments);
+        moveCamera(trackSegments);
+    }
+
     // MARK: - Private methods
 
     @SuppressWarnings("deprecation")
@@ -109,13 +115,5 @@ public class FitnessDetailsViewModel {
 
         final LatLngBounds bounds = boundsBuilder.build();
         delegate.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 200));
-    }
-
-    // MARK: - Public methods
-
-    public void onMapReady() {
-        List<TrackSegment> trackSegments = fitnessRecord.getTrackSegments();
-        drawRoute(trackSegments);
-        moveCamera(trackSegments);
     }
 }
