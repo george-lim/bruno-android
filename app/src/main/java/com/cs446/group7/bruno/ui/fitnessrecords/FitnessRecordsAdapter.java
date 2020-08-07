@@ -14,53 +14,104 @@ import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.cs446.group7.bruno.R;
+import com.cs446.group7.bruno.persistence.FitnessRecordData;
+import com.cs446.group7.bruno.utils.TimeUtils;
 
-public class FitnessRecordsAdapter extends RecyclerView.Adapter<FitnessRecordsAdapter.FitnessRecordViewHolder> {
-    @NonNull
-    @Override
-    public FitnessRecordViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.view_holder_fitness_record, parent, false);
-        return new FitnessRecordViewHolder(view);
-    }
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
-    @Override
-    public void onBindViewHolder(@NonNull FitnessRecordViewHolder holder, int position) {
-        holder.itemView.setOnClickListener(view -> {
-            Bundle bundle = new Bundle();
-            bundle.putInt("recordIndex", position);
-            NavController navController = Navigation.findNavController(view);
-            navController.navigate(R.id.action_fragmenttoplevel_to_fragmentfitnessdetails, bundle);
-        });
+public class FitnessRecordsAdapter extends RecyclerView.Adapter<FitnessRecordsAdapter.FitnessRecordsViewHolder> {
 
-        // MOCK: - Populate holder with dummy data.
-        Drawable walkingIcon = holder.itemView.getResources().getDrawable(R.drawable.ic_walking, null);
-        int color = holder.itemView.getResources().getColor(R.color.colorSecondary, null);
-        holder.icon.setImageDrawable(walkingIcon);
-        holder.icon.setColorFilter(color);
+    // MARK: - Private members
 
-        holder.datetime.setText("Aug 6 • 3:45 PM");
-        holder.distance.setText("2.0 km");
-        holder.duration.setText("17 min");
-    }
+    private List<FitnessRecordData> data;
+    private Locale locale;
 
-    @Override
-    public int getItemCount() {
-        // MOCK: - Populate item count with dummy value.
-        return 10;
-    }
+    // MARK: - ViewHolder class
 
-    public static class FitnessRecordViewHolder extends RecyclerView.ViewHolder {
+    public static class FitnessRecordsViewHolder extends RecyclerView.ViewHolder {
         private ImageView icon;
         private TextView datetime;
         private TextView distance;
         private TextView duration;
 
-        public FitnessRecordViewHolder(@NonNull View itemView) {
+        public FitnessRecordsViewHolder(@NonNull View itemView) {
             super(itemView);
             icon = itemView.findViewById(R.id.record_icon);
             datetime = itemView.findViewById(R.id.record_datetime);
             distance = itemView.findViewById(R.id.record_distance);
             duration = itemView.findViewById(R.id.record_duration);
         }
+
+        public void populate(final FitnessRecordData fitnessRecordData, final Locale locale) {
+            if (fitnessRecordData.isRun()) {
+                Drawable runningIcon = itemView.getResources().getDrawable(R.drawable.ic_running, null);
+                int color = itemView.getResources().getColor(R.color.colorPrimary, null);
+                icon.setImageDrawable(runningIcon);
+                icon.setColorFilter(color);
+            } else {
+                Drawable walkingIcon = itemView.getResources().getDrawable(R.drawable.ic_walking, null);
+                int color = itemView.getResources().getColor(R.color.colorSecondary, null);
+                icon.setImageDrawable(walkingIcon);
+                icon.setColorFilter(color);
+            }
+
+            double distanceKilometer = fitnessRecordData.getRouteDistance() / 1000d;
+            long durationSeconds = Math.round(fitnessRecordData.getUserDuration() / 1000d);
+            String dateTimeText = TimeUtils.formatDateTime(
+                    fitnessRecordData.getStartTime(),
+                    TimeUtils.DATE_TIME_FORMAT,
+                    locale
+            );
+
+            datetime.setText(dateTimeText);
+            distance.setText(String.format(locale,"%.1f km", distanceKilometer));
+            duration.setText(TimeUtils.formatDuration(durationSeconds));
+        }
+    }
+
+    // MARK: - Lifecycle methods
+
+    public FitnessRecordsAdapter() {
+        this.data = new ArrayList<>();
+        this.locale = null;
+    }
+
+    // MARK: - Public methods
+
+    public void setData(final List<FitnessRecordData> data) {
+        this.data = data;
+        notifyDataSetChanged();
+    }
+
+    public void setLocale(final Locale locale) {
+        this.locale = locale;
+    }
+
+    // MARK: - RecyclerView.ViewHolder methods
+
+    @NonNull
+    @Override
+    public FitnessRecordsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.view_holder_fitness_record, parent, false);
+        return new FitnessRecordsViewHolder(view);
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull FitnessRecordsViewHolder holder, int position) {
+        holder.populate(data.get(position), locale);
+        holder.itemView.setOnClickListener(view -> {
+            Bundle bundle = new Bundle();
+            bundle.putInt("recordIndex", position);
+            NavController navController = Navigation.findNavController(view);
+            navController.navigate(R.id.action_fragmenttoplevel_to_fragmentfitnessdetails, bundle);
+        });
+    }
+
+    @Override
+    public int getItemCount() {
+        return data.size();
     }
 }
