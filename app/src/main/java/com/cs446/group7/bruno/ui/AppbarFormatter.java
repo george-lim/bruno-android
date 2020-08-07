@@ -20,7 +20,11 @@ public class AppbarFormatter {
      * @param title         string display to the user on appbar
      * @param hasBackButton true if appbar contains back button
      */
-    public static void format(final AppCompatActivity activity, final View viewContainer, final int appbarId, final String title, final boolean hasBackButton) {
+    public static void format(final AppCompatActivity activity,
+                              final View viewContainer,
+                              final int appbarId,
+                              final String title,
+                              final boolean hasBackButton) {
         Toolbar toolbar = viewContainer.findViewById(appbarId).findViewById(R.id.toolbar);
         TextView toolbarText = viewContainer.findViewById(appbarId).findViewById(R.id.toolbar_text);
         toolbarText.setText(title);

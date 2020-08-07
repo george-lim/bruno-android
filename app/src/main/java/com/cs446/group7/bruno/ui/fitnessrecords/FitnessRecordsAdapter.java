@@ -1,66 +1,67 @@
 package com.cs446.group7.bruno.ui.fitnessrecords;
 
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.cs446.group7.bruno.R;
+import com.cs446.group7.bruno.persistence.FitnessRecord;
 
-public class FitnessRecordsAdapter extends RecyclerView.Adapter<FitnessRecordsAdapter.FitnessRecordViewHolder> {
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+
+public class FitnessRecordsAdapter extends RecyclerView.Adapter<FitnessRecordsViewHolder> {
+
+    // MARK: - Private members
+
+    private List<FitnessRecord> data;
+    private Locale locale;
+    private FitnessRecordsAdapterDelegate delegate;
+
+    // MARK: - Lifecycle methods
+
+    public FitnessRecordsAdapter(FitnessRecordsAdapterDelegate delegate) {
+        this.data = new ArrayList<>();
+        this.locale = null;
+        this.delegate = delegate;
+    }
+
+    // MARK: - Public methods
+
+    public void setData(final List<FitnessRecord> data) {
+        this.data = data;
+        notifyDataSetChanged();
+    }
+
+    public void setLocale(final Locale locale) {
+        this.locale = locale;
+    }
+
+    // MARK: - RecyclerView.ViewHolder methods
+
     @NonNull
     @Override
-    public FitnessRecordViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.view_holder_fitness_record, parent, false);
-        return new FitnessRecordViewHolder(view);
+    public FitnessRecordsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View viewHolderItemView = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.view_holder_fitness_record, parent, false);
+        return new FitnessRecordsViewHolder(viewHolderItemView);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull FitnessRecordViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull FitnessRecordsViewHolder holder, int position) {
+        holder.populate(data.get(position), locale);
         holder.itemView.setOnClickListener(view -> {
-            Bundle bundle = new Bundle();
-            bundle.putInt("recordIndex", position);
-            NavController navController = Navigation.findNavController(view);
-            navController.navigate(R.id.action_fragmenttoplevel_to_fragmentfitnessdetails, bundle);
+            delegate.navigateToFitnessDetails(position);
         });
-
-        // MOCK: - Populate holder with dummy data.
-        Drawable walkingIcon = holder.itemView.getResources().getDrawable(R.drawable.ic_walking, null);
-        int color = holder.itemView.getResources().getColor(R.color.colorSecondary, null);
-        holder.icon.setImageDrawable(walkingIcon);
-        holder.icon.setColorFilter(color);
-
-        holder.datetime.setText("Aug 6 • 3:45 PM");
-        holder.distance.setText("2.0 km");
-        holder.duration.setText("17 min");
     }
 
     @Override
     public int getItemCount() {
-        // MOCK: - Populate item count with dummy value.
-        return 10;
-    }
-
-    public static class FitnessRecordViewHolder extends RecyclerView.ViewHolder {
-        private ImageView icon;
-        private TextView datetime;
-        private TextView distance;
-        private TextView duration;
-
-        public FitnessRecordViewHolder(@NonNull View itemView) {
-            super(itemView);
-            icon = itemView.findViewById(R.id.record_icon);
-            datetime = itemView.findViewById(R.id.record_datetime);
-            distance = itemView.findViewById(R.id.record_distance);
-            duration = itemView.findViewById(R.id.record_duration);
-        }
+        return data.size();
     }
 }
