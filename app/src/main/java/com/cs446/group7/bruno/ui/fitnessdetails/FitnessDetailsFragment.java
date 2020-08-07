@@ -129,14 +129,14 @@ public class FitnessDetailsFragment extends Fragment implements FitnessDetailsVi
 
     @Override
     public void setupTracklist(final List<BrunoTrack> tracks) {
-        int[] colors = getResources().getIntArray(R.array.colorRouteList);
+        final int[] colours = getResources().getIntArray(R.array.colorRouteList);
 
-        for (int i = 0; i < tracks.size(); i++) {
-            BrunoTrack track = tracks.get(i);
-
+        int colourIndex = 0;
+        for (final BrunoTrack track : tracks) {
             View view = getLayoutInflater().inflate(R.layout.view_holder_fitness_details, null);
             ImageView musicNote = view.findViewById(R.id.image_view_fitness_details_holder_music);
-            musicNote.setColorFilter(colors[i % colors.length]);
+            musicNote.setColorFilter(colours[(colourIndex++) % colours.length]);
+
             TextView songName = view.findViewById(R.id.text_view_fitness_details_holder_song);
             songName.setText(track.getName());
 
