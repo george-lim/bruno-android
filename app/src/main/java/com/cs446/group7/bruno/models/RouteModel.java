@@ -1,14 +1,20 @@
 package com.cs446.group7.bruno.models;
 
 import android.location.Location;
+import android.util.Log;
 
 import androidx.lifecycle.ViewModel;
 
+import com.cs446.group7.bruno.MainActivity;
 import com.cs446.group7.bruno.location.Coordinate;
 import com.cs446.group7.bruno.music.BrunoPlaylist;
 import com.cs446.group7.bruno.music.BrunoTrack;
+import com.cs446.group7.bruno.persistence.FitnessRecord;
+import com.cs446.group7.bruno.persistence.FitnessRecordDAO;
+import com.cs446.group7.bruno.persistence.FitnessRecordEntry;
 import com.cs446.group7.bruno.routing.RouteSegment;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
@@ -129,13 +135,32 @@ public class RouteModel extends ViewModel {
     }
 
     public void completeRouteNavigation() {
-        double userDistance = checkpointsModel.getUserRouteDistance(currentCoordinate);
-        long userDuration = new Date().getTime() - startDate.getTime();
-        double brunoDistance = playlistModel.getTotalPlaylistRouteDistance();
-        long brunoDuration = playlistModel.getTotalPlaylistRouteDuration();
-        BrunoPlaylist playlist = playlistModel.getPlaylist();
-        List<TrackSegment> trackSegments = playlistModel.getTrackSegments();
-        // TODO: Persist these to database.
+
+        final long userDuration = new Date().getTime() - startDate.getTime();
+        final double brunoDistance = playlistModel.getTotalPlaylistRouteDistance();
+        final long brunoDuration = playlistModel.getTotalPlaylistRouteDuration();
+
+        // Persist tracks to database.
+        final FitnessRecord fitnessRecordData = new FitnessRecord(
+                mode,
+                startDate,
+                userDuration,
+                brunoDuration,
+                brunoDistance,
+                steps,
+                getPlaylist(),
+                getTrackSegments()
+        );
+
+        try { // Serialize and store record in DB
+            final String serializedString = fitnessRecordData.serialize();
+            final FitnessRecordDAO fitnessRecordDAO = MainActivity.getPersistenceService().getFitnessRecordDAO();
+            final FitnessRecordEntry newRecord = new FitnessRecordEntry();
+            newRecord.setRecordDataString(serializedString);
+            fitnessRecordDAO.insert(newRecord);
+        } catch (IOException e) {
+            Log.e(getClass().getSimpleName(), "Failed to store FitnessRecord in DB: " + e.toString());
+        }
     }
 
     public void reset() {

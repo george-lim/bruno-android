@@ -4,10 +4,11 @@ import com.cs446.group7.bruno.location.Coordinate;
 import com.cs446.group7.bruno.routing.RouteSegment;
 import com.google.android.gms.maps.model.LatLng;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TrackSegment {
+public class TrackSegment implements Serializable {
 
     // MARK: - Private members
 

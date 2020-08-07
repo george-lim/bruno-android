@@ -6,14 +6,6 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.provider.Settings;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-import androidx.navigation.fragment.NavHostFragment;
-
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
 import com.cs446.group7.bruno.capability.CapabilityService;
@@ -23,6 +15,7 @@ import com.cs446.group7.bruno.capability.permission.PermissionRequest;
 import com.cs446.group7.bruno.capability.permission.PermissionRequestDelegate;
 import com.cs446.group7.bruno.location.LocationService;
 import com.cs446.group7.bruno.location.LocationServiceImpl;
+import com.cs446.group7.bruno.persistence.PersistenceService;
 import com.cs446.group7.bruno.sensor.SensorService;
 import com.cs446.group7.bruno.spotify.SpotifyService;
 import com.cs446.group7.bruno.spotify.auth.SpotifyRequest;
@@ -37,6 +30,14 @@ import com.spotify.sdk.android.auth.AuthorizationResponse;
 
 import java.util.HashMap;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
+
 public class MainActivity extends AppCompatActivity
         implements PermissionRequestDelegate, HardwareRequestDelegate, SpotifyRequestDelegate {
 
@@ -47,6 +48,7 @@ public class MainActivity extends AppCompatActivity
     private static SpotifyService spotifyService;
     private static SensorService sensorService;
     private static PreferencesStorage preferencesStorage;
+    private static PersistenceService persistenceService;
 
     private static RequestQueue volleyRequestQueue;
 
@@ -73,6 +75,7 @@ public class MainActivity extends AppCompatActivity
         locationService = new LocationServiceImpl(getApplicationContext());
         spotifyService = new SpotifyService(getApplicationContext(), this);
         sensorService = new SensorService(getApplicationContext());
+        persistenceService = new PersistenceService(getApplicationContext());
         preferencesStorage = new PreferencesStorage(getApplicationContext());
         volleyRequestQueue = Volley.newRequestQueue(getApplicationContext());
     }
@@ -127,7 +130,13 @@ public class MainActivity extends AppCompatActivity
         return sensorService;
     }
 
-    public static PreferencesStorage getPreferencesStorage() { return preferencesStorage; }
+    public static PreferencesStorage getPreferencesStorage() {
+        return preferencesStorage;
+    }
+
+    public static PersistenceService getPersistenceService() {
+        return persistenceService;
+    }
 
     public static RequestQueue getVolleyRequestQueue() {
         return volleyRequestQueue;
