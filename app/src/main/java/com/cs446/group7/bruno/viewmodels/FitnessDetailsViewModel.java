@@ -29,10 +29,9 @@ public class FitnessDetailsViewModel {
         this.delegate = delegate;
         this.model = model;
 
-        Resources resources = context.getResources();
-        FitnessRecordData fitnessRecordData = model.getCurrentFitnessRecord();
-        setupUI(resources, fitnessRecordData, delegate);
-        delegate.setupTracklist(fitnessRecordData.getTracksUserPlayed());
+        // Setup stats and tracks, map is setup later when the map UI is ready
+        setupStats(context.getResources());
+        setupTrackList();
     }
 
     // MARK: - Private methods
@@ -44,9 +43,8 @@ public class FitnessDetailsViewModel {
                 : resources.getConfiguration().locale;
     }
 
-    private void setupUI(final Resources resources,
-                         final FitnessRecordData fitnessRecordData,
-                         final FitnessDetailsViewModelDelegate delegate) {
+    private void setupStats(final Resources resources) {
+        final FitnessRecordData fitnessRecordData = model.getCurrentFitnessRecord();
         long userDuration = fitnessRecordData.getUserDuration() / 1000;
         long brunoDuration = fitnessRecordData.getExpectedDuration() / 1000;
         int stepCount = fitnessRecordData.getSteps();
@@ -89,7 +87,11 @@ public class FitnessDetailsViewModel {
         );
     }
 
-    private void drawRoute() {
+    private void setupTrackList() {
+        delegate.setupTracklist(model.getCurrentFitnessRecord().getTracksUserPlayed());
+    }
+
+    private void setupMap() {
         final List<TrackSegment> trackSegments = model.getCurrentFitnessRecord().getTrackSegments();
         float routeWidth = 14;
         delegate.drawRoute(trackSegments, routeWidth);
@@ -112,7 +114,7 @@ public class FitnessDetailsViewModel {
 
     // MARK: - Public methods
     public void onMapReady() {
-        drawRoute();
+        setupMap();
         moveCamera();
     }
 }
