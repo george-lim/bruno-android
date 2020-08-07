@@ -2,10 +2,16 @@ package com.cs446.group7.bruno.models;
 
 import androidx.lifecycle.ViewModel;
 
+import com.cs446.group7.bruno.location.Coordinate;
+import com.cs446.group7.bruno.music.BrunoPlaylist;
+import com.cs446.group7.bruno.music.BrunoPlaylistImpl;
+import com.cs446.group7.bruno.music.BrunoTrack;
 import com.cs446.group7.bruno.persistence.FitnessRecordData;
+import com.cs446.group7.bruno.routing.RouteSegment;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 public class FitnessModel extends ViewModel {
@@ -22,6 +28,96 @@ public class FitnessModel extends ViewModel {
         fitnessRecordDataList.clear();
 
         // MOCK: - Dummy data
+        final int[] colours =  { -537719, -6234730, -7879170,  -6188606, -1003060, -938359, -5719896, -5977857 };
+        final List<BrunoTrack> mockTracks = new ArrayList<BrunoTrack>() {{
+            add(new BrunoTrack("testName", "testArtist", 280000));
+            add(new BrunoTrack("testName 2", "testArtist", 140000));
+            add(new BrunoTrack("testName 3", "testArtist", 300000));
+        }};
+
+        final BrunoPlaylist mockPlaylist = new BrunoPlaylistImpl("1", "mockList", mockTracks);
+
+        final List<RouteSegment> mockSegments = new ArrayList<RouteSegment>() {{
+            add(new RouteSegment(
+                    new Coordinate(43.476861, -80.539940),
+                    new Coordinate(43.478633, -80.535248),
+                    60000L
+            ));
+            add(new RouteSegment(
+                    new Coordinate(43.478633, -80.535248),
+                    new Coordinate(43.473752, -80.531724),
+                    80000L
+            ));
+            add(new RouteSegment(
+                    new Coordinate(43.473752, -80.531724),
+                    new Coordinate(43.472029, -80.536262),
+                    60000L
+            ));
+            add(new RouteSegment(
+                    new Coordinate(43.472029, -80.536262),
+                    new Coordinate(43.476861, -80.539940),
+                    80000L
+            ));
+        }};
+
+        final List<TrackSegment> mockTrackSegments = new ArrayList<TrackSegment>() {{
+            add(new TrackSegment(mockSegments, -537719));
+        }};
+
+        fitnessRecordDataList.add(new FitnessRecordData(
+                FitnessRecordData.Mode.WALK,
+                new Date(1596332280000L),
+                70 * 60 * 1000,
+                73 * 60 * 1000,
+                3456,
+                1478,
+                mockPlaylist,
+                mockTrackSegments
+        ));
+
+        fitnessRecordDataList.add(new FitnessRecordData(
+                FitnessRecordData.Mode.RUN,
+                new Date(1595794800000L),
+                21 * 60 * 1000,
+                25 * 60 * 1000,
+                2470,
+                690,
+                mockPlaylist,
+                mockTrackSegments
+        ));
+
+        fitnessRecordDataList.add(new FitnessRecordData(
+                FitnessRecordData.Mode.RUN,
+                new Date(1592237332000L),
+                134 * 60 * 1000,
+                140 * 60 * 1000,
+                6789,
+                1234,
+                mockPlaylist,
+                mockTrackSegments
+        ));
+
+        fitnessRecordDataList.add(new FitnessRecordData(
+                FitnessRecordData.Mode.WALK,
+                new Date(1584568760000L),
+                59 * 60 * 1000,
+                60 * 60 * 1000,
+                1560,
+                5433,
+                mockPlaylist,
+                mockTrackSegments
+        ));
+
+        fitnessRecordDataList.add(new FitnessRecordData(
+                FitnessRecordData.Mode.RUN,
+                new Date(1581674932000L),
+                34 * 1000,
+                45 * 1000,
+                100,
+                57,
+                mockPlaylist,
+                mockTrackSegments
+        ));
 
         // Sort descending by the date the of the exercise
         // the Date class already implements Comparable so less work for us
