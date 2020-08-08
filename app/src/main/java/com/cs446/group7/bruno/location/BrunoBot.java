@@ -18,7 +18,7 @@ public class BrunoBot implements LocationService {
     // MARK: - Private constants
 
     // NOTE: Must be greater than zero
-    private static final int UPDATE_INTERVAL_MILLISECONDS = 2000;
+    private static final int UPDATE_INTERVAL_MILLISECONDS = 1000;
 
     // MARK: - Private members
 
