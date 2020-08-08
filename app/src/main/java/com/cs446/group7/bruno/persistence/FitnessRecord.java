@@ -1,10 +1,18 @@
 package com.cs446.group7.bruno.persistence;
 
+import android.util.Base64;
+
 import com.cs446.group7.bruno.models.RouteModel;
 import com.cs446.group7.bruno.models.TrackSegment;
 import com.cs446.group7.bruno.music.BrunoPlaylist;
 import com.cs446.group7.bruno.music.BrunoTrack;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
@@ -12,7 +20,7 @@ import java.util.List;
  * The class that holds the data for a fitness record to be persisted.
  * This is the object that gets serialized and stored into the database
  */
-public class FitnessRecord {
+public class FitnessRecord implements Serializable {
     private final RouteModel.Mode mode;
     private final Date startTime;
     private final long userDuration;
@@ -39,6 +47,14 @@ public class FitnessRecord {
         this.steps = steps;
         this.playlist = playlist;
         this.trackSegments = trackSegments;
+    }
+
+    public static FitnessRecord deserialize(final String serializedString) throws IOException, ClassNotFoundException {
+        byte [] data = Base64.decode(serializedString, Base64.DEFAULT);
+        ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(data));
+        Object result = ois.readObject();
+        ois.close();
+        return (FitnessRecord) result;
     }
 
     public RouteModel.Mode getMode() {
@@ -71,5 +87,13 @@ public class FitnessRecord {
 
     public List<TrackSegment> getTrackSegments() {
         return trackSegments;
+    }
+
+    public String serialize() throws IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ObjectOutputStream oos = new ObjectOutputStream( baos );
+        oos.writeObject(this);
+        oos.close();
+        return Base64.encodeToString(baos.toByteArray(), Base64.DEFAULT);
     }
 }
