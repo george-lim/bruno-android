@@ -179,11 +179,18 @@ public class RouteNavigationViewModel
                 resources.getString(R.string.player_error),
                 errorMessage,
                 resources.getString(R.string.ok_button),
-                (dialogInterface, i) -> delegate.navigateToPreviousScreen(),
+                (dialogInterface, i) -> {
+                    model.stopRouteNavigation();
+                    delegate.navigateToPreviousScreen();
+                },
                 false
         );
     }
 
+    /*
+        NOTE: Spotify retains and reuses the onFailed callback from connectPlayer to handle connection
+              errors during the entirety of the run, even after the connection process has ended.
+     */
     private void connectPlayer(final Context context, final NoFailCallback<Void> callback) {
         showPlayerConnectProgressDialog();
 
