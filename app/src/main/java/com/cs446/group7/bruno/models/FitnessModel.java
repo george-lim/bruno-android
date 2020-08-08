@@ -25,14 +25,15 @@ public class FitnessModel extends ViewModel {
         final FitnessRecordDAO fitnessRecordDAO = MainActivity.getPersistenceService().getFitnessRecordDAO();
         final List<FitnessRecordEntry> entries = fitnessRecordDAO.getRecords();
 
-        for (final FitnessRecordEntry entry : entries) {
-            try {
+        try { // Load data from DB
+            for (final FitnessRecordEntry entry : entries) {
                 fitnessRecords.add(FitnessRecord.deserialize(entry.getRecordDataString()));
-            } catch (IOException | ClassNotFoundException e) {
-                // Happens when the structure of FitnessRecord changes so we must discard all old data
-                Log.e(TAG, "Failed to load record: " + e.toString());
-                fitnessRecordDAO.delete(entry);
             }
+        } catch (IOException | ClassNotFoundException e) {
+            // Happens when the structure of FitnessRecord changes so we must discard all old data
+            fitnessRecords.clear();
+            Log.e(TAG, "Failed to load records, deleting old data: " + e.toString());
+            fitnessRecordDAO.delete(entries.toArray(new FitnessRecordEntry[0]));
         }
 
         // Sort descending by the date the of the exercise
