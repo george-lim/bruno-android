@@ -6,6 +6,14 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.provider.Settings;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
+
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
 import com.cs446.group7.bruno.capability.CapabilityService;
@@ -29,14 +37,6 @@ import com.spotify.sdk.android.auth.AuthorizationClient;
 import com.spotify.sdk.android.auth.AuthorizationResponse;
 
 import java.util.HashMap;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-import androidx.navigation.fragment.NavHostFragment;
 
 public class MainActivity extends AppCompatActivity
         implements PermissionRequestDelegate, HardwareRequestDelegate, SpotifyRequestDelegate {
