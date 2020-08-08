@@ -123,9 +123,13 @@ public class RouteNavigationViewModel
     }
 
     private void refreshUI() {
+        float bearing = !model.hasCompletedAllCheckpoints()
+                ? model.getCurrentLocation().bearingTo(model.getCheckpoint().getLocation())
+                : model.getCurrentLocation().getBearing();
+
         delegate.animateCamera(
                 model.getCurrentCoordinate().getLatLng(),
-                model.getCurrentLocation().bearingTo(model.getCheckpoint().getLocation()),
+                bearing,
                 CAMERA_TILT,
                 CAMERA_ZOOM
         );
