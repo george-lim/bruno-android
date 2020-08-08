@@ -20,6 +20,10 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * Mock database that persists records in memory rather than the actual SQLite DB.
+ * It contains some mock data that always exists.
+ */
 public class MockFitnessRecordDAO implements FitnessRecordDAO {
 
     private final String TAG = getClass().getSimpleName();

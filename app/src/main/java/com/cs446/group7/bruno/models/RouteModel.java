@@ -141,7 +141,7 @@ public class RouteModel extends ViewModel {
         final long brunoDuration = playlistModel.getTotalPlaylistRouteDuration();
 
         // Persist tracks to database.
-        final FitnessRecord fitnessRecordData = new FitnessRecord(
+        final FitnessRecord fitnessRecord = new FitnessRecord(
                 mode,
                 startDate,
                 userDuration,
@@ -153,11 +153,11 @@ public class RouteModel extends ViewModel {
         );
 
         try { // Serialize and store record in DB
-            final String serializedString = fitnessRecordData.serialize();
+            final String serializedString = fitnessRecord.serialize();
             final FitnessRecordDAO fitnessRecordDAO = MainActivity.getPersistenceService().getFitnessRecordDAO();
-            final FitnessRecordEntry newRecord = new FitnessRecordEntry();
-            newRecord.setRecordDataString(serializedString);
-            fitnessRecordDAO.insert(newRecord);
+            final FitnessRecordEntry fitnessRecordEntry = new FitnessRecordEntry();
+            fitnessRecordEntry.setRecordDataString(serializedString);
+            fitnessRecordDAO.insert(fitnessRecordEntry);
         } catch (IOException e) {
             Log.e(getClass().getSimpleName(), "Failed to store FitnessRecord in DB: " + e.toString());
         }

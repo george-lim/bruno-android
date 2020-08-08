@@ -29,7 +29,7 @@ public class FitnessModel extends ViewModel {
             try {
                 fitnessRecords.add(FitnessRecord.deserialize(entry.getRecordDataString()));
             } catch (IOException | ClassNotFoundException e) {
-                // Happens when the structure of FitnessRecordData changes so we must discard all old data
+                // Happens when the structure of FitnessRecord changes so we must discard all old data
                 Log.e(TAG, "Failed to load record: " + e.toString());
                 fitnessRecordDAO.delete(entry);
             }
