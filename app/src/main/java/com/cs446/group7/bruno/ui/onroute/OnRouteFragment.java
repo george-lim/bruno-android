@@ -1,7 +1,6 @@
 package com.cs446.group7.bruno.ui.onroute;
 
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -59,7 +58,6 @@ public class OnRouteFragment extends Fragment implements OnRouteViewModelDelegat
 
     private OnRouteViewModel viewModel;
 
-    private ProgressDialog progressDialog;
     private AlertDialog alertDialog;
     private Marker userMarker;
     private Marker brunoMarker;
@@ -67,6 +65,9 @@ public class OnRouteFragment extends Fragment implements OnRouteViewModelDelegat
     private Circle checkpointCircle;
     private BitmapDescriptor userMarkerIcon;
     private BitmapDescriptor brunoMarkerIcon;
+
+    @SuppressWarnings("deprecation")
+    private android.app.ProgressDialog progressDialog;
 
     private boolean hasDrawnRouteOnce = false;
 
@@ -208,12 +209,13 @@ public class OnRouteFragment extends Fragment implements OnRouteViewModelDelegat
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public void showProgressDialog(final String title,
                                    final String message,
                                    boolean isIndeterminate,
                                    boolean isCancelable) {
         if (getActivity() != null) {
-            progressDialog = new ProgressDialog(getActivity());
+            progressDialog = new android.app.ProgressDialog(getActivity());
             progressDialog.setTitle(title);
             progressDialog.setMessage(message);
             progressDialog.setIndeterminate(isIndeterminate);
@@ -223,6 +225,7 @@ public class OnRouteFragment extends Fragment implements OnRouteViewModelDelegat
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public void dismissProgressDialog() {
         if (progressDialog == null) {
             return;

@@ -1,7 +1,6 @@
 package com.cs446.group7.bruno.ui.shared;
 
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -29,8 +28,10 @@ public class FallbackPlaylistFragment extends Fragment implements FallbackPlayli
     private LinearLayout playlistSelectionView;
     private LinearLayout noPlaylistsView;
     private LinearLayout spotifyErrorView;
-    private ProgressDialog progressDialog;
     private TextView tvError;
+
+    @SuppressWarnings("deprecation")
+    private android.app.ProgressDialog progressDialog;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -110,9 +111,10 @@ public class FallbackPlaylistFragment extends Fragment implements FallbackPlayli
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public void showProgressDialog() {
         if (getActivity() != null) {
-            progressDialog = new ProgressDialog(getActivity());
+            progressDialog = new android.app.ProgressDialog(getActivity());
             progressDialog.setMessage(getResources().getString(R.string.loading_diaglog_text));
             progressDialog.setIndeterminate(false);
             progressDialog.setCancelable(false);
@@ -121,6 +123,7 @@ public class FallbackPlaylistFragment extends Fragment implements FallbackPlayli
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public void dismissProgressDialog() {
         if (progressDialog == null) {
             return;
