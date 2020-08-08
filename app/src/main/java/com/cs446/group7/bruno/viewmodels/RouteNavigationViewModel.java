@@ -125,7 +125,7 @@ public class RouteNavigationViewModel
     private void refreshUI() {
         delegate.animateCamera(
                 model.getCurrentCoordinate().getLatLng(),
-                model.getCurrentLocation().getBearing(),
+                model.getCurrentLocation().bearingTo(model.getCheckpoint().getLocation()),
                 CAMERA_TILT,
                 CAMERA_ZOOM
         );
