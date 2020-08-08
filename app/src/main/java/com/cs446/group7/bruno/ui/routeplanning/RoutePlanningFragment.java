@@ -2,7 +2,6 @@ package com.cs446.group7.bruno.ui.routeplanning;
 
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -88,7 +87,7 @@ public class RoutePlanningFragment extends Fragment implements RoutePlanningView
 
             RouteModel model = new ViewModelProvider(requireActivity()).get(RouteModel.class);
             viewModel = new RoutePlanningViewModel(
-                    getActivity().getApplicationContext(),
+                    requireActivity().getApplicationContext(),
                     model,
                     this);
         });
@@ -219,16 +218,23 @@ public class RoutePlanningFragment extends Fragment implements RoutePlanningView
     }
 
     public void showRouteProcessingError(final String errorMessage) {
-        Toast.makeText(getContext(), errorMessage, Toast.LENGTH_LONG).show();
+        if (getActivity() != null) {
+            Toast toast = Toast.makeText(
+                    getActivity().getApplicationContext(),
+                    errorMessage,
+                    Toast.LENGTH_LONG
+            );
+            toast.show();
+        }
     }
 
     public void navigateToNextScreen() {
         if (getActivity() != null) {
-            NavController navController = Navigation.findNavController(getActivity(), R.id.nav_host_fragment);
+            NavController navController = Navigation.findNavController(
+                    getActivity(),
+                    R.id.nav_host_fragment
+            );
             navController.navigate(R.id.action_fragmenttoplevel_to_fragmentonroute);
-        }
-        else {
-            Log.w(getClass().getSimpleName(), "Detected race condition where navigateToNextScreen was called after already navigating to next screen.");
         }
     }
 

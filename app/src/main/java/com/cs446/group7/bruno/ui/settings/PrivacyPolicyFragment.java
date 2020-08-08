@@ -18,7 +18,7 @@ public class PrivacyPolicyFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_privacy_policy, container, false);
         AppbarFormatter.format(
-                (AppCompatActivity) getActivity(),
+                (AppCompatActivity) requireActivity(),
                 view,
                 R.id.appbar_privacy_policy,
                 getResources().getString(R.string.privacy_policy),

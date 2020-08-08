@@ -36,7 +36,11 @@ public class FallbackPlaylistFragment extends Fragment implements FallbackPlayli
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         FallbackPlaylistAction wrapperFragment = (FallbackPlaylistAction) this.getParentFragment();
-        viewModel = new FallbackPlaylistViewModel(getActivity().getApplicationContext(), wrapperFragment, this);
+        viewModel = new FallbackPlaylistViewModel(
+                requireActivity().getApplicationContext(),
+                wrapperFragment,
+                this
+        );
     }
 
     @Override
@@ -64,7 +68,9 @@ public class FallbackPlaylistFragment extends Fragment implements FallbackPlayli
         // Fallback playlist list
         RecyclerView fallbackPlaylistsList = view.findViewById(R.id.recycler_view_fallback_playlist);
         fallbackPlaylistsList.setHasFixedSize(true);
-        fallbackPlaylistsList.setLayoutManager(new LinearLayoutManager(getActivity()));
+        fallbackPlaylistsList.setLayoutManager(
+                new LinearLayoutManager(requireActivity().getApplicationContext())
+        );
         // Data
         adapter = new FallbackPlaylistsAdapter(viewModel);
         fallbackPlaylistsList.setAdapter(adapter);
@@ -98,16 +104,20 @@ public class FallbackPlaylistFragment extends Fragment implements FallbackPlayli
 
     @Override
     public void quitApp() {
-        requireActivity().finish();
+        if (getActivity() != null) {
+            getActivity().finish();
+        }
     }
 
     @Override
     public void showProgressDialog() {
-        progressDialog = new ProgressDialog(getContext());
-        progressDialog.setMessage(getResources().getString(R.string.loading_diaglog_text));
-        progressDialog.setIndeterminate(false);
-        progressDialog.setCancelable(false);
-        progressDialog.show();
+        if (getActivity() != null) {
+            progressDialog = new ProgressDialog(getActivity());
+            progressDialog.setMessage(getResources().getString(R.string.loading_diaglog_text));
+            progressDialog.setIndeterminate(false);
+            progressDialog.setCancelable(false);
+            progressDialog.show();
+        }
     }
 
     @Override
@@ -124,12 +134,14 @@ public class FallbackPlaylistFragment extends Fragment implements FallbackPlayli
                                 final String positiveButtonText,
                                 final DialogInterface.OnClickListener positiveButtonClickListener,
                                 boolean isCancelable) {
-        new AlertDialog.Builder(getContext())
-                .setTitle(title)
-                .setMessage(message)
-                .setPositiveButton(positiveButtonText, positiveButtonClickListener)
-                .setCancelable(isCancelable)
-                .create()
-                .show();
+        if (getActivity() != null) {
+            new AlertDialog.Builder(getActivity())
+                    .setTitle(title)
+                    .setMessage(message)
+                    .setPositiveButton(positiveButtonText, positiveButtonClickListener)
+                    .setCancelable(isCancelable)
+                    .create()
+                    .show();
+        }
     }
 }

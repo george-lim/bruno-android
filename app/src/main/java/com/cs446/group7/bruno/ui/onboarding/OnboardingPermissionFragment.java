@@ -35,7 +35,10 @@ public class OnboardingPermissionFragment extends Fragment implements Onboarding
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         onboardingFragment = (OnboardingFragment) this.getParentFragment();
-        viewModel = new OnboardingPermissionViewModel(getActivity().getApplicationContext(), this);
+        viewModel = new OnboardingPermissionViewModel(
+                requireActivity().getApplicationContext(),
+                this
+        );
     }
 
     @Override
@@ -124,13 +127,15 @@ public class OnboardingPermissionFragment extends Fragment implements Onboarding
                      final String positiveButtonText,
                      final DialogInterface.OnClickListener positiveButtonClickListener,
                      boolean isCancelable) {
-        new AlertDialog.Builder(getContext())
-                .setTitle(title)
-                .setMessage(message)
-                .setPositiveButton(positiveButtonText, positiveButtonClickListener)
-                .setCancelable(isCancelable)
-                .create()
-                .show();
+        if (getActivity() != null) {
+            new AlertDialog.Builder(getActivity())
+                    .setTitle(title)
+                    .setMessage(message)
+                    .setPositiveButton(positiveButtonText, positiveButtonClickListener)
+                    .setCancelable(isCancelable)
+                    .create()
+                    .show();
+        }
     }
 
     public void moveToNextTab() {

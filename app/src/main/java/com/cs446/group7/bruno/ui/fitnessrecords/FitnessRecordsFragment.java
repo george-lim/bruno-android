@@ -58,7 +58,7 @@ public class FitnessRecordsFragment extends Fragment
 
         final FitnessModel model = new ViewModelProvider(requireActivity()).get(FitnessModel.class);
         viewModel = new FitnessRecordsViewModel(
-                getActivity().getApplicationContext(),
+                requireActivity().getApplicationContext(),
                 model,
                 this
         );
@@ -75,7 +75,9 @@ public class FitnessRecordsFragment extends Fragment
     @Override
     public void setupUI() {
         fitnessRecordsRecyclerView.setHasFixedSize(true);
-        fitnessRecordsRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        fitnessRecordsRecyclerView.setLayoutManager(
+                new LinearLayoutManager(requireActivity().getApplicationContext())
+        );
         fitnessRecordsRecyclerView.setAdapter(adapter);
 
         DividerItemDecoration itemDecoration = new DividerItemDecoration(
@@ -88,8 +90,8 @@ public class FitnessRecordsFragment extends Fragment
         fitnessRecordsRecyclerView.addItemDecoration(itemDecoration);
 
         AppbarFormatter.format(
-                (AppCompatActivity) getActivity(),
-                getView(),
+                (AppCompatActivity) requireActivity(),
+                requireView(),
                 R.id.appbar_fitness_records,
                 getResources().getString(R.string.title_fitness_records),
                 false);
@@ -109,9 +111,11 @@ public class FitnessRecordsFragment extends Fragment
 
     @Override
     public void navigateToFitnessDetails(int fitnessRecordIndex) {
-        Bundle bundle = new Bundle();
-        bundle.putInt(FitnessDetailsFragment.FITNESS_RECORD_INDEX, fitnessRecordIndex);
-        NavController navController = Navigation.findNavController(getActivity(), R.id.nav_host_fragment);
-        navController.navigate(R.id.action_fragmenttoplevel_to_fragmentfitnessdetails, bundle);
+        if (getActivity() != null) {
+            Bundle bundle = new Bundle();
+            bundle.putInt(FitnessDetailsFragment.FITNESS_RECORD_INDEX, fitnessRecordIndex);
+            NavController navController = Navigation.findNavController(getActivity(), R.id.nav_host_fragment);
+            navController.navigate(R.id.action_fragmenttoplevel_to_fragmentfitnessdetails, bundle);
+        }
     }
 }

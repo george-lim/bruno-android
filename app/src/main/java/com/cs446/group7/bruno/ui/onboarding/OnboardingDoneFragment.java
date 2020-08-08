@@ -28,7 +28,12 @@ public class OnboardingDoneFragment extends Fragment {
         PreferencesStorage storage = MainActivity.getPreferencesStorage();
         storage.putBoolean(PreferencesStorage.COMPLETED_ONBOARDING, true);
 
-        NavController navController = Navigation.findNavController(getActivity(), R.id.nav_host_fragment);
-        navController.navigate(R.id.action_fragmentonboarding_to_fragmenttoplevel);
+        if (getActivity() != null) {
+            NavController navController = Navigation.findNavController(
+                    getActivity(),
+                    R.id.nav_host_fragment
+            );
+            navController.navigate(R.id.action_fragmentonboarding_to_fragmenttoplevel);
+        }
     }
 }

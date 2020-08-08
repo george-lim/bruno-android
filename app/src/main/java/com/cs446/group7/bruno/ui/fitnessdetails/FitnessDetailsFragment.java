@@ -76,7 +76,7 @@ public class FitnessDetailsFragment extends Fragment implements FitnessDetailsVi
 
         FitnessModel model = new ViewModelProvider(requireActivity()).get(FitnessModel.class);
         viewModel = new FitnessDetailsViewModel(
-                getActivity().getApplicationContext(),
+                requireActivity().getApplicationContext(),
                 model,
                 this,
                 getArguments().getInt(FITNESS_RECORD_INDEX)
@@ -132,8 +132,8 @@ public class FitnessDetailsFragment extends Fragment implements FitnessDetailsVi
         txtStatsSteps.setText(statsStepsText);
         txtStatsClock.setText(statsClockText);
 
-        AppbarFormatter.format((AppCompatActivity) getActivity(),
-                getView(),
+        AppbarFormatter.format((AppCompatActivity) requireActivity(),
+                requireView(),
                 R.id.appbar_fitness_details,
                 appBarTitle,
                 true);

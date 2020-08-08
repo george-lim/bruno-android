@@ -6,7 +6,6 @@ import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -101,7 +100,11 @@ public class OnRouteFragment extends Fragment implements OnRouteViewModelDelegat
             map = googleMap;
 
             RouteModel model = new ViewModelProvider(requireActivity()).get(RouteModel.class);
-            viewModel = new OnRouteViewModel(getActivity().getApplicationContext(), model, this);
+            viewModel = new OnRouteViewModel(
+                    requireActivity().getApplicationContext(),
+                    model,
+                    this
+            );
         });
     }
 
@@ -209,12 +212,14 @@ public class OnRouteFragment extends Fragment implements OnRouteViewModelDelegat
                                    final String message,
                                    boolean isIndeterminate,
                                    boolean isCancelable) {
-        progressDialog = new ProgressDialog(getContext());
-        progressDialog.setTitle(title);
-        progressDialog.setMessage(message);
-        progressDialog.setIndeterminate(isIndeterminate);
-        progressDialog.setCancelable(isCancelable);
-        progressDialog.show();
+        if (getActivity() != null) {
+            progressDialog = new ProgressDialog(getActivity());
+            progressDialog.setTitle(title);
+            progressDialog.setMessage(message);
+            progressDialog.setIndeterminate(isIndeterminate);
+            progressDialog.setCancelable(isCancelable);
+            progressDialog.show();
+        }
     }
 
     @Override
@@ -238,14 +243,15 @@ public class OnRouteFragment extends Fragment implements OnRouteViewModelDelegat
             alertDialog.dismiss();
         }
 
-        alertDialog = new AlertDialog.Builder(getContext())
-                .setTitle(title)
-                .setMessage(message)
-                .setPositiveButton(positiveButtonText, positiveButtonClickListener)
-                .setCancelable(isCancelable)
-                .create();
-
-        alertDialog.show();
+        if (getActivity() != null) {
+            alertDialog = new AlertDialog.Builder(getActivity())
+                    .setTitle(title)
+                    .setMessage(message)
+                    .setPositiveButton(positiveButtonText, positiveButtonClickListener)
+                    .setCancelable(isCancelable)
+                    .create();
+            alertDialog.show();
+        }
     }
 
     @Override
@@ -260,24 +266,22 @@ public class OnRouteFragment extends Fragment implements OnRouteViewModelDelegat
             alertDialog.dismiss();
         }
 
-        alertDialog = new AlertDialog.Builder(getContext())
-                .setTitle(title)
-                .setMessage(message)
-                .setPositiveButton(positiveButtonText, positiveButtonClickListener)
-                .setNegativeButton(negativeButtonText, negativeButtonClickListener)
-                .setCancelable(isCancelable)
-                .create();
-
-        alertDialog.show();
+        if (getActivity() != null) {
+            alertDialog = new AlertDialog.Builder(getActivity())
+                    .setTitle(title)
+                    .setMessage(message)
+                    .setPositiveButton(positiveButtonText, positiveButtonClickListener)
+                    .setNegativeButton(negativeButtonText, negativeButtonClickListener)
+                    .setCancelable(isCancelable)
+                    .create();
+            alertDialog.show();
+        }
     }
 
     @Override
     public void navigateToPreviousScreen() {
         if (getActivity() != null) {
             Navigation.findNavController(getActivity(), R.id.nav_host_fragment).navigateUp();
-        }
-        else {
-            Log.w(getClass().getSimpleName(), "Detected race condition where navigateToNextScreen was called after already navigating to next screen.");
         }
     }
 

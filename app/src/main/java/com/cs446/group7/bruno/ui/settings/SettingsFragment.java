@@ -22,7 +22,7 @@ public class SettingsFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_settings, container, false);
         AppbarFormatter.format(
-                (AppCompatActivity) getActivity(),
+                (AppCompatActivity) requireActivity(),
                 view,
                 R.id.appbar_settings,
                 getResources().getString(R.string.title_settings),
@@ -54,7 +54,12 @@ public class SettingsFragment extends Fragment {
     }
 
     private void navigateUsingAction(@IdRes final int action) {
-        NavController navController = Navigation.findNavController(getActivity(), R.id.nav_host_fragment);
-        navController.navigate(action);
+        if (getActivity() != null) {
+            NavController navController = Navigation.findNavController(
+                    getActivity(),
+                    R.id.nav_host_fragment
+            );
+            navController.navigate(action);
+        }
     }
 }
