@@ -12,6 +12,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
@@ -120,7 +121,7 @@ public class RoutePlanningFragment extends Fragment implements RoutePlanningView
     // MARK: - RoutePlanningViewModelDelegate methods
 
     private BitmapDescriptor getUserMarkerIcon(int avatarResourceId) {
-        Drawable avatarDrawable = getResources().getDrawable(avatarResourceId, null);
+        Drawable avatarDrawable = ContextCompat.getDrawable(requireActivity(), avatarResourceId);
         return BitmapDescriptorFactory.fromBitmap(BitmapUtils.getBitmapFromVectorDrawable(avatarDrawable));
     }
 

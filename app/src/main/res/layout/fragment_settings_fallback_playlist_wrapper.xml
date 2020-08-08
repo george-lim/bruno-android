@@ -13,7 +13,6 @@
         app:layout_constraintTop_toTopOf="parent"/>
 
     <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/fragment_container_fallback_playlist"
         android:tag="tag_fallback_playlist"
         android:name="com.cs446.group7.bruno.ui.shared.FallbackPlaylistFragment"
         tools:context=".ui.settings.SettingsFallbackPlaylistWrapperFragment"

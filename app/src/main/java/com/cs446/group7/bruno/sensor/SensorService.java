@@ -8,14 +8,12 @@ import android.hardware.SensorManager;
 
 // A service that allows classes to subscribe to device sensor events
 public class SensorService implements SensorEventListener {
-    private SensorManager sensorManager;
-    private Sensor accelerometer;
 
     private Pedometer pedometer;
 
     public SensorService(final Context context) {
-        sensorManager = (SensorManager)context.getSystemService(Context.SENSOR_SERVICE);
-        accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        SensorManager sensorManager = (SensorManager)context.getSystemService(Context.SENSOR_SERVICE);
+        Sensor accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         pedometer = new Pedometer();
 
         sensorManager.registerListener(SensorService.this, accelerometer, SensorManager.SENSOR_DELAY_FASTEST);

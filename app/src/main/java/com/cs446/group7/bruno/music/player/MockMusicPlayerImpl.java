@@ -51,7 +51,7 @@ public class MockMusicPlayerImpl implements MusicPlayer {
             }
         }
         // Return from the method immediately
-        catch (InterruptedException e) { }
+        catch (InterruptedException ignored) { }
     }
 
     // MARK: - MusicPlayer methods

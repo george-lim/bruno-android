@@ -54,9 +54,7 @@ public class FitnessRecordsAdapter extends RecyclerView.Adapter<FitnessRecordsVi
     @Override
     public void onBindViewHolder(@NonNull FitnessRecordsViewHolder holder, int position) {
         holder.populate(data.get(position), locale);
-        holder.itemView.setOnClickListener(view -> {
-            delegate.navigateToFitnessDetails(position);
-        });
+        holder.itemView.setOnClickListener(view -> delegate.navigateToFitnessDetails(position));
     }
 
     @Override

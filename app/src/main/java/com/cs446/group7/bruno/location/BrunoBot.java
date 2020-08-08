@@ -66,7 +66,7 @@ public class BrunoBot implements LocationService {
             }
         }
         // Return from the method immediately
-        catch (InterruptedException e) { }
+        catch (InterruptedException ignored) { }
     }
 
     // MARK: - LocationService methods

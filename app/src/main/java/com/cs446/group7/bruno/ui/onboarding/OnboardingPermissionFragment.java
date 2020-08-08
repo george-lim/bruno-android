@@ -16,6 +16,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.cs446.group7.bruno.R;
@@ -110,8 +111,8 @@ public class OnboardingPermissionFragment extends Fragment implements Onboarding
     private void updateAccessRequestStatus(final View view, final boolean enabled, final String title, final String hint) {
         ImageView statusIcon = view.findViewById(R.id.request_status_icon);
         Drawable icon = enabled
-                ? getResources().getDrawable(R.drawable.ic_check_circle, null)
-                : getResources().getDrawable(R.drawable.ic_times_circle, null);
+                ? ContextCompat.getDrawable(requireActivity(), R.drawable.ic_check_circle)
+                : ContextCompat.getDrawable(requireActivity(), R.drawable.ic_times_circle);
         icon.setTint(enabled
                 ? getResources().getColor(R.color.colorGood, null)
                 : getResources().getColor(R.color.colorError, null));

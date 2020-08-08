@@ -80,7 +80,8 @@ public class RouteNavigationViewModel
     }
 
     public void onDestroyView() {
-        MainActivity.getLocationService().removeSubscriber(this);
+        locationService.stopLocationUpdates();
+        locationService.removeSubscriber(this);
         MainActivity.getSensorService().removePedometerSubscriber(this);
         musicPlayer.removeSubscriber(this);
     }
