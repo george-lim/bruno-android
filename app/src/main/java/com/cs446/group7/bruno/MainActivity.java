@@ -22,7 +22,7 @@ import com.cs446.group7.bruno.spotify.auth.SpotifyRequest;
 import com.cs446.group7.bruno.spotify.auth.SpotifyRequestDelegate;
 import com.cs446.group7.bruno.storage.PreferencesStorage;
 import com.cs446.group7.bruno.ui.onboarding.OnboardingFragment;
-import com.cs446.group7.bruno.ui.onroute.OnRouteFragment;
+import com.cs446.group7.bruno.ui.routenavigation.RouteNavigationFragment;
 import com.cs446.group7.bruno.ui.toplevel.TopLevelFragment;
 import com.cs446.group7.bruno.utils.NoFailCallback;
 import com.spotify.sdk.android.auth.AuthorizationClient;
@@ -67,7 +67,11 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        capabilityService = new CapabilityService(getApplicationContext(), this, this);
+        capabilityService = new CapabilityService(
+                getApplicationContext(),
+                this,
+                this
+        );
         activePermissionRequests = new HashMap<>();
         activeHardwareRequests = new HashMap<>();
         activeSpotifyRequests = new HashMap<>();
@@ -93,22 +97,31 @@ public class MainActivity extends AppCompatActivity
 
         // NOTE: If the back button is pressed in OnboardingFragment, let the fragment handle it unless it delegates back
         if (curContainerFragmentId == R.id.fragment_onboarding) {
-            NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager().getPrimaryNavigationFragment();
-            OnboardingFragment onboardingFragment = (OnboardingFragment) navHostFragment.getChildFragmentManager().getPrimaryNavigationFragment();
+            NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager()
+                    .getPrimaryNavigationFragment();
+            OnboardingFragment onboardingFragment = (OnboardingFragment) navHostFragment
+                    .getChildFragmentManager()
+                    .getPrimaryNavigationFragment();
             if (onboardingFragment.onBackPress()) return;
         }
 
-        // NOTE: If the back button is pressed in OnRouteFragment, let OnRouteFragment handle it
-        if (curContainerFragmentId == R.id.fragment_on_route) {
-            NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager().getPrimaryNavigationFragment();
-            OnRouteFragment onRouteFragment = (OnRouteFragment) navHostFragment.getChildFragmentManager().getPrimaryNavigationFragment();
-            onRouteFragment.onBackPress();
+        // NOTE: If the back button is pressed in RouteNavigationFragment, let RouteNavigationFragment handle it
+        if (curContainerFragmentId == R.id.fragment_route_navigation) {
+            NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager()
+                    .getPrimaryNavigationFragment();
+            RouteNavigationFragment routeNavigationFragment = (RouteNavigationFragment) navHostFragment
+                    .getChildFragmentManager()
+                    .getPrimaryNavigationFragment();
+            routeNavigationFragment.onBackPress();
             return;
         }
 
         if (curContainerFragmentId == R.id.fragment_top_lvl) {
-            NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager().getPrimaryNavigationFragment();
-            TopLevelFragment topLvlFragment = (TopLevelFragment) navHostFragment.getChildFragmentManager().getPrimaryNavigationFragment();
+            NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager()
+                    .getPrimaryNavigationFragment();
+            TopLevelFragment topLvlFragment = (TopLevelFragment) navHostFragment
+                    .getChildFragmentManager()
+                    .getPrimaryNavigationFragment();
             if (topLvlFragment.onBackPress()) return;
         }
         super.onBackPressed();
@@ -290,7 +303,11 @@ public class MainActivity extends AppCompatActivity
     public void handleSpotifyRequest(@NonNull final SpotifyRequest request) {
 
         activeSpotifyRequests.put(currentRequestCode, request);
-        AuthorizationClient.openLoginActivity(this, currentRequestCode, request.getAuthorizationRequest());
+        AuthorizationClient.openLoginActivity(
+                this,
+                currentRequestCode,
+                request.getAuthorizationRequest()
+        );
         currentRequestCode++;
 
     }

@@ -27,7 +27,8 @@ import com.cs446.group7.bruno.storage.PreferencesStorage;
 import com.cs446.group7.bruno.utils.Callback;
 import com.cs446.group7.bruno.utils.NoFailCallback;
 
-public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerSubscriber, PedometerSubscriber {
+public class RouteNavigationViewModel
+        implements LocationServiceSubscriber, MusicPlayerSubscriber, PedometerSubscriber {
 
     // MARK: - Constants
 
@@ -38,7 +39,7 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
 
     private Resources resources;
     private RouteModel model;
-    private OnRouteViewModelDelegate delegate;
+    private RouteNavigationViewModelDelegate delegate;
     private Context context;
 
     private LocationService locationService;
@@ -49,9 +50,9 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
 
     // MARK: - Lifecycle methods
 
-    public OnRouteViewModel(final Context context,
-                            final RouteModel model,
-                            final OnRouteViewModelDelegate delegate) {
+    public RouteNavigationViewModel(final Context context,
+                                    final RouteModel model,
+                                    final RouteNavigationViewModelDelegate delegate) {
         this.resources = context.getResources();
         this.model = model;
         this.delegate = delegate;

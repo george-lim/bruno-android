@@ -1,4 +1,4 @@
-package com.cs446.group7.bruno.ui.onroute;
+package com.cs446.group7.bruno.ui.routenavigation;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -23,8 +23,8 @@ import com.cs446.group7.bruno.R;
 import com.cs446.group7.bruno.models.RouteModel;
 import com.cs446.group7.bruno.models.TrackSegment;
 import com.cs446.group7.bruno.utils.BitmapUtils;
-import com.cs446.group7.bruno.viewmodels.OnRouteViewModel;
-import com.cs446.group7.bruno.viewmodels.OnRouteViewModelDelegate;
+import com.cs446.group7.bruno.viewmodels.RouteNavigationViewModel;
+import com.cs446.group7.bruno.viewmodels.RouteNavigationViewModelDelegate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -40,7 +40,7 @@ import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.util.List;
 
-public class OnRouteFragment extends Fragment implements OnRouteViewModelDelegate {
+public class RouteNavigationFragment extends Fragment implements RouteNavigationViewModelDelegate {
 
     // MARK: - UI components
 
@@ -56,7 +56,7 @@ public class OnRouteFragment extends Fragment implements OnRouteViewModelDelegat
 
     // MARK: - Private members
 
-    private OnRouteViewModel viewModel;
+    private RouteNavigationViewModel viewModel;
 
     private AlertDialog alertDialog;
     private Marker userMarker;
@@ -78,7 +78,7 @@ public class OnRouteFragment extends Fragment implements OnRouteViewModelDelegat
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_on_route, container, false);
+        View view = inflater.inflate(R.layout.fragment_route_navigation, container, false);
         trackInfoCardView = view.findViewById(R.id.card_view_track_info);
         routeInfoCardView = view.findViewById(R.id.card_view_route_info);
         txtSongTitle = view.findViewById(R.id.text_view_song_title);
@@ -101,7 +101,7 @@ public class OnRouteFragment extends Fragment implements OnRouteViewModelDelegat
             map = googleMap;
 
             RouteModel model = new ViewModelProvider(requireActivity()).get(RouteModel.class);
-            viewModel = new OnRouteViewModel(
+            viewModel = new RouteNavigationViewModel(
                     requireActivity().getApplicationContext(),
                     model,
                     this
@@ -125,7 +125,7 @@ public class OnRouteFragment extends Fragment implements OnRouteViewModelDelegat
         viewModel.handleExitRoute();
     }
 
-    // MARK: - OnRouteViewModelDelegate methods
+    // MARK: - RouteNavigationViewModelDelegate methods
 
     private BitmapDescriptor getMarkerIcon(int iconResourceId) {
         Drawable avatarDrawable = getResources().getDrawable(iconResourceId, null);

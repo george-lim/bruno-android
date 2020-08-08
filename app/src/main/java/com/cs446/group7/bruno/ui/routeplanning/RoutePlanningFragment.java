@@ -234,7 +234,7 @@ public class RoutePlanningFragment extends Fragment implements RoutePlanningView
                     getActivity(),
                     R.id.nav_host_fragment
             );
-            navController.navigate(R.id.action_fragmenttoplevel_to_fragmentonroute);
+            navController.navigate(R.id.action_fragmenttoplevel_to_fragmentroutenavigation);
         }
     }
 

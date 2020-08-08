@@ -73,7 +73,7 @@
     <string name="player_error">Player Error</string>
     <string name="run_exit_title">Are you exhausted?</string>
     <string name="run_exit_message">Bruno doesn\'t like it when you quit in the middle. He will stop playing your music.</string>
-    <string name="on_route_stop">EXIT</string>
+    <string name="route_navigation_stop">EXIT</string>
     <string name="fitness_details_leaderboard">Leaderboard</string>
     <string name="fitness_details_stats">Your Stats</string>
     <string name="fitness_details_playlist">Route Playlist</string>

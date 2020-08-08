@@ -16,8 +16,8 @@
             app:popUpTo="@id/fragment_top_lvl"
             app:popUpToInclusive="true" />
         <action
-            android:id="@+id/action_fragmenttoplevel_to_fragmentonroute"
-            app:destination="@id/fragment_on_route" />
+            android:id="@+id/action_fragmenttoplevel_to_fragmentroutenavigation"
+            app:destination="@id/fragment_route_navigation" />
         <action
             android:id="@+id/action_fragmenttoplevel_to_fragmentfitnessdetails"
             app:destination="@id/fragment_fitness_details" />
@@ -51,10 +51,9 @@
     </fragment>
 
     <fragment
-        android:id="@+id/fragment_on_route"
-        android:name="com.cs446.group7.bruno.ui.onroute.OnRouteFragment"
-        android:label="fragment_on_route"
-        tools:layout="@layout/fragment_on_route" />
+        android:id="@+id/fragment_route_navigation"
+        android:name="com.cs446.group7.bruno.ui.routenavigation.RouteNavigationFragment"
+        android:label="fragment_route_navigation" />
 
     <fragment
         android:id="@+id/fragment_fitness_details"
