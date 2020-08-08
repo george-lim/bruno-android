@@ -33,7 +33,7 @@ public class FitnessModel extends ViewModel {
             // Happens when the structure of FitnessRecord changes so we must discard all old data
             fitnessRecords.clear();
             Log.e(TAG, "Failed to load records, deleting old data: " + e.toString());
-            fitnessRecordDAO.delete(entries.toArray(new FitnessRecordEntry[0]));
+            fitnessRecordDAO.deleteAll();
         }
 
         // Sort descending by the date the of the exercise

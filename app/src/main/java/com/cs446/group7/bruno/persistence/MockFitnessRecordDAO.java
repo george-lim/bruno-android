@@ -167,6 +167,11 @@ public class MockFitnessRecordDAO implements FitnessRecordDAO {
     }
 
     @Override
+    public void deleteAll() {
+        recordEntries.clear();
+    }
+
+    @Override
     public List<FitnessRecordEntry> getRecords() {
         return recordEntries;
     }

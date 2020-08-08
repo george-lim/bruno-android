@@ -19,6 +19,9 @@ public interface FitnessRecordDAO {
     @Delete
     void delete(FitnessRecordEntry... records);
 
+    @Query("DELETE FROM " + FitnessRecordEntry.TABLE_NAME)
+    void deleteAll();
+
     @Query("SELECT * FROM " + FitnessRecordEntry.TABLE_NAME)
     List<FitnessRecordEntry> getRecords();
 
