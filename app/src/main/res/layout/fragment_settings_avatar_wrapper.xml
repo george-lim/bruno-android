@@ -13,6 +13,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/avatars_view"
         android:name="com.cs446.group7.bruno.ui.shared.AvatarFragment"
         tools:context=".ui.onboarding.OnboardingAvatarWrapperFragment"
         android:layout_width="match_parent"
