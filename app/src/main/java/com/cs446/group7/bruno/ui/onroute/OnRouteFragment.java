@@ -106,9 +106,9 @@ public class OnRouteFragment extends Fragment implements OnRouteViewModelDelegat
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-        viewModel.onDestroy();
+    public void onDestroyView() {
+        super.onDestroyView();
+        viewModel.onDestroyView();
     }
 
     // MARK: - User actions

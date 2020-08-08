@@ -81,7 +81,7 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
         });
     }
 
-    public void onDestroy() {
+    public void onDestroyView() {
         MainActivity.getLocationService().stopLocationUpdates();
         MainActivity.getLocationService().removeSubscriber(this);
     }

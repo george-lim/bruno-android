@@ -150,6 +150,14 @@ class SpotifyPlayerService implements MusicPlayer {
                         if (!hasReachedFirstSong && convertToBrunoTrack(track).equals(playlist.getTrack(0))) {
                             Log.d(TAG, "Received the first song related to the playlist.");
                             hasReachedFirstSong = true;
+
+                            // Alert subscribers immediately after reaching first song
+                            Log.d(TAG, "Alerting subscribers about a new track change.");
+                            for (MusicPlayerSubscriber subscriber : spotifyServiceSubscribers) {
+                                subscriber.onTrackChanged(convertToBrunoTrack(track));
+                            }
+
+                            return;
                         }
 
                         boolean isDifferentTrack =

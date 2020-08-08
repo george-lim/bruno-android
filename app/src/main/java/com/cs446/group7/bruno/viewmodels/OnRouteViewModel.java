@@ -78,7 +78,7 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
         });
     }
 
-    public void onDestroy() {
+    public void onDestroyView() {
         MainActivity.getLocationService().removeSubscriber(this);
         MainActivity.getSensorService().removePedometerSubscriber(this);
         musicPlayer.removeSubscriber(this);
