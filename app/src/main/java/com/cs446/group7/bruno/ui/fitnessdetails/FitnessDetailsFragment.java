@@ -161,9 +161,9 @@ public class FitnessDetailsFragment extends Fragment implements FitnessDetailsVi
     @Override
     public void drawRoute(final List<TrackSegment> trackSegments, float routeWidth) {
         for (TrackSegment trackSegment : trackSegments) {
-            List<LatLng> trackSegmentLocations = trackSegment.getLatLngs();
+            List<LatLng> trackSegmentLatLngs = trackSegment.getLatLngs();
             map.addPolyline(new PolylineOptions()
-                    .addAll(trackSegmentLocations)
+                    .addAll(trackSegmentLatLngs)
                     .color(trackSegment.getRouteColour())
                     .width(routeWidth));
         }
