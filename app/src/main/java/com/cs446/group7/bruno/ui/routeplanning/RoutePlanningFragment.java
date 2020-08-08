@@ -95,9 +95,9 @@ public class RoutePlanningFragment extends Fragment implements RoutePlanningView
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-        viewModel.onDestroy();
+    public void onDestroyView() {
+        super.onDestroyView();
+        viewModel.onDestroyView();
     }
 
     // MARK: - User actions
@@ -185,9 +185,9 @@ public class RoutePlanningFragment extends Fragment implements RoutePlanningView
 
     public void drawRoute(@NonNull final List<TrackSegment> trackSegments, float routeWidth) {
         for (TrackSegment trackSegment : trackSegments) {
-            List<LatLng> trackSegmentLocations = trackSegment.getLatLngs();
+            List<LatLng> trackSegmentLatLngs = trackSegment.getLatLngs();
             map.addPolyline(new PolylineOptions()
-                    .addAll(trackSegmentLocations)
+                    .addAll(trackSegmentLatLngs)
                     .color(trackSegment.getRouteColour())
                     .width(routeWidth));
         }
