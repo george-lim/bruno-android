@@ -22,6 +22,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 // Communicates with the Spotify Web API through HTTP
 // Uses Volley, an HTTP library: https://developer.android.com/training/volley
@@ -34,8 +35,13 @@ public class SpotifyPlaylistService implements PlaylistGenerator, SpotifyPlaylis
     private final String clientSecret;
     private final String TAG = this.getClass().getSimpleName();
 
-    // Could be expanded to use different playlists
-    private static final String DEFAULT_PLAYLIST_ID = "27q9PVUOHGeSJlz6jSgt2f";
+    private static final String[] PLAYLIST_IDS = {
+            "27q9PVUOHGeSJlz6jSgt2f",
+            "37i9dQZEVXbKj23U1GF4IR",
+            "37i9dQZEVXbMDoHDwVN2tF",
+            "37i9dQZEVXbLiRSasKsNU9",
+            "37i9dQZEVXbKfIuOAZrk7G"
+    };
 
     // Needs context for secret variables
     public SpotifyPlaylistService(final Context context, final DefaultRetryPolicy retryPolicy) {
@@ -50,7 +56,7 @@ public class SpotifyPlaylistService implements PlaylistGenerator, SpotifyPlaylis
         getPublicAuthorizationToken(new Callback<String, Exception>() {
             @Override
             public void onSuccess(String authToken) {
-                getPlaylist(authToken, DEFAULT_PLAYLIST_ID, callback);
+                getPlaylist(authToken, getRandomPlaylistId(), callback);
             }
 
             @Override
@@ -173,5 +179,9 @@ public class SpotifyPlaylistService implements PlaylistGenerator, SpotifyPlaylis
         request.setTag(TAG);
         request.setRetryPolicy(retryPolicy);
         MainActivity.getVolleyRequestQueue().add(request);
+    }
+
+    private static String getRandomPlaylistId() {
+        return PLAYLIST_IDS[new Random().nextInt(PLAYLIST_IDS.length)];
     }
 }
