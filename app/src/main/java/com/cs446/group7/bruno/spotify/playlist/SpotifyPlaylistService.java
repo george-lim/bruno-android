@@ -36,7 +36,6 @@ public class SpotifyPlaylistService implements PlaylistGenerator, SpotifyPlaylis
     private final String TAG = this.getClass().getSimpleName();
 
     private static final String[] PLAYLIST_IDS = {
-            "27q9PVUOHGeSJlz6jSgt2f",
             "37i9dQZEVXbKj23U1GF4IR",
             "37i9dQZEVXbMDoHDwVN2tF",
             "37i9dQZEVXbLiRSasKsNU9",
