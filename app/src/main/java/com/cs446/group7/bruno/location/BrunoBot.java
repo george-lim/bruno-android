@@ -18,7 +18,7 @@ public class BrunoBot implements LocationService {
     // MARK: - Private constants
 
     // NOTE: Must be greater than zero
-    private static final int UPDATE_INTERVAL_MILLISECONDS = 2000;
+    private static final int UPDATE_INTERVAL_MILLISECONDS = 1000;
 
     // MARK: - Private members
 
@@ -36,13 +36,6 @@ public class BrunoBot implements LocationService {
 
     // MARK: - Private methods
 
-    private Location getLocation(final Coordinate coordinate) {
-        Location location = new Location("BrunoLocationProvider");
-        location.setLatitude(coordinate.getLatitude());
-        location.setLongitude(coordinate.getLongitude());
-        return location;
-    }
-
     // Simulates playing the playlist in the background, with proper track delay.
     private void generateLocationUpdates() {
         try {
@@ -58,7 +51,7 @@ public class BrunoBot implements LocationService {
                 new Handler(Looper.getMainLooper()).post(() -> {
                     // Notify all subscribers of next location
                     for (LocationServiceSubscriber subscriber : subscribers) {
-                        subscriber.onLocationUpdate(getLocation(checkpoint));
+                        subscriber.onLocationUpdate(checkpoint.getLocation());
                     }
                 });
 
@@ -66,7 +59,7 @@ public class BrunoBot implements LocationService {
             }
         }
         // Return from the method immediately
-        catch (InterruptedException e) { }
+        catch (InterruptedException ignored) { }
     }
 
     // MARK: - LocationService methods
@@ -80,7 +73,7 @@ public class BrunoBot implements LocationService {
     @Override
     public void startLocationUpdates(final @Nullable NoFailCallback<Location> initialLocationCallback) {
         startLocationUpdates();
-        initialLocationCallback.onSuccess(getLocation(model.getCheckpoint()));
+        initialLocationCallback.onSuccess(model.getCheckpoint().getLocation());
     }
 
     @Override

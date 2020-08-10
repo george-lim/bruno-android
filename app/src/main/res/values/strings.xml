@@ -1,13 +1,11 @@
 <resources>
     <string name="app_name">Bruno</string>
-    <string name="title_activity_maps">Bruno</string>
     <string name="title_route_planning">Route Planning</string>
     <string name="title_fitness_records">Fitness Records</string>
     <string name="title_settings">Settings</string>
     <string name="ok_button">OK</string>
     <string name="yes_button">YES</string>
     <string name="no_button">NO</string>
-    <string name="unknown_error">Unknown error</string>
 
     <!--  Onboarding  -->
     <string name="get_started_button">Get Started</string>
@@ -16,7 +14,7 @@
     <string name="select_button">Select</string>
     <string name="install_button">Install</string>
     <string name="quit_button">Quit</string>
-    <string name="loading_diaglog_text">Loading... Please wait</string>
+    <string name="loading_diaglog_text">Loading… Please wait</string>
     <string name="onboarding_welcome">Welcome to Bruno!</string>
     <string name="onboarding_welcome_text">Bruno is a fitness app that augments your walk or run routines with randomly generated routes and music discovery.</string>
     <string name="onboarding_record">Learn More About Yourself</string>
@@ -41,6 +39,10 @@
     <string name="onboarding_fallback_playlist_fail">Something went wrong, please try again later.</string>
     <string name="onboarding_fallback_playlist_not_premium_user">Unfortunately, Bruno requires Spotify Premium to work.</string>
     <string name="onboarding_all_done">All Done!</string>
+    <string name="onboarding_permission_title">The Boring Stuff</string>
+    <string name="onboarding_permission_skip">Skip</string>
+    <string name="permission_status_name">Permission name</string>
+    <string name="permission_status_description">Explain why permission is needed.</string>
     <!--  Settings  -->
     <string name="settings_user_preferences_title">Your Preferences</string>
     <string name="settings_avatar_title">Avatar</string>
@@ -73,7 +75,7 @@
     <string name="player_error">Player Error</string>
     <string name="run_exit_title">Are you exhausted?</string>
     <string name="run_exit_message">Bruno doesn\'t like it when you quit in the middle. He will stop playing your music.</string>
-    <string name="on_route_stop">EXIT</string>
+    <string name="route_navigation_stop">EXIT</string>
     <string name="fitness_details_leaderboard">Leaderboard</string>
     <string name="fitness_details_stats">Your Stats</string>
     <string name="fitness_details_playlist">Route Playlist</string>
@@ -85,6 +87,11 @@
     <string name="fitness_details_clock_description">Total time elapsed indicator</string>
     <string name="fitness_details_steps_placeholder">%d steps</string>
     <string name="fitness_details_music_description">Music note</string>
+    <string name="view_holder_fallback_playlist_name">Bruno playlist name</string>
+    <string name="view_holder_fallback_playlist_tracks">108 tracks</string>
+    <string name="view_holder_fitness_record_title">June 15 · 11:30 AM</string>
+    <string name="view_holder_fitness_record_distance">1.5 km</string>
+    <string name="view_holder_fitness_record_duration">1 hour</string>
     <string name="fallback_fail_title">Something went wrong</string>
     <string name="fallback_fail_description">Bruno is unable to continue the run. You have either not yet set a
         fallback playlist or Bruno encountered a problem. Your current progress will be lost.</string>

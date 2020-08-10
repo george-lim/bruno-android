@@ -18,7 +18,7 @@ public class CreditsFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_credits, container, false);
         AppbarFormatter.format(
-                (AppCompatActivity) getActivity(),
+                (AppCompatActivity) requireActivity(),
                 view,
                 R.id.appbar_credits,
                 getResources().getString(R.string.credits),

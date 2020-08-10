@@ -18,7 +18,7 @@ public class SettingsAvatarWrapperFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_settings_avatar_wrapper, container, false);
         AppbarFormatter.format(
-                (AppCompatActivity) getActivity(),
+                (AppCompatActivity) requireActivity(),
                 view,
                 R.id.appbar_settings_avatar,
                 getResources().getString(R.string.settings_avatar_title),

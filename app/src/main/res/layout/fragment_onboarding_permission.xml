@@ -8,7 +8,7 @@
 
     <TextView
         style="@style/TextTitle"
-        android:text="The Boring Stuff"
+        android:text="@string/onboarding_permission_title"
         android:layout_marginBottom="20dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -46,7 +46,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@android:color/transparent"
-        android:text="Skip"
+        android:text="@string/onboarding_permission_skip"
         android:textColor="@color/colorDisable"
         app:layout_constraintBottom_toTopOf="@id/btn_allow_access"
         android:layout_marginBottom="15dp"

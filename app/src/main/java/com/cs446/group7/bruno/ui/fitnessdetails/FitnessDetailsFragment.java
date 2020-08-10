@@ -76,7 +76,7 @@ public class FitnessDetailsFragment extends Fragment implements FitnessDetailsVi
 
         FitnessModel model = new ViewModelProvider(requireActivity()).get(FitnessModel.class);
         viewModel = new FitnessDetailsViewModel(
-                getActivity().getApplicationContext(),
+                requireActivity().getApplicationContext(),
                 model,
                 this,
                 getArguments().getInt(FITNESS_RECORD_INDEX)
@@ -91,6 +91,7 @@ public class FitnessDetailsFragment extends Fragment implements FitnessDetailsVi
 
     // MARK: - Private methods
 
+    // TODO: Use an adapter instead of manually adding view holders.
     private void setupTracklist(final List<BrunoTrack> tracks) {
         int[] routeColours = getResources().getIntArray(R.array.colorRouteList);
         int colourIndex = 0;
@@ -132,8 +133,8 @@ public class FitnessDetailsFragment extends Fragment implements FitnessDetailsVi
         txtStatsSteps.setText(statsStepsText);
         txtStatsClock.setText(statsClockText);
 
-        AppbarFormatter.format((AppCompatActivity) getActivity(),
-                getView(),
+        AppbarFormatter.format((AppCompatActivity) requireActivity(),
+                requireView(),
                 R.id.appbar_fitness_details,
                 appBarTitle,
                 true);

@@ -1,12 +1,10 @@
-package com.cs446.group7.bruno.ui.onroute;
+package com.cs446.group7.bruno.ui.routenavigation;
 
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +15,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
@@ -25,8 +24,8 @@ import com.cs446.group7.bruno.R;
 import com.cs446.group7.bruno.models.RouteModel;
 import com.cs446.group7.bruno.models.TrackSegment;
 import com.cs446.group7.bruno.utils.BitmapUtils;
-import com.cs446.group7.bruno.viewmodels.OnRouteViewModel;
-import com.cs446.group7.bruno.viewmodels.OnRouteViewModelDelegate;
+import com.cs446.group7.bruno.viewmodels.RouteNavigationViewModel;
+import com.cs446.group7.bruno.viewmodels.RouteNavigationViewModelDelegate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -42,7 +41,7 @@ import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.util.List;
 
-public class OnRouteFragment extends Fragment implements OnRouteViewModelDelegate {
+public class RouteNavigationFragment extends Fragment implements RouteNavigationViewModelDelegate {
 
     // MARK: - UI components
 
@@ -58,9 +57,8 @@ public class OnRouteFragment extends Fragment implements OnRouteViewModelDelegat
 
     // MARK: - Private members
 
-    private OnRouteViewModel viewModel;
+    private RouteNavigationViewModel viewModel;
 
-    private ProgressDialog progressDialog;
     private AlertDialog alertDialog;
     private Marker userMarker;
     private Marker brunoMarker;
@@ -68,6 +66,9 @@ public class OnRouteFragment extends Fragment implements OnRouteViewModelDelegat
     private Circle checkpointCircle;
     private BitmapDescriptor userMarkerIcon;
     private BitmapDescriptor brunoMarkerIcon;
+
+    @SuppressWarnings("deprecation")
+    private android.app.ProgressDialog progressDialog;
 
     private boolean hasDrawnRouteOnce = false;
 
@@ -78,7 +79,7 @@ public class OnRouteFragment extends Fragment implements OnRouteViewModelDelegat
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_on_route, container, false);
+        View view = inflater.inflate(R.layout.fragment_route_navigation, container, false);
         trackInfoCardView = view.findViewById(R.id.card_view_track_info);
         routeInfoCardView = view.findViewById(R.id.card_view_route_info);
         txtSongTitle = view.findViewById(R.id.text_view_song_title);
@@ -101,7 +102,11 @@ public class OnRouteFragment extends Fragment implements OnRouteViewModelDelegat
             map = googleMap;
 
             RouteModel model = new ViewModelProvider(requireActivity()).get(RouteModel.class);
-            viewModel = new OnRouteViewModel(getActivity().getApplicationContext(), model, this);
+            viewModel = new RouteNavigationViewModel(
+                    requireActivity().getApplicationContext(),
+                    model,
+                    this
+            );
         });
     }
 
@@ -121,10 +126,10 @@ public class OnRouteFragment extends Fragment implements OnRouteViewModelDelegat
         viewModel.handleExitRoute();
     }
 
-    // MARK: - OnRouteViewModelDelegate methods
+    // MARK: - RouteNavigationViewModelDelegate methods
 
     private BitmapDescriptor getMarkerIcon(int iconResourceId) {
-        Drawable avatarDrawable = getResources().getDrawable(iconResourceId, null);
+        Drawable avatarDrawable = ContextCompat.getDrawable(requireActivity(), iconResourceId);
         return BitmapDescriptorFactory.fromBitmap(BitmapUtils.getBitmapFromVectorDrawable(avatarDrawable));
     }
 
@@ -205,19 +210,23 @@ public class OnRouteFragment extends Fragment implements OnRouteViewModelDelegat
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public void showProgressDialog(final String title,
                                    final String message,
                                    boolean isIndeterminate,
                                    boolean isCancelable) {
-        progressDialog = new ProgressDialog(getContext());
-        progressDialog.setTitle(title);
-        progressDialog.setMessage(message);
-        progressDialog.setIndeterminate(isIndeterminate);
-        progressDialog.setCancelable(isCancelable);
-        progressDialog.show();
+        if (getActivity() != null) {
+            progressDialog = new android.app.ProgressDialog(getActivity());
+            progressDialog.setTitle(title);
+            progressDialog.setMessage(message);
+            progressDialog.setIndeterminate(isIndeterminate);
+            progressDialog.setCancelable(isCancelable);
+            progressDialog.show();
+        }
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public void dismissProgressDialog() {
         if (progressDialog == null) {
             return;
@@ -238,14 +247,15 @@ public class OnRouteFragment extends Fragment implements OnRouteViewModelDelegat
             alertDialog.dismiss();
         }
 
-        alertDialog = new AlertDialog.Builder(getContext())
-                .setTitle(title)
-                .setMessage(message)
-                .setPositiveButton(positiveButtonText, positiveButtonClickListener)
-                .setCancelable(isCancelable)
-                .create();
-
-        alertDialog.show();
+        if (getActivity() != null) {
+            alertDialog = new AlertDialog.Builder(getActivity())
+                    .setTitle(title)
+                    .setMessage(message)
+                    .setPositiveButton(positiveButtonText, positiveButtonClickListener)
+                    .setCancelable(isCancelable)
+                    .create();
+            alertDialog.show();
+        }
     }
 
     @Override
@@ -260,24 +270,22 @@ public class OnRouteFragment extends Fragment implements OnRouteViewModelDelegat
             alertDialog.dismiss();
         }
 
-        alertDialog = new AlertDialog.Builder(getContext())
-                .setTitle(title)
-                .setMessage(message)
-                .setPositiveButton(positiveButtonText, positiveButtonClickListener)
-                .setNegativeButton(negativeButtonText, negativeButtonClickListener)
-                .setCancelable(isCancelable)
-                .create();
-
-        alertDialog.show();
+        if (getActivity() != null) {
+            alertDialog = new AlertDialog.Builder(getActivity())
+                    .setTitle(title)
+                    .setMessage(message)
+                    .setPositiveButton(positiveButtonText, positiveButtonClickListener)
+                    .setNegativeButton(negativeButtonText, negativeButtonClickListener)
+                    .setCancelable(isCancelable)
+                    .create();
+            alertDialog.show();
+        }
     }
 
     @Override
     public void navigateToPreviousScreen() {
         if (getActivity() != null) {
             Navigation.findNavController(getActivity(), R.id.nav_host_fragment).navigateUp();
-        }
-        else {
-            Log.w(getClass().getSimpleName(), "Detected race condition where navigateToNextScreen was called after already navigating to next screen.");
         }
     }
 

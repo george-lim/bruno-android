@@ -19,7 +19,7 @@ import java.util.Map;
 
 public class AvatarFragment extends Fragment {
 
-    private static int NUM_AVATARS = 8;
+    private static final int NUM_AVATARS = 8;
 
     private Map<Integer, Integer> imageViewToAvatarMapping;
     private ImageView[] avatars;

@@ -71,4 +71,13 @@ public class Coordinate implements Serializable {
     public LatLng getLatLng() {
         return new LatLng(latitude, longitude);
     }
+
+    // Returns a Location with only latitude and longitude set
+    public Location getLocation() {
+        // Requires some provider string to identify where the Location came from
+        Location location = new Location("BrunoLocationProvider");
+        location.setLatitude(latitude);
+        location.setLongitude(longitude);
+        return location;
+    }
 }

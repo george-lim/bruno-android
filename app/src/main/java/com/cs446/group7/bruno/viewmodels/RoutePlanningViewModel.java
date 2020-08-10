@@ -364,7 +364,8 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
         onProcessTrackSegmentsFailure();
         delegate.showRouteProcessingError(exception.getMessage());
 
-        final String errorMsg = exception.getCause().getLocalizedMessage();
-        Log.e(TAG, errorMsg == null ? resources.getString(R.string.unknown_error) : errorMsg);
+        if (exception.getCause() != null && exception.getCause().getLocalizedMessage() != null) {
+            Log.e(TAG, exception.getCause().getLocalizedMessage());
+        }
     }
 }

@@ -10,7 +10,7 @@ import com.google.android.gms.maps.model.LatLng;
 
 import java.util.List;
 
-public interface OnRouteViewModelDelegate {
+public interface RouteNavigationViewModelDelegate {
     void setupUI(int userAvatarDrawableResourceId, int brunoAvatarDrawableResourceId);
     void updateCurrentSongUI(final String name, final String artists);
     void clearMap();
