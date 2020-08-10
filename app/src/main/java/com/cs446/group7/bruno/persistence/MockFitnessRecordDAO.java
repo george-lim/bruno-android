@@ -159,14 +159,6 @@ public class MockFitnessRecordDAO implements FitnessRecordDAO {
     }
 
     @Override
-    public void update(FitnessRecordEntry... records) {}
-
-    @Override
-    public void delete(FitnessRecordEntry... records) {
-        recordEntries.removeAll(Arrays.asList(records));
-    }
-
-    @Override
     public void deleteAll() {
         recordEntries.clear();
     }
@@ -174,10 +166,5 @@ public class MockFitnessRecordDAO implements FitnessRecordDAO {
     @Override
     public List<FitnessRecordEntry> getRecords() {
         return recordEntries;
-    }
-
-    @Override
-    public FitnessRecordEntry getRecordWithUID(int uid) {
-        return null;
     }
 }

@@ -17,7 +17,7 @@ public class TermsAndConditionsFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_terms_and_conditions, container, false);
         AppbarFormatter.format(
-                (AppCompatActivity) getActivity(),
+                (AppCompatActivity) requireActivity(),
                 view,
                 R.id.appbar_terms_and_condition,
                 getResources().getString(R.string.terms_and_conditions),

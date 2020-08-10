@@ -30,7 +30,6 @@
                 tools:context=".ui.fitnessdetails.FitnessDetailsFragment" />
 
             <TextView
-                android:id="@+id/textView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingLeft="20dp"
@@ -65,7 +64,6 @@
                         android:src="@drawable/ic_crown" />
 
                     <TextView
-                        android:id="@+id/text_view_leaderboard_user"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="7"
@@ -80,7 +78,6 @@
                 </LinearLayout>
 
                 <View
-                    android:id="@+id/divider4"
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:background="?android:attr/listDivider" />
@@ -101,7 +98,6 @@
                         android:src="@drawable/ic_crown" />
 
                     <TextView
-                        android:id="@+id/text_view_leaderboard_bruno"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="7"
@@ -116,7 +112,6 @@
                 </LinearLayout>
 
                 <View
-                    android:id="@+id/divider2"
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:background="?android:attr/listDivider" />
@@ -124,7 +119,6 @@
             </LinearLayout>
 
             <TextView
-                android:id="@+id/textView2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingLeft="20dp"
@@ -152,7 +146,6 @@
                     android:orientation="vertical">
 
                     <ImageView
-                        android:id="@+id/image_view_stats_distance"
                         android:layout_width="44dp"
                         android:layout_height="44dp"
                         android:layout_gravity="center_horizontal"
@@ -177,7 +170,6 @@
                     android:orientation="vertical">
 
                     <ImageView
-                        android:id="@+id/image_view_stats_steps"
                         android:layout_width="44dp"
                         android:layout_height="44dp"
                         android:layout_gravity="center_horizontal"
@@ -202,7 +194,6 @@
                     android:orientation="vertical">
 
                     <ImageView
-                        android:id="@+id/image_view_stats_clock"
                         android:layout_width="44dp"
                         android:layout_height="44dp"
                         android:layout_gravity="center_horizontal"
@@ -222,7 +213,6 @@
             </LinearLayout>
 
             <TextView
-                android:id="@+id/textView3"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingLeft="20dp"
@@ -238,7 +228,7 @@
                 android:id="@+id/linear_layout_fitness_detail_tracklist"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"></LinearLayout>
+                android:orientation="vertical" />
 
         </LinearLayout>
     </ScrollView>

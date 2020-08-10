@@ -10,7 +10,7 @@
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".ui.onroute.OnRouteFragment" />
+        tools:context=".ui.routenavigation.RouteNavigationFragment" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -124,7 +124,7 @@
                     android:background="@drawable/btn_exit_route"
                     android:src="@drawable/ic_cancel"
                     android:tint="@color/colorOnBackgroundLite"
-                    android:contentDescription="@string/on_route_stop" />
+                    android:contentDescription="@string/route_navigation_stop" />
             </LinearLayout>
         </androidx.cardview.widget.CardView>
     </LinearLayout>

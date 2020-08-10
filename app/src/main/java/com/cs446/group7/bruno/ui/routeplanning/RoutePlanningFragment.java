@@ -2,7 +2,6 @@ package com.cs446.group7.bruno.ui.routeplanning;
 
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +12,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
@@ -88,7 +88,7 @@ public class RoutePlanningFragment extends Fragment implements RoutePlanningView
 
             RouteModel model = new ViewModelProvider(requireActivity()).get(RouteModel.class);
             viewModel = new RoutePlanningViewModel(
-                    getActivity().getApplicationContext(),
+                    requireActivity().getApplicationContext(),
                     model,
                     this);
         });
@@ -121,7 +121,7 @@ public class RoutePlanningFragment extends Fragment implements RoutePlanningView
     // MARK: - RoutePlanningViewModelDelegate methods
 
     private BitmapDescriptor getUserMarkerIcon(int avatarResourceId) {
-        Drawable avatarDrawable = getResources().getDrawable(avatarResourceId, null);
+        Drawable avatarDrawable = ContextCompat.getDrawable(requireActivity(), avatarResourceId);
         return BitmapDescriptorFactory.fromBitmap(BitmapUtils.getBitmapFromVectorDrawable(avatarDrawable));
     }
 
@@ -219,16 +219,23 @@ public class RoutePlanningFragment extends Fragment implements RoutePlanningView
     }
 
     public void showRouteProcessingError(final String errorMessage) {
-        Toast.makeText(getContext(), errorMessage, Toast.LENGTH_LONG).show();
+        if (getActivity() != null) {
+            Toast toast = Toast.makeText(
+                    getActivity().getApplicationContext(),
+                    errorMessage,
+                    Toast.LENGTH_LONG
+            );
+            toast.show();
+        }
     }
 
     public void navigateToNextScreen() {
         if (getActivity() != null) {
-            NavController navController = Navigation.findNavController(getActivity(), R.id.nav_host_fragment);
-            navController.navigate(R.id.action_fragmenttoplevel_to_fragmentonroute);
-        }
-        else {
-            Log.w(getClass().getSimpleName(), "Detected race condition where navigateToNextScreen was called after already navigating to next screen.");
+            NavController navController = Navigation.findNavController(
+                    getActivity(),
+                    R.id.nav_host_fragment
+            );
+            navController.navigate(R.id.action_fragmenttoplevel_to_fragmentroutenavigation);
         }
     }
 

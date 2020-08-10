@@ -27,7 +27,8 @@ import com.cs446.group7.bruno.storage.PreferencesStorage;
 import com.cs446.group7.bruno.utils.Callback;
 import com.cs446.group7.bruno.utils.NoFailCallback;
 
-public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerSubscriber, PedometerSubscriber {
+public class RouteNavigationViewModel
+        implements LocationServiceSubscriber, MusicPlayerSubscriber, PedometerSubscriber {
 
     // MARK: - Constants
 
@@ -38,7 +39,7 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
 
     private Resources resources;
     private RouteModel model;
-    private OnRouteViewModelDelegate delegate;
+    private RouteNavigationViewModelDelegate delegate;
     private Context context;
 
     private LocationService locationService;
@@ -49,9 +50,9 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
 
     // MARK: - Lifecycle methods
 
-    public OnRouteViewModel(final Context context,
-                            final RouteModel model,
-                            final OnRouteViewModelDelegate delegate) {
+    public RouteNavigationViewModel(final Context context,
+                                    final RouteModel model,
+                                    final RouteNavigationViewModelDelegate delegate) {
         this.resources = context.getResources();
         this.model = model;
         this.delegate = delegate;
@@ -79,7 +80,8 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
     }
 
     public void onDestroyView() {
-        MainActivity.getLocationService().removeSubscriber(this);
+        locationService.stopLocationUpdates();
+        locationService.removeSubscriber(this);
         MainActivity.getSensorService().removePedometerSubscriber(this);
         musicPlayer.removeSubscriber(this);
     }
@@ -121,9 +123,13 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
     }
 
     private void refreshUI() {
+        float bearing = !model.hasCompletedAllCheckpoints()
+                ? model.getCurrentLocation().bearingTo(model.getCheckpoint().getLocation())
+                : model.getCurrentLocation().getBearing();
+
         delegate.animateCamera(
                 model.getCurrentCoordinate().getLatLng(),
-                model.getCurrentLocation().getBearing(),
+                bearing,
                 CAMERA_TILT,
                 CAMERA_ZOOM
         );
@@ -173,11 +179,18 @@ public class OnRouteViewModel implements LocationServiceSubscriber, MusicPlayerS
                 resources.getString(R.string.player_error),
                 errorMessage,
                 resources.getString(R.string.ok_button),
-                (dialogInterface, i) -> delegate.navigateToPreviousScreen(),
+                (dialogInterface, i) -> {
+                    model.stopRouteNavigation();
+                    delegate.navigateToPreviousScreen();
+                },
                 false
         );
     }
 
+    /*
+        NOTE: Spotify retains and reuses the onFailed callback from connectPlayer to handle connection
+              errors during the entirety of the run, even after the connection process has ended.
+     */
     private void connectPlayer(final Context context, final NoFailCallback<Void> callback) {
         showPlayerConnectProgressDialog();
 

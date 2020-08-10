@@ -25,7 +25,7 @@ import java.util.List;
 public class LocationServiceImpl implements LocationService {
 
     private static final int UPDATE_INTERVAL_MILLISECONDS = 5000;
-    private static final int FASTEST_UPDATE_INTERVAL_MILLISECONDS = 2000;
+    private static final int FASTEST_UPDATE_INTERVAL_MILLISECONDS = 1000;
 
     private FusedLocationProviderClient fusedLocationClient;
     private List<LocationServiceSubscriber> subscriberList;

@@ -70,7 +70,7 @@ public class FallbackPlaylistsAdapter extends RecyclerView.Adapter<FallbackPlayl
 
         public void updateUI(PlaylistMetadata playlistInfo) {
             playlistName.setText(playlistInfo.getName());
-            playlistNumTracks.setText(playlistInfo.getTrackCount() + " tracks");
+            playlistNumTracks.setText(String.format("%s tracks", playlistInfo.getTrackCount()));
         }
 
         private void handleItemSelected(final View view) {

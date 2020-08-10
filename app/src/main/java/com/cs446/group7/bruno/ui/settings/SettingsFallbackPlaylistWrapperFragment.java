@@ -22,7 +22,7 @@ public class SettingsFallbackPlaylistWrapperFragment extends Fragment implements
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_settings_fallback_playlist_wrapper, container, false);
         AppbarFormatter.format(
-                (AppCompatActivity) getActivity(),
+                (AppCompatActivity) requireActivity(),
                 view,
                 R.id.appbar_fallback_playlist,
                 getResources().getString(R.string.settings_fallback_playlist_title),
@@ -51,11 +51,15 @@ public class SettingsFallbackPlaylistWrapperFragment extends Fragment implements
 
     @Override
     public void onSelectPlaylistPressed() {
-        requireActivity().onBackPressed();
+        if (getActivity() != null) {
+            getActivity().onBackPressed();
+        }
     }
 
     @Override
     public void onNoPlaylistPressed() {
-        requireActivity().onBackPressed();
+        if (getActivity() != null) {
+            getActivity().onBackPressed();
+        }
     }
 }
