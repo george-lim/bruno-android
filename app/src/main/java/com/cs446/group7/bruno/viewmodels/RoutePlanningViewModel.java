@@ -17,8 +17,10 @@ import com.cs446.group7.bruno.location.LocationServiceSubscriber;
 import com.cs446.group7.bruno.models.RouteModel;
 import com.cs446.group7.bruno.models.TrackSegment;
 import com.cs446.group7.bruno.music.BrunoPlaylist;
+import com.cs446.group7.bruno.music.playlist.DynamicPlaylistGeneratorImpl;
 import com.cs446.group7.bruno.music.playlist.MockPlaylistGeneratorImpl;
 import com.cs446.group7.bruno.music.playlist.PlaylistGenerator;
+import com.cs446.group7.bruno.routing.DynamicRouteGeneratorImpl;
 import com.cs446.group7.bruno.routing.MockRouteGeneratorImpl;
 import com.cs446.group7.bruno.routing.OnRouteResponseCallback;
 import com.cs446.group7.bruno.routing.RouteGenerator;
@@ -91,13 +93,19 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
     private RouteGenerator getRouteGenerator() {
         String googleMapsKey = resources.getString(R.string.google_maps_key);
         return BuildConfig.DEBUG
-                ? new MockRouteGeneratorImpl()
+                ? new DynamicRouteGeneratorImpl(
+                        new RouteGeneratorImpl(googleMapsKey),
+                        new MockRouteGeneratorImpl()
+                )
                 : new RouteGeneratorImpl(googleMapsKey);
     }
 
     private PlaylistGenerator getPlaylistGenerator() {
         return BuildConfig.DEBUG
-                ? new MockPlaylistGeneratorImpl()
+                ? new DynamicPlaylistGeneratorImpl(
+                        MainActivity.getSpotifyService().getPlaylistService(),
+                        new MockPlaylistGeneratorImpl()
+                )
                 : MainActivity.getSpotifyService().getPlaylistService();
     }
 
@@ -117,7 +125,7 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
         }
 
         int userAvatarDrawableResourceId = MainActivity.getPreferencesStorage()
-                .getInt(PreferencesStorage.USER_AVATAR, PreferencesStorage.DEFAULT_AVATAR);
+                .getInt(PreferencesStorage.KEYS.USER_AVATAR, PreferencesStorage.DEFAULT_AVATAR);
 
         delegate.setupUI(
                 startBtnText,

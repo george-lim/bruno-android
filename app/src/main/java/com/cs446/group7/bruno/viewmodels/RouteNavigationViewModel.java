@@ -12,11 +12,13 @@ import com.cs446.group7.bruno.MainActivity;
 import com.cs446.group7.bruno.R;
 import com.cs446.group7.bruno.location.BrunoBot;
 import com.cs446.group7.bruno.location.Coordinate;
+import com.cs446.group7.bruno.location.DynamicLocationServiceImpl;
 import com.cs446.group7.bruno.location.LocationService;
 import com.cs446.group7.bruno.location.LocationServiceSubscriber;
 import com.cs446.group7.bruno.models.RouteModel;
 import com.cs446.group7.bruno.music.BrunoPlaylist;
 import com.cs446.group7.bruno.music.BrunoTrack;
+import com.cs446.group7.bruno.music.player.DynamicMusicPlayerImpl;
 import com.cs446.group7.bruno.music.player.MockMusicPlayerImpl;
 import com.cs446.group7.bruno.music.player.MusicPlayer;
 import com.cs446.group7.bruno.music.player.MusicPlayerException;
@@ -90,19 +92,25 @@ public class RouteNavigationViewModel
 
     private LocationService getLocationService() {
         return BuildConfig.DEBUG
-                ? new BrunoBot(model)
+                ? new DynamicLocationServiceImpl(
+                        MainActivity.getLocationService(),
+                        new BrunoBot(model)
+                )
                 : MainActivity.getLocationService();
     }
 
     private MusicPlayer getMusicPlayer() {
         return BuildConfig.DEBUG
-                ? new MockMusicPlayerImpl()
+                ? new DynamicMusicPlayerImpl(
+                        MainActivity.getSpotifyService().getPlayerService(),
+                        new MockMusicPlayerImpl()
+                )
                 : MainActivity.getSpotifyService().getPlayerService();
     }
 
     private void setupUI() {
         int userAvatarDrawableResourceId = MainActivity.getPreferencesStorage()
-                .getInt(PreferencesStorage.USER_AVATAR, PreferencesStorage.DEFAULT_AVATAR);
+                .getInt(PreferencesStorage.KEYS.USER_AVATAR, PreferencesStorage.DEFAULT_AVATAR);
         int brunoAvatarDrawableResourceId = R.drawable.ic_bruno_avatar;
 
         delegate.setupUI(userAvatarDrawableResourceId, brunoAvatarDrawableResourceId);
@@ -328,7 +336,11 @@ public class RouteNavigationViewModel
                 BrunoPlaylist playlist;
 
                 try {
-                    playlist = FileStorage.readFileAsSerializable(context, FileStorage.FALLBACK_PLAYLIST);
+                    playlist = FileStorage.readFileAsSerializable(
+                            context,
+                            FileStorage.KEYS.FALLBACK_PLAYLIST
+                    );
+
                     // Don't use a playlist with no tracks
                     if (playlist.isEmpty()) {
                         handleFallbackFailed();

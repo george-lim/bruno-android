@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.android.volley.DefaultRetryPolicy;
 import com.cs446.group7.bruno.BuildConfig;
+import com.cs446.group7.bruno.spotify.auth.DynamicSpotifyAuthServiceImpl;
 import com.cs446.group7.bruno.spotify.auth.MockSpotifyAuthServiceImpl;
 import com.cs446.group7.bruno.spotify.auth.SpotifyAuthService;
 import com.cs446.group7.bruno.spotify.auth.SpotifyAuthServiceImpl;
@@ -13,7 +14,6 @@ import com.spotify.android.appremote.api.SpotifyAppRemote;
 
 // Initiates singletons for SpotifyPlayerService and SpotifyPlaylistService
 public class SpotifyService {
-
     private SpotifyAuthService authService;
     private SpotifyPlayerService playerService;
     private SpotifyPlaylistService playlistService;
@@ -30,10 +30,12 @@ public class SpotifyService {
             REQUEST_BACKOFF_MULT
     );
 
-
     public SpotifyService(Context context, SpotifyRequestDelegate delegate) {
         authService = BuildConfig.DEBUG
-                ? new MockSpotifyAuthServiceImpl()
+                ? new DynamicSpotifyAuthServiceImpl(
+                        new SpotifyAuthServiceImpl(context, delegate, retryPolicy),
+                        new MockSpotifyAuthServiceImpl()
+                )
                 : new SpotifyAuthServiceImpl(context, delegate, retryPolicy);
         playerService = new SpotifyPlayerService();
         playlistService = new SpotifyPlaylistService(context, retryPolicy);

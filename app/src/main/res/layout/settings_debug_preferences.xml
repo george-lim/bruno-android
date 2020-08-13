@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <LinearLayout
+        android:id="@+id/debug_preferences"
+        style="@style/SettingSectionContainer">
+
+        <LinearLayout style="@style/SettingItemContainer">
+
+            <TextView
+                style="@style/TextTitle"
+                android:text="@string/settings_debug_preferences_title" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/debug_preferences_mock_route_generator"
+            style="@style/SettingClickableItemContainer">
+
+            <TextView
+                style="@style/NormalText"
+                android:text="@string/settings_mock_route_generator_title" />
+
+            <TextView
+                android:id="@+id/debug_preferences_mock_route_generator_hint_text_view"
+                style="@style/HintText" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/debug_preferences_mock_playlist_generator"
+            style="@style/SettingClickableItemContainer">
+
+            <TextView
+                style="@style/NormalText"
+                android:text="@string/settings_mock_playlist_generator_title" />
+
+            <TextView
+                android:id="@+id/debug_preferences_mock_playlist_generator_hint_text_view"
+                style="@style/HintText" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/debug_preferences_mock_music_player"
+            style="@style/SettingClickableItemContainer">
+
+            <TextView
+                style="@style/NormalText"
+                android:text="@string/settings_mock_music_player_title" />
+
+            <TextView
+                android:id="@+id/debug_preferences_mock_music_player_hint_text_view"
+                style="@style/HintText" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/debug_preferences_mock_location_service"
+            style="@style/SettingClickableItemContainer">
+
+            <TextView
+                style="@style/NormalText"
+                android:text="@string/settings_mock_location_service_title" />
+
+            <TextView
+                android:id="@+id/debug_preferences_mock_location_service_hint_text_view"
+                style="@style/HintText" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/debug_preferences_mock_fitness_record_dao"
+            style="@style/SettingClickableItemContainer">
+
+            <TextView
+                style="@style/NormalText"
+                android:text="@string/settings_mock_fitness_record_dao_title" />
+
+            <TextView
+                android:id="@+id/debug_preferences_mock_fitness_record_dao_hint_text_view"
+                style="@style/HintText" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/debug_preferences_mock_spotify_auth_service"
+            style="@style/SettingClickableItemContainer">
+
+            <TextView
+                style="@style/NormalText"
+                android:text="@string/settings_mock_spotify_auth_service_title" />
+
+            <TextView
+                android:id="@+id/debug_preferences_mock_spotify_auth_service_hint_text_view"
+                style="@style/HintText" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/debug_preferences_mock_spotify_playlist_api"
+            style="@style/SettingClickableItemContainer">
+
+            <TextView
+                style="@style/NormalText"
+                android:text="@string/settings_mock_spotify_playlist_api_title" />
+
+            <TextView
+                android:id="@+id/debug_preferences_mock_spotify_playlist_api_hint_text_view"
+                style="@style/HintText" />
+        </LinearLayout>
+    </LinearLayout>
+</merge>
