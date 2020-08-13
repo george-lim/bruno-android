@@ -76,3 +76,4 @@ lint/reports/
 .DS_Store
 .project
 .settings/
+config.yml

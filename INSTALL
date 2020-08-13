@@ -6,22 +6,33 @@ cd `dirname $0`
 # Copy hooks
 cp hooks/* .git/hooks
 
-# Install API key (if found)
-google_maps_key=${1:-'<!-- Add Google Maps API Key here -->'}
-google_maps_api_xml="<resources>\n\t<string name=\"google_maps_key\" templateMergeStrategy=\"preserve\" translatable=\"false\">\n\t\t$google_maps_key\n\t</string>\n</resources>"
+function parse_yaml {
+   local prefix=$2
+   local s='[[:space:]]*' w='[a-zA-Z0-9_]*' fs=$(echo @|tr @ '\034')
+   sed -ne "s|^\($s\):|\1|" \
+        -e "s|^\($s\)\($w\)$s:$s[\"']\(.*\)[\"']$s\$|\1$fs\2$fs\3|p" \
+        -e "s|^\($s\)\($w\)$s:$s\(.*\)$s\$|\1$fs\2$fs\3|p"  $1 |
+   awk -F$fs '{
+      indent = length($1)/2;
+      vname[indent] = $2;
+      for (i in vname) {if (i > indent) {delete vname[i]}}
+      if (length($3) > 0) {
+         vn=""; for (i=0; i<indent; i++) {vn=(vn)(vname[i])("_")}
+         printf("%s%s%s=\"%s\"\n", "'$prefix'",vn, $2, $3);
+      }
+   }'
+}
 
-spotify_client_id=${2:-'<!-- Add Spotify Client ID here -->'}
+# Parse from config.yml
+eval $(parse_yaml config.yml)
+
+google_maps_api_xml="<resources>\n\t<string name=\"google_maps_key\" templateMergeStrategy=\"preserve\" translatable=\"false\">\n\t\t$google_maps_key\n\t</string>\n</resources>"
 spotify_client_id_xml="\t<string name=\"spotify_client_id\">\n\t\t
 $spotify_client_id\n\t</string>"
-
-spotify_client_secret=${3:-'<!-- Add Spotify Client Secret here -->'}
 spotify_client_secret_xml="\t<string name=\"spotify_client_secret\">\n\t\t
 $spotify_client_secret\n\t</string>"
-
-spotify_redirect_uri=${4:-'<!-- Add Spotify Redirect URI here -->'}
 spotify_redirect_uri_xml="\t<string name=\"spotify_redirect_uri\">\n\t\t
 $spotify_redirect_uri\n\t</string>"
-
 
 for config in debug release; do
   api_key_dir=app/src/$config/res/values
@@ -42,14 +53,14 @@ for config in debug release; do
 done
 
 # Install spotify-app-remote library if it does not exist
-spotify_app_remote_libary_location=https://github.com/spotify/android-sdk/releases/download/v7.0.0-appremote_v1.2.3-auth/spotify-app-remote-release-0.7.0.aar 
+spotify_app_remote_libary_location=https://github.com/spotify/android-sdk/releases/download/v7.0.0-appremote_v1.2.3-auth/spotify-app-remote-release-0.7.0.aar
 spotify_app_remote_release_dir=dependencies/spotify-app-remote
 spotify_app_remote_release_file=spotify-app-remote-release-0.7.0.aar
 
 if [ ! -f "$spotify_app_remote_release_dir/$spotify_app_remote_release_file" ]; then
   echo "Spotify app remote library missing, downloading from GitHub"
   mkdir -p $spotify_app_remote_release_dir
-  curl -L "$spotify_app_remote_libary_location" --output "$spotify_app_remote_release_dir/$spotify_app_remote_release_file"
+  curl -sL "$spotify_app_remote_libary_location" --output "$spotify_app_remote_release_dir/$spotify_app_remote_release_file"
 fi
 
 # Install spotify-auth library if it does not exist
@@ -60,5 +71,5 @@ spotify_auth_release_file=spotify-auth-release-1.2.3.aar
 if [ ! -f "$spotify_auth_release_dir/$spotify_auth_release_file" ]; then
   echo "Spotify auth library missing, downloading from GitHub"
   mkdir -p $spotify_auth_release_dir
-  curl -L "$spotify_auth_library_location" --output "$spotify_auth_release_dir/$spotify_auth_release_file"
+  curl -sL "$spotify_auth_library_location" --output "$spotify_auth_release_dir/$spotify_auth_release_file"
 fi
