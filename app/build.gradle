@@ -4,7 +4,7 @@ android {
     compileSdkVersion 30
 
     defaultConfig {
-        applicationId "com.cs446.group7.bruno"
+        applicationId "com.bruno.android"
         minSdkVersion 23
         targetSdkVersion 30
         versionCode 1
