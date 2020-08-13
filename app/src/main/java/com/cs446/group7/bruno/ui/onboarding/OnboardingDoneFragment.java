@@ -26,7 +26,7 @@ public class OnboardingDoneFragment extends Fragment {
 
     private void finishOnboarding(final View view) {
         PreferencesStorage storage = MainActivity.getPreferencesStorage();
-        storage.putBoolean(PreferencesStorage.COMPLETED_ONBOARDING, true);
+        storage.putBoolean(PreferencesStorage.KEYS.COMPLETED_ONBOARDING, true);
 
         if (getActivity() != null) {
             NavController navController = Navigation.findNavController(

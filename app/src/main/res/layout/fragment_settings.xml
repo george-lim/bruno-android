@@ -21,6 +21,8 @@
 
         <include layout="@layout/settings_user_preferences" />
 
+        <include layout="@layout/settings_debug_preferences" />
+
         <include layout="@layout/settings_about_bruno" />
 
     </LinearLayout>

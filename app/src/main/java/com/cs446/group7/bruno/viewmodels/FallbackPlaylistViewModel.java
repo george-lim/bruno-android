@@ -11,6 +11,7 @@ import com.cs446.group7.bruno.music.BrunoPlaylist;
 import com.cs446.group7.bruno.music.BrunoPlaylistImpl;
 import com.cs446.group7.bruno.music.playlist.PlaylistMetadata;
 import com.cs446.group7.bruno.spotify.SpotifyService;
+import com.cs446.group7.bruno.spotify.playlist.DynamicSpotifyPlaylistAPIImpl;
 import com.cs446.group7.bruno.spotify.playlist.MockSpotifyPlaylistAPIImpl;
 import com.cs446.group7.bruno.spotify.playlist.SpotifyPlaylistAPI;
 import com.cs446.group7.bruno.storage.FileStorage;
@@ -54,11 +55,16 @@ public class FallbackPlaylistViewModel {
 
         // Make sure have necessary capabilities
         boolean isSpotifyInstalled = SpotifyService.isSpotifyInstalled(context);
+
         if (!isSpotifyInstalled) {
             showSpotifyError(context.getResources().getString(R.string.onboarding_missing_spotify_installation_description));
             return;
         }
-        boolean hasInternet = MainActivity.getCapabilityService().isCapabilityEnabled(Capability.INTERNET);
+
+        boolean hasInternet = MainActivity
+                .getCapabilityService()
+                .isCapabilityEnabled(Capability.INTERNET);
+
         if (!hasInternet) {
             showSpotifyError(context.getResources().getString(R.string.onboarding_missing_internet_text));
             return;
@@ -67,58 +73,67 @@ public class FallbackPlaylistViewModel {
         // Get user to authorize if not done, otherwise fetch user playlist library for fallback playlist
         SpotifyService spotifyService = MainActivity.getSpotifyService();
         ClosureQueue<Void, Void> queue = new ClosureQueue<>();
+
         if (token == null) {
-            queue.add((result, callback) -> spotifyService.getAuthService().requestUserAuth(new Callback<String, Void>() {
-                @Override
-                public void onSuccess(String resultToken) {
-                    token = resultToken;
-                    callback.onSuccess(null);
-                }
+            queue.add((result, callback) -> spotifyService
+                    .getAuthService()
+                    .requestUserAuth(new Callback<String, Void>() {
+                        @Override
+                        public void onSuccess(String resultToken) {
+                            token = resultToken;
+                            callback.onSuccess(null);
+                        }
 
-                @Override
-                public void onFailed(Void result) {
-                    Log.d(TAG, "Get user auth fail");
-                    showSpotifyError(context.getResources().getString(R.string.onboarding_fallback_playlist_fail));
-                    callback.onFailed(null);
-                }
-            }));
+                        @Override
+                        public void onFailed(Void result) {
+                            Log.d(TAG, "Get user auth fail");
+                            showSpotifyError(context.getResources().getString(R.string.onboarding_fallback_playlist_fail));
+                            callback.onFailed(null);
+                        }
+                    }));
         }
-        queue.add((result, callback) -> spotifyService.getAuthService().checkIfUserIsPremium(token, new Callback<Boolean, Exception>() {
-            @Override
-            public void onSuccess(Boolean isPremium) {
-                if (!isPremium) {
-                    showNotPremiumUser();
-                    callback.onFailed(null);
-                } else {
-                    callback.onSuccess(null);
-                }
-            }
 
-            @Override
-            public void onFailed(Exception e) {
-                Log.d(TAG, "Check if user is premium fail");
-                showSpotifyError(context.getResources().getString(R.string.onboarding_fallback_playlist_fail));
-                callback.onFailed(null);
-            }
-        }));
-        queue.add((result, callback) -> getSpotifyPlaylistAPI().getUserPlaylistLibrary(token, new Callback<List<PlaylistMetadata>, Exception>() {
-            @Override
-            public void onSuccess(List<PlaylistMetadata> playlistMetadata) {
-                if (playlistMetadata.size() == 0) {
-                    showNoPlaylist();
-                } else {
-                    showSelectPlaylist(playlistMetadata);
-                }
-                callback.onSuccess(null);
-            }
+        queue.add((result, callback) -> spotifyService
+                .getAuthService()
+                .checkIfUserIsPremium(token, new Callback<Boolean, Exception>() {
+                    @Override
+                    public void onSuccess(Boolean isPremium) {
+                        if (!isPremium) {
+                            showNotPremiumUser();
+                            callback.onFailed(null);
+                        } else {
+                            callback.onSuccess(null);
+                        }
+                    }
 
-            @Override
-            public void onFailed(Exception result) {
-                Log.d(TAG, "Get user playlists fail");
-                showSpotifyError(context.getResources().getString(R.string.onboarding_fallback_playlist_fail));
-                callback.onFailed(null);
-            }
-        }));
+                    @Override
+                    public void onFailed(Exception e) {
+                        Log.d(TAG, "Check if user is premium fail");
+                        showSpotifyError(context.getResources().getString(R.string.onboarding_fallback_playlist_fail));
+                        callback.onFailed(null);
+                    }
+                }));
+
+        queue.add((result, callback) -> getSpotifyPlaylistAPI()
+                .getUserPlaylistLibrary(token, new Callback<List<PlaylistMetadata>, Exception>() {
+                    @Override
+                    public void onSuccess(List<PlaylistMetadata> playlistMetadata) {
+                        if (playlistMetadata.size() == 0) {
+                            showNoPlaylist();
+                        } else {
+                            showSelectPlaylist(playlistMetadata);
+                        }
+                        callback.onSuccess(null);
+                    }
+
+                    @Override
+                    public void onFailed(Exception result) {
+                        Log.d(TAG, "Get user playlists fail");
+                        showSpotifyError(context.getResources().getString(R.string.onboarding_fallback_playlist_fail));
+                        callback.onFailed(null);
+                    }
+                }));
+
         queue.run(new Callback<Void, Void>() {
             @Override
             public void onSuccess(Void result) {
@@ -132,17 +147,20 @@ public class FallbackPlaylistViewModel {
         });
     }
 
-
     private SpotifyPlaylistAPI getSpotifyPlaylistAPI() {
         return BuildConfig.DEBUG
-                ? new MockSpotifyPlaylistAPIImpl()
+                ? new DynamicSpotifyPlaylistAPIImpl(
+                        MainActivity.getSpotifyService().getPlaylistService(),
+                        new MockSpotifyPlaylistAPIImpl()
+                )
                 : MainActivity.getSpotifyService().getPlaylistService();
     }
 
     private void showSelectPlaylist(List<PlaylistMetadata> playlists) {
         int index = 0;
-        String savedFallbackPlaylistId =
-                MainActivity.getPreferencesStorage().getString(PreferencesStorage.FALLBACK_PLAYLIST_ID, null);
+        String savedFallbackPlaylistId = MainActivity
+                .getPreferencesStorage()
+                .getString(PreferencesStorage.KEYS.FALLBACK_PLAYLIST_ID, null);
         if (savedFallbackPlaylistId != null) {
             for (int i = 0; i < playlists.size(); ++i) {
                 if (playlists.get(i).getId().equals(savedFallbackPlaylistId)) {
@@ -186,28 +204,40 @@ public class FallbackPlaylistViewModel {
         }
 
         delegate.showProgressDialog();
-        getSpotifyPlaylistAPI().getPlaylist(token, fallbackPlaylist.getId(), new Callback<BrunoPlaylist, Exception>() {
-            @Override
-            public void onSuccess(BrunoPlaylist playlist) {
-                try {
-                    Log.d(TAG, playlist.getName());
-                    FileStorage.writeSerializableToFile(context, FileStorage.FALLBACK_PLAYLIST, (BrunoPlaylistImpl)playlist);
-                    MainActivity.getPreferencesStorage().putString(PreferencesStorage.FALLBACK_PLAYLIST_ID, playlist.getId());
-                    wrapperDelegate.onSelectPlaylistPressed();
-                } catch (Exception e) {
-                    Log.d(TAG, e.getCause() + ": " + e.getMessage());
-                    showErrorDialog();
-                }
-                delegate.dismissProgressDialog();
-            }
+        getSpotifyPlaylistAPI().getPlaylist(
+                token,
+                fallbackPlaylist.getId(),
+                new Callback<BrunoPlaylist, Exception>() {
+                    @Override
+                    public void onSuccess(BrunoPlaylist playlist) {
+                        try {
+                            Log.d(TAG, playlist.getName());
+                            FileStorage.writeSerializableToFile(
+                                    context,
+                                    FileStorage.KEYS.FALLBACK_PLAYLIST,
+                                    (BrunoPlaylistImpl) playlist);
+                            MainActivity
+                                    .getPreferencesStorage()
+                                    .putString(
+                                            PreferencesStorage.KEYS.FALLBACK_PLAYLIST_ID,
+                                            playlist.getId()
+                                    );
+                            wrapperDelegate.onSelectPlaylistPressed();
+                        } catch (Exception e) {
+                            Log.d(TAG, e.getCause() + ": " + e.getMessage());
+                            showErrorDialog();
+                        }
+                        delegate.dismissProgressDialog();
+                    }
 
-            @Override
-            public void onFailed(Exception e) {
-                Log.d(TAG, e.getCause() + ": " + e.getMessage());
-                delegate.dismissProgressDialog();
-                showErrorDialog();
-            }
-        });
+                    @Override
+                    public void onFailed(Exception e) {
+                        Log.d(TAG, e.getCause() + ": " + e.getMessage());
+                        delegate.dismissProgressDialog();
+                        showErrorDialog();
+                    }
+                }
+        );
     }
 
     private void showErrorDialog() {

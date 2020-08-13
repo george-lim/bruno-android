@@ -38,7 +38,11 @@ public class TopLevelFragment extends Fragment implements BottomNavigationView.O
         super.onViewCreated(view, savedInstanceState);
 
         PreferencesStorage storage = MainActivity.getPreferencesStorage();
-        boolean completedOnboarding = storage.getBoolean(PreferencesStorage.COMPLETED_ONBOARDING, false);
+        boolean completedOnboarding = storage.getBoolean(
+                PreferencesStorage.KEYS.COMPLETED_ONBOARDING,
+                false
+        );
+
         if (!completedOnboarding) {
             NavController navController = Navigation.findNavController(view);
             navController.navigate(R.id.action_fragmenttoplevel_to_fragmentonboarding);

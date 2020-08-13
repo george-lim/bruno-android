@@ -29,7 +29,7 @@ import java.util.List;
 /**
  * Service responsible for connecting to Spotify, play music and notifying subscribers about state changes.
  */
-class SpotifyPlayerService implements MusicPlayer {
+public class SpotifyPlayerService implements MusicPlayer {
 
     // Main interface to the Spotify app, initialized by connect()
     private SpotifyAppRemote mSpotifyAppRemote;
