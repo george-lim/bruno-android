@@ -46,9 +46,17 @@
     <!--  Settings  -->
     <string name="settings_user_preferences_title">Your Preferences</string>
     <string name="settings_avatar_title">Avatar</string>
-    <string name="settings_avatar_hint">Pick a new avatar.</string>
+    <string name="settings_avatar_hint">Pick a new avatar</string>
     <string name="settings_fallback_playlist_title">Fallback Playlist</string>
     <string name="settings_fallback_playlist_hint">Spotify playlist used when you lose Internet connection</string>
+    <string name="settings_debug_preferences_title">Debug Preferences</string>
+    <string name="settings_mock_route_generator_title">Route Generator</string>
+    <string name="settings_mock_playlist_generator_title">Playlist Generator</string>
+    <string name="settings_mock_music_player_title">Music Player</string>
+    <string name="settings_mock_location_service_title">Location Service</string>
+    <string name="settings_mock_fitness_record_dao_title">Fitness Record DAO</string>
+    <string name="settings_mock_spotify_auth_service_title">Spotify Auth Service</string>
+    <string name="settings_mock_spotify_playlist_api_title">Spotify Playlist API</string>
     <string name="save_button">Save</string>
     <string name="about_bruno_title">About Bruno</string>
     <string name="version">Version</string>
