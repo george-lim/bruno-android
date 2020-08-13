@@ -16,4 +16,6 @@ jobs:
     - name: Run INSTALL script
       run: ./INSTALL
     - name: Build project
-      run: ./gradlew build
+      uses: eskatos/gradle-command-action@v1
+        with:
+          arguments: build
