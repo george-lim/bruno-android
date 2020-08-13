@@ -6,7 +6,7 @@
 
     <fragment
         android:id="@+id/fragment_top_lvl"
-        android:name="com.cs446.group7.bruno.ui.toplevel.TopLevelFragment"
+        android:name="com.bruno.android.ui.toplevel.TopLevelFragment"
         android:label="fragment_top_level"
         tools:layout="@layout/fragment_top_level">
         <action
@@ -39,7 +39,7 @@
 
     <fragment
         android:id="@+id/fragment_onboarding"
-        android:name="com.cs446.group7.bruno.ui.onboarding.OnboardingFragment"
+        android:name="com.bruno.android.ui.onboarding.OnboardingFragment"
         android:label="fragment_onboarding"
         tools:layout="@layout/fragment_onboarding">
         <action
@@ -51,42 +51,42 @@
 
     <fragment
         android:id="@+id/fragment_route_navigation"
-        android:name="com.cs446.group7.bruno.ui.routenavigation.RouteNavigationFragment"
+        android:name="com.bruno.android.ui.routenavigation.RouteNavigationFragment"
         android:label="fragment_route_navigation" />
 
     <fragment
         android:id="@+id/fragment_fitness_details"
-        android:name="com.cs446.group7.bruno.ui.fitnessdetails.FitnessDetailsFragment"
+        android:name="com.bruno.android.ui.fitnessdetails.FitnessDetailsFragment"
         android:label="fragment_fitness_details"
         tools:layout="@layout/fragment_fitness_details" />
 
     <fragment
         android:id="@+id/fragment_terms_and_conditions"
-        android:name="com.cs446.group7.bruno.ui.settings.TermsAndConditionsFragment"
+        android:name="com.bruno.android.ui.settings.TermsAndConditionsFragment"
         android:label="fragment_terms_and_conditions"
         tools:layout="@layout/fragment_terms_and_conditions" />
 
     <fragment
         android:id="@+id/fragment_privacy_policy"
-        android:name="com.cs446.group7.bruno.ui.settings.PrivacyPolicyFragment"
+        android:name="com.bruno.android.ui.settings.PrivacyPolicyFragment"
         android:label="fragment_privacy_policy"
         tools:layout="@layout/fragment_privacy_policy" />
 
     <fragment
         android:id="@+id/fragment_credits"
-        android:name="com.cs446.group7.bruno.ui.settings.CreditsFragment"
+        android:name="com.bruno.android.ui.settings.CreditsFragment"
         android:label="fragment_credits"
         tools:layout="@layout/fragment_credits" />
 
     <fragment
         android:id="@+id/fragment_settings_avatar_wrapper"
-        android:name="com.cs446.group7.bruno.ui.settings.SettingsAvatarWrapperFragment"
+        android:name="com.bruno.android.ui.settings.SettingsAvatarWrapperFragment"
         android:label="fragment_settings_avatar_wrapper"
         tools:layout="@layout/fragment_settings_avatar_wrapper" />
 
     <fragment
         android:id="@+id/fragment_fallback_playlist_wrapper"
-        android:name="com.cs446.group7.bruno.ui.settings.SettingsFallbackPlaylistWrapperFragment"
+        android:name="com.bruno.android.ui.settings.SettingsFallbackPlaylistWrapperFragment"
         android:label="fragment_fallback_playlist_wrapper"
         tools:layout="@layout/fragment_settings_fallback_playlist_wrapper" />
 </navigation>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.cs446.group7.bruno">
+    package="com.bruno.android">
 
     <!--
          The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
@@ -46,7 +46,7 @@
             android:value="@string/spotify_redirect_uri" />
 
         <activity
-            android:name=".MainActivity"
+            android:name="com.bruno.android.MainActivity"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

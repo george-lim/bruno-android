@@ -13,12 +13,12 @@ jobs:
     steps:
     - name: Checkout repo
       uses: actions/checkout@v2
-    - name: Run INSTALL.sh
-      env:
-        google_maps_key: ${{ secrets.google_maps_key }}
-        spotify_client_id: ${{ secrets.spotify_client_id }}
-        spotify_client_secret: ${{ secrets.spotify_client_secret }}
-        spotify_redirect_uri: ${{ secrets.spotify_redirect_uri }}
-      run: bash INSTALL.sh "$google_maps_key" "$spotify_client_id" "$spotify_client_secret" "$spotify_redirect_uri"
-    - name: Build with Gradle
-      run: ./gradlew build --stacktrace
+    - name: Run INSTALL script
+      run: ./INSTALL
+    - name: Build project
+      uses: eskatos/gradle-command-action@v1
+      with:
+        wrapper-cache-enabled: true
+        dependencies-cache-enabled: true
+        configuration-cache-enabled: true
+        arguments: build
