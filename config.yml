@@ -1,0 +1,4 @@
+google_maps_key: '<!-- Add Google Maps API Key here -->'
+spotify_client_id: '<!-- Add Spotify Client ID here -->'
+spotify_client_secret: '<!-- Add Spotify Client Secret here -->'
+spotify_redirect_uri: '<!-- Add Spotify Redirect URI here -->'
