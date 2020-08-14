@@ -6,6 +6,7 @@ cd `dirname $0`
 # Copy hooks
 cp hooks/* .git/hooks
 
+# Parse yaml file into bash variables
 function parse_yaml {
    local prefix=$2
    local s='[[:space:]]*' w='[a-zA-Z0-9_]*' fs=$(echo @|tr @ '\034')
@@ -23,33 +24,52 @@ function parse_yaml {
    }'
 }
 
-# Parse from config.yml
-eval $(parse_yaml config.yml)
+# Parse config.yml
+if [ -f config.yml ]; then
+  eval $(parse_yaml config.yml)
+else
+  debug_google_api_key='<!-- Add Google API key here -->'
+  debug_spotify_client_id='<!-- Add Spotify Client ID here -->'
+  debug_spotify_client_secret='<!-- Add Spotify Client Secret here -->'
+  debug_spotify_redirect_uri='<!-- Add Spotify Redirect URI here -->'
 
-google_maps_api_xml="<resources>\n\t<string name=\"google_maps_key\" templateMergeStrategy=\"preserve\" translatable=\"false\">\n\t\t$google_maps_key\n\t</string>\n</resources>"
-spotify_client_id_xml="\t<string name=\"spotify_client_id\">\n\t\t
-$spotify_client_id\n\t</string>"
-spotify_client_secret_xml="\t<string name=\"spotify_client_secret\">\n\t\t
-$spotify_client_secret\n\t</string>"
-spotify_redirect_uri_xml="\t<string name=\"spotify_redirect_uri\">\n\t\t
-$spotify_redirect_uri\n\t</string>"
+  release_google_api_key='<!-- Add Google API key here -->'
+  release_spotify_client_id='<!-- Add Spotify Client ID here -->'
+  release_spotify_client_secret='<!-- Add Spotify Client Secret here -->'
+  release_spotify_redirect_uri='<!-- Add Spotify Redirect URI here -->'
+fi
 
+# Process values from config.yml
 for config in debug release; do
-  api_key_dir=app/src/$config/res/values
-  mkdir -p $api_key_dir
-  echo -e $google_maps_api_xml > $api_key_dir/google_maps_api.xml
+  google_api_key=${config}_google_api_key
+  google_api_key_xml="\t<string name=\"google_api_key\">\n\t\t${!google_api_key}\n\t</string>"
 
-  # Combines Spotify keys into a single resource file
-  if [ -f "$api_key_dir/spotify.xml" ]; then
-    rm $api_key_dir/spotify.xml
+  spotify_client_id=${config}_spotify_client_id
+  spotify_client_id_xml="\t<string name=\"spotify_client_id\">\n\t\t${!spotify_client_id}\n\t</string>"
+
+  spotify_client_secret=${config}_spotify_client_secret
+  spotify_client_secret_xml="\t<string name=\"spotify_client_secret\">\n\t\t${!spotify_client_secret}\n\t</string>"
+
+  spotify_redirect_uri=${config}_spotify_redirect_uri
+  spotify_redirect_uri_xml="\t<string name=\"spotify_redirect_uri\">\n\t\t${!spotify_redirect_uri}\n\t</string>"
+
+  api_key_dir=app/src/$config/res/values
+
+  if [ -d $api_key_dir ]; then
+    rm -r $api_key_dir
   fi
+
+  mkdir -p $api_key_dir
+
+  echo -e "<resources>" >> $api_key_dir/google.xml
+  echo -e $google_api_key_xml >> $api_key_dir/google.xml
+  echo -e "</resources>" >> $api_key_dir/google.xml
 
   echo -e "<resources>" >> $api_key_dir/spotify.xml
   echo -e $spotify_client_id_xml >> $api_key_dir/spotify.xml
   echo -e $spotify_client_secret_xml >> $api_key_dir/spotify.xml
   echo -e $spotify_redirect_uri_xml >> $api_key_dir/spotify.xml
   echo -e "</resources>" >> $api_key_dir/spotify.xml
-
 done
 
 # Install spotify-app-remote library if it does not exist
@@ -58,7 +78,7 @@ spotify_app_remote_release_dir=dependencies/spotify-app-remote
 spotify_app_remote_release_file=spotify-app-remote-release-0.7.0.aar
 
 if [ ! -f "$spotify_app_remote_release_dir/$spotify_app_remote_release_file" ]; then
-  echo "Spotify app remote library missing, downloading from GitHub"
+  echo "Downloading Spotify app remote library from GitHub"
   mkdir -p $spotify_app_remote_release_dir
   curl -sL "$spotify_app_remote_libary_location" --output "$spotify_app_remote_release_dir/$spotify_app_remote_release_file"
 fi
@@ -69,7 +89,7 @@ spotify_auth_release_dir=dependencies/spotify-auth
 spotify_auth_release_file=spotify-auth-release-1.2.3.aar
 
 if [ ! -f "$spotify_auth_release_dir/$spotify_auth_release_file" ]; then
-  echo "Spotify auth library missing, downloading from GitHub"
+  echo "Downloading Spotify auth library from GitHub"
   mkdir -p $spotify_auth_release_dir
   curl -sL "$spotify_auth_library_location" --output "$spotify_auth_release_dir/$spotify_auth_release_file"
 fi
