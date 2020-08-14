@@ -91,13 +91,13 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
     // MARK: - Private methods
 
     private RouteGenerator getRouteGenerator() {
-        String googleMapsKey = resources.getString(R.string.google_maps_key);
+        String googleAPIKey = resources.getString(R.string.google_api_key);
         return BuildConfig.DEBUG
                 ? new DynamicRouteGeneratorImpl(
-                        new RouteGeneratorImpl(googleMapsKey),
+                        new RouteGeneratorImpl(googleAPIKey),
                         new MockRouteGeneratorImpl()
                 )
-                : new RouteGeneratorImpl(googleMapsKey);
+                : new RouteGeneratorImpl(googleAPIKey);
     }
 
     private PlaylistGenerator getPlaylistGenerator() {

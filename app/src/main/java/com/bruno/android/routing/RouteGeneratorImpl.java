@@ -16,10 +16,10 @@ import java.util.List;
  */
 public class RouteGeneratorImpl extends RouteGenerator {
     private final String TAG = getClass().getSimpleName();
-    private String gMapsApiKey;
+    private String googleAPIKey;
 
-    public RouteGeneratorImpl(final String gMapsApiKey) {
-        this.gMapsApiKey = gMapsApiKey;
+    public RouteGeneratorImpl(final String googleAPIKey) {
+        this.googleAPIKey = googleAPIKey;
     }
 
     @Override
@@ -48,7 +48,7 @@ public class RouteGeneratorImpl extends RouteGenerator {
                 "waypoints=" + builder.toString() + "&" +
                 "mode=walking&" +
                 "avoid=tolls|highways|ferries&" +
-                "key=" + gMapsApiKey;
+                "key=" + googleAPIKey;
 
         Log.i(TAG, url);
 

@@ -13,7 +13,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Class used to generate routes using the Google maps API
+ * Class used to generate routes using the Directions API
  */
 public abstract class RouteGenerator {
     protected static final String DIRECTIONS_ENDPOINT = "https://maps.googleapis.com/maps/api/directions/";
