@@ -1,6 +1,37 @@
 apply plugin: 'com.android.application'
 
+if (file('../team/debugConfig.gradle').exists()) {
+    apply from: '../team/debugConfig.gradle'
+}
+
+if (file('../team/releaseConfig.gradle').exists()) {
+    apply from: '../team/releaseConfig.gradle'
+}
+
+boolean hasDebugConfig = project.hasProperty('debugConfig')
+boolean hasReleaseConfig = project.hasProperty('releaseConfig')
+
 android {
+    signingConfigs {
+        if (hasDebugConfig) {
+            debug {
+                storeFile file(project.debugConfig.store_file)
+                storePassword project.debugConfig.store_password
+                keyAlias project.debugConfig.key_alias
+                keyPassword project.debugConfig.key_password
+            }
+        }
+
+        if (hasReleaseConfig) {
+            release {
+                storeFile file(project.releaseConfig.store_file)
+                storePassword project.releaseConfig.store_password
+                keyAlias project.releaseConfig.key_alias
+                keyPassword project.releaseConfig.key_password
+            }
+        }
+    }
+
     compileSdkVersion 30
 
     defaultConfig {
@@ -22,16 +53,27 @@ android {
     buildTypes {
         debug {
             resValue "string", "app_version", "${defaultConfig.versionName}.debug"
+            resValue "string", "google_api_key", hasDebugConfig ? project.debugConfig.google_api_key : ""
+            resValue "string", "spotify_client_id", hasDebugConfig ? project.debugConfig.spotify_client_id : ""
+            resValue "string", "spotify_client_secret", hasDebugConfig ? project.debugConfig.spotify_client_secret : ""
+            resValue "string", "spotify_redirect_uri", hasDebugConfig ? project.debugConfig.spotify_redirect_uri : ""
         }
 
         release {
             resValue "string", "app_version", "${defaultConfig.versionName}"
-            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            // TODO: Add release signing config with key store before global launch
-            signingConfig signingConfigs.debug
+
+            resValue "string", "google_api_key", hasReleaseConfig ? project.releaseConfig.google_api_key : ""
+            resValue "string", "spotify_client_id", hasReleaseConfig ? project.releaseConfig.spotify_client_id : ""
+            resValue "string", "spotify_client_secret", hasReleaseConfig ? project.releaseConfig.spotify_client_secret : ""
+            resValue "string", "spotify_redirect_uri", hasReleaseConfig ? project.releaseConfig.spotify_redirect_uri : ""
+
+            if (hasReleaseConfig) {
+                signingConfig signingConfigs.release
+            }
         }
     }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
@@ -56,14 +98,10 @@ dependencies {
     implementation project(':dependencies:spotify-auth')
     implementation "com.google.code.gson:gson:2.8.6"
     annotationProcessor 'androidx.room:room-compiler:2.2.5'
-
-    def nav_version = "2.3.0"
-    implementation "androidx.navigation:navigation-fragment:$nav_version"
-    implementation "androidx.navigation:navigation-ui:$nav_version"
+    implementation "androidx.navigation:navigation-fragment:2.3.0"
+    implementation "androidx.navigation:navigation-ui:2.3.0"
     implementation "androidx.viewpager2:viewpager2:1.0.0"
-
     implementation "androidx.recyclerview:recyclerview:1.1.0"
     implementation "androidx.recyclerview:recyclerview-selection:1.1.0-rc01"
-
     implementation "androidx.preference:preference:1.1.1"
 }
