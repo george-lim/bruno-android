@@ -8,15 +8,18 @@ if (file('../team/releaseConfig.gradle').exists()) {
     apply from: '../team/releaseConfig.gradle'
 }
 
+boolean hasDebugConfig = project.hasProperty('debugConfig')
+boolean hasReleaseConfig = project.hasProperty('releaseConfig')
+
 android {
     signingConfigs {
-        if (project.hasProperty('debugConfig')) {
+        if (hasDebugConfig) {
             debug {
                 storeFile file(project.debugConfig.store_file)
             }
         }
 
-        if (project.hasProperty('releaseConfig')) {
+        if (hasReleaseConfig) {
             release {
                 storeFile file(project.releaseConfig.store_file)
                 storePassword project.releaseConfig.store_password
@@ -47,38 +50,23 @@ android {
     buildTypes {
         debug {
             resValue "string", "app_version", "${defaultConfig.versionName}.debug"
-
-            if (project.hasProperty('debugConfig')) {
-                resValue "string", "google_api_key", project.debugConfig.google_api_key
-                resValue "string", "spotify_client_id", project.debugConfig.spotify_client_id
-                resValue "string", "spotify_client_secret", project.debugConfig.spotify_client_secret
-                resValue "string", "spotify_redirect_uri", project.debugConfig.spotify_redirect_uri
-            }
-            else {
-                resValue "string", "google_api_key", ""
-                resValue "string", "spotify_client_id", ""
-                resValue "string", "spotify_client_secret", ""
-                resValue "string", "spotify_redirect_uri", ""
-            }
+            resValue "string", "google_api_key", hasDebugConfig ? project.debugConfig.google_api_key : ""
+            resValue "string", "spotify_client_id", hasDebugConfig ? project.debugConfig.spotify_client_id : ""
+            resValue "string", "spotify_client_secret", hasDebugConfig ? project.debugConfig.spotify_client_secret : ""
+            resValue "string", "spotify_redirect_uri", hasDebugConfig ? project.debugConfig.spotify_redirect_uri : ""
         }
 
         release {
             resValue "string", "app_version", "${defaultConfig.versionName}"
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
 
-            if (project.hasProperty('releaseConfig')) {
-                resValue "string", "google_api_key", project.releaseConfig.google_api_key
-                resValue "string", "spotify_client_id", project.releaseConfig.spotify_client_id
-                resValue "string", "spotify_client_secret", project.releaseConfig.spotify_client_secret
-                resValue "string", "spotify_redirect_uri", project.releaseConfig.spotify_redirect_uri
+            resValue "string", "google_api_key", hasReleaseConfig ? project.releaseConfig.google_api_key : ""
+            resValue "string", "spotify_client_id", hasReleaseConfig ? project.releaseConfig.spotify_client_id : ""
+            resValue "string", "spotify_client_secret", hasReleaseConfig ? project.releaseConfig.spotify_client_secret : ""
+            resValue "string", "spotify_redirect_uri", hasReleaseConfig ? project.releaseConfig.spotify_redirect_uri : ""
 
+            if (hasReleaseConfig) {
                 signingConfig signingConfigs.release
-            }
-            else {
-                resValue "string", "google_api_key", ""
-                resValue "string", "spotify_client_id", ""
-                resValue "string", "spotify_client_secret", ""
-                resValue "string", "spotify_redirect_uri", ""
             }
         }
     }
