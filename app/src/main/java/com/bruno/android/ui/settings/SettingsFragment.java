@@ -306,6 +306,8 @@ public class SettingsFragment extends Fragment {
     }
 
     private void setupAboutBruno(final View rootView) {
+        TextView versionHintTextView = rootView.findViewById(R.id.version_hint_text_view);
+        versionHintTextView.setText(BuildConfig.VERSION_NAME);
         LinearLayout termsAndConditionsItem = rootView.findViewById(R.id.settings_terms_and_conditions);
         termsAndConditionsItem.setOnClickListener(view ->
                 navigateUsingAction(R.id.action_fragmenttoplvl_to_fragmenttermsandconditions));

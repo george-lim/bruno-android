@@ -1,5 +1,4 @@
 <resources>
-    <string name="app_name">Bruno</string>
     <string name="title_route_planning">Route Planning</string>
     <string name="title_fitness_records">Fitness Records</string>
     <string name="title_settings">Settings</string>

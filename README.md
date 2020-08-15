@@ -62,7 +62,7 @@ The following guides show how to create and add third-party secret keys to `debu
 1. Create a new application from the [Spotify developer dashboard](https://developer.spotify.com/dashboard/applications)
 2. Find the client ID and add it to `spotify_client_id` in `debugConfig.gradle`
 3. Find the client secret and add it to `spotify_client_secret` in `debugConfig.gradle`
-4. From the dashboard, add this project's android package name and the `debug.keystore` SHA1 fingerprint through the `edit settings` menu. Repeat this step for the `release.keystore` SHA1 fingerprint. You can get the SHA1 fingerprint of a key store by executing:
+4. From the dashboard, add the package name `com.bruno.android.dev` and the `debug.keystore` SHA1 fingerprint through the `edit settings` menu. Repeat this step for the package name `com.bruno.android` and the `release.keystore` SHA1 fingerprint. You can get the SHA1 fingerprint of a Keystore by executing:
 ```
 keytool -list -v -keystore {store_name} -storepass {store_password} -alias {key_alias} -keypass {key_password}
 ```
