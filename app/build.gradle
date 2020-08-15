@@ -16,6 +16,9 @@ android {
         if (hasDebugConfig) {
             debug {
                 storeFile file(project.debugConfig.store_file)
+                storePassword project.debugConfig.store_password
+                keyAlias project.debugConfig.key_alias
+                keyPassword project.debugConfig.key_password
             }
         }
 
