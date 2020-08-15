@@ -62,17 +62,23 @@ android {
             }
         }
 
-        if (project.hasProperty('releaseConfig')) {
-            release {
-                resValue "string", "app_version", "${defaultConfig.versionName}"
-                proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        release {
+            resValue "string", "app_version", "${defaultConfig.versionName}"
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
 
+            if (project.hasProperty('releaseConfig')) {
                 resValue "string", "google_api_key", project.releaseConfig.google_api_key
                 resValue "string", "spotify_client_id", project.releaseConfig.spotify_client_id
                 resValue "string", "spotify_client_secret", project.releaseConfig.spotify_client_secret
                 resValue "string", "spotify_redirect_uri", project.releaseConfig.spotify_redirect_uri
 
                 signingConfig signingConfigs.release
+            }
+            else {
+                resValue "string", "google_api_key", ""
+                resValue "string", "spotify_client_id", ""
+                resValue "string", "spotify_client_secret", ""
+                resValue "string", "spotify_redirect_uri", ""
             }
         }
     }
