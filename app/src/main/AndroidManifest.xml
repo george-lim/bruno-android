@@ -32,19 +32,6 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_api_key" />
 
-        <!-- Spotify variables which correspond to INSTALL.sh - see README.md as well -->
-        <meta-data
-            android:name="spotify_client_id"
-            android:value="@string/spotify_client_id" />
-
-        <meta-data
-            android:name="spotify_client_secret"
-            android:value="@string/spotify_client_secret" />
-
-        <meta-data
-            android:name="spotify_redirect_uri"
-            android:value="@string/spotify_redirect_uri" />
-
         <activity
             android:name="com.bruno.android.MainActivity"
             android:screenOrientation="portrait">

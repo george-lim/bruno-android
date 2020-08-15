@@ -52,7 +52,10 @@ android {
 
     buildTypes {
         debug {
-            resValue "string", "app_version", "${defaultConfig.versionName}.debug"
+            applicationIdSuffix ".dev"
+            versionNameSuffix "-dev"
+
+            resValue "string", "app_name", "Bruno dev"
             resValue "string", "google_api_key", hasDebugConfig ? project.debugConfig.google_api_key : ""
             resValue "string", "spotify_client_id", hasDebugConfig ? project.debugConfig.spotify_client_id : ""
             resValue "string", "spotify_client_secret", hasDebugConfig ? project.debugConfig.spotify_client_secret : ""
@@ -60,9 +63,12 @@ android {
         }
 
         release {
-            resValue "string", "app_version", "${defaultConfig.versionName}"
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            minifyEnabled true
+            shrinkResources true
+            zipAlignEnabled true
 
+            resValue "string", "app_name", "Bruno"
             resValue "string", "google_api_key", hasReleaseConfig ? project.releaseConfig.google_api_key : ""
             resValue "string", "spotify_client_id", hasReleaseConfig ? project.releaseConfig.spotify_client_id : ""
             resValue "string", "spotify_client_secret", hasReleaseConfig ? project.releaseConfig.spotify_client_secret : ""

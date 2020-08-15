@@ -11,8 +11,8 @@
             style="@style/NormalText"
             android:text="@string/version" />
         <TextView
-            style="@style/HintText"
-            android:text="@string/app_version" />
+            android:id="@+id/version_hint_text_view"
+            style="@style/HintText" />
     </LinearLayout>
 
     <LinearLayout
