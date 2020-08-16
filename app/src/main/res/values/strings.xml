@@ -73,7 +73,6 @@
     <string name="route_planning_create_route">Create Route</string>
     <string name="route_planning_duration">Duration (Minutes)</string>
     <string name="route_planning_playlist_error">Error generating playlist, please try again!</string>
-    <!-- TODO: Should the greeting be dynamic? E.g. good morning, afternoon, etc. -->
     <string name="route_planning_greeting">Good day,</string>
     <string name="run_player_connect_title">Hold on tight</string>
     <string name="run_player_connect_message">Bruno is connecting to the music player</string>

@@ -91,7 +91,6 @@ public class FitnessDetailsFragment extends Fragment implements FitnessDetailsVi
 
     // MARK: - Private methods
 
-    // TODO: Use an adapter instead of manually adding view holders.
     private void setupTracklist(final List<BrunoTrack> tracks) {
         int[] routeColours = getResources().getIntArray(R.array.colorRouteList);
         int colourIndex = 0;
