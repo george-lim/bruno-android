@@ -1,11 +1,11 @@
 apply plugin: 'com.android.application'
 
-if (file('../team/debugConfig.gradle').exists()) {
-    apply from: '../team/debugConfig.gradle'
+if (file('../team/debug-config.gradle').exists()) {
+    apply from: '../team/debug-config.gradle'
 }
 
-if (file('../team/releaseConfig.gradle').exists()) {
-    apply from: '../team/releaseConfig.gradle'
+if (file('../team/release-config.gradle').exists()) {
+    apply from: '../team/release-config.gradle'
 }
 
 boolean hasDebugConfig = project.hasProperty('debugConfig')
