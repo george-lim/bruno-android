@@ -47,8 +47,9 @@ public class FitnessRecordsFragment extends Fragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_fitness_records, container, false);
-        adapter = new FitnessRecordsAdapter(this);
         fitnessRecordsRecyclerView = view.findViewById(R.id.recycler_view_fitness_record);
+
+        adapter = new FitnessRecordsAdapter(this);
         fitnessRecordsRecyclerView.setAdapter(adapter);
         return view;
     }
@@ -79,7 +80,6 @@ public class FitnessRecordsFragment extends Fragment
         fitnessRecordsRecyclerView.setLayoutManager(
                 new LinearLayoutManager(requireActivity().getApplicationContext())
         );
-        fitnessRecordsRecyclerView.setAdapter(adapter);
 
         DividerItemDecoration itemDecoration = new DividerItemDecoration(
                 fitnessRecordsRecyclerView.getContext(),

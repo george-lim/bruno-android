@@ -224,12 +224,11 @@
                 android:textSize="24sp"
                 android:textStyle="bold" />
 
-            <LinearLayout
-                android:id="@+id/linear_layout_fitness_detail_tracklist"
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/playlist_recycler_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical" />
-
+                android:scrollbars="vertical" />
         </LinearLayout>
     </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>
