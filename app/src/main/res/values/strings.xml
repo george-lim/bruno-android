@@ -38,8 +38,7 @@
     <string name="onboarding_fallback_playlist_fail">Something went wrong, please try again later.</string>
     <string name="onboarding_fallback_playlist_not_premium_user">Unfortunately, Bruno requires Spotify Premium to work.</string>
     <string name="onboarding_all_done">All Done!</string>
-    <string name="onboarding_permission_title">The Boring Stuff</string>
-    <string name="onboarding_permission_skip">Skip</string>
+    <string name="onboarding_permission_title">Bruno Requirements</string>
     <string name="permission_status_name">Permission name</string>
     <string name="permission_status_description">Explain why permission is needed.</string>
     <!--  Settings  -->
