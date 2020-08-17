@@ -15,7 +15,7 @@
         android:paddingBottom="10dp">
 
         <ImageView
-            android:id="@+id/image_view_fitness_details_holder_music"
+            android:id="@+id/fitness_details_playlist_track_icon"
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:layout_gravity="center"
@@ -30,7 +30,7 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/text_view_fitness_details_holder_song"
+                android:id="@+id/fitness_details_playlist_track_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
@@ -38,19 +38,11 @@
                 android:textColor="@android:color/black" />
 
             <TextView
-                android:id="@+id/text_view_fitness_details_holder_artist"
+                android:id="@+id/fitness_details_playlist_track_artists"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
                 android:maxLines="1" />
-
         </LinearLayout>
-
     </LinearLayout>
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="?android:attr/listDivider" />
-
 </LinearLayout>

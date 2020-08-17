@@ -1,18 +1,22 @@
 package com.bruno.android.ui.fitnessdetails;
 
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.bruno.android.R;
 import com.bruno.android.models.FitnessModel;
@@ -45,11 +49,12 @@ public class FitnessDetailsFragment extends Fragment implements FitnessDetailsVi
     private TextView txtStatsDistance;
     private TextView txtStatsSteps;
     private TextView txtStatsClock;
-    private LinearLayout runTracklist;
+    private RecyclerView playlistRecyclerView;
 
     // MARK: - Private members
 
     private FitnessDetailsViewModel viewModel;
+    private FitnessDetailsPlaylistAdapter playlistAdapter;
 
     // MARK: - Lifecycle methods
 
@@ -63,7 +68,12 @@ public class FitnessDetailsFragment extends Fragment implements FitnessDetailsVi
         txtStatsDistance = view.findViewById(R.id.text_view_stats_distance);
         txtStatsSteps = view.findViewById(R.id.text_view_stats_steps);
         txtStatsClock = view.findViewById(R.id.text_view_stats_clock);
-        runTracklist = view.findViewById(R.id.linear_layout_fitness_detail_tracklist);
+        playlistRecyclerView = view.findViewById(R.id.playlist_recycler_view);
+
+        int[] trackColours = getResources().getIntArray(R.array.colorRouteList);
+        playlistAdapter = new FitnessDetailsPlaylistAdapter(trackColours);
+        playlistRecyclerView.setAdapter(playlistAdapter);
+
         return view;
     }
 
@@ -91,29 +101,22 @@ public class FitnessDetailsFragment extends Fragment implements FitnessDetailsVi
 
     // MARK: - Private methods
 
-    // TODO: Use an adapter instead of manually adding view holders.
-    private void setupTracklist(final List<BrunoTrack> tracks) {
-        int[] routeColours = getResources().getIntArray(R.array.colorRouteList);
-        int colourIndex = 0;
+    private void setupPlaylist(final List<BrunoTrack> tracks) {
+        playlistRecyclerView.setHasFixedSize(true);
+        playlistRecyclerView.setLayoutManager(
+                new LinearLayoutManager(requireActivity().getApplicationContext())
+        );
 
-        for (BrunoTrack track : tracks) {
-            View viewHolderItemView = getLayoutInflater()
-                    .inflate(R.layout.view_holder_fitness_details, null);
-            ImageView musicNote = viewHolderItemView
-                    .findViewById(R.id.image_view_fitness_details_holder_music);
+        DividerItemDecoration itemDecoration = new DividerItemDecoration(
+                playlistRecyclerView.getContext(),
+                DividerItemDecoration.VERTICAL
+        );
 
-            musicNote.setColorFilter(routeColours[colourIndex]);
-            colourIndex = (colourIndex + 1) % routeColours.length;
+        Drawable dividerDrawable = ContextCompat.getDrawable(requireActivity(), R.drawable.list_divider);
+        itemDecoration.setDrawable(dividerDrawable);
+        playlistRecyclerView.addItemDecoration(itemDecoration);
 
-            TextView songName = viewHolderItemView
-                    .findViewById(R.id.text_view_fitness_details_holder_song);
-            songName.setText(track.getName());
-
-            TextView artist = viewHolderItemView
-                    .findViewById(R.id.text_view_fitness_details_holder_artist);
-            artist.setText(track.getArtists());
-            runTracklist.addView(viewHolderItemView);
-        }
+        playlistAdapter.setData(tracks);
     }
 
     // MARK: - FitnessDetailsViewModelDelegate methods
@@ -156,7 +159,7 @@ public class FitnessDetailsFragment extends Fragment implements FitnessDetailsVi
                 break;
         }
 
-        setupTracklist(tracks);
+        setupPlaylist(tracks);
     }
 
     @Override
