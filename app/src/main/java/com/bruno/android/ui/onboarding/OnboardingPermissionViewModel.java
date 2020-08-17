@@ -25,22 +25,6 @@ public class OnboardingPermissionViewModel {
         this.delegate = delegate;
     }
 
-    public void handleSkip() {
-        if (isAllAccessAllowed()) {
-            delegate.moveToNextTab();
-        } else if (!accessToSpotify) {
-            showSpotifyNotInstallPopUp();
-        } else {
-            delegate.showPopUp(
-                    context.getResources().getString(R.string.onboarding_missing_access_title),
-                    context.getResources().getString(R.string.onboarding_missing_access_text),
-                    context.getResources().getString(R.string.ok_button),
-                    (dialogInterface, i) -> delegate.moveToNextTab(),
-                    true
-            );
-        }
-    }
-
     public void handleAllowAccess() {
         // All access are granted by the user, automatically move to next tab
         if (isAllAccessAllowed()) {

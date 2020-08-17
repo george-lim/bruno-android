@@ -279,7 +279,6 @@ public class RouteNavigationViewModel
         hasCompletedRoute = true;
         model.completeRouteNavigation();
 
-        // TODO: Implement a route completion screen.
         delegate.showAlertDialog(
                 resources.getString(R.string.run_completion_title),
                 resources.getString(R.string.run_completion_message),

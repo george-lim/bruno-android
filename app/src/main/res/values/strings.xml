@@ -38,8 +38,7 @@
     <string name="onboarding_fallback_playlist_fail">Something went wrong, please try again later.</string>
     <string name="onboarding_fallback_playlist_not_premium_user">Unfortunately, Bruno requires Spotify Premium to work.</string>
     <string name="onboarding_all_done">All Done!</string>
-    <string name="onboarding_permission_title">The Boring Stuff</string>
-    <string name="onboarding_permission_skip">Skip</string>
+    <string name="onboarding_permission_title">Bruno Requirements</string>
     <string name="permission_status_name">Permission name</string>
     <string name="permission_status_description">Explain why permission is needed.</string>
     <!--  Settings  -->
@@ -73,7 +72,6 @@
     <string name="route_planning_create_route">Create Route</string>
     <string name="route_planning_duration">Duration (Minutes)</string>
     <string name="route_planning_playlist_error">Error generating playlist, please try again!</string>
-    <!-- TODO: Should the greeting be dynamic? E.g. good morning, afternoon, etc. -->
     <string name="route_planning_greeting">Good day,</string>
     <string name="run_player_connect_title">Hold on tight</string>
     <string name="run_player_connect_message">Bruno is connecting to the music player</string>

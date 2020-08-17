@@ -59,9 +59,6 @@ public class FallbackPlaylistFragment extends Fragment implements FallbackPlayli
     @Override
     public void onResume() {
         super.onResume();
-        // This call is needed to be in onResume because ViewPager used for onBoarding have a tendency to
-        // create view in previous tab to enhance performance.
-        // This also allows us to re-sync user playlist when they added a new on after seeing they have none.
         viewModel.getUserPlaylistLibrary();
     }
 

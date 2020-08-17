@@ -50,9 +50,6 @@ public class OnboardingPermissionFragment extends Fragment implements Onboarding
         active_internet_status = view.findViewById(R.id.active_internet_status);
         spotify_status = view.findViewById(R.id.spotify_status);
         btnAllowAccess = view.findViewById(R.id.btn_allow_access);
-
-        Button btnSkip = view.findViewById(R.id.btn_skip);
-        btnSkip.setOnClickListener(this::handleSkip);
         btnAllowAccess.setOnClickListener(this::handleAllowAccess);
         return view;
     }
@@ -67,10 +64,6 @@ public class OnboardingPermissionFragment extends Fragment implements Onboarding
     public void onResume() {
         super.onResume();
         viewModel.updateUserAccess();
-    }
-
-    private void handleSkip(final View view) {
-        viewModel.handleSkip();
     }
 
     private void handleAllowAccess(final View view) {
