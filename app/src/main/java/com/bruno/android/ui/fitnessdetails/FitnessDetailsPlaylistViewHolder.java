@@ -27,7 +27,7 @@ public class FitnessDetailsPlaylistViewHolder extends RecyclerView.ViewHolder {
         trackArtists = itemView.findViewById(R.id.fitness_details_playlist_track_artists);
     }
 
-    // MARK: - public methods
+    // MARK: - Public methods
 
     public void populate(int musicNoteColour, final BrunoTrack track) {
         trackIcon.setColorFilter(musicNoteColour);
