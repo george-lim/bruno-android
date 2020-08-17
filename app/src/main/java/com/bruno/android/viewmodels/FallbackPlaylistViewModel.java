@@ -31,6 +31,7 @@ public class FallbackPlaylistViewModel {
     private boolean ongoingRequest;
     private PlaylistMetadata fallbackPlaylist;
     public final String TAG = this.getClass().getSimpleName();
+    private boolean hasShownSpotifyError;
 
     public FallbackPlaylistViewModel(final Context context,
                                      final FallbackPlaylistAction wrapperDelegate,
@@ -45,6 +46,10 @@ public class FallbackPlaylistViewModel {
     }
 
     public void getUserPlaylistLibrary() {
+        if (hasShownSpotifyError) {
+            return;
+        }
+
         // Check if there is an ongoing process
         // Since this is call by onResume, when auth view return, we don't want duplicate request.
         if (ongoingRequest) {
@@ -191,6 +196,7 @@ public class FallbackPlaylistViewModel {
     }
 
     private void showSpotifyError(final String errorText) {
+        hasShownSpotifyError = true;
         wrapperDelegate.updatePrimaryAction(
                 FallbackPlaylistAction.ActionType.QUIT,
                 view -> delegate.quitApp());
