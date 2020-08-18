@@ -77,3 +77,4 @@ lint/reports/
 .project
 .settings/
 team/
+fastlane/metadata

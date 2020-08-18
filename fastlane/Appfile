@@ -1,0 +1,2 @@
+json_key_file("team/service-account-key.json")
+package_name("com.bruno.android")
