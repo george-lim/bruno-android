@@ -4,23 +4,116 @@ update_fastlane
 default_platform(:android)
 
 platform :android do
-  desc "Runs all the tests"
-  lane :test do
-    gradle(task: "test")
+  def bump_version_code
+    build_gradle_path = '../app/build.gradle'
+    regex = /versionCode\s+(\d+)/
+
+    build_gradle_content = File.read(build_gradle_path)
+    version_code = build_gradle_content[regex, 1].to_i
+    build_gradle_content[regex, 1] = (version_code + 1).to_s
+
+    build_gradle_file = File.new(build_gradle_path, 'w')
+    build_gradle_file.write(build_gradle_content)
+    build_gradle_file.close
   end
 
-  desc "Submit a new Beta Build to Crashlytics Beta"
-  lane :beta do
-    gradle(task: "clean assembleRelease")
-    crashlytics
+  def bump_version_number(bump_type: nil, version_number: nil)
+    build_gradle_path = '../app/build.gradle'
+    regex = /versionName\s+("\d+.\d+.\d+")/
 
-    # sh "your_script.sh"
-    # You can also use other beta testing services here
+    build_gradle_content = File.read(build_gradle_path)
+    version_name = build_gradle_content[regex, 1].gsub!('"','').split('.')
+
+    major = version_name[0].to_i
+    minor = version_name[1].to_i
+    patch = version_name[2].to_i
+
+    if bump_type == 'major'
+      major += 1
+      minor = 0
+      patch = 0
+    elsif bump_type == 'minor'
+      minor += 1
+      patch = 0
+    elsif bump_type == 'patch'
+      patch += 1
+    end
+
+    if version_number
+      build_gradle_content[regex, 1] = "\"#{version_number}\""
+    else
+      build_gradle_content[regex, 1] = "\"#{major}.#{minor}.#{patch}\""
+    end
+
+    build_gradle_file = File.new(build_gradle_path, 'w')
+    build_gradle_file.write(build_gradle_content)
+    build_gradle_file.close
   end
 
-  desc "Deploy a new version to the Google Play"
-  lane :deploy do
-    gradle(task: "clean assembleRelease")
-    upload_to_play_store
+  def bump_version(options)
+    if !options[:version]
+      bump_version_code
+      return
+    end
+
+    version = options[:version]
+    regex = /\d+.\d+.\d+/
+    version_number = version[regex, 0]
+
+    if version_number
+      bump_version_code
+      bump_version_number(version_number: version_number)
+    elsif (version == 'major' || version == 'minor' || version == 'patch')
+      bump_version_code
+      bump_version_number(bump_type: version)
+    else
+      UI.user_error!('Unexpected user input!')
+    end
+  end
+
+  def create_changelog
+    build_gradle_path = '../app/build.gradle'
+    regex = /versionCode\s+(\d+)/
+
+    build_gradle_content = File.read(build_gradle_path)
+    version_code = build_gradle_content[regex, 1]
+    changelog_path = '../fastlane/metadata/android/en-US/changelogs/' << version_code << '.txt'
+
+    changelog_file = File.new(changelog_path, 'w')
+    changelog_file.write('• Bug fixes and performance improvements')
+    changelog_file.close
+  end
+
+  def promote_latest_release
+    supply(
+      version_code: google_play_track_version_codes(track: 'internal')[0],
+      track: 'internal',
+      track_promote_to: 'production',
+      skip_upload_aab: true,
+      skip_upload_metadata: true,
+      skip_upload_changelogs: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true
+    )
+  end
+
+  # Optionally specify a version number (version:1.0.0) or version bump type (version:(major, minor, patch))
+  # Defaults to a version code bump
+  desc 'Download metadata and binaries from Google Play'
+  lane :bump do |options|
+    download_from_play_store
+    bump_version(options)
+    create_changelog
+  end
+
+  desc 'Release a new internal build to Google Play'
+  lane :release do
+    gradle(task: 'clean bundleRelease')
+    upload_to_play_store(track: 'internal')
+  end
+
+  desc 'Promote latest internal build to production track'
+  lane :promote do
+    promote_latest_release
   end
 end
