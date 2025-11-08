@@ -5,6 +5,7 @@ import android.content.Context;
 import android.location.Location;
 import android.os.Looper;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.bruno.android.utils.NoFailCallback;
@@ -13,6 +14,7 @@ import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.Priority;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,11 +29,11 @@ public class LocationServiceImpl implements LocationService {
     private static final int UPDATE_INTERVAL_MILLISECONDS = 5000;
     private static final int FASTEST_UPDATE_INTERVAL_MILLISECONDS = 1000;
 
-    private FusedLocationProviderClient fusedLocationClient;
-    private List<LocationServiceSubscriber> subscriberList;
-    private LocationRequest locationRequest;
+    private final FusedLocationProviderClient fusedLocationClient;
+    private final List<LocationServiceSubscriber> subscriberList;
+    private final LocationRequest locationRequest;
 
-    private LocationCallback locationCallback = new LocationCallback() {
+    private final LocationCallback locationCallback = new LocationCallback() {
         @Override
         public void onLocationResult(LocationResult locationResult) {
             final Location result = locationResult.getLastLocation();
@@ -46,22 +48,15 @@ public class LocationServiceImpl implements LocationService {
     public LocationServiceImpl(final Context context) {
         subscriberList = new ArrayList<>();
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(context);
-
-        locationRequest = LocationRequest.create();
-
-        // Desired duration at which updates are received
-        locationRequest.setInterval(UPDATE_INTERVAL_MILLISECONDS);
-
-        // Fastest interval that we can handle requests. eg. It can handle updates as fast as every 2000 ms
-        locationRequest.setFastestInterval(FASTEST_UPDATE_INTERVAL_MILLISECONDS);
-
-        // Prioritize high accuracy results
-        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        locationRequest = new LocationRequest.Builder(UPDATE_INTERVAL_MILLISECONDS)
+                .setPriority(Priority.PRIORITY_HIGH_ACCURACY)
+                .setMinUpdateIntervalMillis(FASTEST_UPDATE_INTERVAL_MILLISECONDS)
+                .build();
     }
 
     /**
      * Start the periodic location updates for all subscribers.
-     *
+     * <p>
      * NOTE: Location permissions must be enabled before calling this method. If it is not, subscribers
      * will not receive location updates.
      */
@@ -74,7 +69,7 @@ public class LocationServiceImpl implements LocationService {
     /**
      * Start periodic location updates for all subscribers. The optional {@code initialLocationCallback} argument enables the client
      * to receive the initial location before starting the regular, periodic updates.
-     *
+     * <p>
      * NOTE: Location permissions must be enabled before calling this method. If it is not, the client
      * will not receive location updates and {@code initialLocationCallback} will not be invoked.
      *
@@ -88,22 +83,10 @@ public class LocationServiceImpl implements LocationService {
             return;
         }
 
-        // request for initial location before starting it for the subscribers
-        LocationRequest initialLocationRequest = LocationRequest
-                .create()
-                .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
-                .setNumUpdates(1); // Receive one update as the initial location, then stop
-
-        // Request initial location push, this will only be triggered once
-        fusedLocationClient.requestLocationUpdates(initialLocationRequest, new LocationCallback() {
-
-            // Initial location received, invoke the callback and start the periodic updates for subscribers
-            @Override
-            public void onLocationResult(LocationResult locationResult) {
-                initialLocationCallback.onSuccess(locationResult.getLastLocation());
-                startLocationUpdates();
-            }
-        }, Looper.getMainLooper());
+        fusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null).addOnSuccessListener(location -> {
+            initialLocationCallback.onSuccess(location);
+            startLocationUpdates();
+        });
     }
 
     @Override

@@ -4,8 +4,8 @@ import com.bruno.android.utils.Callback;
 
 // A model that contains all permission request info
 public class PermissionRequest {
-    private PermissionGroup permissionGroup;
-    private Callback<Void, Void> callback;
+    private final PermissionGroup permissionGroup;
+    private final Callback<Void, Void> callback;
 
     // All permission requests share the same title internally
     private static final String TITLE = "Permission Request";

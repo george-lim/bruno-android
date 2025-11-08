@@ -13,6 +13,7 @@ public interface SpotifyPlaylistAPI {
     void getPlaylist(final String accessToken,
                      final String playlistId,
                      final Callback<BrunoPlaylist, Exception> callback);
+
     void getUserPlaylistLibrary(final String accessToken,
                                 final Callback<List<PlaylistMetadata>, Exception> callback);
 }

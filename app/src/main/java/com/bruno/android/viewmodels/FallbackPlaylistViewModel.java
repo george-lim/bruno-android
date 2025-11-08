@@ -24,9 +24,9 @@ import java.util.List;
 
 public class FallbackPlaylistViewModel {
 
-    private Context context;
-    private FallbackPlaylistAction wrapperDelegate;
-    private FallbackPlaylistViewModelDelegate delegate;
+    private final Context context;
+    private final FallbackPlaylistAction wrapperDelegate;
+    private final FallbackPlaylistViewModelDelegate delegate;
     private String token;
     private boolean ongoingRequest;
     private PlaylistMetadata fallbackPlaylist;
@@ -82,7 +82,7 @@ public class FallbackPlaylistViewModel {
         if (token == null) {
             queue.add((result, callback) -> spotifyService
                     .getAuthService()
-                    .requestUserAuth(new Callback<String, Void>() {
+                    .requestUserAuth(new Callback<>() {
                         @Override
                         public void onSuccess(String resultToken) {
                             token = resultToken;
@@ -100,7 +100,7 @@ public class FallbackPlaylistViewModel {
 
         queue.add((result, callback) -> spotifyService
                 .getAuthService()
-                .checkIfUserIsPremium(token, new Callback<Boolean, Exception>() {
+                .checkIfUserIsPremium(token, new Callback<>() {
                     @Override
                     public void onSuccess(Boolean isPremium) {
                         if (!isPremium) {
@@ -120,10 +120,10 @@ public class FallbackPlaylistViewModel {
                 }));
 
         queue.add((result, callback) -> getSpotifyPlaylistAPI()
-                .getUserPlaylistLibrary(token, new Callback<List<PlaylistMetadata>, Exception>() {
+                .getUserPlaylistLibrary(token, new Callback<>() {
                     @Override
                     public void onSuccess(List<PlaylistMetadata> playlistMetadata) {
-                        if (playlistMetadata.size() == 0) {
+                        if (playlistMetadata.isEmpty()) {
                             showNoPlaylist();
                         } else {
                             showSelectPlaylist(playlistMetadata);
@@ -139,7 +139,7 @@ public class FallbackPlaylistViewModel {
                     }
                 }));
 
-        queue.run(new Callback<Void, Void>() {
+        queue.run(new Callback<>() {
             @Override
             public void onSuccess(Void result) {
                 ongoingRequest = false;
@@ -155,9 +155,9 @@ public class FallbackPlaylistViewModel {
     private SpotifyPlaylistAPI getSpotifyPlaylistAPI() {
         return BuildConfig.DEBUG
                 ? new DynamicSpotifyPlaylistAPIImpl(
-                        MainActivity.getSpotifyService().getPlaylistService(),
-                        new MockSpotifyPlaylistAPIImpl()
-                )
+                MainActivity.getSpotifyService().getPlaylistService(),
+                new MockSpotifyPlaylistAPIImpl()
+        )
                 : MainActivity.getSpotifyService().getPlaylistService();
     }
 
@@ -213,7 +213,7 @@ public class FallbackPlaylistViewModel {
         getSpotifyPlaylistAPI().getPlaylist(
                 token,
                 fallbackPlaylist.getId(),
-                new Callback<BrunoPlaylist, Exception>() {
+                new Callback<>() {
                     @Override
                     public void onSuccess(BrunoPlaylist playlist) {
                         try {

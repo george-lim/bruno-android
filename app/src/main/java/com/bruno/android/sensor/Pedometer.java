@@ -19,7 +19,7 @@ public class Pedometer {
         // Total data points observed
         private int totalCount = 0;
         // Data point queue. Overwrites oldest data points when buffer is full.
-        private float[][] queue = new float[VECTOR_DIMENSION][MAX_SIZE];
+        private final float[][] queue = new float[VECTOR_DIMENSION][MAX_SIZE];
 
         // Add a data point
         void add(final float[] vector) {
@@ -47,7 +47,7 @@ public class Pedometer {
         // Total data points observed
         private int totalCount = 0;
         // Data point queue. Overwrites oldest data points when buffer is full.
-        private float[] queue = new float[MAX_SIZE];
+        private final float[] queue = new float[MAX_SIZE];
 
         // Add a data point
         void add(float value) {
@@ -78,9 +78,9 @@ public class Pedometer {
 
     // MARK - General Pedometer properties
 
-    private ArrayList<PedometerSubscriber> subscribers;
-    private AccelerationData accelerationData;
-    private VelocityData velocityData;
+    private final ArrayList<PedometerSubscriber> subscribers;
+    private final AccelerationData accelerationData;
+    private final VelocityData velocityData;
 
     public Pedometer() {
         subscribers = new ArrayList<>();

@@ -120,7 +120,6 @@ public class FallbackPlaylistFragment extends Fragment implements FallbackPlayli
     }
 
     @Override
-    @SuppressWarnings("deprecation")
     public void dismissProgressDialog() {
         if (progressDialog == null) {
             return;

@@ -8,8 +8,8 @@ public class RouteSegment {
     private static final double RUNNING_SPEED_METRES_PER_MILLISECOND =
             SettingsService.PREFERRED_RUNNING_SPEED / MILLISECONDS_PER_MINUTE;
 
-    private Coordinate startCoordinate;
-    private Coordinate endCoordinate;
+    private final Coordinate startCoordinate;
+    private final Coordinate endCoordinate;
     private long duration; // milliseconds
 
     public RouteSegment(final Coordinate startCoordinate,

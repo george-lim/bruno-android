@@ -1,7 +1,6 @@
 package com.bruno.android.utils;
 
 import android.content.res.Resources;
-import android.os.Build;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -11,11 +10,8 @@ public class DateTimeUtils {
     // Default date time format
     private static final String DATE_TIME_FORMAT = "MMM d • h:mm aa";
 
-    @SuppressWarnings("deprecation")
     public static Locale getLocale(final Resources resources) {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
-                ? resources.getConfiguration().getLocales().get(0)
-                : resources.getConfiguration().locale;
+        return resources.getConfiguration().getLocales().get(0);
     }
 
     public static String getDurationString(long seconds) {
@@ -41,7 +37,7 @@ public class DateTimeUtils {
             return String.format(Locale.getDefault(), "%s min", minutes);
         }
 
-        return String.format(Locale.getDefault(), "%.1f hr", (float)minutes / 60);
+        return String.format(Locale.getDefault(), "%.1f hr", (float) minutes / 60);
     }
 
     public static String formatDateTime(final Date dateTime, final Locale locale) {

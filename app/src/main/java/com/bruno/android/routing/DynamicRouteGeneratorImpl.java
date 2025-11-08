@@ -5,8 +5,8 @@ import com.bruno.android.location.Coordinate;
 import com.bruno.android.storage.PreferencesStorage;
 
 public class DynamicRouteGeneratorImpl extends RouteGenerator {
-    private RouteGenerator routeGenerator;
-    private RouteGenerator mockRouteGenerator;
+    private final RouteGenerator routeGenerator;
+    private final RouteGenerator mockRouteGenerator;
 
     public DynamicRouteGeneratorImpl(final RouteGenerator routeGenerator,
                                      final RouteGenerator mockRouteGenerator) {
@@ -17,7 +17,7 @@ public class DynamicRouteGeneratorImpl extends RouteGenerator {
     private RouteGenerator getRouteGenerator() {
         boolean isUsingMock = MainActivity.getPreferencesStorage().getBoolean(
                 PreferencesStorage.KEYS.MOCK_ROUTE_GENERATOR,
-                true
+                false
         );
 
         return isUsingMock ? mockRouteGenerator : routeGenerator;

@@ -4,9 +4,9 @@ import java.io.Serializable;
 
 // Simple container class containing information about a track
 public class BrunoTrack implements Serializable {
-    private String name;
-    private String artists;
-    private long duration; // Milliseconds
+    private final String name;
+    private final String artists;
+    private final long duration; // Milliseconds
 
     public BrunoTrack(final String name, final String artists, long duration) {
         this.name = name;

@@ -10,6 +10,8 @@ public interface FallbackPlaylistAction {
     }
 
     void updatePrimaryAction(ActionType action, final View.OnClickListener clickListener);
+
     void onSelectPlaylistPressed();
+
     void onNoPlaylistPressed();
 }

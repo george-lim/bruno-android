@@ -1,5 +1,7 @@
 package com.bruno.android;
 
+import static org.junit.Assert.assertEquals;
+
 import com.bruno.android.location.Coordinate;
 import com.bruno.android.models.PlaylistModel;
 import com.bruno.android.models.TrackSegment;
@@ -10,40 +12,37 @@ import com.bruno.android.routing.RouteSegment;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-
 public class ProcessTrackSegmentsTest {
     // These mock segments create a box around the university of waterloo
-    RouteSegment mockSegment1 = new RouteSegment(
+    final RouteSegment mockSegment1 = new RouteSegment(
             new Coordinate(43.476861, -80.539940),
             new Coordinate(43.478633, -80.535248),
             60000L
     );
-    RouteSegment mockSegment2 = new RouteSegment(
+    final RouteSegment mockSegment2 = new RouteSegment(
             new Coordinate(43.478633, -80.535248),
             new Coordinate(43.473752, -80.531724),
             80000L
     );
-    RouteSegment mockSegment3 = new RouteSegment(
+    final RouteSegment mockSegment3 = new RouteSegment(
             new Coordinate(43.473752, -80.531724),
             new Coordinate(43.472029, -80.536262),
             60000L
     );
-    RouteSegment mockSegment4 = new RouteSegment(
+    final RouteSegment mockSegment4 = new RouteSegment(
             new Coordinate(43.472029, -80.536262),
             new Coordinate(43.476861, -80.539940),
             80000L
     );
-    LinkedList<RouteSegment> mockSegments = new LinkedList<>();
+    final LinkedList<RouteSegment> mockSegments = new LinkedList<>();
 
-    private static int[] DEFAULT_ROUTE_COLOURS = new int[] { 0 };
+    private static final int[] DEFAULT_ROUTE_COLOURS = new int[]{0};
 
     @Before
     public void setup() {
@@ -146,35 +145,5 @@ public class ProcessTrackSegmentsTest {
         model.setRouteColours(DEFAULT_ROUTE_COLOURS);
         model.setPlaylist(playlist);
         assertEqualTrackSegments(model.getTrackSegments(), answer);
-    }
-
-    @Ignore("Legacy test: PlaylistModel no longer exposes getRouteSegments() method.")
-    @Test
-    public void routeSegmentDurationLongerThanTrackDuration() {
-        List<BrunoTrack> tracks = new LinkedList<>();
-        tracks.add(new BrunoTrack("testName1", "testArtist1", 70000));
-        tracks.add(new BrunoTrack("testName2", "testArtist2", 60000));
-        tracks.add(new BrunoTrack("testName3", "testArtist3", 200000));
-        BrunoPlaylist playlist = new BrunoPlaylistImpl("id", "playlistName", tracks);
-
-        PlaylistModel model = new PlaylistModel();
-        model.setRouteSegments(mockSegments);
-        model.setRouteColours(DEFAULT_ROUTE_COLOURS);
-        model.setPlaylist(playlist);
-
-//        List<RouteSegment> routeSegments = model.getTrackSegments().get(0).getRouteSegments();
-//        assertEquals(routeSegments.size(), 2);
-//        assertEquals(routeSegments.get(0).getDuration(), 60000);
-//        assertEquals(routeSegments.get(1).getDuration(), 10000);
-//
-//        routeSegments = model.getTrackSegments().get(1).getRouteSegments();
-//        assertEquals(routeSegments.size(), 1);
-//        assertEquals(routeSegments.get(0).getDuration(), 60000);
-//
-//        routeSegments = model.getTrackSegments().get(2).getRouteSegments();
-//        assertEquals(routeSegments.size(), 3);
-//        assertEquals(routeSegments.get(0).getDuration(), 10000);
-//        assertEquals(routeSegments.get(1).getDuration(), 60000);
-//        assertEquals(routeSegments.get(2).getDuration(), 80000);
     }
 }

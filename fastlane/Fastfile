@@ -5,8 +5,8 @@ default_platform(:android)
 
 platform :android do
   def bump_version_code
-    build_gradle_path = '../app/build.gradle'
-    regex = /versionCode\s+(\d+)/
+    build_gradle_path = '../app/build.gradle.kts'
+    regex = /versionCode = (\d+)/
 
     build_gradle_content = File.read(build_gradle_path)
     version_code = build_gradle_content[regex, 1].to_i
@@ -18,8 +18,8 @@ platform :android do
   end
 
   def bump_version_number(bump_type: nil, version_number: nil)
-    build_gradle_path = '../app/build.gradle'
-    regex = /versionName\s+("\d+.\d+.\d+")/
+    build_gradle_path = '../app/build.gradle.kts'
+    regex = /versionName = ("\d+.\d+.\d+")/
 
     build_gradle_content = File.read(build_gradle_path)
     version_name = build_gradle_content[regex, 1].gsub!('"','').split('.')
@@ -72,8 +72,8 @@ platform :android do
   end
 
   def create_changelog
-    build_gradle_path = '../app/build.gradle'
-    regex = /versionCode\s+(\d+)/
+    build_gradle_path = '../app/build.gradle.kts'
+    regex = /versionCode = (\d+)/
 
     build_gradle_content = File.read(build_gradle_path)
     version_code = build_gradle_content[regex, 1]

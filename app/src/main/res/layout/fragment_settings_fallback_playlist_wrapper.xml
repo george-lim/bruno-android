@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -10,17 +9,17 @@
     <include
         android:id="@+id/appbar_fallback_playlist"
         layout="@layout/toolbar_layout"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/fragment_container_fallback_playlist"
-        android:tag="tag_fallback_playlist"
         android:name="com.bruno.android.ui.shared.FallbackPlaylistFragment"
-        tools:context=".ui.settings.SettingsFallbackPlaylistWrapperFragment"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:tag="tag_fallback_playlist"
+        app:layout_constraintBottom_toTopOf="@id/btn_primary_action"
         app:layout_constraintTop_toBottomOf="@id/appbar_fallback_playlist"
-        app:layout_constraintBottom_toTopOf="@id/btn_primary_action" />
+        tools:context=".ui.settings.SettingsFallbackPlaylistWrapperFragment" />
 
     <Button
         android:id="@+id/btn_primary_action"

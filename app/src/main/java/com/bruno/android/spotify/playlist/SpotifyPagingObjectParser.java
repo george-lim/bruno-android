@@ -22,11 +22,11 @@ import java.util.Map;
  * Subclasses are capable of parsing the paging object into lists of different types
  * The recursive parsing logic is performed between getPagingObject() and parsePagingObject()
  */
-public abstract class SpotifyPagingObjectParser<T>  {
+public abstract class SpotifyPagingObjectParser<T> {
 
-    private String token;
-    private DefaultRetryPolicy retryPolicy;
-    private List<T> output;
+    private final String token;
+    private final DefaultRetryPolicy retryPolicy;
+    private final List<T> output;
     private final String TAG = this.getClass().getSimpleName();
 
     public SpotifyPagingObjectParser(final String token, final DefaultRetryPolicy retryPolicy) {
@@ -46,7 +46,7 @@ public abstract class SpotifyPagingObjectParser<T>  {
 
             String nextUrl = pagingObj.getString("next");
             if (!nextUrl.equals("null")) {
-                getPagingObject(nextUrl, new Callback<JSONObject, Exception>() {
+                getPagingObject(nextUrl, new Callback<>() {
                     @Override
                     public void onSuccess(JSONObject result) {
                         parsePagingObject(result, callback);

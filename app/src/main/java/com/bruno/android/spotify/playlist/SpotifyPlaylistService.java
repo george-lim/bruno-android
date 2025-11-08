@@ -1,13 +1,12 @@
 package com.bruno.android.spotify.playlist;
 
-import android.content.Context;
 import android.util.Log;
 
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.toolbox.StringRequest;
+import com.bruno.android.BuildConfig;
 import com.bruno.android.MainActivity;
-import com.bruno.android.R;
 import com.bruno.android.music.BrunoPlaylist;
 import com.bruno.android.music.BrunoPlaylistImpl;
 import com.bruno.android.music.BrunoTrack;
@@ -28,31 +27,25 @@ import java.util.Random;
 // Uses Volley, an HTTP library: https://developer.android.com/training/volley
 public class SpotifyPlaylistService implements PlaylistGenerator, SpotifyPlaylistAPI {
 
-    private final String playlistEndpoint = "https://api.spotify.com/v1/playlists/";
-    private final String authorizationEndpoint = "https://accounts.spotify.com/api/token";
     private final DefaultRetryPolicy retryPolicy;
-    private final String clientId;
-    private final String clientSecret;
     private final String TAG = this.getClass().getSimpleName();
 
     private static final String[] PLAYLIST_IDS = {
-            "37i9dQZEVXbKj23U1GF4IR",
-            "37i9dQZEVXbMDoHDwVN2tF",
-            "37i9dQZEVXbLiRSasKsNU9",
-            "37i9dQZEVXbKfIuOAZrk7G"
+            "0Ljf1rAruX3SVPkoSN0rlG",
+            "1wqLZv3iGUj70RiGKA2yXC",
+            "0DCxpWUBg9ArgKDe34l0iA",
+            "00jy0g2ZnCxiCfhEiwCzY6"
     };
 
     // Needs context for secret variables
-    public SpotifyPlaylistService(final Context context, final DefaultRetryPolicy retryPolicy) {
-        clientId = context.getResources().getString(R.string.spotify_client_id);
-        clientSecret = context.getResources().getString(R.string.spotify_client_secret);
+    public SpotifyPlaylistService(final DefaultRetryPolicy retryPolicy) {
         this.retryPolicy = retryPolicy;
     }
 
     // Call this to get the BrunoPlaylist - it goes through public authentication and then the playlist
     // endpoint to provide the BrunoPlaylist requested by callback
     public void discoverPlaylist(final Callback<BrunoPlaylist, Exception> callback) {
-        getPublicAuthorizationToken(new Callback<String, Exception>() {
+        getPublicAuthorizationToken(new Callback<>() {
             @Override
             public void onSuccess(String authToken) {
                 getPlaylist(authToken, getRandomPlaylistId(), callback);
@@ -98,6 +91,7 @@ public class SpotifyPlaylistService implements PlaylistGenerator, SpotifyPlaylis
     // the playlist endpoint.
     private void getPublicAuthorizationToken(final Callback<String, Exception> callback) {
         final StringRequest authRequest;
+        String authorizationEndpoint = "https://accounts.spotify.com/api/token";
         authRequest = new StringRequest(Request.Method.POST, authorizationEndpoint,
                 response -> {
                     try {
@@ -120,8 +114,8 @@ public class SpotifyPlaylistService implements PlaylistGenerator, SpotifyPlaylis
             public byte[] getBody() {
                 String body = "";
                 body += "grant_type=client_credentials";
-                body += "&client_id=" + clientId;
-                body += "&client_secret=" + clientSecret;
+                body += "&client_id=" + BuildConfig.SPOTIFY_CLIENT_ID;
+                body += "&client_secret=" + BuildConfig.SPOTIFY_CLIENT_SECRET;
                 return body.getBytes(StandardCharsets.UTF_8);
             }
         };
@@ -134,6 +128,7 @@ public class SpotifyPlaylistService implements PlaylistGenerator, SpotifyPlaylis
     public void getPlaylist(final String token,
                             final String playlistId,
                             final Callback<BrunoPlaylist, Exception> callback) {
+        String playlistEndpoint = "https://api.spotify.com/v1/playlists/";
         final StringRequest stringRequest = new StringRequest(Request.Method.GET,
                 playlistEndpoint + playlistId,
                 response -> {
@@ -142,7 +137,7 @@ public class SpotifyPlaylistService implements PlaylistGenerator, SpotifyPlaylis
                         final String outputPlaylistName = responseJson.getString("name");
                         final JSONObject pagingObject = responseJson.getJSONObject("tracks");
                         new TrackPagingObjectParser(token, retryPolicy)
-                                .parsePagingObject(pagingObject, new Callback<List<BrunoTrack>, Exception>() {
+                                .parsePagingObject(pagingObject, new Callback<>() {
                                     @Override
                                     public void onSuccess(List<BrunoTrack> result) {
                                         final BrunoPlaylist outputPlaylist = new BrunoPlaylistImpl(playlistId,

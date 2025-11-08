@@ -7,7 +7,7 @@ public enum Capability {
     LOCATION(PermissionGroup.LOCATION),
     INTERNET(null);
 
-    private PermissionGroup permissionGroup;
+    private final PermissionGroup permissionGroup;
 
     Capability(final PermissionGroup permissionGroup) {
         this.permissionGroup = permissionGroup;

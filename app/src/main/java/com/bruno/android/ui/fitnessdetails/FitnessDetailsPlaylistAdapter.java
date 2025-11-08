@@ -17,7 +17,7 @@ public class FitnessDetailsPlaylistAdapter extends RecyclerView.Adapter<FitnessD
 
     // MARK: - Private members
 
-    private int[] trackColours;
+    private final int[] trackColours;
     private List<BrunoTrack> data;
 
     // MARK: - Lifecycle methods

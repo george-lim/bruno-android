@@ -3,6 +3,7 @@ package com.bruno.android.location;
 import android.location.Location;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
 
@@ -22,9 +23,11 @@ public class BrunoBot implements LocationService {
 
     // MARK: - Private members
 
-    private RouteModel model;
-    private List<LocationServiceSubscriber> subscribers;
+    private final RouteModel model;
+    private final List<LocationServiceSubscriber> subscribers;
     private Thread locationUpdateThread;
+
+    private final String TAG = getClass().getSimpleName();
 
     // MARK: - Lifecycle methods
 
@@ -59,7 +62,8 @@ public class BrunoBot implements LocationService {
             }
         }
         // Return from the method immediately
-        catch (InterruptedException ignored) { }
+        catch (InterruptedException ignored) {
+        }
     }
 
     // MARK: - LocationService methods
@@ -87,7 +91,7 @@ public class BrunoBot implements LocationService {
             locationUpdateThread.join();
         } catch (InterruptedException e) {
             // NOTE: .join requires a try-catch, even though control will never get here.
-            e.printStackTrace();
+            Log.e(TAG, "Interrupted while stopping location updates", e);
         }
     }
 

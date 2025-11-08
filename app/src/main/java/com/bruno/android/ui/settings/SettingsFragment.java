@@ -77,7 +77,7 @@ public class SettingsFragment extends Fragment {
     private void updateMockRouteGeneratorHint() {
         boolean isUsingMock = MainActivity.getPreferencesStorage().getBoolean(
                 PreferencesStorage.KEYS.MOCK_ROUTE_GENERATOR,
-                true
+                false
         );
 
         tvMockRouteGeneratorHint.setText(isUsingMock
@@ -88,7 +88,7 @@ public class SettingsFragment extends Fragment {
     private void updateMockPlaylistGeneratorHint() {
         boolean isUsingMock = MainActivity.getPreferencesStorage().getBoolean(
                 PreferencesStorage.KEYS.MOCK_PLAYLIST_GENERATOR,
-                true
+                false
         );
 
         tvMockPlaylistGeneratorHint.setText(isUsingMock
@@ -99,7 +99,7 @@ public class SettingsFragment extends Fragment {
     private void updateMockMusicPlayerHint() {
         boolean isUsingMock = MainActivity.getPreferencesStorage().getBoolean(
                 PreferencesStorage.KEYS.MOCK_MUSIC_PLAYER,
-                true
+                false
         );
 
         tvMockMusicPlayerHint.setText(isUsingMock
@@ -110,7 +110,7 @@ public class SettingsFragment extends Fragment {
     private void updateMockLocationServiceHint() {
         boolean isUsingMock = MainActivity.getPreferencesStorage().getBoolean(
                 PreferencesStorage.KEYS.MOCK_LOCATION_SERVICE,
-                true
+                false
         );
 
         tvMockLocationServiceHint.setText(isUsingMock
@@ -121,7 +121,7 @@ public class SettingsFragment extends Fragment {
     private void updateMockFitnessRecordDAOHint() {
         boolean isUsingMock = MainActivity.getPreferencesStorage().getBoolean(
                 PreferencesStorage.KEYS.MOCK_FITNESS_RECORD_DAO,
-                true
+                false
         );
 
         tvMockFitnessRecordDAOHint.setText(isUsingMock
@@ -132,7 +132,7 @@ public class SettingsFragment extends Fragment {
     private void updateMockSpotifyAuthServiceHint() {
         boolean isUsingMock = MainActivity.getPreferencesStorage().getBoolean(
                 PreferencesStorage.KEYS.MOCK_SPOTIFY_AUTH_SERVICE,
-                true
+                false
         );
 
         tvMockSpotifyAuthServiceHint.setText(isUsingMock
@@ -143,7 +143,7 @@ public class SettingsFragment extends Fragment {
     private void updateMockSpotifyPlaylistAPIHint() {
         boolean isUsingMock = MainActivity.getPreferencesStorage().getBoolean(
                 PreferencesStorage.KEYS.MOCK_SPOTIFY_PLAYLIST_API,
-                true
+                false
         );
 
         tvMockSpotifyPlaylistAPIHint.setText(isUsingMock
@@ -192,7 +192,7 @@ public class SettingsFragment extends Fragment {
         debugPreferencesMockRouteGenerator.setOnClickListener(view -> {
             boolean isUsingMock = MainActivity.getPreferencesStorage().getBoolean(
                     PreferencesStorage.KEYS.MOCK_ROUTE_GENERATOR,
-                    true
+                    false
             );
 
             MainActivity
@@ -209,7 +209,7 @@ public class SettingsFragment extends Fragment {
         debugPreferencesMockPlaylistGenerator.setOnClickListener(view -> {
             boolean isUsingMock = MainActivity.getPreferencesStorage().getBoolean(
                     PreferencesStorage.KEYS.MOCK_PLAYLIST_GENERATOR,
-                    true
+                    false
             );
 
             MainActivity
@@ -226,7 +226,7 @@ public class SettingsFragment extends Fragment {
         debugPreferencesMockMusicPlayer.setOnClickListener(view -> {
             boolean isUsingMock = MainActivity.getPreferencesStorage().getBoolean(
                     PreferencesStorage.KEYS.MOCK_MUSIC_PLAYER,
-                    true
+                    false
             );
 
             MainActivity
@@ -243,7 +243,7 @@ public class SettingsFragment extends Fragment {
         debugPreferencesMockLocationService.setOnClickListener(view -> {
             boolean isUsingMock = MainActivity.getPreferencesStorage().getBoolean(
                     PreferencesStorage.KEYS.MOCK_LOCATION_SERVICE,
-                    true
+                    false
             );
 
             MainActivity
@@ -260,7 +260,7 @@ public class SettingsFragment extends Fragment {
         debugPreferencesMockFitnessRecordDAO.setOnClickListener(view -> {
             boolean isUsingMock = MainActivity.getPreferencesStorage().getBoolean(
                     PreferencesStorage.KEYS.MOCK_FITNESS_RECORD_DAO,
-                    true
+                    false
             );
 
             MainActivity
@@ -277,7 +277,7 @@ public class SettingsFragment extends Fragment {
         debugPreferencesMockSpotifyAuthService.setOnClickListener(view -> {
             boolean isUsingMock = MainActivity.getPreferencesStorage().getBoolean(
                     PreferencesStorage.KEYS.MOCK_SPOTIFY_AUTH_SERVICE,
-                    true
+                    false
             );
 
             MainActivity
@@ -294,7 +294,7 @@ public class SettingsFragment extends Fragment {
         debugPreferencesMockSpotifyPlaylistAPI.setOnClickListener(view -> {
             boolean isUsingMock = MainActivity.getPreferencesStorage().getBoolean(
                     PreferencesStorage.KEYS.MOCK_SPOTIFY_PLAYLIST_API,
-                    true
+                    false
             );
 
             MainActivity

@@ -12,8 +12,8 @@ import com.bruno.android.utils.NoFailClosureQueue;
 
 public class OnboardingPermissionViewModel {
 
-    private Context context;
-    private OnboardingPermissionViewModelDelegate delegate;
+    private final Context context;
+    private final OnboardingPermissionViewModelDelegate delegate;
 
     private boolean accessToLocationPermission = false;
     private boolean accessToLocationService = false;
@@ -37,7 +37,7 @@ public class OnboardingPermissionViewModel {
         // granted access to icon UI.
         NoFailClosureQueue<Void> queue = new NoFailClosureQueue<>();
         CapabilityService capabilityService = MainActivity.getCapabilityService();
-        queue.add((result, callback) -> capabilityService.request(Capability.LOCATION, new Callback<Void, Void>() {
+        queue.add((result, callback) -> capabilityService.request(Capability.LOCATION, new Callback<>() {
             @Override
             public void onSuccess(Void result) {
                 updateUserAccess();
@@ -49,7 +49,7 @@ public class OnboardingPermissionViewModel {
                 callback.onSuccess(null);
             }
         }));
-        queue.add((result, callback) -> capabilityService.request(Capability.INTERNET, new Callback<Void, Void>() {
+        queue.add((result, callback) -> capabilityService.request(Capability.INTERNET, new Callback<>() {
             @Override
             public void onSuccess(Void result) {
                 updateUserAccess();

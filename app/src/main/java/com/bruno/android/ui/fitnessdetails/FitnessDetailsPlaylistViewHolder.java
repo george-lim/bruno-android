@@ -14,9 +14,9 @@ public class FitnessDetailsPlaylistViewHolder extends RecyclerView.ViewHolder {
 
     // MARK: - Private members
 
-    private ImageView trackIcon;
-    private TextView trackName;
-    private TextView trackArtists;
+    private final ImageView trackIcon;
+    private final TextView trackName;
+    private final TextView trackArtists;
 
     // MARK: - Lifecycle methods
 

@@ -9,10 +9,10 @@ import android.hardware.SensorManager;
 // A service that allows classes to subscribe to device sensor events
 public class SensorService implements SensorEventListener {
 
-    private Pedometer pedometer;
+    private final Pedometer pedometer;
 
     public SensorService(final Context context) {
-        SensorManager sensorManager = (SensorManager)context.getSystemService(Context.SENSOR_SERVICE);
+        SensorManager sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
         Sensor accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         pedometer = new Pedometer();
 
@@ -32,12 +32,13 @@ public class SensorService implements SensorEventListener {
     // MARK - SensorEventListener methods
 
     @Override
-    public void onAccuracyChanged(Sensor sensor, int i) {}
+    public void onAccuracyChanged(Sensor sensor, int i) {
+    }
 
     @Override
     public void onSensorChanged(SensorEvent event) {
         if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
-            float[] accelerationVector = new float[] { event.values[0], event.values[1], event.values[2] };
+            float[] accelerationVector = new float[]{event.values[0], event.values[1], event.values[2]};
             pedometer.onAccelerometerChanged(event.timestamp, accelerationVector);
         }
     }

@@ -20,7 +20,7 @@ public class FitnessRecordsAdapter extends RecyclerView.Adapter<FitnessRecordsVi
 
     private List<FitnessRecord> data;
     private Locale locale;
-    private FitnessRecordsAdapterDelegate delegate;
+    private final FitnessRecordsAdapterDelegate delegate;
 
     // MARK: - Lifecycle methods
 

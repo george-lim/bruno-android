@@ -57,7 +57,7 @@ public class CheckpointsModel {
         double distance = 0;
 
         for (int i = 0; i < checkpointIndex; ++i) {
-            distance += checkpoints.get(i).getDistance(checkpoints.get(i+1));
+            distance += checkpoints.get(i).getDistance(checkpoints.get(i + 1));
         }
 
         return distance;

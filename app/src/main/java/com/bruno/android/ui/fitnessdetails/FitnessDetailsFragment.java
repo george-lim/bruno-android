@@ -81,7 +81,7 @@ public class FitnessDetailsFragment extends Fragment implements FitnessDetailsVi
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        SupportMapFragment mapFragment = (SupportMapFragment)getChildFragmentManager()
+        SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager()
                 .findFragmentById(R.id.fitness_details_map);
 
         FitnessModel model = new ViewModelProvider(requireActivity()).get(FitnessModel.class);
@@ -102,7 +102,6 @@ public class FitnessDetailsFragment extends Fragment implements FitnessDetailsVi
     // MARK: - Private methods
 
     private void setupPlaylist(final List<BrunoTrack> tracks) {
-        playlistRecyclerView.setHasFixedSize(true);
         playlistRecyclerView.setLayoutManager(
                 new LinearLayoutManager(requireActivity().getApplicationContext())
         );

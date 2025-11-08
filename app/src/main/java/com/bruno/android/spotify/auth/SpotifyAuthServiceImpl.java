@@ -1,13 +1,12 @@
 package com.bruno.android.spotify.auth;
 
-import android.content.Context;
 import android.util.Log;
 
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.toolbox.StringRequest;
+import com.bruno.android.BuildConfig;
 import com.bruno.android.MainActivity;
-import com.bruno.android.R;
 import com.bruno.android.utils.Callback;
 import com.spotify.sdk.android.auth.AuthorizationRequest;
 import com.spotify.sdk.android.auth.AuthorizationResponse;
@@ -22,23 +21,21 @@ public class SpotifyAuthServiceImpl implements SpotifyAuthService {
 
     private final DefaultRetryPolicy retryPolicy;
     private final SpotifyRequestDelegate delegate;
-    private final String redirectURI;
-    private final String clientID;
     private final String TAG = this.getClass().getSimpleName();
 
-    public SpotifyAuthServiceImpl(final Context context,
-                                  final SpotifyRequestDelegate delegate,
+    public SpotifyAuthServiceImpl(final SpotifyRequestDelegate delegate,
                                   final DefaultRetryPolicy retryPolicy) {
-        redirectURI = context.getResources().getString(R.string.spotify_redirect_uri);
-        clientID = context.getResources().getString(R.string.spotify_client_id);
         this.delegate = delegate;
         this.retryPolicy = retryPolicy;
     }
 
     @Override
     public void requestUserAuth(final Callback<String, Void> clientCallback) {
-        final AuthorizationRequest.Builder builder = new AuthorizationRequest.Builder(clientID,
-                AuthorizationResponse.Type.TOKEN, redirectURI);
+        final AuthorizationRequest.Builder builder = new AuthorizationRequest.Builder(
+                BuildConfig.SPOTIFY_CLIENT_ID,
+                AuthorizationResponse.Type.TOKEN,
+                BuildConfig.SPOTIFY_REDIRECT_URI
+        );
         builder.setShowDialog(true);
         builder.setScopes(new String[]{"app-remote-control", "playlist-read-private", "user-read-private"});
         final AuthorizationRequest authRequest = builder.build();

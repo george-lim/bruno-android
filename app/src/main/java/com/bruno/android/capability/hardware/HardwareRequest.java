@@ -5,8 +5,8 @@ import com.bruno.android.utils.NoFailCallback;
 
 // A model that contains all hardware request info
 public class HardwareRequest {
-    private Capability capability;
-    private NoFailCallback<Void> callback;
+    private final Capability capability;
+    private final NoFailCallback<Void> callback;
 
     // All hardware requests share the same title internally
     private static final String TITLE = "Hardware Request";

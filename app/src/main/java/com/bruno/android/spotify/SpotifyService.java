@@ -14,9 +14,9 @@ import com.spotify.android.appremote.api.SpotifyAppRemote;
 
 // Initiates singletons for SpotifyPlayerService and SpotifyPlaylistService
 public class SpotifyService {
-    private SpotifyAuthService authService;
-    private SpotifyPlayerService playerService;
-    private SpotifyPlaylistService playlistService;
+    private final SpotifyAuthService authService;
+    private final SpotifyPlayerService playerService;
+    private final SpotifyPlaylistService playlistService;
 
     // Default is 2500 MS
     private static final int REQUEST_TIMEOUT_MS = DefaultRetryPolicy.DEFAULT_TIMEOUT_MS;
@@ -30,15 +30,15 @@ public class SpotifyService {
             REQUEST_BACKOFF_MULT
     );
 
-    public SpotifyService(Context context, SpotifyRequestDelegate delegate) {
+    public SpotifyService(SpotifyRequestDelegate delegate) {
         authService = BuildConfig.DEBUG
                 ? new DynamicSpotifyAuthServiceImpl(
-                        new SpotifyAuthServiceImpl(context, delegate, retryPolicy),
-                        new MockSpotifyAuthServiceImpl()
-                )
-                : new SpotifyAuthServiceImpl(context, delegate, retryPolicy);
+                new SpotifyAuthServiceImpl(delegate, retryPolicy),
+                new MockSpotifyAuthServiceImpl()
+        )
+                : new SpotifyAuthServiceImpl(delegate, retryPolicy);
         playerService = new SpotifyPlayerService();
-        playlistService = new SpotifyPlaylistService(context, retryPolicy);
+        playlistService = new SpotifyPlaylistService(retryPolicy);
     }
 
     public SpotifyAuthService getAuthService() {

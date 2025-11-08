@@ -17,21 +17,17 @@
           {
             "fieldPath": "recordDataString",
             "columnName": "record_data",
-            "affinity": "TEXT",
-            "notNull": false
+            "affinity": "TEXT"
           }
         ],
         "primaryKey": {
+          "autoGenerate": true,
           "columnNames": [
             "uid"
-          ],
-          "autoGenerate": true
-        },
-        "indices": [],
-        "foreignKeys": []
+          ]
+        }
       }
     ],
-    "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
       "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '9274bcee1005d21be849dcc22e27659f')"

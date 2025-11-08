@@ -42,18 +42,18 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
     // MARK: - Constants
 
     private static final Capability[] REQUIRED_CAPABILITIES
-            = { Capability.LOCATION, Capability.INTERNET };
+            = {Capability.LOCATION, Capability.INTERNET};
 
     private final String TAG = getClass().getSimpleName();
 
     // MARK: - Private members
 
-    private Resources resources;
-    private RouteModel model;
-    private RoutePlanningViewModelDelegate delegate;
+    private final Resources resources;
+    private final RouteModel model;
+    private final RoutePlanningViewModelDelegate delegate;
 
-    private RouteGenerator routeGenerator;
-    private PlaylistGenerator playlistGenerator;
+    private final RouteGenerator routeGenerator;
+    private final PlaylistGenerator playlistGenerator;
 
     private boolean isRequestingCapabilities = false;
     private boolean hasStartedLocationUpdates = false;
@@ -91,21 +91,20 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
     // MARK: - Private methods
 
     private RouteGenerator getRouteGenerator() {
-        String googleAPIKey = resources.getString(R.string.google_api_key);
         return BuildConfig.DEBUG
                 ? new DynamicRouteGeneratorImpl(
-                        new RouteGeneratorImpl(googleAPIKey),
-                        new MockRouteGeneratorImpl()
-                )
-                : new RouteGeneratorImpl(googleAPIKey);
+                new RouteGeneratorImpl(),
+                new MockRouteGeneratorImpl()
+        )
+                : new RouteGeneratorImpl();
     }
 
     private PlaylistGenerator getPlaylistGenerator() {
         return BuildConfig.DEBUG
                 ? new DynamicPlaylistGeneratorImpl(
-                        MainActivity.getSpotifyService().getPlaylistService(),
-                        new MockPlaylistGeneratorImpl()
-                )
+                MainActivity.getSpotifyService().getPlaylistService(),
+                new MockPlaylistGeneratorImpl()
+        )
                 : MainActivity.getSpotifyService().getPlaylistService();
     }
 
@@ -176,7 +175,7 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
             return;
         }
 
-        playlistGenerator.discoverPlaylist(new Callback<BrunoPlaylist, Exception>() {
+        playlistGenerator.discoverPlaylist(new Callback<>() {
             @Override
             public void onSuccess(BrunoPlaylist playlist) {
                 model.setPlaylist(playlist);
@@ -256,7 +255,7 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
         final double offset = T - 2 * H;
 
         // find mirror point of maxLat and include in bounds
-        final LatLng mirrorMaxLat= new LatLng(2 * minLat.latitude - maxLat.latitude - offset, maxLat.longitude);
+        final LatLng mirrorMaxLat = new LatLng(2 * minLat.latitude - maxLat.latitude - offset, maxLat.longitude);
         boundsBuilder.include(mirrorMaxLat);
 
         bounds = boundsBuilder.build();
@@ -288,20 +287,18 @@ public class RoutePlanningViewModel implements LocationServiceSubscriber, OnRout
         if (isRequestingCapabilities) return;
         isRequestingCapabilities = true;
 
-        MainActivity.getCapabilityService().request(REQUIRED_CAPABILITIES, new Callback<Void, Void>() {
+        MainActivity.getCapabilityService().request(REQUIRED_CAPABILITIES, new Callback<>() {
             @Override
             public void onSuccess(Void result) {
                 if (model.hasTrackSegments()) {
                     delegate.navigateToNextScreen();
-                }
-                else if (!hasStartedLocationUpdates) {
+                } else if (!hasStartedLocationUpdates) {
                     startLocationUpdates(nextResult -> {
                         if (!model.hasTrackSegments()) {
                             processTrackSegments();
                         }
                     });
-                }
-                else {
+                } else {
                     processTrackSegments();
                 }
 

@@ -10,14 +10,14 @@ import com.bruno.android.utils.NoFailClosureQueue;
 
 // Manages hardware capability checking and requests
 public class HardwareManager {
-    private LocationManager locationManager;
-    private ConnectivityManager connectivityManager;
-    private HardwareRequestDelegate delegate;
+    private final LocationManager locationManager;
+    private final ConnectivityManager connectivityManager;
+    private final HardwareRequestDelegate delegate;
 
     public HardwareManager(final Context context,
                            final HardwareRequestDelegate delegate) {
-        locationManager = (LocationManager)context.getSystemService(Context.LOCATION_SERVICE);
-        connectivityManager = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+        connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         this.delegate = delegate;
     }
 

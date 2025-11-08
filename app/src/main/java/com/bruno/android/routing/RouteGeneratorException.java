@@ -19,14 +19,11 @@ public class RouteGeneratorException extends RuntimeException {
 
         if (throwable instanceof JSONException) {
             return "Error parsing route, please try again!";
-        }
-        else if (throwable instanceof NoConnectionError) {
+        } else if (throwable instanceof NoConnectionError) {
             return "No network, please enable internet access!";
-        }
-        else if (throwable instanceof ServerError) {
+        } else if (throwable instanceof ServerError) {
             return "A server error occurred, please try again!";
-        }
-        else {
+        } else {
             return "Something went wrong, please try again!";
         }
     }

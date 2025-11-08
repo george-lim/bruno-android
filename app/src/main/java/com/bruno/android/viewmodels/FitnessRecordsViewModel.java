@@ -11,9 +11,9 @@ public class FitnessRecordsViewModel {
 
     // MARK: - Private members
 
-    private Locale locale;
-    private FitnessModel model;
-    private FitnessRecordsViewModelDelegate delegate;
+    private final Locale locale;
+    private final FitnessModel model;
+    private final FitnessRecordsViewModelDelegate delegate;
 
     // MARK: - Lifecycle methods
 

@@ -27,16 +27,16 @@ import java.util.List;
 public class MockFitnessRecordDAO implements FitnessRecordDAO {
 
     private final String TAG = getClass().getSimpleName();
-    private final int[] COLOURS =  { -537719, -6234730, -7879170,  -6188606, -1003060, -938359, -5719896, -5977857 };
+    private final int[] COLOURS = {-537719, -6234730, -7879170, -6188606, -1003060, -938359, -5719896, -5977857};
 
-    private List<FitnessRecordEntry> recordEntries;
+    private final List<FitnessRecordEntry> recordEntries;
 
-    private static FitnessRecordEntry makeEntry(final FitnessRecord data) {
+    private FitnessRecordEntry makeEntry(final FitnessRecord data) {
         FitnessRecordEntry entry = new FitnessRecordEntry();
         try {
             entry.setRecordDataString(data.serialize());
         } catch (IOException e) {
-            e.printStackTrace();
+            Log.e(TAG, "Failed to serialize fitness record", e);
         }
         return entry;
     }
@@ -50,7 +50,7 @@ public class MockFitnessRecordDAO implements FitnessRecordDAO {
                 new OnRouteResponseCallback() {
                     @Override
                     public void onRouteReady(List<RouteSegment> routeSegments) {
-                        playlistGenerator.discoverPlaylist(new Callback<BrunoPlaylist, Exception>() {
+                        playlistGenerator.discoverPlaylist(new Callback<>() {
                             @Override
                             public void onSuccess(BrunoPlaylist result) {
 
@@ -75,7 +75,7 @@ public class MockFitnessRecordDAO implements FitnessRecordDAO {
                                 try {
                                     recordEntries.add(makeEntry(FitnessRecord.deserialize(data.serialize())));
                                 } catch (IOException | ClassNotFoundException e) {
-                                    Log.e(TAG, "Failed to load dummy record: " + e.toString());
+                                    Log.e(TAG, "Failed to load dummy record: " + e);
                                 }
 
                                 recordEntries.add(makeEntry(new FitnessRecord(

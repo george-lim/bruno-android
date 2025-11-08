@@ -1,10 +1,10 @@
 package com.bruno.android.music;
 
 public class MergedBrunoPlaylistImpl extends BrunoPlaylist {
-    private BrunoPlaylist primaryPlaylist;
-    private BrunoPlaylist secondaryPlaylist;
-    private int mergeTrackIndex;
-    private long mergePlaybackPosition;
+    private final BrunoPlaylist primaryPlaylist;
+    private final BrunoPlaylist secondaryPlaylist;
+    private final int mergeTrackIndex;
+    private final long mergePlaybackPosition;
 
     public MergedBrunoPlaylistImpl(final BrunoPlaylist primaryPlaylist,
                                    final BrunoPlaylist secondaryPlaylist,
@@ -30,14 +30,11 @@ public class MergedBrunoPlaylistImpl extends BrunoPlaylist {
     public BrunoTrack getTrack(int index) {
         if (index < mergeTrackIndex) {
             return primaryPlaylist.getTrack(index);
-        }
-        else if (index == mergeTrackIndex && mergePlaybackPosition == 0) {
+        } else if (index == mergeTrackIndex && mergePlaybackPosition == 0) {
             return secondaryPlaylist.getTrack(0);
-        }
-        else if (index == mergeTrackIndex) {
+        } else if (index == mergeTrackIndex) {
             return primaryPlaylist.getTrack(index).split(mergePlaybackPosition);
-        }
-        else {
+        } else {
             return secondaryPlaylist.getTrack((index - mergeTrackIndex) - 1);
         }
     }

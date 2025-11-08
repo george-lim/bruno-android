@@ -80,7 +80,7 @@ public class RoutePlanningFragment extends Fragment implements RoutePlanningView
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        SupportMapFragment mapFragment = (SupportMapFragment)getChildFragmentManager()
+        SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager()
                 .findFragmentById(R.id.planning_map);
 
         mapFragment.getMapAsync(googleMap -> {
@@ -163,8 +163,7 @@ public class RoutePlanningFragment extends Fragment implements RoutePlanningView
 
         if (isEnabled) {
             startBtn.getBackground().setTint(startBtnEnableColour);
-        }
-        else {
+        } else {
             startBtn.getBackground().setTint(startBtnDisableColour);
         }
     }
@@ -197,8 +196,7 @@ public class RoutePlanningFragment extends Fragment implements RoutePlanningView
         // Do not animate camera on initial route
         if (hasDrawnRouteOnce) {
             map.animateCamera(cameraUpdate);
-        }
-        else {
+        } else {
             map.moveCamera(cameraUpdate);
             hasDrawnRouteOnce = true;
         }
@@ -212,8 +210,7 @@ public class RoutePlanningFragment extends Fragment implements RoutePlanningView
         if (userMarker == null) {
             userMarker = map.addMarker(new MarkerOptions().position(latLng));
             userMarker.setIcon(userMarkerIcon);
-        }
-        else {
+        } else {
             userMarker.setPosition(latLng);
         }
     }

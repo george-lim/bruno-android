@@ -19,7 +19,7 @@ import java.util.List;
 public class FallbackPlaylistsAdapter extends RecyclerView.Adapter<FallbackPlaylistsAdapter.FallbackPlaylistViewHolder> {
 
     private List<PlaylistMetadata> playlists;
-    private FallbackPlaylistViewModel viewModel;
+    private final FallbackPlaylistViewModel viewModel;
     private int positionSelected = 0;
 
     public FallbackPlaylistsAdapter(final FallbackPlaylistViewModel viewModel) {
@@ -54,9 +54,9 @@ public class FallbackPlaylistsAdapter extends RecyclerView.Adapter<FallbackPlayl
     }
 
     public class FallbackPlaylistViewHolder extends RecyclerView.ViewHolder {
-        private RadioButton radioButton;
-        private TextView playlistName;
-        private TextView playlistNumTracks;
+        private final RadioButton radioButton;
+        private final TextView playlistName;
+        private final TextView playlistNumTracks;
 
         public FallbackPlaylistViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -75,7 +75,7 @@ public class FallbackPlaylistsAdapter extends RecyclerView.Adapter<FallbackPlayl
 
         private void handleItemSelected(final View view) {
             int copy = positionSelected;
-            positionSelected = getAdapterPosition();
+            positionSelected = getBindingAdapterPosition();
             notifyItemChanged(copy);
             notifyItemChanged(positionSelected);
         }

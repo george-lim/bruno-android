@@ -6,6 +6,7 @@ import android.location.Location;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.res.ResourcesCompat;
 
 import com.bruno.android.BuildConfig;
 import com.bruno.android.MainActivity;
@@ -39,16 +40,16 @@ public class RouteNavigationViewModel
 
     // MARK: - Private members
 
-    private Resources resources;
-    private RouteModel model;
-    private RouteNavigationViewModelDelegate delegate;
-    private Context context;
+    private final Resources resources;
+    private final RouteModel model;
+    private final RouteNavigationViewModelDelegate delegate;
+    private final Context context;
 
-    private LocationService locationService;
-    private MusicPlayer musicPlayer;
+    private final LocationService locationService;
+    private final MusicPlayer musicPlayer;
     private boolean hasCompletedRoute;
 
-    private String TAG = getClass().getSimpleName();
+    private final String TAG = getClass().getSimpleName();
 
     // MARK: - Lifecycle methods
 
@@ -93,18 +94,18 @@ public class RouteNavigationViewModel
     private LocationService getLocationService() {
         return BuildConfig.DEBUG
                 ? new DynamicLocationServiceImpl(
-                        MainActivity.getLocationService(),
-                        new BrunoBot(model)
-                )
+                MainActivity.getLocationService(),
+                new BrunoBot(model)
+        )
                 : MainActivity.getLocationService();
     }
 
     private MusicPlayer getMusicPlayer() {
         return BuildConfig.DEBUG
                 ? new DynamicMusicPlayerImpl(
-                        MainActivity.getSpotifyService().getPlayerService(),
-                        new MockMusicPlayerImpl()
-                )
+                MainActivity.getSpotifyService().getPlayerService(),
+                new MockMusicPlayerImpl()
+        )
                 : MainActivity.getSpotifyService().getPlayerService();
     }
 
@@ -142,7 +143,7 @@ public class RouteNavigationViewModel
                 CAMERA_ZOOM
         );
 
-        musicPlayer.getPlaybackPosition(new Callback<Long, Throwable>() {
+        musicPlayer.getPlaybackPosition(new Callback<>() {
             @Override
             public void onSuccess(Long playbackPosition) {
                 updateBrunoCoordinate(playbackPosition);
@@ -160,8 +161,7 @@ public class RouteNavigationViewModel
 
         if (model.hasCompletedAllCheckpoints()) {
             onRouteCompleted();
-        }
-        else {
+        } else {
             delegate.updateCheckpointMarker(
                     model.getCheckpoint().getLatLng(),
                     model.getCheckpointRadius()
@@ -202,7 +202,7 @@ public class RouteNavigationViewModel
     private void connectPlayer(final Context context, final NoFailCallback<Void> callback) {
         showPlayerConnectProgressDialog();
 
-        musicPlayer.connect(context, new Callback<Void, MusicPlayerException>() {
+        musicPlayer.connect(context, new Callback<>() {
             @Override
             public void onSuccess(Void result) {
                 dismissPlayerConnectProgressDialog();
@@ -226,17 +226,17 @@ public class RouteNavigationViewModel
     }
 
     private void updateDistanceBetweenUserAndPlaylist(long playbackPosition) {
-        int userPlaylistDistance = (int)model.getDistanceBetweenUserAndPlaylist(playbackPosition);
+        int userPlaylistDistance = (int) model.getDistanceBetweenUserAndPlaylist(playbackPosition);
 
         if (userPlaylistDistance < 0) {
             delegate.updateDistanceBetweenUserAndPlaylist(
                     -userPlaylistDistance + " m",
-                    resources.getDrawable(R.drawable.ic_angle_double_down, null),
+                    ResourcesCompat.getDrawable(resources, R.drawable.ic_angle_double_down, null),
                     resources.getColor(R.color.colorPrimary, null));
         } else {
             delegate.updateDistanceBetweenUserAndPlaylist(
                     userPlaylistDistance + " m",
-                    resources.getDrawable(R.drawable.ic_angle_double_up, null),
+                    ResourcesCompat.getDrawable(resources, R.drawable.ic_angle_double_up, null),
                     resources.getColor(R.color.colorSecondary, null));
         }
     }
@@ -329,7 +329,7 @@ public class RouteNavigationViewModel
 
     @Override
     public void onFallback() {
-        musicPlayer.getPlaybackPosition(new Callback<Long, Throwable>() {
+        musicPlayer.getPlaybackPosition(new Callback<>() {
             @Override
             public void onSuccess(Long playbackPosition) {
                 BrunoPlaylist playlist;
@@ -345,8 +345,7 @@ public class RouteNavigationViewModel
                         handleFallbackFailed();
                         return;
                     }
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     // When a user don't have a fallback playlist, FileStorage will throw a FileNotFoundError
                     handleFallbackFailed();
                     return;

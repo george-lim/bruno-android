@@ -8,11 +8,17 @@ import java.util.List;
 
 public interface FallbackPlaylistViewModelDelegate {
     void showPlaylistSelectionView(List<PlaylistMetadata> playlists, int selectedIndex);
+
     void showNoPlaylistsView();
+
     void showSpotifyErrorView(final String errorText);
+
     void quitApp();
+
     void showProgressDialog();
+
     void dismissProgressDialog();
+
     void showAlertDialog(final String title,
                          final String message,
                          final String positiveButtonText,

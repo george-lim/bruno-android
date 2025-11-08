@@ -42,7 +42,7 @@ public class PlaylistModel {
         long accumulatedRouteSegmentDuration = 0;
         List<RouteSegment> accumulatedRouteSegments = new LinkedList<>();
         LinkedList<RouteSegment> routeSegmentsCopy = new LinkedList<>(routeSegments);
-        while (routeSegmentsCopy.size() > 0) {
+        while (!routeSegmentsCopy.isEmpty()) {
             BrunoTrack track = playlist.getTrack(trackIndex);
 
             RouteSegment currentRouteSegment = routeSegmentsCopy.poll();
@@ -102,7 +102,7 @@ public class PlaylistModel {
             }
         }
 
-        if (accumulatedRouteSegments.size() > 0) {
+        if (!accumulatedRouteSegments.isEmpty()) {
             TrackSegment trackSegment = new TrackSegment(
                     accumulatedRouteSegments,
                     routeColours[routeColourIndex]
@@ -121,12 +121,10 @@ public class PlaylistModel {
     private boolean hasCompletedPlaylistRoute(long playbackPosition) {
         if (!hasStartedPlaylistRoute()) {
             return false;
-        }
-        else if (trackIndex + 1 == trackSegments.size()
+        } else if (trackIndex + 1 == trackSegments.size()
                 && playbackPosition >= trackSegments.get(trackIndex).getDuration()) {
             return true;
-        }
-        else {
+        } else {
             return trackIndex >= trackSegments.size();
         }
     }
@@ -157,7 +155,7 @@ public class PlaylistModel {
             return 0;
         }
 
-        double currentTrackPlaybackRatio = (double)playbackPosition
+        double currentTrackPlaybackRatio = (double) playbackPosition
                 / getCurrentTrack().getDuration();
         double currentTrackDistance = trackSegments.get(trackIndex).getDistance();
         return currentTrackPlaybackRatio * currentTrackDistance;
@@ -233,11 +231,9 @@ public class PlaylistModel {
 
         if (!hasStartedPlaylistRoute()) {
             return routeSegments.get(0).getStartCoordinate();
-        }
-        else if (hasCompletedPlaylistRoute(safePlaybackPosition)) {
+        } else if (hasCompletedPlaylistRoute(safePlaybackPosition)) {
             return routeSegments.get(routeSegments.size() - 1).getEndCoordinate();
-        }
-        else {
+        } else {
             return trackSegments.get(trackIndex).getCoordinate(safePlaybackPosition);
         }
     }

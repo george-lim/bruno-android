@@ -117,10 +117,10 @@ public class OnboardingPermissionFragment extends Fragment implements Onboarding
     }
 
     public void showPopUp(final String title,
-                     final String message,
-                     final String positiveButtonText,
-                     final DialogInterface.OnClickListener positiveButtonClickListener,
-                     boolean isCancelable) {
+                          final String message,
+                          final String positiveButtonText,
+                          final DialogInterface.OnClickListener positiveButtonClickListener,
+                          boolean isCancelable) {
         if (getActivity() != null) {
             new AlertDialog.Builder(getActivity())
                     .setTitle(title)

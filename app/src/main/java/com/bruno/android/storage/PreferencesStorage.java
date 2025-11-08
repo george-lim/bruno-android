@@ -10,7 +10,7 @@ import com.bruno.android.R;
 
 public class PreferencesStorage {
     // Android's share preference key value storage
-    private SharedPreferences pref;
+    private final SharedPreferences pref;
 
     // String identifier to get share preference value
 

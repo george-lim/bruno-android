@@ -6,8 +6,8 @@ import com.bruno.android.storage.PreferencesStorage;
 import java.util.List;
 
 public class DynamicFitnessRecordDAO implements FitnessRecordDAO {
-    private FitnessRecordDAO fitnessRecordDAO;
-    private FitnessRecordDAO mockFitnessRecordDAO;
+    private final FitnessRecordDAO fitnessRecordDAO;
+    private final FitnessRecordDAO mockFitnessRecordDAO;
 
     public DynamicFitnessRecordDAO(final FitnessRecordDAO fitnessRecordDAO,
                                    final FitnessRecordDAO mockFitnessRecordDAO) {
@@ -18,7 +18,7 @@ public class DynamicFitnessRecordDAO implements FitnessRecordDAO {
     private FitnessRecordDAO getFitnessRecordDAO() {
         boolean isUsingMock = MainActivity.getPreferencesStorage().getBoolean(
                 PreferencesStorage.KEYS.MOCK_FITNESS_RECORD_DAO,
-                true
+                false
         );
 
         return isUsingMock ? mockFitnessRecordDAO : fitnessRecordDAO;

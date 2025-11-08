@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -9,11 +8,11 @@
 
     <TextView
         style="@style/TextTitle"
+        android:layout_marginBottom="20dp"
         android:text="@string/onboarding_pick_your_avatar"
         app:layout_constraintBottom_toTopOf="@id/avatars_row_1"
-        android:layout_marginBottom="20dp"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"/>
+        app:layout_constraintRight_toRightOf="parent" />
 
     <LinearLayout
         android:id="@+id/avatars_row_1"

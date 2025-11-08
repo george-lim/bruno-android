@@ -50,7 +50,7 @@ public class FitnessRecord implements Serializable {
     }
 
     public static FitnessRecord deserialize(final String serializedString) throws IOException, ClassNotFoundException {
-        byte [] data = Base64.decode(serializedString, Base64.DEFAULT);
+        byte[] data = Base64.decode(serializedString, Base64.DEFAULT);
         ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(data));
         Object result = ois.readObject();
         ois.close();
@@ -91,7 +91,7 @@ public class FitnessRecord implements Serializable {
 
     public String serialize() throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        ObjectOutputStream oos = new ObjectOutputStream( baos );
+        ObjectOutputStream oos = new ObjectOutputStream(baos);
         oos.writeObject(this);
         oos.close();
         return Base64.encodeToString(baos.toByteArray(), Base64.DEFAULT);

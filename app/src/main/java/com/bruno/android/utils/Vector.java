@@ -3,7 +3,8 @@ package com.bruno.android.utils;
 // A simple vector utility that houses useful vector methods
 public class Vector {
     // NOTE: - Vector is a utility class, should not be instantiated
-    private Vector() {}
+    private Vector() {
+    }
 
     // MARK: - Vector exceptions
 
@@ -31,7 +32,7 @@ public class Vector {
         for (float i : vector) {
             result += i * i;
         }
-        return (float)Math.sqrt(result);
+        return (float) Math.sqrt(result);
     }
 
     // Returns normalized vector

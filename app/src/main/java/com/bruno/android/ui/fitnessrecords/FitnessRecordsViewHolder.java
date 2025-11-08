@@ -6,6 +6,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bruno.android.R;
@@ -16,10 +17,10 @@ import com.bruno.android.utils.DateTimeUtils;
 import java.util.Locale;
 
 public class FitnessRecordsViewHolder extends RecyclerView.ViewHolder {
-    private ImageView icon;
-    private TextView datetime;
-    private TextView distance;
-    private TextView duration;
+    private final ImageView icon;
+    private final TextView datetime;
+    private final TextView distance;
+    private final TextView duration;
 
     public FitnessRecordsViewHolder(@NonNull View itemView) {
         super(itemView);
@@ -31,13 +32,13 @@ public class FitnessRecordsViewHolder extends RecyclerView.ViewHolder {
 
     public void populate(final FitnessRecord fitnessRecord, final Locale locale) {
         if (fitnessRecord.getMode() == RouteModel.Mode.WALK) {
-            Drawable walkingIcon = itemView.getResources().getDrawable(R.drawable.ic_walking, null);
+
+            Drawable walkingIcon = ResourcesCompat.getDrawable(itemView.getResources(), R.drawable.ic_walking, null);
             int color = itemView.getResources().getColor(R.color.colorSecondary, null);
             icon.setImageDrawable(walkingIcon);
             icon.setColorFilter(color);
-        }
-        else {
-            Drawable runningIcon = itemView.getResources().getDrawable(R.drawable.ic_running, null);
+        } else {
+            Drawable runningIcon = ResourcesCompat.getDrawable(itemView.getResources(), R.drawable.ic_running, null);
             int color = itemView.getResources().getColor(R.color.colorPrimary, null);
             icon.setImageDrawable(runningIcon);
             icon.setColorFilter(color);
@@ -48,7 +49,7 @@ public class FitnessRecordsViewHolder extends RecyclerView.ViewHolder {
         String dateTimeText = DateTimeUtils.formatDateTime(fitnessRecord.getStartTime(), locale);
 
         datetime.setText(dateTimeText);
-        distance.setText(String.format(locale,"%.1f km", distanceKilometer));
+        distance.setText(String.format(locale, "%.1f km", distanceKilometer));
         duration.setText(DateTimeUtils.formatDuration(durationSeconds));
     }
 }

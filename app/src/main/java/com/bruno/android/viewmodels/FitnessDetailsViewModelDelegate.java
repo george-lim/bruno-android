@@ -15,6 +15,8 @@ public interface FitnessDetailsViewModelDelegate {
                  final String appBarTitle,
                  final FitnessDetailsViewModel.Winner winner,
                  final List<BrunoTrack> tracks);
+
     void drawRoute(final List<TrackSegment> trackSegments, float routeWidth);
+
     void moveCamera(final CameraUpdate cameraUpdate);
 }

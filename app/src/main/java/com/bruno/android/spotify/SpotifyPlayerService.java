@@ -5,7 +5,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
-import com.bruno.android.R;
+import com.bruno.android.BuildConfig;
 import com.bruno.android.music.BrunoPlaylist;
 import com.bruno.android.music.BrunoTrack;
 import com.bruno.android.music.player.MusicPlayer;
@@ -33,7 +33,7 @@ public class SpotifyPlayerService implements MusicPlayer {
 
     // Main interface to the Spotify app, initialized by connect()
     private SpotifyAppRemote mSpotifyAppRemote;
-    private List<MusicPlayerSubscriber> spotifyServiceSubscribers;
+    private final List<MusicPlayerSubscriber> spotifyServiceSubscribers;
     private final String TAG = getClass().getSimpleName();
 
     private PlayerState currentPlayerState;
@@ -53,6 +53,7 @@ public class SpotifyPlayerService implements MusicPlayer {
     /**
      * Attempts to connect to Spotify via the user's Spotify app. If any error occurs, a {@link SpotifyPlayerException} is
      * generated in the callback.
+     *
      * @param callback callback for handling the result of the connection
      */
     public void connect(final Context context,
@@ -73,10 +74,10 @@ public class SpotifyPlayerService implements MusicPlayer {
 
         // Configuration parameters read from resources
         final ConnectionParams connectionParams =
-                new ConnectionParams.Builder(context.getResources().getString(R.string.spotify_client_id))
-                    .setRedirectUri(context.getResources().getString(R.string.spotify_redirect_uri))
-                    .showAuthView(true)
-                    .build();
+                new ConnectionParams.Builder(BuildConfig.SPOTIFY_CLIENT_ID)
+                        .setRedirectUri(BuildConfig.SPOTIFY_REDIRECT_URI)
+                        .showAuthView(true)
+                        .build();
 
         // Attempt to connect to Spotify
         SpotifyAppRemote.connect(context, connectionParams, new Connector.ConnectionListener() {
@@ -104,7 +105,7 @@ public class SpotifyPlayerService implements MusicPlayer {
     private boolean isConnected() {
         return mSpotifyAppRemote != null && mSpotifyAppRemote.isConnected();
     }
-    
+
     public void addSubscriber(final MusicPlayerSubscriber subscriber) {
         if (spotifyServiceSubscribers.contains(subscriber)) return;
         spotifyServiceSubscribers.add(subscriber);
@@ -124,7 +125,7 @@ public class SpotifyPlayerService implements MusicPlayer {
                 .setEventCallback(playerState -> {
                     if (playerState == null || playerState.equals(currentPlayerState)) return;
 
-                    Log.d(TAG, "Received new PlayerState: " + playerState.toString());
+                    Log.d(TAG, "Received new PlayerState: " + playerState);
 
                     // Detect and handle fallback behaviour.
                     // Since we only have one fallback playlist, we only trigger fallback once.
@@ -145,7 +146,7 @@ public class SpotifyPlayerService implements MusicPlayer {
                     Track track = playerState.track;
 
                     if (track != null) {
-                        Log.d(TAG, String.format("Received Track: %s", track.toString()));
+                        Log.d(TAG, String.format("Received Track: %s", track));
                         // Check to see if the track received corresponds to the beginning of the playlist
                         if (!hasReachedFirstSong && convertToBrunoTrack(track).equals(playlist.getTrack(0))) {
                             Log.d(TAG, "Received the first song related to the playlist.");
@@ -215,8 +216,12 @@ public class SpotifyPlayerService implements MusicPlayer {
         boolean stoppedInSongBeginning =
                 currentState.isPaused && currentState.playbackSpeed == 0.0
                         && currentState.playbackPosition == 0;
-        if (stoppedInSongBeginning) { Log.d(TAG, "The song has stopped in the beginning."); }
-        if (stoppedInSongMiddle) { Log.d(TAG, "The song has stopped in the middle."); }
+        if (stoppedInSongBeginning) {
+            Log.d(TAG, "The song has stopped in the beginning.");
+        }
+        if (stoppedInSongMiddle) {
+            Log.d(TAG, "The song has stopped in the middle.");
+        }
         return stoppedInSongBeginning || stoppedInSongMiddle;
     }
 
@@ -280,7 +285,7 @@ public class SpotifyPlayerService implements MusicPlayer {
                     .setErrorCallback(nextCallback::onFailed);
         });
 
-        queue.run(new Callback<Void, Throwable>() {
+        queue.run(new Callback<>() {
             @Override
             public void onSuccess(Void result) {
                 // NOOP
@@ -294,7 +299,9 @@ public class SpotifyPlayerService implements MusicPlayer {
     }
 
     // Sets the playlist for the music player
-    public void setPlayerPlaylist(BrunoPlaylist playlist) { this.playlist = playlist; }
+    public void setPlayerPlaylist(BrunoPlaylist playlist) {
+        this.playlist = playlist;
+    }
 
     // Stop the player by pausing it
     public void stop() {

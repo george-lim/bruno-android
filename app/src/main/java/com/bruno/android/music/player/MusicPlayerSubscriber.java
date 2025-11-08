@@ -6,6 +6,7 @@ import com.bruno.android.music.BrunoTrack;
 public interface MusicPlayerSubscriber {
     // The player changed to a different track
     void onTrackChanged(BrunoTrack track);
+
     // The player has detected that the fallback playlist needs to be used
     void onFallback();
 }

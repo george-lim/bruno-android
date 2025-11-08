@@ -22,8 +22,8 @@ import com.bruno.android.utils.ClosureQueue;
     to request permissions from the user if the permission check fails.
  */
 public class CapabilityService {
-    private PermissionManager permissionManager;
-    private HardwareManager hardwareManager;
+    private final PermissionManager permissionManager;
+    private final HardwareManager hardwareManager;
 
     public CapabilityService(@NonNull final Context context,
                              @NonNull final PermissionRequestDelegate permissionRequestDelegate,
@@ -61,7 +61,7 @@ public class CapabilityService {
     // Checks if a capability is enabled, and requests user action if any check fails
     public void request(@NonNull final Capability capability,
                         @NonNull final Callback<Void, Void> callback) {
-        permissionManager.requestPermission(capability.getPermissionGroup(), new Callback<Void, Void>() {
+        permissionManager.requestPermission(capability.getPermissionGroup(), new Callback<>() {
             @Override
             public void onSuccess(Void result) {
                 hardwareManager.requestHardware(capability, callback);

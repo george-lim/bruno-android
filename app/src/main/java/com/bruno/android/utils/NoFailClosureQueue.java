@@ -4,7 +4,7 @@ import java.util.LinkedList;
 
 // A queue that will execute a bunch of closures sequentially
 public class NoFailClosureQueue<Success> implements NoFailClosure<Success> {
-    private LinkedList<NoFailClosure<Success>> steps;
+    private final LinkedList<NoFailClosure<Success>> steps;
 
     public NoFailClosureQueue() {
         steps = new LinkedList<>();

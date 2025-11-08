@@ -9,8 +9,8 @@ import com.bruno.android.storage.PreferencesStorage;
 import com.bruno.android.utils.NoFailCallback;
 
 public class DynamicLocationServiceImpl implements LocationService {
-    private LocationService locationService;
-    private LocationService mockLocationService;
+    private final LocationService locationService;
+    private final LocationService mockLocationService;
 
     public DynamicLocationServiceImpl(final LocationService locationService,
                                       final LocationService mockLocationService) {
@@ -21,7 +21,7 @@ public class DynamicLocationServiceImpl implements LocationService {
     private LocationService getLocationService() {
         boolean isUsingMock = MainActivity.getPreferencesStorage().getBoolean(
                 PreferencesStorage.KEYS.MOCK_LOCATION_SERVICE,
-                true
+                false
         );
 
         return isUsingMock ? mockLocationService : locationService;

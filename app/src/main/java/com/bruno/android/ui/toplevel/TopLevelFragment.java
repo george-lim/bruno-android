@@ -21,7 +21,7 @@ import com.bruno.android.ui.routeplanning.RoutePlanningFragment;
 import com.bruno.android.ui.settings.SettingsFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-public class TopLevelFragment extends Fragment implements BottomNavigationView.OnNavigationItemSelectedListener {
+public class TopLevelFragment extends Fragment implements BottomNavigationView.OnItemSelectedListener {
     private ViewPager2 viewPager;
     private BottomNavigationView btmNav;
 
@@ -65,11 +65,11 @@ public class TopLevelFragment extends Fragment implements BottomNavigationView.O
         viewPager.setUserInputEnabled(false);
         int numOfTabs = adaptor.getItemCount();
         viewPager.setOffscreenPageLimit(numOfTabs);
-        btmNav.setOnNavigationItemSelectedListener(this);
+        btmNav.setOnItemSelectedListener(this);
         viewPager.registerOnPageChangeCallback(pageChangeCallback);
     }
 
-    private ViewPager2.OnPageChangeCallback pageChangeCallback = new ViewPager2.OnPageChangeCallback() {
+    private final ViewPager2.OnPageChangeCallback pageChangeCallback = new ViewPager2.OnPageChangeCallback() {
         @Override
         public void onPageSelected(int position) {
             switch (position) {
@@ -89,17 +89,18 @@ public class TopLevelFragment extends Fragment implements BottomNavigationView.O
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-        switch (menuItem.getItemId()) {
-            case R.id.navigate_route_planning:
-                viewPager.setCurrentItem(BottomNavTab.MAP, false);
-                break;
-            case R.id.navigate_fitness_records:
-                viewPager.setCurrentItem(BottomNavTab.FITNESS, false);
-                break;
-            case R.id.navigate_settings:
-                viewPager.setCurrentItem(BottomNavTab.SETTINGS, false);
-                break;
+        int itemId = menuItem.getItemId();
+
+        if (itemId == R.id.navigate_route_planning) {
+            viewPager.setCurrentItem(BottomNavTab.MAP, false);
+        } else if (itemId == R.id.navigate_fitness_records) {
+            viewPager.setCurrentItem(BottomNavTab.FITNESS, false);
+        } else if (itemId == R.id.navigate_settings) {
+            viewPager.setCurrentItem(BottomNavTab.SETTINGS, false);
+        } else {
+            return false;
         }
+
         return true;
     }
 

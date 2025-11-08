@@ -1,4 +1,0 @@
-include ':dependencies:spotify-app-remote'
-include ':dependencies:spotify-auth'
-include ':app'
-rootProject.name = "Bruno"

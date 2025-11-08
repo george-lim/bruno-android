@@ -17,9 +17,11 @@ public class MockMusicPlayerImpl implements MusicPlayer {
     // MARK: - Private members
 
     private BrunoPlaylist playlist;
-    private List<MusicPlayerSubscriber> subscribers;
+    private final List<MusicPlayerSubscriber> subscribers;
     private Thread playSongsThread;
     private long songStartTime;
+
+    private final String TAG = getClass().getSimpleName();
 
     // MARK: - Lifecycle methods
 
@@ -51,7 +53,8 @@ public class MockMusicPlayerImpl implements MusicPlayer {
             }
         }
         // Return from the method immediately
-        catch (InterruptedException ignored) { }
+        catch (InterruptedException ignored) {
+        }
     }
 
     // MARK: - MusicPlayer methods
@@ -93,7 +96,7 @@ public class MockMusicPlayerImpl implements MusicPlayer {
             playSongsThread.join();
         } catch (InterruptedException e) {
             // NOTE: .join requires a try-catch, even though control will never get here.
-            e.printStackTrace();
+            Log.e(TAG, "Interrupted while stopping music player", e);
         }
     }
 

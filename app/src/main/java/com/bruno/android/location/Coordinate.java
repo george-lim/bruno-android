@@ -14,8 +14,8 @@ public class Coordinate implements Serializable {
 
     // MARK: - Private members
 
-    private double latitude;
-    private double longitude;
+    private final double latitude;
+    private final double longitude;
 
     // MARK: - Lifecycle methods
 

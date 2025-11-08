@@ -19,12 +19,12 @@ public class FitnessDetailsViewModel {
 
     // MARK: - Enums
 
-    public enum Winner { USER, BRUNO, TIE }
+    public enum Winner {USER, BRUNO, TIE}
 
     // MARK: - Private members
 
-    private FitnessRecord fitnessRecord;
-    private FitnessDetailsViewModelDelegate delegate;
+    private final FitnessRecord fitnessRecord;
+    private final FitnessDetailsViewModelDelegate delegate;
 
     // MARK: - Lifecycle methods
 
@@ -59,8 +59,9 @@ public class FitnessDetailsViewModel {
                 "%.1f km",
                 fitnessRecord.getRouteDistance() / 1000
         );
-        String statsStepsText = String.format(
-                resources.getString(R.string.fitness_details_steps_placeholder),
+        String statsStepsText = resources.getQuantityString(
+                R.plurals.fitness_details_steps_placeholder,
+                stepCount,
                 stepCount
         );
         String statsClockText = DateTimeUtils.formatDuration(userDuration);

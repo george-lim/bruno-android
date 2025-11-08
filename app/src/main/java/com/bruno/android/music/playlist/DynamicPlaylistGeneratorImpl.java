@@ -6,8 +6,8 @@ import com.bruno.android.storage.PreferencesStorage;
 import com.bruno.android.utils.Callback;
 
 public class DynamicPlaylistGeneratorImpl implements PlaylistGenerator {
-    private PlaylistGenerator playlistGenerator;
-    private PlaylistGenerator mockPlaylistGenerator;
+    private final PlaylistGenerator playlistGenerator;
+    private final PlaylistGenerator mockPlaylistGenerator;
 
     public DynamicPlaylistGeneratorImpl(final PlaylistGenerator playlistGenerator,
                                         final PlaylistGenerator mockPlaylistGenerator) {
@@ -18,7 +18,7 @@ public class DynamicPlaylistGeneratorImpl implements PlaylistGenerator {
     private PlaylistGenerator getPlaylistGenerator() {
         boolean isUsingMock = MainActivity.getPreferencesStorage().getBoolean(
                 PreferencesStorage.KEYS.MOCK_PLAYLIST_GENERATOR,
-                true
+                false
         );
 
         return isUsingMock ? mockPlaylistGenerator : playlistGenerator;

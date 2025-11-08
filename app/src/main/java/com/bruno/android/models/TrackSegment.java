@@ -14,7 +14,7 @@ public class TrackSegment implements Serializable {
 
     private List<Coordinate> coordinates;
     private List<Long> durations;
-    private int routeColour;
+    private final int routeColour;
 
     // MARK: - Lifecycle methods
 
@@ -63,8 +63,8 @@ public class TrackSegment implements Serializable {
     public double getDistance() {
         double distance = 0;
 
-        for (int i = 0; i+1 < coordinates.size(); ++i) {
-            distance += coordinates.get(i).getDistance(coordinates.get(i+1));
+        for (int i = 0; i + 1 < coordinates.size(); ++i) {
+            distance += coordinates.get(i).getDistance(coordinates.get(i + 1));
         }
 
         return distance;
@@ -95,10 +95,10 @@ public class TrackSegment implements Serializable {
 
         Coordinate routeSegmentStart = coordinates.get(routeSegmentIndex);
         // i+1 is safe because coordinates contains last segment's end coordinate as well
-        Coordinate routeSegmentEnd = coordinates.get(routeSegmentIndex+1);
+        Coordinate routeSegmentEnd = coordinates.get(routeSegmentIndex + 1);
 
         long routeSegmentDuration = durations.get(routeSegmentIndex);
-        double routeSegmentPlaybackRatio = (double)routeSegmentPlaybackPosition / routeSegmentDuration;
+        double routeSegmentPlaybackRatio = (double) routeSegmentPlaybackPosition / routeSegmentDuration;
 
         return routeSegmentStart.getSplitPoint(routeSegmentEnd, routeSegmentPlaybackRatio);
     }

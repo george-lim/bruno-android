@@ -8,8 +8,8 @@ import com.bruno.android.storage.PreferencesStorage;
 import com.bruno.android.utils.Callback;
 
 public class DynamicMusicPlayerImpl implements MusicPlayer {
-    private MusicPlayer musicPlayer;
-    private MusicPlayer mockMusicPlayer;
+    private final MusicPlayer musicPlayer;
+    private final MusicPlayer mockMusicPlayer;
 
     public DynamicMusicPlayerImpl(final MusicPlayer musicPlayer,
                                   final MusicPlayer mockMusicPlayer) {
@@ -20,7 +20,7 @@ public class DynamicMusicPlayerImpl implements MusicPlayer {
     private MusicPlayer getMusicPlayer() {
         boolean isUsingMock = MainActivity.getPreferencesStorage().getBoolean(
                 PreferencesStorage.KEYS.MOCK_MUSIC_PLAYER,
-                true
+                false
         );
 
         return isUsingMock ? mockMusicPlayer : musicPlayer;

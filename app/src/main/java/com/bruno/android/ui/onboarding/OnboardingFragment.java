@@ -42,7 +42,7 @@ public class OnboardingFragment extends Fragment {
         viewPager.registerOnPageChangeCallback(pageChangeCallback);
     }
 
-    private ViewPager2.OnPageChangeCallback pageChangeCallback = new ViewPager2.OnPageChangeCallback() {
+    private final ViewPager2.OnPageChangeCallback pageChangeCallback = new ViewPager2.OnPageChangeCallback() {
         @Override
         public void onPageSelected(int position) {
             currentTab = position;

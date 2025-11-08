@@ -22,12 +22,13 @@ public class RouteModel extends ViewModel {
 
     // MARK: - Enums
 
-    public enum Mode { WALK, RUN }
-    public enum Stage { PLANNING, NAVIGATION }
+    public enum Mode {WALK, RUN}
+
+    public enum Stage {PLANNING, NAVIGATION}
 
     // MARK: - Constants
 
-    public static final int[] DURATIONS_IN_MINUTES = { 15, 30, 45, 60, 75, 90, 105, 120 };
+    public static final int[] DURATIONS_IN_MINUTES = {15, 30, 45, 60, 75, 90, 105, 120};
 
     // MARK: - Private members
 
@@ -39,8 +40,8 @@ public class RouteModel extends ViewModel {
     private int steps = 0;
     private Date startDate = null;
 
-    private PlaylistModel playlistModel = new PlaylistModel();
-    private CheckpointsModel checkpointsModel = new CheckpointsModel();
+    private final PlaylistModel playlistModel = new PlaylistModel();
+    private final CheckpointsModel checkpointsModel = new CheckpointsModel();
 
     // MARK: - private methods
 
@@ -159,7 +160,7 @@ public class RouteModel extends ViewModel {
             fitnessRecordEntry.setRecordDataString(serializedString);
             fitnessRecordDAO.insert(fitnessRecordEntry);
         } catch (IOException e) {
-            Log.e(getClass().getSimpleName(), "Failed to store FitnessRecord in DB: " + e.toString());
+            Log.e(getClass().getSimpleName(), "Failed to store FitnessRecord in DB: " + e);
         }
     }
 

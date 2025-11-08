@@ -51,15 +51,11 @@ public class SettingsFallbackPlaylistWrapperFragment extends Fragment implements
 
     @Override
     public void onSelectPlaylistPressed() {
-        if (getActivity() != null) {
-            getActivity().onBackPressed();
-        }
+        getParentFragmentManager().popBackStack();
     }
 
     @Override
     public void onNoPlaylistPressed() {
-        if (getActivity() != null) {
-            getActivity().onBackPressed();
-        }
+        getParentFragmentManager().popBackStack();
     }
 }

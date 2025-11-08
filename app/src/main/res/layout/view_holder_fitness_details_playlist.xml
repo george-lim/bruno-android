@@ -3,46 +3,38 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:paddingLeft="20dp"
-    android:paddingRight="20dp">
+    android:orientation="horizontal"
+    android:paddingHorizontal="20dp"
+    android:paddingVertical="10dp">
+
+    <ImageView
+        android:id="@+id/fitness_details_playlist_track_icon"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_gravity="center"
+        android:layout_weight="1"
+        android:contentDescription="@string/fitness_details_music_description"
+        app:srcCompat="@drawable/ic_music" />
 
     <LinearLayout
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:paddingTop="10dp"
-        android:paddingBottom="10dp">
+        android:layout_weight="9"
+        android:orientation="vertical">
 
-        <ImageView
-            android:id="@+id/fitness_details_playlist_track_icon"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:layout_gravity="center"
-            android:layout_weight="1"
-            android:contentDescription="@string/fitness_details_music_description"
-            app:srcCompat="@drawable/ic_music" />
-
-        <LinearLayout
-            android:layout_width="0dp"
+        <TextView
+            android:id="@+id/fitness_details_playlist_track_name"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="9"
-            android:orientation="vertical">
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textColor="@android:color/black" />
 
-            <TextView
-                android:id="@+id/fitness_details_playlist_track_name"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:textColor="@android:color/black" />
-
-            <TextView
-                android:id="@+id/fitness_details_playlist_track_artists"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:ellipsize="end"
-                android:maxLines="1" />
-        </LinearLayout>
+        <TextView
+            android:id="@+id/fitness_details_playlist_track_artists"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1" />
     </LinearLayout>
 </LinearLayout>

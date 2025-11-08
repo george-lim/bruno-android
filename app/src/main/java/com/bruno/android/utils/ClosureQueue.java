@@ -7,7 +7,7 @@ import java.util.LinkedList;
     NOTE: If any closure step fails, the client callback will fail
  */
 public class ClosureQueue<Success, Failure> implements Closure<Success, Failure> {
-    private LinkedList<Closure<Success, Failure>> steps;
+    private final LinkedList<Closure<Success, Failure>> steps;
 
     public ClosureQueue() {
         steps = new LinkedList<>();
@@ -28,7 +28,7 @@ public class ClosureQueue<Success, Failure> implements Closure<Success, Failure>
             return;
         }
 
-        nextStep.run(result, new Callback<Success, Failure>() {
+        nextStep.run(result, new Callback<>() {
             @Override
             public void onSuccess(Success result) {
                 run(result, callback);

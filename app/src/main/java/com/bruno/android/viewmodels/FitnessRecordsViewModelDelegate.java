@@ -7,6 +7,8 @@ import java.util.Locale;
 
 public interface FitnessRecordsViewModelDelegate {
     void setupUI();
+
     void setAdapterData(final List<FitnessRecord> data);
+
     void setAdapterLocale(final Locale locale);
 }

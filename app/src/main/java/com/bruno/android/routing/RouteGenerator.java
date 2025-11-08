@@ -1,5 +1,7 @@
 package com.bruno.android.routing;
 
+import androidx.annotation.NonNull;
+
 import com.bruno.android.location.Coordinate;
 import com.bruno.android.settings.SettingsService;
 import com.google.android.gms.maps.model.LatLng;
@@ -13,10 +15,10 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Class used to generate routes using the Directions API
+ * Class used to generate routes using the Routes API
  */
 public abstract class RouteGenerator {
-    protected static final String DIRECTIONS_ENDPOINT = "https://maps.googleapis.com/maps/api/directions/";
+    protected static final String ROUTES_ENDPOINT = "https://routes.googleapis.com/directions/v2:computeRoutes";
     protected static final double METRES_PER_LAT_DEG = 110947.2;
     protected static final double EARTH_CIRCUMFERENCE_METRES = 40075000;
     protected static final int DEG_PER_PI_RADIAN = 180;
@@ -25,10 +27,10 @@ public abstract class RouteGenerator {
     /**
      * Selects a random path from the stored paths.
      *
-     * @param callback callback handler
-     * @param origin origin coordinate
+     * @param callback      callback handler
+     * @param origin        origin coordinate
      * @param totalDistance target route distance (meters)
-     * @param rotation rotation of route w.r.t starting position (rad), 0 being due south
+     * @param rotation      rotation of route w.r.t starting position (rad), 0 being due south
      */
     public abstract void generateRoute(final OnRouteResponseCallback callback,
                                        final Coordinate origin,
@@ -36,11 +38,12 @@ public abstract class RouteGenerator {
                                        double rotation);
 
     /**
-     *  Generate waypoints forming an equilateral triangle with perimeter {@code totalDistance} anchored
+     * Generate waypoints forming an equilateral triangle with perimeter {@code totalDistance} anchored
      * around {@code origin} with rotation {@code rotation}.
-     * @param origin origin coordinate
+     *
+     * @param origin        origin coordinate
      * @param totalDistance distance (meters)
-     * @param rotation rotation (rad)
+     * @param rotation      rotation (rad)
      * @return list of {@code LatLng} points in route order
      */
     protected static List<Coordinate> generateWaypoints(final Coordinate origin,
@@ -74,35 +77,39 @@ public abstract class RouteGenerator {
             throws JSONException {
         String encodedPath = routeJson.getJSONArray("routes")
                 .getJSONObject(0)
-                .getJSONObject("overview_polyline")
-                .getString("points");
+                .getJSONObject("polyline")
+                .getString("encodedPolyline");
 
         List<LatLng> decodedPath = PolyUtil.decode(encodedPath);
 
         List<RouteSegment> routeSegments = new LinkedList<>();
         for (int i = 0; i < decodedPath.size() - 1; ++i) {
-            Coordinate startCoordinate = new Coordinate(decodedPath.get(i));
-            Coordinate endCoordinate = new Coordinate(decodedPath.get(i+1));
-            double distanceMetres = startCoordinate.getDistance(endCoordinate);
-            // should not overflow since (distanceMetres / WALKING_SPEED) is small enough
-            double durationMs = (distanceMetres / (SettingsService.PREFERRED_WALKING_SPEED / 60)) * 1000;
-
-            RouteSegment routeSegment = new RouteSegment(
-                    startCoordinate,
-                    endCoordinate,
-                    (long) durationMs
-            );
-
+            RouteSegment routeSegment = getRouteSegment(decodedPath, i);
             routeSegments.add(routeSegment);
         }
 
         return routeSegments;
     }
 
+    @NonNull
+    private static RouteSegment getRouteSegment(List<LatLng> decodedPath, int i) {
+        Coordinate startCoordinate = new Coordinate(decodedPath.get(i));
+        Coordinate endCoordinate = new Coordinate(decodedPath.get(i + 1));
+        double distanceMetres = startCoordinate.getDistance(endCoordinate);
+        // should not overflow since (distanceMetres / WALKING_SPEED) is small enough
+        double durationMs = (distanceMetres / (SettingsService.PREFERRED_WALKING_SPEED / 60)) * 1000;
+
+        return new RouteSegment(
+                startCoordinate,
+                endCoordinate,
+                (long) durationMs
+        );
+    }
+
     /**
      * Converts distance in meters to Latitude and longitude measures
      *
-     * @param origin origin coordinate
+     * @param origin        origin coordinate
      * @param totalDistance distance (m)
      */
     private static double distanceToLatLngDegree(final Coordinate origin, double totalDistance) {

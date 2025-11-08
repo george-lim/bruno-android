@@ -7,14 +7,14 @@ import androidx.annotation.NonNull;
 // An enumerable model representing a group of related permissions
 public enum PermissionGroup {
     LOCATION(
-            new String[] {
+            new String[]{
                     Manifest.permission.ACCESS_FINE_LOCATION
             },
             "Bruno requires GPS capability to calculate nearby routes and track your pace during runs."
     );
 
-    private String[] permissionNames;
-    private String requestMessage;
+    private final String[] permissionNames;
+    private final String requestMessage;
 
     PermissionGroup(@NonNull final String[] permissionNames,
                     @NonNull final String requestMessage) {

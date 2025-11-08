@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:state_selected="true" android:color="@color/colorPrimary">
+    <item android:color="@color/colorPrimary" android:state_selected="true">
         <shape android:shape="rectangle">
-            <corners android:bottomRightRadius="10dp" android:topRightRadius="10dp"/>
+            <corners android:bottomRightRadius="10dp" android:topRightRadius="10dp" />
             <stroke android:width="1.75dp" android:color="@color/colorPrimary" />
         </shape>
     </item>
     <item android:color="@color/colorDisable">
         <shape android:shape="rectangle">
-            <corners android:bottomRightRadius="10dp" android:topRightRadius="10dp"/>
+            <corners android:bottomRightRadius="10dp" android:topRightRadius="10dp" />
             <stroke android:width="1.75dp" android:color="@color/colorOutline" />
         </shape>
     </item>

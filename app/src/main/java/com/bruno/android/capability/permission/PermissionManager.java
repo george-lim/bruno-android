@@ -7,9 +7,9 @@ import com.bruno.android.utils.Callback;
 
 // Manages permission status checking and permission requests
 public class PermissionManager {
-    private PackageManager packageManager;
-    private String packageName;
-    private PermissionRequestDelegate delegate;
+    private final PackageManager packageManager;
+    private final String packageName;
+    private final PermissionRequestDelegate delegate;
 
     public PermissionManager(final Context context,
                              final PermissionRequestDelegate delegate) {

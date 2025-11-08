@@ -6,8 +6,8 @@ import java.io.Serializable;
 import java.util.List;
 
 public class BrunoPlaylistImpl extends BrunoPlaylist implements Serializable {
-    private PlaylistMetadata metadata;
-    private List<BrunoTrack> tracks;
+    private final PlaylistMetadata metadata;
+    private final List<BrunoTrack> tracks;
 
     public BrunoPlaylistImpl(final String id,
                              final String name,
@@ -32,5 +32,7 @@ public class BrunoPlaylistImpl extends BrunoPlaylist implements Serializable {
     }
 
     @Override
-    public boolean isEmpty() { return tracks.size() == 0; }
+    public boolean isEmpty() {
+        return tracks.isEmpty();
+    }
 }

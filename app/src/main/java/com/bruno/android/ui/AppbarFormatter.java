@@ -41,7 +41,9 @@ public class AppbarFormatter {
         if (hasBackButton) {
             actionbar.setDisplayShowHomeEnabled(true);
             actionbar.setDisplayHomeAsUpEnabled(true);
-            toolbar.setNavigationOnClickListener(view -> activity.onBackPressed());
+            toolbar.setNavigationOnClickListener(view ->
+                    activity.getOnBackPressedDispatcher().onBackPressed()
+            );
         }
     }
 }

@@ -5,8 +5,8 @@ import com.bruno.android.storage.PreferencesStorage;
 import com.bruno.android.utils.Callback;
 
 public class DynamicSpotifyAuthServiceImpl implements SpotifyAuthService {
-    private SpotifyAuthService authService;
-    private SpotifyAuthService mockAuthService;
+    private final SpotifyAuthService authService;
+    private final SpotifyAuthService mockAuthService;
 
     public DynamicSpotifyAuthServiceImpl(final SpotifyAuthService authService,
                                          final SpotifyAuthService mockAuthService) {
@@ -17,7 +17,7 @@ public class DynamicSpotifyAuthServiceImpl implements SpotifyAuthService {
     private SpotifyAuthService getAuthService() {
         boolean isUsingMock = MainActivity.getPreferencesStorage().getBoolean(
                 PreferencesStorage.KEYS.MOCK_SPOTIFY_AUTH_SERVICE,
-                true
+                false
         );
 
         return isUsingMock ? mockAuthService : authService;

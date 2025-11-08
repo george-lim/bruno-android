@@ -9,8 +9,8 @@ import com.bruno.android.utils.Callback;
 import java.util.List;
 
 public class DynamicSpotifyPlaylistAPIImpl implements SpotifyPlaylistAPI {
-    private SpotifyPlaylistAPI playlistAPI;
-    private SpotifyPlaylistAPI mockPlaylistAPI;
+    private final SpotifyPlaylistAPI playlistAPI;
+    private final SpotifyPlaylistAPI mockPlaylistAPI;
 
     public DynamicSpotifyPlaylistAPIImpl(final SpotifyPlaylistAPI playlistAPI,
                                          final SpotifyPlaylistAPI mockPlaylistAPI) {
@@ -21,7 +21,7 @@ public class DynamicSpotifyPlaylistAPIImpl implements SpotifyPlaylistAPI {
     private SpotifyPlaylistAPI getPlaylistAPI() {
         boolean isUsingMock = MainActivity.getPreferencesStorage().getBoolean(
                 PreferencesStorage.KEYS.MOCK_SPOTIFY_PLAYLIST_API,
-                true
+                false
         );
 
         return isUsingMock ? mockPlaylistAPI : playlistAPI;

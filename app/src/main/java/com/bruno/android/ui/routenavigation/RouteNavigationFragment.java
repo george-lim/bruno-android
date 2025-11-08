@@ -95,7 +95,7 @@ public class RouteNavigationFragment extends Fragment implements RouteNavigation
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        SupportMapFragment mapFragment = (SupportMapFragment)getChildFragmentManager()
+        SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager()
                 .findFragmentById(R.id.walking_map);
 
         mapFragment.getMapAsync(googleMap -> {
@@ -188,8 +188,7 @@ public class RouteNavigationFragment extends Fragment implements RouteNavigation
         if (userMarker == null) {
             userMarker = map.addMarker(new MarkerOptions().position(latLng));
             userMarker.setIcon(userMarkerIcon);
-        }
-        else {
+        } else {
             userMarker.setPosition(latLng);
         }
 
@@ -202,8 +201,7 @@ public class RouteNavigationFragment extends Fragment implements RouteNavigation
 
         if (hasDrawnRouteOnce) {
             map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-        }
-        else {
+        } else {
             map.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
             hasDrawnRouteOnce = true;
         }
@@ -226,7 +224,6 @@ public class RouteNavigationFragment extends Fragment implements RouteNavigation
     }
 
     @Override
-    @SuppressWarnings("deprecation")
     public void dismissProgressDialog() {
         if (progressDialog == null) {
             return;

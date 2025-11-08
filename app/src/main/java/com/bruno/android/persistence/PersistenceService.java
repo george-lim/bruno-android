@@ -7,7 +7,7 @@ import androidx.room.Room;
 import com.bruno.android.BuildConfig;
 
 public class PersistenceService {
-    private FitnessRecordDAO fitnessRecordDAO;
+    private final FitnessRecordDAO fitnessRecordDAO;
 
     public PersistenceService(final Context context) {
         AppDatabase database = Room
@@ -17,9 +17,9 @@ public class PersistenceService {
 
         fitnessRecordDAO = BuildConfig.DEBUG
                 ? new DynamicFitnessRecordDAO(
-                        database.getRecordDAO(),
-                        new MockFitnessRecordDAO()
-                )
+                database.getRecordDAO(),
+                new MockFitnessRecordDAO()
+        )
                 : database.getRecordDAO();
     }
 
