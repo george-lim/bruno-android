@@ -1,0 +1,66 @@
+name: Release
+
+on:
+  schedule:
+    # Run once every 4 months (on the 1st day of January, May, and September at 00:00 UTC)
+    - cron: '0 0 1 1,5,9 *'
+  workflow_dispatch:
+    inputs:
+      bump_type:
+        description: Version bump type
+        default: code
+        type: choice
+        options:
+          - major
+          - minor
+          - patch
+          - code
+
+env:
+  BUMP_TYPE: ${{ github.event.inputs.bump_type || 'code' }}
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+    - uses: actions/checkout@v5
+    - uses: actions/checkout@v5
+      with:
+        repository: george-lim/bruno-internal
+        token: ${{ secrets.BRUNO_INTERNAL_PAT }}
+        path: bruno-internal
+        sparse-checkout: env
+    - run: mv bruno-internal/env/* . && rm -rf bruno-internal
+    - uses: gradle/actions/setup-gradle@v3
+    - uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '3.1'
+        bundler-cache: true
+    - id: set_bump_options
+      run: |
+        if [ "${{ env.BUMP_TYPE }}" != "code" ]; then
+          echo "options={\"version\":\"${{ env.BUMP_TYPE }}\"}" >> $GITHUB_OUTPUT
+        else
+          echo "options={}" >> $GITHUB_OUTPUT
+        fi
+    - uses: maierj/fastlane-action@v3.1.0
+      with:
+        lane: bump
+        options: ${{ steps.set_bump_options.outputs.options }}
+    - uses: maierj/fastlane-action@v3.1.0
+      with:
+        lane: release
+    - uses: stefanzweifel/git-auto-commit-action@v7
+      with:
+        commit_message: Bump version
+    - run: echo TARGET_VERSION=$(sed -n 's/.*versionName = "\([^"]*\)".*/\1/p' app/build.gradle.kts) >> "$GITHUB_ENV"
+      if: ${{ env.BUMP_TYPE != 'code' }}
+    - uses: actions/create-release@v1
+      if: ${{ env.BUMP_TYPE != 'code' }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: v${{ env.TARGET_VERSION }}
+        release_name: Release v${{ env.TARGET_VERSION }}

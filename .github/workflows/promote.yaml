@@ -1,0 +1,24 @@
+name: Promote
+
+on:
+  workflow_dispatch:
+
+jobs:
+  promote:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v5
+    - uses: actions/checkout@v5
+      with:
+        repository: george-lim/bruno-internal
+        token: ${{ secrets.BRUNO_INTERNAL_PAT }}
+        path: bruno-internal
+        sparse-checkout: env
+    - run: mv bruno-internal/env/* . && rm -rf bruno-internal
+    - uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '3.1'
+        bundler-cache: true
+    - uses: maierj/fastlane-action@v3.1.0
+      with:
+        lane: promote
