@@ -25,7 +25,7 @@ android {
         applicationId = "com.bruno.android"
         minSdk = 33
         targetSdk = 36
-        versionCode = 7
+        versionCode = 8
         versionName = "1.1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
